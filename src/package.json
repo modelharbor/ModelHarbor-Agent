@@ -1,5 +1,5 @@
 {
-	"name": "model-harbor-agent",
+	"name": "roo-cline",
 	"displayName": "%extension.displayName%",
 	"description": "%extension.description%",
 	"publisher": "ModelHarbor",
@@ -14,13 +14,13 @@
 		"node": "20.19.2"
 	},
 	"author": {
-		"name": "ModelHarbor"
+		"name": "Roo Code"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/utarn/ModelHarbor-Agent"
+		"url": "https://github.com/RooCodeInc/Roo-Code"
 	},
-	"homepage": "https://www.modelharbor.com",
+	"homepage": "https://github.com/RooCodeInc/Roo-Code",
 	"categories": [
 		"AI",
 		"Chat",
@@ -43,8 +43,7 @@
 		"ai",
 		"llama",
 		"roo code",
-		"roocode",
-		"modelharbor"
+		"roocode"
 	],
 	"activationEvents": [
 		"onLanguage",

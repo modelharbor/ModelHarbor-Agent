@@ -55,7 +55,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "requesty", apiKey: "requesty-key" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "glama" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "unbound", apiKey: "unbound-key" })
-		expect(mockGetModels).toHaveBeenCalledWith({ provider: "modelharbor" })
 		expect(mockGetModels).toHaveBeenCalledWith({
 			provider: "litellm",
 			apiKey: "litellm-key",
@@ -70,7 +69,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				requesty: mockModels,
 				glama: mockModels,
 				unbound: mockModels,
-				modelharbor: mockModels,
 				litellm: mockModels,
 			},
 		})
@@ -156,7 +154,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				requesty: mockModels,
 				glama: mockModels,
 				unbound: mockModels,
-				modelharbor: mockModels,
 				litellm: {},
 			},
 		})
@@ -178,7 +175,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty
 			.mockResolvedValueOnce(mockModels) // glama
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
-			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // modelharbor
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm
 
 		await webviewMessageHandler(mockClineProvider, {
@@ -193,7 +189,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				requesty: {},
 				glama: mockModels,
 				unbound: {},
-				modelharbor: {},
 				litellm: {},
 			},
 		})
@@ -217,13 +212,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			type: "singleRouterModelFetchResponse",
 			success: false,
 			error: "LiteLLM connection failed",
-			values: { provider: "modelharbor" },
-		})
-
-		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
-			type: "singleRouterModelFetchResponse",
-			success: false,
-			error: "LiteLLM connection failed",
 			values: { provider: "litellm" },
 		})
 	})
@@ -234,7 +222,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockRejectedValueOnce(new Error("Structured error message")) // Error object
 			.mockRejectedValueOnce("String error message") // String error
 			.mockRejectedValueOnce({ message: "Object with message" }) // Object error
-			.mockResolvedValueOnce({}) // Success
 			.mockResolvedValueOnce({}) // Success
 			.mockResolvedValueOnce({}) // Success
 
