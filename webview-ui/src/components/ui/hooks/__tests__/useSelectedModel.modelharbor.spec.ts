@@ -3,7 +3,7 @@ import { useSelectedModel } from "../useSelectedModel"
 import type { ProviderSettings } from "@roo-code/types"
 
 // Mock the useRouterModels hook
-jest.mock("../useRouterModels", () => ({
+vi.mock("../useRouterModels", () => ({
 	useRouterModels: () => ({
 		data: {
 			openrouter: {},
@@ -59,7 +59,7 @@ jest.mock("../useRouterModels", () => ({
 }))
 
 // Mock the useOpenRouterModelProviders hook
-jest.mock("../useOpenRouterModelProviders", () => ({
+vi.mock("../useOpenRouterModelProviders", () => ({
 	useOpenRouterModelProviders: () => ({
 		data: {},
 		isLoading: false,
