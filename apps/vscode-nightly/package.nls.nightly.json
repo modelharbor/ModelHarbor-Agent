@@ -1,7 +1,7 @@
 {
-	"extension.displayName": "Roo Code Nightly",
-	"views.contextMenu.label": "Roo Code Nightly",
-	"views.terminalMenu.label": "Roo Code Nightly",
-	"views.activitybar.title": "Roo Code Nightly",
-	"configuration.title": "Roo Code Nightly"
+	"extension.displayName": "ModelHarbor Agent Nightly",
+	"views.contextMenu.label": "ModelHarbor Agent Nightly",
+	"views.terminalMenu.label": "ModelHarbor Agent Nightly",
+	"views.activitybar.title": "ModelHarbor Agent Nightly",
+	"configuration.title": "ModelHarbor Agent Nightly"
 }
