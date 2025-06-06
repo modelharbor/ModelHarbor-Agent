@@ -38,6 +38,7 @@ export const ModelHarbor = memo(
 		return (
 			<div className="flex flex-col gap-3">
 				<VSCodeTextField
+					type="password"
 					value={apiConfiguration?.modelharborApiKey || ""}
 					onInput={handleInputChange("modelharborApiKey")}
 					placeholder={t("settings:providers.modelharborApiKey")}
