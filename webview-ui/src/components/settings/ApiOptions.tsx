@@ -42,7 +42,6 @@ import {
 	Vertex,
 	VSCodeLM,
 	XAI,
-	ModelHarbor,
 } from "./providers"
 
 import { MODELS_BY_PROVIDER, PROVIDERS } from "./constants"
@@ -231,11 +230,6 @@ const ApiOptions = ({
 						setApiConfigurationField("litellmModelId", litellmDefaultModelId)
 					}
 					break
-				case "modelharbor":
-					if (!apiConfiguration.modelharborModelId) {
-						setApiConfigurationField("modelharborModelId", "qwen/qwen3-32b")
-					}
-					break
 			}
 
 			setApiConfigurationField("apiProvider", value)
@@ -247,7 +241,6 @@ const ApiOptions = ({
 			apiConfiguration.unboundModelId,
 			apiConfiguration.requestyModelId,
 			apiConfiguration.litellmModelId,
-			apiConfiguration.modelharborModelId,
 		],
 	)
 
@@ -408,14 +401,6 @@ const ApiOptions = ({
 
 			{selectedProvider === "litellm" && (
 				<LiteLLM
-					apiConfiguration={apiConfiguration}
-					setApiConfigurationField={setApiConfigurationField}
-					organizationAllowList={organizationAllowList}
-				/>
-			)}
-
-			{selectedProvider === "modelharbor" && (
-				<ModelHarbor
 					apiConfiguration={apiConfiguration}
 					setApiConfigurationField={setApiConfigurationField}
 					organizationAllowList={organizationAllowList}

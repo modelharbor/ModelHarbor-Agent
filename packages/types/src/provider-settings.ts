@@ -30,7 +30,6 @@ export const providerNames = [
 	"groq",
 	"chutes",
 	"litellm",
-	"modelharbor",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -204,11 +203,6 @@ const litellmSchema = baseProviderSettingsSchema.extend({
 	litellmModelId: z.string().optional(),
 })
 
-const modelharborSchema = baseProviderSettingsSchema.extend({
-	modelharborApiKey: z.string().optional(),
-	modelharborModelId: z.string().optional(),
-})
-
 const defaultSchema = z.object({
 	apiProvider: z.undefined(),
 })
@@ -235,7 +229,6 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	groqSchema.merge(z.object({ apiProvider: z.literal("groq") })),
 	chutesSchema.merge(z.object({ apiProvider: z.literal("chutes") })),
 	litellmSchema.merge(z.object({ apiProvider: z.literal("litellm") })),
-	modelharborSchema.merge(z.object({ apiProvider: z.literal("modelharbor") })),
 	defaultSchema,
 ])
 
@@ -262,7 +255,6 @@ export const providerSettingsSchema = z.object({
 	...groqSchema.shape,
 	...chutesSchema.shape,
 	...litellmSchema.shape,
-	...modelharborSchema.shape,
 	...codebaseIndexProviderSchema.shape,
 })
 
@@ -370,9 +362,6 @@ export const PROVIDER_SETTINGS_KEYS = keysOf<ProviderSettings>()([
 	"litellmBaseUrl",
 	"litellmApiKey",
 	"litellmModelId",
-	// ModelHarbor
-	"modelharborApiKey",
-	"modelharborModelId",
 ])
 
 export const MODEL_ID_KEYS: Partial<keyof ProviderSettings>[] = [
