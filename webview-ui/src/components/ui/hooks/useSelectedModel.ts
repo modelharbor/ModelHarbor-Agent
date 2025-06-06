@@ -30,7 +30,6 @@ import {
 	glamaDefaultModelId,
 	unboundDefaultModelId,
 	litellmDefaultModelId,
-	modelHarborDefaultModelId,
 } from "@roo-code/types"
 
 import type { RouterModels } from "@roo/api"
@@ -121,13 +120,6 @@ function getSelectedModel({
 			return info
 				? { id, info }
 				: { id: litellmDefaultModelId, info: routerModels.litellm[litellmDefaultModelId] }
-		}
-		case "modelharbor": {
-			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
-			const info = routerModels.modelharbor[id]
-			return info
-				? { id, info }
-				: { id: modelHarborDefaultModelId, info: routerModels.modelharbor[modelHarborDefaultModelId] }
 		}
 		case "xai": {
 			const id = apiConfiguration.apiModelId ?? xaiDefaultModelId

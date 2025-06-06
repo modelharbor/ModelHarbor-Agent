@@ -324,7 +324,6 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 				glama: {},
 				unbound: {},
 				litellm: {},
-				modelharbor: {},
 			}
 
 			const safeGetModels = async (options: GetModelsOptions): Promise<ModelRecord> => {
@@ -344,7 +343,6 @@ export const webviewMessageHandler = async (provider: ClineProvider, message: We
 				{ key: "requesty", options: { provider: "requesty", apiKey: apiConfiguration.requestyApiKey } },
 				{ key: "glama", options: { provider: "glama" } },
 				{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
-				{ key: "modelharbor", options: { provider: "modelharbor" } },
 			]
 
 			const litellmApiKey = apiConfiguration.litellmApiKey || message?.values?.litellmApiKey
