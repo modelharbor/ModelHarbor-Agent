@@ -1,8 +1,8 @@
 {
-	"name": "roo-cline",
+	"name": "model-harbor-agent",
 	"displayName": "%extension.displayName%",
 	"description": "%extension.description%",
-	"publisher": "RooVeterinaryInc",
+	"publisher": "ModelHarbor",
 	"version": "3.19.7",
 	"icon": "assets/icons/icon.png",
 	"galleryBanner": {
@@ -14,13 +14,13 @@
 		"node": "20.19.2"
 	},
 	"author": {
-		"name": "Roo Code"
+		"name": "ModelHarbor"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/RooCodeInc/Roo-Code"
+		"url": "https://github.com/utarn/ModelHarbor-Agent"
 	},
-	"homepage": "https://github.com/RooCodeInc/Roo-Code",
+	"homepage": "https://www.modelharbor.com",
 	"categories": [
 		"AI",
 		"Chat",
@@ -43,7 +43,8 @@
 		"ai",
 		"llama",
 		"roo code",
-		"roocode"
+		"roocode",
+		"modelharbor"
 	],
 	"activationEvents": [
 		"onLanguage",

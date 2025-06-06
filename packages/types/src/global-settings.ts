@@ -221,6 +221,7 @@ export type SecretState = Pick<
 	| "groqApiKey"
 	| "chutesApiKey"
 	| "litellmApiKey"
+	| "modelharborApiKey"
 	| "codeIndexOpenAiKey"
 	| "codeIndexQdrantApiKey"
 	| "codebaseIndexOpenAiCompatibleApiKey"
@@ -244,6 +245,7 @@ export const SECRET_STATE_KEYS = keysOf<SecretState>()([
 	"groqApiKey",
 	"chutesApiKey",
 	"litellmApiKey",
+	"modelharborApiKey",
 	"codeIndexOpenAiKey",
 	"codeIndexQdrantApiKey",
 	"codebaseIndexOpenAiCompatibleApiKey",
