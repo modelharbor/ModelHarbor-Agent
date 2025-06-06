@@ -70,7 +70,7 @@ customModes:
 
       ```
       ---
-      "roo-cline": patch|minor|major
+      "modelharbor-agent": patch|minor|major
       ---
 
       [list of changes]

@@ -18,7 +18,7 @@ jest.mock("vscode", () => ({
 		createTerminal: (...args: any[]) => {
 			mockCreateTerminal(...args)
 			return {
-				name: "Roo Code",
+				name: "ModelHarbor Agent",
 				exitStatus: undefined,
 				dispose: jest.fn(),
 				show: jest.fn(),
@@ -63,7 +63,7 @@ describe("TerminalRegistry", () => {
 
 			expect(mockCreateTerminal).toHaveBeenCalledWith({
 				cwd: "/test/path",
-				name: "Roo Code",
+				name: "ModelHarbor Agent",
 				iconPath: expect.any(Object),
 				env: {
 					PAGER,
@@ -83,7 +83,7 @@ describe("TerminalRegistry", () => {
 
 				expect(mockCreateTerminal).toHaveBeenCalledWith({
 					cwd: "/test/path",
-					name: "Roo Code",
+					name: "ModelHarbor Agent",
 					iconPath: expect.any(Object),
 					env: {
 						PAGER,
@@ -105,7 +105,7 @@ describe("TerminalRegistry", () => {
 
 				expect(mockCreateTerminal).toHaveBeenCalledWith({
 					cwd: "/test/path",
-					name: "Roo Code",
+					name: "ModelHarbor Agent",
 					iconPath: expect.any(Object),
 					env: {
 						PAGER,
@@ -126,7 +126,7 @@ describe("TerminalRegistry", () => {
 
 				expect(mockCreateTerminal).toHaveBeenCalledWith({
 					cwd: "/test/path",
-					name: "Roo Code",
+					name: "ModelHarbor Agent",
 					iconPath: expect.any(Object),
 					env: {
 						PAGER,
@@ -146,7 +146,7 @@ describe("TerminalRegistry", () => {
 
 		beforeEach(() => {
 			mockVsTerminal = {
-				name: "Roo Code",
+				name: "ModelHarbor Agent",
 				exitStatus: undefined,
 				dispose: jest.fn(),
 				show: jest.fn(),

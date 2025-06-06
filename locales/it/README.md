@@ -28,9 +28,9 @@
 <img src="https://media.githubusercontent.com/media/RooCodeInc/Roo-Code/main/src/assets/docs/demo.gif" width="100%" />
 </p>
 
-<a href="https://marketplace.visualstudio.com/items?itemName=RooVeterinaryInc.roo-cline" target="_blank"><img src="https://img.shields.io/badge/Scarica%20su%20VS%20Marketplace-blue?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="Scarica su VS Marketplace"></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.modelharbor-agent" target="_blank"><img src="https://img.shields.io/badge/Scarica%20su%20VS%20Marketplace-blue?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="Scarica su VS Marketplace"></a>
 <a href="https://github.com/RooCodeInc/Roo-Code/discussions/categories/feature-requests?discussions_q=is%3Aopen+category%3A%22Feature+Requests%22+sort%3Atop" target="_blank"><img src="https://img.shields.io/badge/Richieste%20di%20Funzionalità-yellow?style=for-the-badge" alt="Richieste di Funzionalità"></a>
-<a href="https://marketplace.visualstudio.com/items?itemName=RooVeterinaryInc.roo-cline&ssr=false#review-details" target="_blank"><img src="https://img.shields.io/badge/Valuta%20%26%20Recensisci-green?style=for-the-badge" alt="Valuta & Recensisci"></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.modelharbor-agent&ssr=false#review-details" target="_blank"><img src="https://img.shields.io/badge/Valuta%20%26%20Recensisci-green?style=for-the-badge" alt="Valuta & Recensisci"></a>
 <a href="https://docs.roocode.com" target="_blank"><img src="https://img.shields.io/badge/Documentazione-6B46C1?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Documentazione"></a>
 
 </div>

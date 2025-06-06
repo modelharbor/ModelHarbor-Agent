@@ -345,7 +345,7 @@ describe("importExport", () => {
 
 		it("should export settings to the selected file location", async () => {
 			;(vscode.window.showSaveDialog as jest.Mock).mockResolvedValue({
-				fsPath: "/mock/path/roo-code-settings.json",
+				fsPath: "/mock/path/modelharbor-agent-settings.json",
 			})
 
 			const mockProviderProfiles = {
@@ -373,7 +373,7 @@ describe("importExport", () => {
 			expect(fs.mkdir).toHaveBeenCalledWith("/mock/path", { recursive: true })
 
 			expect(fs.writeFile).toHaveBeenCalledWith(
-				"/mock/path/roo-code-settings.json",
+				"/mock/path/modelharbor-agent-settings.json",
 				JSON.stringify({ providerProfiles: mockProviderProfiles, globalSettings: mockGlobalSettings }, null, 2),
 				"utf-8",
 			)
@@ -381,7 +381,7 @@ describe("importExport", () => {
 
 		it("should include globalSettings when allowedMaxRequests is null", async () => {
 			;(vscode.window.showSaveDialog as jest.Mock).mockResolvedValue({
-				fsPath: "/mock/path/roo-code-settings.json",
+				fsPath: "/mock/path/modelharbor-agent-settings.json",
 			})
 
 			const mockProviderProfiles = {
@@ -406,7 +406,7 @@ describe("importExport", () => {
 			})
 
 			expect(fs.writeFile).toHaveBeenCalledWith(
-				"/mock/path/roo-code-settings.json",
+				"/mock/path/modelharbor-agent-settings.json",
 				JSON.stringify({ providerProfiles: mockProviderProfiles, globalSettings: mockGlobalSettings }, null, 2),
 				"utf-8",
 			)
@@ -414,7 +414,7 @@ describe("importExport", () => {
 
 		it("should handle errors during the export process", async () => {
 			;(vscode.window.showSaveDialog as jest.Mock).mockResolvedValue({
-				fsPath: "/mock/path/roo-code-settings.json",
+				fsPath: "/mock/path/modelharbor-agent-settings.json",
 			})
 
 			mockProviderSettingsManager.export.mockResolvedValue({
@@ -441,7 +441,7 @@ describe("importExport", () => {
 
 		it("should handle errors during directory creation", async () => {
 			;(vscode.window.showSaveDialog as jest.Mock).mockResolvedValue({
-				fsPath: "/mock/path/roo-code-settings.json",
+				fsPath: "/mock/path/modelharbor-agent-settings.json",
 			})
 
 			mockProviderSettingsManager.export.mockResolvedValue({
@@ -478,7 +478,7 @@ describe("importExport", () => {
 				defaultUri: expect.anything(),
 			})
 
-			expect(vscode.Uri.file).toHaveBeenCalledWith(path.join("/mock/home", "Documents", "roo-code-settings.json"))
+			expect(vscode.Uri.file).toHaveBeenCalledWith(path.join("/mock/home", "Documents", "modelharbor-agent-settings.json"))
 		})
 	})
 })
