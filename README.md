@@ -16,16 +16,17 @@ English • [Català](locales/ca/README.md) • [Deutsch](locales/de/README.md) 
   <p align="center">
   <img src="https://media.githubusercontent.com/media/modelharbor/ModelHarbor-Agent/refs/heads/main/src/assets/docs/demo.gif" width="100%" />
   </p>
+  <p>Connect with developers, contribute ideas, and stay ahead with the latest AI-powered coding tools.</p>
+  
 </div>
 <br>
 <br>
 
 <div align="center">
 
-<a href="https://marketplace.visualstudio.com/items?itemName=ModelHarborVeterinaryInc.ModelHarbor-cline" target="_blank"><img src="https://img.shields.io/badge/Download%20on%20VS%20Marketplace-blue?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="Download on VS Marketplace"></a>
-<a href="https://github.com/ModelHarborCodeInc/ModelHarbor-Code/discussions/categories/feature-requests?discussions_q=is%3Aopen+category%3A%22Feature+Requests%22+sort%3Atop" target="_blank"><img src="https://img.shields.io/badge/Feature%20Requests-yellow?style=for-the-badge" alt="Feature Requests"></a>
-<a href="https://marketplace.visualstudio.com/items?itemName=ModelHarborVeterinaryInc.ModelHarbor-cline&ssr=false#review-details" target="_blank"><img src="https://img.shields.io/badge/Rate%20%26%20Review-green?style=for-the-badge" alt="Rate & Review"></a>
-<a href="https://docs.ModelHarborcode.com" target="_blank"><img src="https://img.shields.io/badge/Documentation-6B46C1?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Documentation"></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.modelharbor-agent" target="_blank"><img src="https://img.shields.io/badge/Download%20on%20VS%20Marketplace-blue?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="Download on VS Marketplace"></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.modelharbor-agent&ssr=false#review-details" target="_blank"><img src="https://img.shields.io/badge/Rate%20%26%20Review-green?style=for-the-badge" alt="Rate & Review"></a>
+<a href="https://www.modelharbor.com" target="_blank"><img src="https://img.shields.io/badge/Documentation-6B46C1?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Documentation"></a>
 
 </div>
 
@@ -39,8 +40,6 @@ English • [Català](locales/ca/README.md) • [Deutsch](locales/de/README.md) 
 - Adapt its “personality” and capabilities through **Custom Modes**
 
 Whether you’re seeking a flexible coding partner, a system architect, or specialized roles like a QA engineer or product manager, ModelHarbor Agent can help you build software more efficiently.
-
-Check out the [CHANGELOG](CHANGELOG.md) for detailed updates and fixes.
 
 ---
 
@@ -69,4 +68,4 @@ ModelHarbor Agent 3.20 brings intelligent context management improvements and en
 
 ---
 
-**Enjoy ModelHarbor Agent!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/ModelHarborCode/) or [Discord](https://discord.gg/ModelHarborcode). Happy coding!
+**Enjoy ModelHarbor Agent!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!
