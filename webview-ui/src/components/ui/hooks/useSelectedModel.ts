@@ -30,6 +30,7 @@ import {
 	glamaDefaultModelId,
 	unboundDefaultModelId,
 	litellmDefaultModelId,
+	modelHarborDefaultModelId,
 } from "@roo-code/types"
 
 import type { RouterModels } from "@roo/api"
@@ -38,7 +39,7 @@ import { useRouterModels } from "./useRouterModels"
 import { useOpenRouterModelProviders } from "./useOpenRouterModelProviders"
 
 export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
-	const provider = apiConfiguration?.apiProvider || "anthropic"
+	const provider = apiConfiguration?.apiProvider || "modelharbor"
 	const openRouterModelId = provider === "openrouter" ? apiConfiguration?.openRouterModelId : undefined
 
 	const routerModels = useRouterModels()
@@ -54,7 +55,7 @@ export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
 					routerModels: routerModels.data,
 					openRouterModelProviders: openRouterModelProviders.data,
 				})
-			: { id: anthropicDefaultModelId, info: undefined }
+			: { id: modelHarborDefaultModelId, info: undefined }
 
 	return {
 		provider,
@@ -115,6 +116,13 @@ function getSelectedModel({
 			const id = apiConfiguration.litellmModelId ?? litellmDefaultModelId
 			const info = routerModels.litellm[id]
 			return { id, info }
+		}
+		case "modelharbor": {
+			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
+			const info = routerModels.modelharbor[id]
+			return info
+				? { id, info }
+				: { id: modelHarborDefaultModelId, info: routerModels.modelharbor[modelHarborDefaultModelId] }
 		}
 		case "xai": {
 			const id = apiConfiguration.apiModelId ?? xaiDefaultModelId

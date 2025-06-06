@@ -52,6 +52,11 @@ function validateModelsAndKeysProvided(apiConfiguration: ProviderSettings): stri
 				return i18next.t("settings:validation.apiKey")
 			}
 			break
+		case "modelharbor":
+			if (!apiConfiguration.modelharborApiKey) {
+				return i18next.t("settings:validation.apiKey")
+			}
+			break
 		case "anthropic":
 			if (!apiConfiguration.apiKey) {
 				return i18next.t("settings:validation.apiKey")
@@ -109,7 +114,7 @@ function validateModelsAndKeysProvided(apiConfiguration: ProviderSettings): stri
 
 type ValidationError = {
 	message: string
-	code: 'PROVIDER_NOT_ALLOWED' | 'MODEL_NOT_ALLOWED'
+	code: "PROVIDER_NOT_ALLOWED" | "MODEL_NOT_ALLOWED"
 }
 
 function validateProviderAgainstOrganizationSettings(
@@ -124,7 +129,7 @@ function validateProviderAgainstOrganizationSettings(
 		if (!providerConfig) {
 			return {
 				message: i18next.t("settings:validation.providerNotAllowed", { provider }),
-				code: 'PROVIDER_NOT_ALLOWED'
+				code: "PROVIDER_NOT_ALLOWED",
 			}
 		}
 
@@ -138,7 +143,7 @@ function validateProviderAgainstOrganizationSettings(
 						model: modelId,
 						provider,
 					}),
-					code: 'MODEL_NOT_ALLOWED'
+					code: "MODEL_NOT_ALLOWED",
 				}
 			}
 		}
@@ -157,6 +162,8 @@ function getModelIdForProvider(apiConfiguration: ProviderSettings, provider: str
 			return apiConfiguration.requestyModelId
 		case "litellm":
 			return apiConfiguration.litellmModelId
+		case "modelharbor":
+			return apiConfiguration.modelharborModelId
 		case "openai":
 			return apiConfiguration.openAiModelId
 		case "ollama":
@@ -230,6 +237,9 @@ export function validateModelId(apiConfiguration: ProviderSettings, routerModels
 		case "litellm":
 			modelId = apiConfiguration.litellmModelId
 			break
+		case "modelharbor":
+			modelId = apiConfiguration.modelharborModelId
+			break
 	}
 
 	if (!modelId) {
@@ -261,7 +271,7 @@ export function getModelValidationError(
 	}
 
 	const orgError = validateProviderAgainstOrganizationSettings(configWithModelId, organizationAllowList)
-	if (orgError && orgError.code === 'MODEL_NOT_ALLOWED') {
+	if (orgError && orgError.code === "MODEL_NOT_ALLOWED") {
 		return orgError.message
 	}
 
@@ -289,7 +299,7 @@ export function validateApiConfigurationExcludingModelErrors(
 	)
 
 	// only return organization errors if they're not model-specific
-	if (organizationAllowListError && organizationAllowListError.code === 'PROVIDER_NOT_ALLOWED') {
+	if (organizationAllowListError && organizationAllowListError.code === "PROVIDER_NOT_ALLOWED") {
 		return organizationAllowListError.message
 	}
 

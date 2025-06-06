@@ -22,7 +22,7 @@ export default function Privacy() {
 						marketing website. For details on how your data is handled within the Roo Code extension itself,
 						please refer to our separate{" "}
 						<a
-							href="https://github.com/RooCodeInc/Roo-Code/blob/main/PRIVACY.md"
+							href="https://github.com/modelharbor/ModelHarbor-Agent/blob/main/PRIVACY.md"
 							target="_blank"
 							rel="noopener noreferrer"
 							className="text-primary hover:underline">
@@ -67,8 +67,8 @@ export default function Privacy() {
 						</li>
 						<li>
 							We do not share or sell this data to third parties for their own marketing purposes. It is
-							used only to communicate with you about Roo Code, respond to inquiries, or send updates
-							you&apos;ve requested.
+							used only to communicate with you About ModelHarbor Agent, respond to inquiries, or send
+							updates you&apos;ve requested.
 						</li>
 					</ul>
 
@@ -161,7 +161,7 @@ export default function Privacy() {
 							By using the Roo Code marketing landing page, you agree to this Privacy Policy. If you use
 							the Roo Code extension, please see our separate{" "}
 							<a
-								href="https://github.com/RooCodeInc/Roo-Code/blob/main/PRIVACY.md"
+								href="https://github.com/modelharbor/ModelHarbor-Agent/blob/main/PRIVACY.md"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="text-primary hover:underline">
