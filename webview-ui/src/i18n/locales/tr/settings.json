@@ -188,8 +188,6 @@
 		"getXaiApiKey": "xAI API Anahtarı Al",
 		"litellmApiKey": "LiteLLM API Anahtarı",
 		"litellmBaseUrl": "LiteLLM Temel URL",
-		"modelharborApiKey": "ModelHarbor API Anahtarı",
-		"getModelHarborApiKey": "ModelHarbor API Anahtarı Al",
 		"awsCredentials": "AWS Kimlik Bilgileri",
 		"awsProfile": "AWS Profili",
 		"awsProfileName": "AWS Profil Adı",

@@ -13,7 +13,6 @@ import { getRequestyModels } from "./requesty"
 import { getGlamaModels } from "./glama"
 import { getUnboundModels } from "./unbound"
 import { getLiteLLMModels } from "./litellm"
-import { getModelHarborModels } from "./modelharbor"
 import { GetModelsOptions } from "../../../shared/api"
 const memoryCache = new NodeCache({ stdTTL: 5 * 60, checkperiod: 5 * 60 })
 
@@ -69,9 +68,6 @@ export const getModels = async (options: GetModelsOptions): Promise<ModelRecord>
 				// Type safety ensures apiKey and baseUrl are always provided for litellm
 				models = await getLiteLLMModels(options.apiKey, options.baseUrl)
 				break
-			case "modelharbor":
-				models = await getModelHarborModels()
-				break
 			default: {
 				// Ensures router is exhaustively checked if RouterName is a strict union
 				const exhaustiveCheck: never = provider
@@ -79,26 +75,17 @@ export const getModels = async (options: GetModelsOptions): Promise<ModelRecord>
 			}
 		}
 
-		// Ensure models is not undefined before caching
-		if (models) {
-			// Cache the fetched models (even if empty, to signify a successful fetch with no models)
-			memoryCache.set(provider, models)
-			await writeModels(provider, models).catch((err) => {
-				// Only log cache write errors if not in test environment
-				if (!process.env.NODE_ENV?.includes("test") && !process.env.JEST_WORKER_ID) {
-					console.error(`[getModels] Error writing ${provider} models to file cache:`, err)
-				}
-			})
-		}
+		// Cache the fetched models (even if empty, to signify a successful fetch with no models)
+		memoryCache.set(provider, models)
+		await writeModels(provider, models).catch((err) =>
+			console.error(`[getModels] Error writing ${provider} models to file cache:`, err),
+		)
 
 		try {
 			models = await readModels(provider)
 			// console.log(`[getModels] read ${router} models from file cache`)
 		} catch (error) {
-			// Only log cache read errors if not in test environment
-			if (!process.env.NODE_ENV?.includes("test") && !process.env.JEST_WORKER_ID) {
-				console.error(`[getModels] error reading ${provider} models from file cache`, error)
-			}
+			console.error(`[getModels] error reading ${provider} models from file cache`, error)
 		}
 		return models || {}
 	} catch (error) {
