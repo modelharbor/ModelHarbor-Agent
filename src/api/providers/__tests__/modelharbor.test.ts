@@ -111,8 +111,8 @@ describe("ModelHarborHandler", () => {
 			baseURL: "https://api.modelharbor.com/v1",
 			apiKey: mockOptions.modelharborApiKey,
 			defaultHeaders: {
-				"HTTP-Referer": "https://github.com/RooVetGit/Roo-Cline",
-				"X-Title": "Roo Code",
+				"HTTP-Referer": "https://www.modelharbor.com",
+				"X-Title": "ModelHarbor Agent",
 			},
 		})
 	})
