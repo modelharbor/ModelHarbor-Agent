@@ -195,7 +195,7 @@
 	"autoApprove": {
 		"title": "Automatisch goedkeuren:",
 		"none": "Geen",
-		"description": "Met automatisch goedkeuren kan ModelHarbor Code acties uitvoeren zonder om toestemming te vragen. Schakel dit alleen in voor acties die je volledig vertrouwt. Meer gedetailleerde configuratie beschikbaar in de <settingsLink>Instellingen</settingsLink>."
+		"description": "Met automatisch goedkeuren kan ModelHarbor Agent acties uitvoeren zonder om toestemming te vragen. Schakel dit alleen in voor acties die je volledig vertrouwt. Meer gedetailleerde configuratie beschikbaar in de <settingsLink>Instellingen</settingsLink>."
 	},
 	"announcement": {
 		"title": "🎉 ModelHarbor Agent {{version}} Released",
@@ -250,7 +250,7 @@
 	"profileViolationWarning": "Het huidige profiel schendt de instellingen van uw organisatie",
 	"shellIntegration": {
 		"title": "Waarschuwing commando-uitvoering",
-		"description": "Je commando wordt uitgevoerd zonder VSCode-terminal shell-integratie. Om deze waarschuwing te onderdrukken kun je shell-integratie uitschakelen in het gedeelte <strong>Terminal</strong> van de <settingsLink>ModelHarbor Code-instellingen</settingsLink> of de VSCode-terminalintegratie oplossen via de onderstaande link.",
+		"description": "Je commando wordt uitgevoerd zonder VSCode-terminal shell-integratie. Om deze waarschuwing te onderdrukken kun je shell-integratie uitschakelen in het gedeelte <strong>Terminal</strong> van de <settingsLink>ModelHarbor Agent-instellingen</settingsLink> of de VSCode-terminalintegratie oplossen via de onderstaande link.",
 		"troubleshooting": "Klik hier voor shell-integratie documentatie."
 	},
 	"ask": {
