@@ -24,8 +24,8 @@ English • [Català](locales/ca/README.md) • [Deutsch](locales/de/README.md) 
 
 <div align="center">
 
-<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.model-harbor-agent" target="_blank"><img src="https://img.shields.io/badge/Download%20on%20VS%20Marketplace-blue?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="Download on VS Marketplace"></a>
-<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.model-harbor-agent&ssr=false#review-details" target="_blank"><img src="https://img.shields.io/badge/Rate%20%26%20Review-green?style=for-the-badge" alt="Rate & Review"></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.modelharbor-agent" target="_blank"><img src="https://img.shields.io/badge/Download%20on%20VS%20Marketplace-blue?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="Download on VS Marketplace"></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.modelharbor-agent&ssr=false#review-details" target="_blank"><img src="https://img.shields.io/badge/Rate%20%26%20Review-green?style=for-the-badge" alt="Rate & Review"></a>
 <a href="https://www.modelharbor.com" target="_blank"><img src="https://img.shields.io/badge/Documentation-6B46C1?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Documentation"></a>
 
 </div>
