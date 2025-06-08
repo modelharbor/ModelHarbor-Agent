@@ -62,7 +62,10 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 	// Safely calculate available models for current provider
 	const currentProvider = codebaseIndexConfig?.codebaseIndexEmbedderProvider
 	const modelsForProvider =
-		currentProvider === "openai" || currentProvider === "ollama" || currentProvider === "openai-compatible"
+		currentProvider === "openai" ||
+		currentProvider === "ollama" ||
+		currentProvider === "openai-compatible" ||
+		currentProvider === "modelharbor"
 			? codebaseIndexModels?.[currentProvider] || codebaseIndexModels?.openai
 			: codebaseIndexModels?.openai
 	const availableModelIds = Object.keys(modelsForProvider || {})
@@ -145,6 +148,10 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 					.positive("Dimension must be a positive number")
 					.optional(),
 			}),
+			modelharbor: baseSchema.extend({
+				codebaseIndexEmbedderProvider: z.literal("modelharbor"),
+				codeIndexModelHarborApiKey: z.string().min(1, "ModelHarbor API key is required"),
+			}),
 		}
 
 		try {
@@ -153,7 +160,9 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 					? providerSchemas.openai
 					: config.codebaseIndexEmbedderProvider === "ollama"
 						? providerSchemas.ollama
-						: providerSchemas["openai-compatible"]
+						: config.codebaseIndexEmbedderProvider === "modelharbor"
+							? providerSchemas.modelharbor
+							: providerSchemas["openai-compatible"]
 
 			schema.parse({
 				...config,
@@ -161,6 +170,7 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 				codebaseIndexOpenAiCompatibleBaseUrl: apiConfig.codebaseIndexOpenAiCompatibleBaseUrl,
 				codebaseIndexOpenAiCompatibleApiKey: apiConfig.codebaseIndexOpenAiCompatibleApiKey,
 				codebaseIndexOpenAiCompatibleModelDimension: apiConfig.codebaseIndexOpenAiCompatibleModelDimension,
+				codeIndexModelHarborApiKey: apiConfig.codeIndexModelHarborApiKey,
 			})
 			return true
 		} catch {
@@ -275,6 +285,9 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 									<SelectItem value="openai-compatible">
 										{t("settings:codeIndex.openaiCompatibleProvider")}
 									</SelectItem>
+									<SelectItem value="modelharbor">
+										{t("settings:codeIndex.modelharborProvider")}
+									</SelectItem>
 								</SelectContent>
 							</Select>
 						</div>
@@ -323,6 +336,23 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 						</div>
 					)}
 
+					{codebaseIndexConfig?.codebaseIndexEmbedderProvider === "modelharbor" && (
+						<div className="flex flex-col gap-3">
+							<div className="flex items-center gap-4 font-bold">
+								<div>{t("settings:codeIndex.modelharborApiKeyLabel")}</div>
+							</div>
+							<div>
+								<VSCodeTextField
+									type="password"
+									value={apiConfiguration.codeIndexModelHarborApiKey || ""}
+									onInput={(e: any) =>
+										setApiConfigurationField("codeIndexModelHarborApiKey", e.target.value)
+									}
+									style={{ width: "100%" }}></VSCodeTextField>
+							</div>
+						</div>
+					)}
+
 					<div className="flex items-center gap-4 font-bold">
 						<div>{t("settings:codeIndex.modelLabel")}</div>
 					</div>
@@ -339,6 +369,22 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 									}
 									placeholder="Enter custom model ID"
 									style={{ width: "100%" }}></VSCodeTextField>
+							) : codebaseIndexConfig?.codebaseIndexEmbedderProvider === "modelharbor" ? (
+								<Select
+									value={codebaseIndexConfig?.codebaseIndexEmbedderModelId || "baai/bge-m3"}
+									onValueChange={(value) =>
+										setCachedStateField("codebaseIndexConfig", {
+											...codebaseIndexConfig,
+											codebaseIndexEmbedderModelId: value,
+										})
+									}>
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder={t("settings:codeIndex.selectModelPlaceholder")} />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="baai/bge-m3">baai/bge-m3</SelectItem>
+									</SelectContent>
+								</Select>
 							) : (
 								<Select
 									value={codebaseIndexConfig?.codebaseIndexEmbedderModelId || ""}
@@ -446,6 +492,13 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 								value={apiConfiguration.codeIndexQdrantApiKey}
 								onInput={(e: any) => setApiConfigurationField("codeIndexQdrantApiKey", e.target.value)}
 								style={{ width: "100%" }}></VSCodeTextField>
+						</div>
+						<div className="mt-1">
+							<VSCodeLink
+								href="https://www.modelharbor.com/home/qdrant-setup"
+								style={{ fontSize: "0.875rem" }}>
+								{t("settings:codeIndex.qdrantSetupLabel")}
+							</VSCodeLink>
 						</div>
 					</div>
 

@@ -347,6 +347,7 @@ export const PROVIDER_SETTINGS_KEYS = keysOf<ProviderSettings>()([
 	"codebaseIndexOpenAiCompatibleBaseUrl",
 	"codebaseIndexOpenAiCompatibleApiKey",
 	"codebaseIndexOpenAiCompatibleModelDimension",
+	"codeIndexModelHarborApiKey",
 	// Reasoning
 	"enableReasoningEffort",
 	"reasoningEffort",

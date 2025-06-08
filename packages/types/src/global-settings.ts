@@ -225,6 +225,7 @@ export type SecretState = Pick<
 	| "codeIndexOpenAiKey"
 	| "codeIndexQdrantApiKey"
 	| "codebaseIndexOpenAiCompatibleApiKey"
+	| "codeIndexModelHarborApiKey"
 >
 
 export const SECRET_STATE_KEYS = keysOf<SecretState>()([
@@ -249,6 +250,7 @@ export const SECRET_STATE_KEYS = keysOf<SecretState>()([
 	"codeIndexOpenAiKey",
 	"codeIndexQdrantApiKey",
 	"codebaseIndexOpenAiCompatibleApiKey",
+	"codeIndexModelHarborApiKey",
 ])
 
 export const isSecretStateKey = (key: string): key is Keys<SecretState> =>
