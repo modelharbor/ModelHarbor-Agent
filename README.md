@@ -14,7 +14,7 @@ English • [Català](locales/ca/README.md) • [Deutsch](locales/de/README.md) 
 <div align="center">
   <h1>ModelHarbor Agent</h1>
   <p align="center">
-  <img src="https://media.githubusercontent.com/media/RooCodeInc/Roo-Code/main/src/assets/docs/demo.gif" width="100%" />
+  <img src="https://media.githubusercontent.com/media/modelharbor/ModelHarbor-Agent/refs/heads/main/src/assets/docs/demo.gif" width="100%" />
   </p>
   <p>Connect with developers, contribute ideas, and stay ahead with the latest AI-powered coding tools.</p>
   
@@ -68,4 +68,4 @@ ModelHarbor Agent 3.19 brings intelligent context management improvements and en
 
 ---
 
-**Enjoy ModelHarbor Agent!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!
+**Enjoy ModelHarbor Agent!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Facebook](https://www.facebook.com/modelharbor/) or [X](https://x.com/modelharbor). Happy coding!
