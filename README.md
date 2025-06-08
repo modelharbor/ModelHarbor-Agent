@@ -68,4 +68,4 @@ ModelHarbor Agent 3.20 brings intelligent context management improvements and en
 
 ---
 
-**Enjoy ModelHarbor Agent!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!
+**Enjoy ModelHarbor Agent!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Facebook](https://www.facebook.com/modelharbor/) or [X](https://x.com/modelharbor). Happy coding!
