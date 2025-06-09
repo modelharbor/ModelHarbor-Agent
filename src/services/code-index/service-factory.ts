@@ -84,9 +84,6 @@ export class CodeIndexServiceFactory {
 				// Fallback if not provided or invalid in openAiCompatibleOptions
 				vectorSize = getModelDimension(provider, modelId)
 			}
-		} else if (provider === "modelharbor") {
-			// ModelHarbor always uses fixed dimension of 1024 for baai/bge-m3
-			vectorSize = 1024
 		} else {
 			vectorSize = getModelDimension(provider, modelId)
 		}
@@ -96,7 +93,7 @@ export class CodeIndexServiceFactory {
 			if (provider === "openai-compatible") {
 				errorMessage += `Please ensure the 'Embedding Dimension' is correctly set in the OpenAI-Compatible provider settings.`
 			} else if (provider === "modelharbor") {
-				errorMessage += `ModelHarbor should use fixed dimension of 1024.`
+				errorMessage += `ModelHarbor dimension should be configured in model profiles.`
 			} else {
 				errorMessage += `Check model profiles or configuration.`
 			}

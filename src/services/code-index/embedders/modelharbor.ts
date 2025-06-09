@@ -14,7 +14,7 @@ import {
 export class ModelHarborEmbedder implements IEmbedder {
 	private embeddingsClient: OpenAI
 	private readonly modelId: string = "baai/bge-m3"
-	private readonly baseUrl: string = "https://api.modelharbor.com/v1"
+	private readonly baseUrl: string = "https://api.modelharbor.com"
 
 	/**
 	 * Creates a new ModelHarbor embedder

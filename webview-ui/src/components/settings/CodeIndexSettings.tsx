@@ -504,7 +504,7 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 						</div>
 						<div className="mt-1">
 							<VSCodeLink
-								href="https://www.modelharbor.com/home/qdrant-setup"
+								href="https://www.modelharbor.com/qdrant-setup"
 								style={{ fontSize: "0.875rem" }}>
 								{t("settings:codeIndex.qdrantSetupLabel")}
 							</VSCodeLink>
