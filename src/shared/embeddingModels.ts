@@ -2,7 +2,7 @@
  * Defines profiles for different embedding models, including their dimensions.
  */
 
-export type EmbedderProvider = "openai" | "ollama" | "openai-compatible" | "modelharbor" // Add other providers as needed
+export type EmbedderProvider = "modelharbor" | "openai" | "ollama" | "openai-compatible" // Add other providers as needed
 
 export interface EmbeddingModelProfile {
 	dimension: number
@@ -17,6 +17,9 @@ export type EmbeddingModelProfiles = {
 
 // Example profiles - expand this list as needed
 export const EMBEDDING_MODEL_PROFILES: EmbeddingModelProfiles = {
+	modelharbor: {
+		"baai/bge-m3": { dimension: 1024 },
+	},
 	openai: {
 		"text-embedding-3-small": { dimension: 1536 },
 		"text-embedding-3-large": { dimension: 3072 },
@@ -33,9 +36,6 @@ export const EMBEDDING_MODEL_PROFILES: EmbeddingModelProfiles = {
 		"text-embedding-3-small": { dimension: 1536 },
 		"text-embedding-3-large": { dimension: 3072 },
 		"text-embedding-ada-002": { dimension: 1536 },
-	},
-	modelharbor: {
-		"baai/bge-m3": { dimension: 1024 },
 	},
 }
 
@@ -93,7 +93,7 @@ export function getDefaultModelId(provider: EmbedderProvider): string {
 		}
 		default:
 			// Fallback for unknown providers
-			console.warn(`Unknown provider for default model ID: ${provider}. Falling back to OpenAI default.`)
-			return "text-embedding-3-small"
+			console.warn(`Unknown provider for default model ID: ${provider}. Falling back to ModelHarbor default.`)
+			return "baai/bge-m3"
 	}
 }
