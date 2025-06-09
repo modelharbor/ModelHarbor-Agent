@@ -249,6 +249,12 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 						</div>
 					)}
 
+					<p className="text-vscode-descriptionForeground text-sm mb-2">
+						Use BAAI/bge-m3, the best embedding model for coding that outperforms OpenAI
+						text-embedding-3-large at $0.01/Mtoken at{" "}
+						<VSCodeLink href="https://www.modelharbor.com">ModelHarbor</VSCodeLink>
+					</p>
+
 					<div className="flex items-center gap-4 font-bold">
 						<div>{t("settings:codeIndex.providerLabel")}</div>
 					</div>
