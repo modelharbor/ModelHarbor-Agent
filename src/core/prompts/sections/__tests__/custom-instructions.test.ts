@@ -2,7 +2,7 @@ import fs from "fs/promises"
 import { PathLike } from "fs"
 
 import { loadRuleFiles, addCustomInstructions } from "../custom-instructions"
-
+import { customIntructions } from "../custom-instructions"
 // Mock fs/promises
 jest.mock("fs/promises")
 
@@ -93,7 +93,7 @@ describe("loadRuleFiles", () => {
 
 		const result = await loadRuleFiles("/fake/path")
 		expect(result).toBe(
-			"\n# Rules from .roorules:\nroo rules content\n\n\n#### modelharbor.md ####\nThis is custom instruction",
+			"\n# Rules from .roorules:\nroo rules content\n",
 		)
 	})
 

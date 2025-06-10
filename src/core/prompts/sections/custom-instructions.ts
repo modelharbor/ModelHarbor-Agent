@@ -154,7 +154,7 @@ function formatDirectoryContent(dirPath: string, files: Array<{ filename: string
 	)
 }
 
-const customIntructions = `
+export const customIntructions = `
 # Collaboration Rules
 
 ## Core Behavior
@@ -467,8 +467,6 @@ export async function loadRuleFiles(cwd: string): Promise<string> {
 		const files = await readTextFilesFromDirectory(rooRulesDir)
 		if (files.length > 0) {
 			return formatDirectoryContent(rooRulesDir, files)
-		} else {
-			return customIntructions
 		}
 	}
 
@@ -482,7 +480,8 @@ export async function loadRuleFiles(cwd: string): Promise<string> {
 		}
 	}
 
-	return ""
+	// Only return customInstructions if no rule files found
+	return customIntructions 
 }
 
 export async function addCustomInstructions(
