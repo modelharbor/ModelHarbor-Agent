@@ -2184,6 +2184,10 @@ describe("ClineProvider - Router Models", () => {
 	beforeEach(() => {
 		jest.clearAllMocks()
 
+		if (!TelemetryService.hasInstance()) {
+			TelemetryService.createInstance([])
+		}
+
 		const globalState: Record<string, string | undefined> = {}
 		const secrets: Record<string, string | undefined> = {}
 
@@ -2273,6 +2277,7 @@ describe("ClineProvider - Router Models", () => {
 			apiKey: "litellm-key",
 			baseUrl: "http://localhost:4000",
 		})
+		expect(getModels).toHaveBeenCalledWith({ provider: "modelharbor" })
 
 		// Verify response was sent
 		expect(mockPostMessage).toHaveBeenCalledWith({
@@ -2283,6 +2288,7 @@ describe("ClineProvider - Router Models", () => {
 				glama: mockModels,
 				unbound: mockModels,
 				litellm: mockModels,
+				modelharbor: mockModels,
 			},
 		})
 	})
@@ -2311,6 +2317,7 @@ describe("ClineProvider - Router Models", () => {
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty fail
 			.mockResolvedValueOnce(mockModels) // glama success
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound fail
+			.mockResolvedValueOnce(mockModels) // modelharbor success
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm fail
 
 		await messageHandler({ type: "requestRouterModels" })
@@ -2324,6 +2331,7 @@ describe("ClineProvider - Router Models", () => {
 				glama: mockModels,
 				unbound: {},
 				litellm: {},
+				modelharbor: mockModels,
 			},
 		})
 
@@ -2421,6 +2429,7 @@ describe("ClineProvider - Router Models", () => {
 				glama: mockModels,
 				unbound: mockModels,
 				litellm: {},
+				modelharbor: mockModels,
 			},
 		})
 	})
