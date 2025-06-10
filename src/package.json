@@ -67,7 +67,8 @@
 				{
 					"type": "webview",
 					"id": "modelharbor-agent.SidebarProvider",
-					"name": "%views.sidebar.name%"
+					"name": "%views.sidebar.name%",
+					"icon": "assets/icons/icon.svg"
 				}
 			]
 		},
