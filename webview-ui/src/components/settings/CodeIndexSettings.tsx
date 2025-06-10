@@ -270,7 +270,7 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 					<div>
 						<div className="flex items-center gap-2">
 							<Select
-								value={codebaseIndexConfig?.codebaseIndexEmbedderProvider || "openai"}
+								value={codebaseIndexConfig?.codebaseIndexEmbedderProvider || "modelharbor"}
 								onValueChange={(value) => {
 									const newProvider = value as EmbedderProvider
 									const currentProvider = codebaseIndexConfig?.codebaseIndexEmbedderProvider
@@ -295,13 +295,13 @@ export const CodeIndexSettings: React.FC<CodeIndexSettingsProps> = ({
 									<SelectValue placeholder={t("settings:codeIndex.selectProviderPlaceholder")} />
 								</SelectTrigger>
 								<SelectContent>
+									<SelectItem value="modelharbor">
+										{t("settings:codeIndex.modelharborProvider")}
+									</SelectItem>
 									<SelectItem value="openai">{t("settings:codeIndex.openaiProvider")}</SelectItem>
 									<SelectItem value="ollama">{t("settings:codeIndex.ollamaProvider")}</SelectItem>
 									<SelectItem value="openai-compatible">
 										{t("settings:codeIndex.openaiCompatibleProvider")}
-									</SelectItem>
-									<SelectItem value="modelharbor">
-										{t("settings:codeIndex.modelharborProvider")}
 									</SelectItem>
 								</SelectContent>
 							</Select>

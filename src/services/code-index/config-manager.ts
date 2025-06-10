@@ -11,7 +11,7 @@ import { getDefaultModelId, getModelDimension } from "../../shared/embeddingMode
  */
 export class CodeIndexConfigManager {
 	private isEnabled: boolean = false
-	private embedderProvider: EmbedderProvider = "openai"
+	private embedderProvider: EmbedderProvider = "modelharbor"
 	private modelId?: string
 	private openAiOptions?: ApiHandlerOptions
 	private ollamaOptions?: ApiHandlerOptions
