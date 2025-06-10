@@ -1850,9 +1850,9 @@ function sum(a, b) {
 				"**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Facebook](https://www.facebook.com/modelharbor/) or [X](https://x.com/modelharbor). Happy coding!"
 			const diffContent = `test.ts
 <<<<<<< SEARCH
-**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Facebook](https://www.facebook.com/modelharbor/) or [X](https://x.com/modelharbor). Happy coding!"
+**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Facebook](https://www.facebook.com/modelharbor/) or [X](https://x.com/modelharbor). Happy coding!
 =======
-**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can't wait to see what you build. If you have questions or feature ideas, drop by our [Facebook](https://www.facebook.com/modelharbor/) or [X](https://x.com/modelharbor). Happy coding!"
+**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can't wait to see what you build. If you have questions or feature ideas, drop by our [Facebook](https://www.facebook.com/modelharbor/) or [X](https://x.com/modelharbor). Happy coding!
 
 You're still here?
 >>>>>>> REPLACE`
