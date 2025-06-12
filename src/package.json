@@ -42,7 +42,7 @@
 		"sonnet",
 		"ai",
 		"llama",
-		"roo code",
+		"ModelHarbor Agent",
 		"roocode",
 		"model harbor",
 		"modelharbor"
@@ -93,11 +93,11 @@
 				"title": "%command.history.title%",
 				"icon": "$(history)"
 			},
-            {
-              "command": "roo-cline.marketplaceButtonClicked",
-              "title": "%command.marketplace.title%",
-              "icon": "$(extensions)"
-            },
+			{
+				"command": "roo-cline.marketplaceButtonClicked",
+				"title": "%command.marketplace.title%",
+				"icon": "$(extensions)"
+			},
 			{
 				"command": "modelharbor-agent.popoutButtonClicked",
 				"title": "%command.openInEditor.title%",
@@ -232,11 +232,11 @@
 					"group": "navigation@3",
 					"when": "view == modelharbor-agent.SidebarProvider"
 				},
-              {
-                "command": "roo-cline.marketplaceButtonClicked",
-                "group": "navigation@4",
-                "when": "view == roo-cline.SidebarProvider && roo-cline.marketplaceEnabled"
-              },
+				{
+					"command": "roo-cline.marketplaceButtonClicked",
+					"group": "navigation@4",
+					"when": "view == roo-cline.SidebarProvider && roo-cline.marketplaceEnabled"
+				},
 				{
 					"command": "modelharbor-agent.historyButtonClicked",
 					"group": "navigation@4",
@@ -274,12 +274,12 @@
 					"group": "navigation@3",
 					"when": "activeWebviewPanelId == modelharbor-agent.TabPanelProvider"
 				},
-              {
-                "command": "roo-cline.marketplaceButtonClicked",
-                "group": "navigation@4",
-                "when": "activeWebviewPanelId == roo-cline.TabPanelProvider && roo-cline.marketplaceEnabled"
-              },
-              {
+				{
+					"command": "roo-cline.marketplaceButtonClicked",
+					"group": "navigation@4",
+					"when": "activeWebviewPanelId == roo-cline.TabPanelProvider && roo-cline.marketplaceEnabled"
+				},
+				{
 					"command": "modelharbor-agent.historyButtonClicked",
 					"group": "navigation@4",
 					"when": "activeWebviewPanelId == modelharbor-agent.TabPanelProvider"
