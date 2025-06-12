@@ -1,6 +1,6 @@
 {
 	"name": "@roo-code/web-evals",
-	"version": "0.0.1",
+	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
 		"lint": "next lint",
