@@ -94,7 +94,7 @@
 		"enter_valid_path": "Inserisci un percorso valido"
 	},
 	"input": {
-		"task_prompt": "Cosa deve fare Roo?",
+		"task_prompt": "Cosa deve fare ModelHarbor Agent?",
 		"task_placeholder": "Scrivi il tuo compito qui"
 	},
 	"settings": {

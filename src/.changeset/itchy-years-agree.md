@@ -1,5 +1,5 @@
 ---
-"roo-cline": minor
+"modelharbor-agent": minor
 ---
 
 Add ModelHarbor provider support
