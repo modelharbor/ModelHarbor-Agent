@@ -94,7 +94,7 @@
 		"enter_valid_path": "Voer een geldig pad in"
 	},
 	"input": {
-		"task_prompt": "Wat moet Roo doen?",
+		"task_prompt": "Wat moet ModelHarbor Agent doen?",
 		"task_placeholder": "Typ hier je taak"
 	}
 }

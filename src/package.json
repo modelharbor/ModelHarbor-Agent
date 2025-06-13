@@ -94,7 +94,7 @@
 				"icon": "$(history)"
 			},
 			{
-				"command": "roo-cline.marketplaceButtonClicked",
+				"command": "modelharbor-agent.marketplaceButtonClicked",
 				"title": "%command.marketplace.title%",
 				"icon": "$(extensions)"
 			},
@@ -233,9 +233,9 @@
 					"when": "view == modelharbor-agent.SidebarProvider"
 				},
 				{
-					"command": "roo-cline.marketplaceButtonClicked",
+					"command": "modelharbor-agent.marketplaceButtonClicked",
 					"group": "navigation@4",
-					"when": "view == roo-cline.SidebarProvider && roo-cline.marketplaceEnabled"
+					"when": "view == modelharbor-agent.SidebarProvider && modelharbor-agent.marketplaceEnabled"
 				},
 				{
 					"command": "modelharbor-agent.historyButtonClicked",
@@ -275,9 +275,9 @@
 					"when": "activeWebviewPanelId == modelharbor-agent.TabPanelProvider"
 				},
 				{
-					"command": "roo-cline.marketplaceButtonClicked",
+					"command": "modelharbor-agent.marketplaceButtonClicked",
 					"group": "navigation@4",
-					"when": "activeWebviewPanelId == roo-cline.TabPanelProvider && roo-cline.marketplaceEnabled"
+					"when": "activeWebviewPanelId == modelharbor-agent.TabPanelProvider && modelharbor-agent.marketplaceEnabled"
 				},
 				{
 					"command": "modelharbor-agent.historyButtonClicked",
