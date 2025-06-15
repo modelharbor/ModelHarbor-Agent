@@ -245,34 +245,68 @@ async function fetchModelHarborModels(): Promise<Record<string, ModelInfo>> {
 
 // Fallback hardcoded models in case API fails (sorted alphabetically)
 const fallbackModelHarborModels = {
+	"anthropic/claude-sonnet-3.7": {
+		maxTokens: 16384,
+		contextWindow: 200000,
+		supportsImages: true,
+		supportsPromptCache: false,
+		inputPrice: 3.0,
+		outputPrice: 15.0,
+		description: "Anthropic Claude 3.7 Sonnet with advanced reasoning capabilities and vision support.",
+	},
+	"anthropic/claude-sonnet-4": {
+		maxTokens: 8192,
+		contextWindow: 128000,
+		supportsImages: false,
+		supportsPromptCache: false,
+		inputPrice: 3.0,
+		outputPrice: 15.0,
+		description: "Anthropic Claude Sonnet 4 with advanced language understanding and generation.",
+	},
+	"baai/bge-m3": {
+		maxTokens: 8192,
+		contextWindow: 40960,
+		supportsImages: false,
+		supportsPromptCache: false,
+		inputPrice: 0.01,
+		outputPrice: 0.0,
+		description: "BAAI BGE-M3 embedding model for semantic similarity and retrieval tasks.",
+	},
+	"deepseek/deepseek-r1-0528": {
+		maxTokens: 8192,
+		contextWindow: 163840,
+		supportsImages: true,
+		supportsPromptCache: false,
+		inputPrice: 1.0,
+		outputPrice: 5.0,
+		description: "DeepSeek R1 model with reasoning capabilities and multimodal support.",
+	},
+	"deepseek/deepseek-v3-0324": {
+		maxTokens: 8192,
+		contextWindow: 163840,
+		supportsImages: true,
+		supportsPromptCache: false,
+		inputPrice: 0.6,
+		outputPrice: 1.5,
+		description: "DeepSeek V3 model with advanced coding and reasoning capabilities.",
+	},
+	"microsoft/deepseek-r1t-chimera": {
+		maxTokens: 8192,
+		contextWindow: 163840,
+		supportsImages: true,
+		supportsPromptCache: false,
+		inputPrice: 1.0,
+		outputPrice: 4.0,
+		description: "Microsoft DeepSeek R1T Chimera with enhanced reasoning and multimodal capabilities.",
+	},
 	"openai/gpt-4.1": {
 		maxTokens: 16384,
 		contextWindow: 128000,
 		supportsImages: true,
 		supportsPromptCache: true,
-		inputPrice: 0.0002,
-		outputPrice: 0.0008,
+		inputPrice: 1.5,
+		outputPrice: 7.5,
 		description: "OpenAI GPT-4.1 with vision support and advanced function calling capabilities.",
-	},
-	"qwen/qwen2.5-coder-32b": {
-		maxTokens: 8192,
-		contextWindow: 131072,
-		supportsImages: false,
-		supportsPromptCache: false,
-		inputPrice: 0.1,
-		outputPrice: 0.3,
-		description:
-			"Qwen2.5-Coder-32B is a powerful coding-focused model with excellent performance in code generation and understanding.",
-	},
-	"qwen/qwen3-32b": {
-		maxTokens: 8192,
-		contextWindow: 40960,
-		supportsImages: false,
-		supportsPromptCache: false,
-		inputPrice: 0.15,
-		outputPrice: 0.6,
-		description:
-			"Qwen3-32B is a powerful large language model with excellent performance across various tasks including reasoning, coding, and creative writing.",
 	},
 } as const satisfies Record<string, ModelInfo>
 
@@ -361,7 +395,7 @@ export const modelHarborModels = new Proxy({} as Record<string, ModelInfo>, {
 
 export type ModelHarborModelId = string
 
-export const modelHarborDefaultModelId: ModelHarborModelId = "qwen/qwen3-32b"
+export const modelHarborDefaultModelId: ModelHarborModelId = "deepseek/deepseek-v3-0324"
 
 // Initialize models cache on module load only in Node.js environment (extension host)
 // In webview/browser environments, models are fetched via message passing
