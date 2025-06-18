@@ -229,7 +229,7 @@
 		"title": "🎉 ModelHarbor Agent {{version}} wydany",
 		"description": "ModelHarbor Agent {{version}} przynosi potężne nowe funkcje i ulepszenia na podstawie Twoich opinii.",
 		"whatsNew": "Co nowego",
-		"feature1": "<bold>Uruchomienie Roo Marketplace</bold> - Marketplace jest już dostępny! Odkrywaj i instaluj tryby oraz MCP łatwiej niż kiedykolwiek wcześniej.",
+		"feature1": "<bold>Uruchomienie ModelHarbor Marketplace</bold> - Marketplace jest już dostępny! Odkrywaj i instaluj tryby oraz MCP łatwiej niż kiedykolwiek wcześniej.",
 		"feature2": "<bold>Modele Gemini 2.5</bold> - Dodano wsparcie dla nowych modeli Gemini 2.5 Pro, Flash i Flash Lite.",
 		"feature3": "<bold>Wsparcie dla plików Excel i więcej</bold> - Dodano wsparcie dla plików Excel (.xlsx) oraz liczne poprawki błędów i ulepszenia!",
 		"hideButton": "Ukryj ogłoszenie",
