@@ -42,7 +42,7 @@ describe("TerminalRegistry", () => {
 
 			expect(mockCreateTerminal).toHaveBeenCalledWith({
 				cwd: "/test/path",
-				name: "Roo Code",
+				name: "ModelHarbor Agent",
 				iconPath: expect.any(Object),
 				env: {
 					PAGER,
@@ -62,7 +62,7 @@ describe("TerminalRegistry", () => {
 
 				expect(mockCreateTerminal).toHaveBeenCalledWith({
 					cwd: "/test/path",
-					name: "Roo Code",
+					name: "ModelHarbor Agent",
 					iconPath: expect.any(Object),
 					env: {
 						PAGER,
@@ -84,7 +84,7 @@ describe("TerminalRegistry", () => {
 
 				expect(mockCreateTerminal).toHaveBeenCalledWith({
 					cwd: "/test/path",
-					name: "Roo Code",
+					name: "ModelHarbor Agent",
 					iconPath: expect.any(Object),
 					env: {
 						PAGER,
@@ -105,7 +105,7 @@ describe("TerminalRegistry", () => {
 
 				expect(mockCreateTerminal).toHaveBeenCalledWith({
 					cwd: "/test/path",
-					name: "Roo Code",
+					name: "ModelHarbor Agent",
 					iconPath: expect.any(Object),
 					env: {
 						PAGER,

@@ -7,31 +7,27 @@ import { ModelHarborHandler } from "../modelharbor"
 import { ApiHandlerOptions } from "../../../shared/api"
 
 // Mock dependencies
-jest.mock("openai")
-jest.mock("delay", () => jest.fn(() => Promise.resolve()))
+vi.mock("openai")
+vi.mock("delay", () => vi.fn(() => Promise.resolve()))
 
 // Mock VSCode output channel
 const mockOutputChannel = {
-	appendLine: jest.fn(),
-	show: jest.fn(),
-	hide: jest.fn(),
-	dispose: jest.fn(),
+	appendLine: vi.fn(),
+	show: vi.fn(),
+	hide: vi.fn(),
+	dispose: vi.fn(),
 	name: "ModelHarbor",
 }
 
-jest.mock(
-	"vscode",
-	() => ({
-		window: {
-			createOutputChannel: jest.fn(() => mockOutputChannel),
-		},
-	}),
-	{ virtual: true },
-)
+vi.mock("vscode", () => ({
+	window: {
+		createOutputChannel: vi.fn(() => mockOutputChannel),
+	},
+}))
 
 // Mock the getModelHarborModels function
-jest.mock("../fetchers/modelharbor", () => ({
-	getModelHarborModels: jest.fn().mockImplementation(() => {
+vi.mock("../fetchers/modelharbor", () => ({
+	getModelHarborModels: vi.fn().mockImplementation(() => {
 		return Promise.resolve({
 			"qwen/qwen2.5-coder-32b": {
 				maxTokens: 8192,
@@ -78,7 +74,7 @@ jest.mock("../fetchers/modelharbor", () => ({
 }))
 
 // Mock @roo-code/types
-jest.mock("@roo-code/types", () => ({
+vi.mock("@roo-code/types", () => ({
 	modelHarborModels: {
 		"qwen/qwen2.5-coder-32b": {
 			maxTokens: 8192,
@@ -89,8 +85,8 @@ jest.mock("@roo-code/types", () => ({
 		},
 	},
 	modelHarborDefaultModelId: "qwen/qwen2.5-coder-32b",
-	getModelHarborModels: jest.fn(),
-	setModelHarborOutputChannel: jest.fn(),
+	getModelHarborModels: vi.fn(),
+	setModelHarborOutputChannel: vi.fn(),
 }))
 
 describe("ModelHarborHandler", () => {
@@ -100,7 +96,7 @@ describe("ModelHarborHandler", () => {
 	}
 
 	beforeEach(() => {
-		jest.clearAllMocks()
+		vi.clearAllMocks()
 	})
 
 	it("initializes with correct options", () => {
@@ -176,9 +172,9 @@ describe("ModelHarborHandler", () => {
 			}
 
 			// Mock OpenAI chat.completions.create
-			const mockCreate = jest.fn().mockResolvedValue(mockStream)
+			const mockCreate = vi.fn().mockResolvedValue(mockStream)
 
-			;(OpenAI as jest.MockedClass<typeof OpenAI>).prototype.chat = {
+			;(OpenAI as any).prototype.chat = {
 				completions: { create: mockCreate },
 			} as any
 
@@ -246,7 +242,7 @@ describe("ModelHarborHandler", () => {
 			}
 
 			// Override the getModel method to return qwen3-32b-fast
-			jest.spyOn(handler, "getModel").mockReturnValue({
+			vi.spyOn(handler, "getModel").mockReturnValue({
 				id: "qwen/qwen3-32b-fast",
 				info: mockFastModels["qwen/qwen3-32b-fast"],
 			})
@@ -260,8 +256,8 @@ describe("ModelHarborHandler", () => {
 				},
 			}
 
-			const mockCreate = jest.fn().mockResolvedValue(mockStream)
-			;(OpenAI as jest.MockedClass<typeof OpenAI>).prototype.chat = {
+			const mockCreate = vi.fn().mockResolvedValue(mockStream)
+			;(OpenAI as any).prototype.chat = {
 				completions: { create: mockCreate },
 			} as any
 
@@ -279,8 +275,8 @@ describe("ModelHarborHandler", () => {
 		it("handles API errors", async () => {
 			const handler = new ModelHarborHandler(mockOptions)
 			const mockError = new Error("API Error")
-			const mockCreate = jest.fn().mockRejectedValue(mockError)
-			;(OpenAI as jest.MockedClass<typeof OpenAI>).prototype.chat = {
+			const mockCreate = vi.fn().mockRejectedValue(mockError)
+			;(OpenAI as any).prototype.chat = {
 				completions: { create: mockCreate },
 			} as any
 
@@ -294,8 +290,8 @@ describe("ModelHarborHandler", () => {
 			const handler = new ModelHarborHandler(mockOptions)
 			const mockResponse = { choices: [{ message: { content: "test completion" } }] }
 
-			const mockCreate = jest.fn().mockResolvedValue(mockResponse)
-			;(OpenAI as jest.MockedClass<typeof OpenAI>).prototype.chat = {
+			const mockCreate = vi.fn().mockResolvedValue(mockResponse)
+			;(OpenAI as any).prototype.chat = {
 				completions: { create: mockCreate },
 			} as any
 
@@ -314,8 +310,8 @@ describe("ModelHarborHandler", () => {
 		it("handles API errors", async () => {
 			const handler = new ModelHarborHandler(mockOptions)
 			const mockError = new Error("API Error")
-			const mockCreate = jest.fn().mockRejectedValue(mockError)
-			;(OpenAI as jest.MockedClass<typeof OpenAI>).prototype.chat = {
+			const mockCreate = vi.fn().mockRejectedValue(mockError)
+			;(OpenAI as any).prototype.chat = {
 				completions: { create: mockCreate },
 			} as any
 
@@ -324,8 +320,8 @@ describe("ModelHarborHandler", () => {
 
 		it("handles unexpected errors", async () => {
 			const handler = new ModelHarborHandler(mockOptions)
-			const mockCreate = jest.fn().mockRejectedValue(new Error("Unexpected error"))
-			;(OpenAI as jest.MockedClass<typeof OpenAI>).prototype.chat = {
+			const mockCreate = vi.fn().mockRejectedValue(new Error("Unexpected error"))
+			;(OpenAI as any).prototype.chat = {
 				completions: { create: mockCreate },
 			} as any
 
@@ -337,9 +333,6 @@ describe("ModelHarborHandler", () => {
 		it("refreshes models cache successfully", async () => {
 			const handler = new ModelHarborHandler(mockOptions)
 
-			// Mock the refreshModels method to test it calls getModelHarborModels
-			const { getModelHarborModels } = require("../fetchers/modelharbor")
-
 			await handler.refreshModels()
 
 			// The refreshModels method calls getModelHarborModels internally
@@ -350,8 +343,9 @@ describe("ModelHarborHandler", () => {
 		it("handles refresh errors gracefully", async () => {
 			const handler = new ModelHarborHandler(mockOptions)
 
-			const { getModelHarborModels } = require("../fetchers/modelharbor")
-			getModelHarborModels.mockRejectedValueOnce(new Error("Refresh failed"))
+			// Mock the getModelHarborModels to throw an error
+			const modelharborFetchers = await import("../fetchers/modelharbor")
+			vi.mocked(modelharborFetchers.getModelHarborModels).mockRejectedValueOnce(new Error("Refresh failed"))
 
 			// Should not throw
 			await expect(handler.refreshModels()).resolves.toBeUndefined()

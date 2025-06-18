@@ -1,34 +1,33 @@
 import { ModelHarborEmbedder } from "../modelharbor"
 import { getModelDimension } from "../../../../shared/embeddingModels"
+import { OpenAI } from "openai"
 
 // Mock the OpenAI client
-jest.mock("openai", () => {
+vi.mock("openai", () => {
 	return {
-		OpenAI: jest.fn().mockImplementation(() => ({
-			embeddings: {
-				create: jest.fn(),
-			},
-		})),
+		OpenAI: vi.fn(),
 	}
 })
 
 describe("ModelHarborEmbedder", () => {
 	let embedder: ModelHarborEmbedder
-	let mockOpenAI: any
+	let mockCreate: any
 
 	beforeEach(() => {
-		const { OpenAI } = require("openai")
-		mockOpenAI = {
-			embeddings: {
-				create: jest.fn(),
-			},
-		}
-		OpenAI.mockImplementation(() => mockOpenAI)
+		mockCreate = vi.fn()
+		vi.mocked(OpenAI).mockImplementation(
+			() =>
+				({
+					embeddings: {
+						create: mockCreate,
+					},
+				}) as any,
+		)
 		embedder = new ModelHarborEmbedder("test-api-key")
 	})
 
 	afterEach(() => {
-		jest.clearAllMocks()
+		vi.clearAllMocks()
 	})
 
 	describe("constructor", () => {
@@ -43,8 +42,8 @@ describe("ModelHarborEmbedder", () => {
 
 	describe("createEmbeddings", () => {
 		it("should create embeddings successfully", async () => {
-			const mockEmbedding = new Array(256).fill(0.1) // 256 dimensions
-			mockOpenAI.embeddings.create.mockResolvedValue({
+			const mockEmbedding = new Array(1024).fill(0.1) // 1024 dimensions for bge-m3
+			mockCreate.mockResolvedValue({
 				data: [{ embedding: mockEmbedding }, { embedding: mockEmbedding }],
 				usage: {
 					prompt_tokens: 10,
@@ -61,34 +60,32 @@ describe("ModelHarborEmbedder", () => {
 					totalTokens: 15,
 				},
 			})
-			expect(mockOpenAI.embeddings.create).toHaveBeenCalledWith({
+			expect(mockCreate).toHaveBeenCalledWith({
 				input: ["test text 1", "test text 2"],
 				model: "baai/bge-m3",
 			})
 		})
 
 		it("should handle rate limiting with retries", async () => {
-			const mockEmbedding = new Array(256).fill(0.1)
+			const mockEmbedding = new Array(1024).fill(0.1)
 
 			// First call fails with rate limit, second succeeds
-			mockOpenAI.embeddings.create
-				.mockRejectedValueOnce({ status: 429, message: "Rate limit exceeded" })
-				.mockResolvedValueOnce({
-					data: [{ embedding: mockEmbedding }],
-					usage: { prompt_tokens: 5, total_tokens: 8 },
-				})
+			mockCreate.mockRejectedValueOnce({ status: 429, message: "Rate limit exceeded" }).mockResolvedValueOnce({
+				data: [{ embedding: mockEmbedding }],
+				usage: { prompt_tokens: 5, total_tokens: 8 },
+			})
 
 			const result = await embedder.createEmbeddings(["test text"])
 
 			expect(result.embeddings).toEqual([mockEmbedding])
-			expect(mockOpenAI.embeddings.create).toHaveBeenCalledTimes(2)
+			expect(mockCreate).toHaveBeenCalledTimes(2)
 		})
 
 		it("should process large batches correctly", async () => {
-			const mockEmbedding = new Array(256).fill(0.1)
+			const mockEmbedding = new Array(1024).fill(0.1)
 			const largeTexts = new Array(100).fill("test text")
 
-			mockOpenAI.embeddings.create.mockResolvedValue({
+			mockCreate.mockResolvedValue({
 				data: largeTexts.map(() => ({ embedding: mockEmbedding })),
 				usage: { prompt_tokens: 100, total_tokens: 150 },
 			})
@@ -110,7 +107,7 @@ describe("ModelHarborEmbedder", () => {
 	describe("dimension configuration", () => {
 		it("should have correct dimension in shared config", () => {
 			const dimension = getModelDimension("modelharbor", "baai/bge-m3")
-			expect(dimension).toBe(256)
+			expect(dimension).toBe(1024)
 		})
 	})
 })
