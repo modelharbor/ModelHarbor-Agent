@@ -3,17 +3,17 @@
 import { getModelHarborModels } from "../modelharbor"
 
 // Mock fetch globally
-global.fetch = jest.fn()
+global.fetch = vi.fn()
 
 describe("getModelHarborModels", () => {
 	beforeEach(() => {
-		jest.clearAllMocks()
+		vi.clearAllMocks()
 		// Reset console.error mock
-		jest.spyOn(console, "error").mockImplementation(() => {})
+		vi.spyOn(console, "error").mockImplementation(() => {})
 	})
 
 	afterEach(() => {
-		jest.restoreAllMocks()
+		vi.restoreAllMocks()
 	})
 
 	it("fetches and transforms ModelHarbor models correctly", async () => {
@@ -185,7 +185,7 @@ describe("getModelHarborModels", () => {
 			],
 		}
 
-		;(fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce({
+		;(fetch as any).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockApiResponse,
 		} as Response)
@@ -288,7 +288,7 @@ describe("getModelHarborModels", () => {
 			],
 		}
 
-		;(fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce({
+		;(fetch as any).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockApiResponse,
 		} as Response)
@@ -329,7 +329,7 @@ describe("getModelHarborModels", () => {
 			],
 		}
 
-		;(fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce({
+		;(fetch as any).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockApiResponse,
 		} as Response)
@@ -373,7 +373,7 @@ describe("getModelHarborModels", () => {
 			],
 		}
 
-		;(fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce({
+		;(fetch as any).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockApiResponse,
 		} as Response)
@@ -385,7 +385,7 @@ describe("getModelHarborModels", () => {
 	})
 
 	it("handles API error responses", async () => {
-		;(fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce({
+		;(fetch as any).mockResolvedValueOnce({
 			ok: false,
 			status: 500,
 		} as Response)
@@ -397,7 +397,7 @@ describe("getModelHarborModels", () => {
 	})
 
 	it("handles network errors", async () => {
-		;(fetch as jest.MockedFunction<typeof fetch>).mockRejectedValueOnce(new Error("Network error"))
+		;(fetch as any).mockRejectedValueOnce(new Error("Network error"))
 
 		const result = await getModelHarborModels()
 
@@ -406,7 +406,7 @@ describe("getModelHarborModels", () => {
 	})
 
 	it("handles malformed API response", async () => {
-		;(fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce({
+		;(fetch as any).mockResolvedValueOnce({
 			ok: true,
 			json: async () => ({ invalid: "response" }),
 		} as Response)
@@ -432,7 +432,7 @@ describe("getModelHarborModels", () => {
 			],
 		}
 
-		;(fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce({
+		;(fetch as any).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockApiResponse,
 		} as Response)
@@ -459,7 +459,7 @@ describe("getModelHarborModels", () => {
 			],
 		}
 
-		;(fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce({
+		;(fetch as any).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockApiResponse,
 		} as Response)
@@ -488,7 +488,7 @@ describe("getModelHarborModels", () => {
 			],
 		}
 
-		;(fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce({
+		;(fetch as any).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockApiResponse,
 		} as Response)

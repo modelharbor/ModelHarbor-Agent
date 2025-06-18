@@ -22,7 +22,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 
 	beforeAll(() => {
 		originalConsoleError = console.error
-		console.error = jest.fn()
+		console.error = vi.fn()
 	})
 
 	afterAll(() => {

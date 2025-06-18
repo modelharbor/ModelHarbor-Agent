@@ -2,11 +2,11 @@ import { ModelHarborEmbedder } from "../modelharbor"
 import { MAX_ITEM_TOKENS } from "../../constants"
 
 // Mock the OpenAI library
-jest.mock("openai", () => {
+vi.mock("openai", () => {
 	return {
-		OpenAI: jest.fn().mockImplementation(() => ({
+		OpenAI: vi.fn().mockImplementation(() => ({
 			embeddings: {
-				create: jest.fn(),
+				create: vi.fn(),
 			},
 		})),
 	}
@@ -21,7 +21,7 @@ describe("ModelHarborEmbedder", () => {
 	})
 
 	afterEach(() => {
-		jest.clearAllMocks()
+		vi.clearAllMocks()
 	})
 
 	describe("constructor", () => {
@@ -52,7 +52,7 @@ describe("ModelHarborEmbedder", () => {
 			}
 
 			// Mock the OpenAI client's create method
-			const mockCreate = jest.fn().mockResolvedValue(mockEmbeddingsResponse)
+			const mockCreate = vi.fn().mockResolvedValue(mockEmbeddingsResponse)
 			;(embedder as any).embeddingsClient.embeddings.create = mockCreate
 
 			const texts = ["hello world", "test text"]
@@ -84,7 +84,7 @@ describe("ModelHarborEmbedder", () => {
 				},
 			}
 
-			const mockCreate = jest.fn().mockResolvedValue(mockEmbeddingsResponse)
+			const mockCreate = vi.fn().mockResolvedValue(mockEmbeddingsResponse)
 			;(embedder as any).embeddingsClient.embeddings.create = mockCreate
 
 			const texts = ["test"]
@@ -100,7 +100,7 @@ describe("ModelHarborEmbedder", () => {
 			const rateLimitError = new Error("Rate limit exceeded")
 			;(rateLimitError as any).status = 429
 
-			const mockCreate = jest
+			const mockCreate = vi
 				.fn()
 				.mockRejectedValueOnce(rateLimitError)
 				.mockRejectedValueOnce(rateLimitError)
@@ -111,7 +111,7 @@ describe("ModelHarborEmbedder", () => {
 
 			;(embedder as any).embeddingsClient.embeddings.create = mockCreate
 
-			const consoleSpy = jest.spyOn(console, "warn").mockImplementation()
+			const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
 
 			const result = await embedder.createEmbeddings(["test"])
 
@@ -124,10 +124,10 @@ describe("ModelHarborEmbedder", () => {
 
 		it("should throw error after max retries", async () => {
 			const error = new Error("API error")
-			const mockCreate = jest.fn().mockRejectedValue(error)
+			const mockCreate = vi.fn().mockRejectedValue(error)
 			;(embedder as any).embeddingsClient.embeddings.create = mockCreate
 
-			const consoleSpy = jest.spyOn(console, "error").mockImplementation()
+			const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {})
 
 			await expect(embedder.createEmbeddings(["test"])).rejects.toThrow(
 				"Failed to create embeddings: batch processing error",
@@ -150,7 +150,7 @@ describe("ModelHarborEmbedder", () => {
 				usage: { prompt_tokens: 5, total_tokens: 5 },
 			}
 
-			const mockCreate = jest.fn().mockResolvedValue(mockEmbeddingsResponse)
+			const mockCreate = vi.fn().mockResolvedValue(mockEmbeddingsResponse)
 			;(embedder as any).embeddingsClient.embeddings.create = mockCreate
 
 			// Create a large text that exceeds token limits (MAX_ITEM_TOKENS = 8191)
@@ -158,7 +158,7 @@ describe("ModelHarborEmbedder", () => {
 			const largeText = "x".repeat(MAX_ITEM_TOKENS * 5) // This should exceed MAX_ITEM_TOKENS
 			const normalText = "normal text"
 
-			const consoleSpy = jest.spyOn(console, "warn").mockImplementation()
+			const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
 
 			const result = await embedder.createEmbeddings([largeText, normalText])
 
