@@ -225,7 +225,7 @@
 		"title": "🎉 ModelHarbor Agent {{version}} Yayınlandı",
 		"description": "ModelHarbor Agent {{version}} geri bildirimlerinize dayalı güçlü yeni özellikler ve iyileştirmeler getiriyor.",
 		"whatsNew": "Yenilikler",
-		"feature1": "<bold>Roo Marketplace Lansmanı</bold> - Marketplace artık canlı! Modları ve MCP'leri her zamankinden daha kolay keşfedin ve kurun.",
+		"feature1": "<bold>ModelHarbor Marketplace Lansmanı</bold> - Marketplace artık canlı! Modları ve MCP'leri her zamankinden daha kolay keşfedin ve kurun.",
 		"feature2": "<bold>Gemini 2.5 Modelleri</bold> - Yeni Gemini 2.5 Pro, Flash ve Flash Lite modelleri için destek eklendi.",
 		"feature3": "<bold>Excel Dosya Desteği ve Daha Fazlası</bold> - Excel (.xlsx) dosya desteği eklendi ve sayısız hata düzeltmesi ve iyileştirme!",
 		"hideButton": "Duyuruyu gizle",

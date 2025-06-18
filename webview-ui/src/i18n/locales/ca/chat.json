@@ -225,7 +225,7 @@
 		"title": "🎉 ModelHarbor Agent {{version}} publicat",
 		"description": "ModelHarbor Agent {{version}} porta noves funcionalitats potents i millores basades en els teus comentaris.",
 		"whatsNew": "Novetats",
-		"feature1": "<bold>Llançament del Marketplace Roo</bold> - El marketplace ja està en funcionament! Descobreix i instal·la modes i MCP més fàcilment que mai.",
+		"feature1": "<bold>Llançament del Marketplace ModelHarbor</bold> - El marketplace ja està en funcionament! Descobreix i instal·la modes i MCP més fàcilment que mai.",
 		"feature2": "<bold>Models Gemini 2.5</bold> - S'ha afegit suport per als nous models Gemini 2.5 Pro, Flash i Flash Lite.",
 		"feature3": "<bold>Suport per a fitxers Excel i més</bold> - S'ha afegit suport per a fitxers Excel (.xlsx) i nombroses correccions d'errors i millores!",
 		"hideButton": "Amagar anunci",

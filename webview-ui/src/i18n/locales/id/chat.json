@@ -237,7 +237,7 @@
 		"title": "🎉 ModelHarbor Agent {{version}} Dirilis",
 		"description": "ModelHarbor Agent {{version}} menghadirkan fitur baru yang powerful dan perbaikan berdasarkan feedback kamu.",
 		"whatsNew": "Apa yang Baru",
-		"feature1": "<bold>Peluncuran Roo Marketplace</bold> - Marketplace sekarang sudah live! Temukan dan install mode serta MCP lebih mudah dari sebelumnya.",
+		"feature1": "<bold>Peluncuran ModelHarbor Marketplace</bold> - Marketplace sekarang sudah live! Temukan dan install mode serta MCP lebih mudah dari sebelumnya.",
 		"feature2": "<bold>Model Gemini 2.5</bold> - Menambahkan dukungan untuk model Gemini 2.5 Pro, Flash, dan Flash Lite yang baru.",
 		"feature3": "<bold>Dukungan File Excel & Lainnya</bold> - Menambahkan dukungan file Excel (.xlsx) dan banyak perbaikan bug serta peningkatan!",
 		"hideButton": "Sembunyikan pengumuman",
