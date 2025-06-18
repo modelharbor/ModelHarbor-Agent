@@ -235,7 +235,7 @@
 				{
 					"command": "modelharbor-agent.marketplaceButtonClicked",
 					"group": "navigation@4",
-					"when": "view == modelharbor-agent.SidebarProvider && modelharbor-agent.marketplaceEnabled"
+					"when": "view == modelharbor-agent.SidebarProvider"
 				},
 				{
 					"command": "modelharbor-agent.historyButtonClicked",
