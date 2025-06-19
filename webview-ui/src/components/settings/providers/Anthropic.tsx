@@ -48,6 +48,14 @@ export const Anthropic = ({ apiConfiguration, setApiConfigurationField }: Anthro
 					{t("settings:providers.getAnthropicApiKey")}
 				</VSCodeButtonLink>
 			)}
+			<div className="text-sm text-vscode-descriptionForeground">
+				<VSCodeButtonLink
+					href="https://www.modelharbor.com/Home/Pricing"
+					appearance="secondary"
+					className="text-xs">
+					{t("settings:providers.anthropicModelharborPricing")}
+				</VSCodeButtonLink>
+			</div>
 			<div>
 				<Checkbox
 					checked={anthropicBaseUrlSelected}

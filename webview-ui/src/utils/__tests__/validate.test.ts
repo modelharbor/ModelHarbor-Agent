@@ -81,7 +81,7 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("validation.modelAvailability")
+			expect(result).toBe("settings:validation.modelAvailability")
 		})
 
 		it("returns error for model not allowed by organization", () => {
@@ -131,7 +131,7 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("validation.modelId")
+			expect(result).toBe("settings:validation.modelId")
 		})
 
 		it("handles undefined model IDs gracefully", () => {
@@ -141,7 +141,7 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("validation.modelId")
+			expect(result).toBe("settings:validation.modelId")
 		})
 	})
 
@@ -165,7 +165,7 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = validateApiConfigurationExcludingModelErrors(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("validation.apiKey")
+			expect(result).toBe("settings:validation.apiKey")
 		})
 
 		it("excludes model-specific errors", () => {

@@ -2,8 +2,8 @@ import {
 	type ProviderName,
 	type ProviderSettings,
 	type ModelInfo,
-	anthropicDefaultModelId,
-	anthropicModels,
+	//	anthropicDefaultModelId,
+	//	anthropicModels,
 	bedrockDefaultModelId,
 	bedrockModels,
 	deepSeekDefaultModelId,
@@ -31,6 +31,7 @@ import {
 	unboundDefaultModelId,
 	litellmDefaultModelId,
 	modelHarborDefaultModelId,
+	modelHarborModels,
 } from "@roo-code/types"
 
 import type { RouterModels } from "@roo/api"
@@ -205,8 +206,8 @@ function getSelectedModel({
 		// case "human-relay":
 		// case "fake-ai":
 		default: {
-			const id = apiConfiguration.apiModelId ?? anthropicDefaultModelId
-			const info = anthropicModels[id as keyof typeof anthropicModels]
+			const id = apiConfiguration.apiModelId ?? modelHarborDefaultModelId
+			const info = modelHarborModels[id as keyof typeof modelHarborModels]
 			return { id, info }
 		}
 	}
