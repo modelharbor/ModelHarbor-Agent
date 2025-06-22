@@ -244,16 +244,14 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 
 	it("handles Error objects and string errors correctly", async () => {
 		// Mock providers to fail with different error types
+		// Order matches the implementation: openrouter, requesty, glama, unbound, modelharbor, litellm
 		mockGetModels
 			.mockRejectedValueOnce(new Error("Structured error message")) // openrouter
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty
 			.mockRejectedValueOnce(new Error("Glama API error")) // glama
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
+			.mockRejectedValueOnce(new Error("Modelharbor API error")) // modelharbor
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm
-			.mockRejectedValueOnce("String error message") // String error
-			.mockRejectedValueOnce({ message: "Object with message" }) // Object error
-			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
-			.mockResolvedValueOnce({}) // modelharbor
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
@@ -286,6 +284,13 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			success: false,
 			error: "Unbound API error",
 			values: { provider: "unbound" },
+		})
+
+		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
+			type: "singleRouterModelFetchResponse",
+			success: false,
+			error: "Modelharbor API error",
+			values: { provider: "modelharbor" },
 		})
 
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
