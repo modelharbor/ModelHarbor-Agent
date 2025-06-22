@@ -1,6 +1,13 @@
 import "@testing-library/jest-dom"
 import "@testing-library/jest-dom/vitest"
 
+// Mock i18next for validation tests
+vi.mock("i18next", () => ({
+	default: {
+		t: (key: string) => key, // Return the key itself as the translation
+	},
+}))
+
 class MockResizeObserver {
 	observe() {}
 	unobserve() {}
