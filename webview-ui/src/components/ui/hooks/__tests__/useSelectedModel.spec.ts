@@ -348,7 +348,7 @@ describe("useSelectedModel", () => {
 	})
 
 	describe("default behavior", () => {
-		it("should return anthropic default when no configuration is provided", () => {
+		it("should return modelharbor default when no configuration is provided", () => {
 			mockUseRouterModels.mockReturnValue({
 				data: undefined,
 				isLoading: false,
@@ -364,8 +364,8 @@ describe("useSelectedModel", () => {
 			const wrapper = createWrapper()
 			const { result } = renderHook(() => useSelectedModel(), { wrapper })
 
-			expect(result.current.provider).toBe("anthropic")
-			expect(result.current.id).toBe("claude-sonnet-4-20250514")
+			expect(result.current.provider).toBe("modelharbor")
+			expect(result.current.id).toBe("deepseek/deepseek-v3-0324")
 			expect(result.current.info).toBeUndefined()
 		})
 	})

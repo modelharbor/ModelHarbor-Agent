@@ -17,6 +17,18 @@ const mockClineProvider = {
 } as unknown as ClineProvider
 
 describe("webviewMessageHandler - requestRouterModels", () => {
+	// Suppress console.error during tests for cleaner output
+	let originalConsoleError: typeof console.error
+
+	beforeAll(() => {
+		originalConsoleError = console.error
+		console.error = vi.fn()
+	})
+
+	afterAll(() => {
+		console.error = originalConsoleError
+	})
+
 	beforeEach(() => {
 		vi.clearAllMocks()
 		mockClineProvider.getState = vi.fn().mockResolvedValue({
@@ -58,6 +70,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "requesty", apiKey: "requesty-key" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "glama" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "unbound", apiKey: "unbound-key" })
+		expect(mockGetModels).toHaveBeenCalledWith({ provider: "modelharbor" })
 		expect(mockGetModels).toHaveBeenCalledWith({
 			provider: "litellm",
 			apiKey: "litellm-key",
@@ -72,6 +85,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				requesty: mockModels,
 				glama: mockModels,
 				unbound: mockModels,
+				modelharbor: mockModels,
 				litellm: mockModels,
 				ollama: {},
 				lmstudio: {},
@@ -159,6 +173,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				requesty: mockModels,
 				glama: mockModels,
 				unbound: mockModels,
+				modelharbor: mockModels,
 				litellm: {},
 				ollama: {},
 				lmstudio: {},
@@ -182,6 +197,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty
 			.mockResolvedValueOnce(mockModels) // glama
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
+			.mockResolvedValueOnce(mockModels) // modelharbor
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm
 
 		await webviewMessageHandler(mockClineProvider, {
@@ -196,6 +212,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				requesty: {},
 				glama: mockModels,
 				unbound: {},
+				modelharbor: mockModels,
 				litellm: {},
 				ollama: {},
 				lmstudio: {},
@@ -233,6 +250,10 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockRejectedValueOnce(new Error("Glama API error")) // glama
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm
+			.mockRejectedValueOnce("String error message") // String error
+			.mockRejectedValueOnce({ message: "Object with message" }) // Object error
+			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
+			.mockResolvedValueOnce({}) // modelharbor
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
@@ -293,5 +314,8 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			apiKey: "litellm-key", // From config
 			baseUrl: "http://localhost:4000", // From config
 		})
+
+		// Verify modelharbor was also called
+		expect(mockGetModels).toHaveBeenCalledWith({ provider: "modelharbor" })
 	})
 })

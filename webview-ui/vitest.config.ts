@@ -9,7 +9,7 @@ export default defineConfig({
 		reporters: ["dot"],
 		silent: true,
 		environment: "jsdom",
-		include: ["src/**/*.spec.ts", "src/**/*.spec.tsx"],
+		include: ["src/**/*.spec.ts", "src/**/*.spec.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"],
 	},
 	resolve: {
 		alias: {

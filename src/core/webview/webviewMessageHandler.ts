@@ -355,6 +355,7 @@ export const webviewMessageHandler = async (
 				glama: {},
 				unbound: {},
 				litellm: {},
+				modelharbor: {},
 				ollama: {},
 				lmstudio: {},
 			}
@@ -376,6 +377,7 @@ export const webviewMessageHandler = async (
 				{ key: "requesty", options: { provider: "requesty", apiKey: apiConfiguration.requestyApiKey } },
 				{ key: "glama", options: { provider: "glama" } },
 				{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
+				{ key: "modelharbor", options: { provider: "modelharbor" } },
 			]
 
 			// Don't fetch Ollama and LM Studio models by default anymore

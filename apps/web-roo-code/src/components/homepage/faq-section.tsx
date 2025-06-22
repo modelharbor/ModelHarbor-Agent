@@ -88,8 +88,8 @@ export function FAQSection() {
 							Frequently Asked Questions
 						</h2>
 						<p className="mt-6 text-lg text-muted-foreground">
-							Everything you need to know about Roo Code and how it can transform your development
-							workflow.
+							Everything you need to know About ModelHarbor Agent and how it can transform your
+							development workflow.
 						</p>
 					</motion.div>
 				</div>

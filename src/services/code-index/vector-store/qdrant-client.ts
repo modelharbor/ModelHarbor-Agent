@@ -29,12 +29,14 @@ export class QdrantVectorStore implements IVectorStore {
 			url: this.qdrantUrl,
 			apiKey,
 			headers: {
-				"User-Agent": "Roo-Code",
+				"User-Agent": "ModelHarbor",
 			},
 		})
 
 		// Generate collection name from workspace path
-		const hash = createHash("sha256").update(workspacePath).digest("hex")
+		const hash = createHash("sha256")
+			.update(workspacePath + "modelharbor")
+			.digest("hex")
 		this.vectorSize = vectorSize
 		this.collectionName = `ws-${hash.substring(0, 16)}`
 	}

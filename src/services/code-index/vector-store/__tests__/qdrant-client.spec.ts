@@ -61,11 +61,11 @@ describe("QdrantVectorStore", () => {
 			url: mockQdrantUrl,
 			apiKey: mockApiKey,
 			headers: {
-				"User-Agent": "Roo-Code",
+				"User-Agent": "ModelHarbor",
 			},
 		})
 		expect(createHash).toHaveBeenCalledWith("sha256")
-		expect(mockCreateHashInstance.update).toHaveBeenCalledWith(mockWorkspacePath)
+		expect(mockCreateHashInstance.update).toHaveBeenCalledWith(mockWorkspacePath + "modelharbor")
 		expect(mockCreateHashInstance.digest).toHaveBeenCalledWith("hex")
 		// Access private member for testing constructor logic (not ideal, but necessary here)
 		expect((vectorStore as any).collectionName).toBe(expectedCollectionName)
@@ -78,7 +78,7 @@ describe("QdrantVectorStore", () => {
 			url: "http://localhost:6333", // Should use default QDRANT_URL
 			apiKey: undefined,
 			headers: {
-				"User-Agent": "Roo-Code",
+				"User-Agent": "ModelHarbor",
 			},
 		})
 	})
@@ -90,7 +90,7 @@ describe("QdrantVectorStore", () => {
 			url: mockQdrantUrl,
 			apiKey: undefined,
 			headers: {
-				"User-Agent": "Roo-Code",
+				"User-Agent": "ModelHarbor",
 			},
 		})
 	})
