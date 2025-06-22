@@ -63,11 +63,11 @@ describe("QdrantVectorStore", () => {
 			port: 6333,
 			apiKey: mockApiKey,
 			headers: {
-				"User-Agent": "Roo-Code",
+				"User-Agent": "ModelHarbor",
 			},
 		})
 		expect(createHash).toHaveBeenCalledWith("sha256")
-		expect(mockCreateHashInstance.update).toHaveBeenCalledWith(mockWorkspacePath)
+		expect(mockCreateHashInstance.update).toHaveBeenCalledWith(mockWorkspacePath + "modelharbor")
 		expect(mockCreateHashInstance.digest).toHaveBeenCalledWith("hex")
 		// Access private member for testing constructor logic (not ideal, but necessary here)
 		expect((vectorStore as any).collectionName).toBe(expectedCollectionName)
@@ -82,7 +82,7 @@ describe("QdrantVectorStore", () => {
 			port: 6333,
 			apiKey: undefined,
 			headers: {
-				"User-Agent": "Roo-Code",
+				"User-Agent": "ModelHarbor",
 			},
 		})
 	})
@@ -96,7 +96,7 @@ describe("QdrantVectorStore", () => {
 			port: 6333,
 			apiKey: undefined,
 			headers: {
-				"User-Agent": "Roo-Code",
+				"User-Agent": "ModelHarbor",
 			},
 		})
 	})
