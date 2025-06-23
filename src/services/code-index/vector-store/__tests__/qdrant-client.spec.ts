@@ -115,7 +115,7 @@ describe("QdrantVectorStore", () => {
 					port: 443,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("https://qdrant.ashbyfam.com")
@@ -129,7 +129,7 @@ describe("QdrantVectorStore", () => {
 					port: 9000,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("https://example.com:9000")
@@ -147,7 +147,7 @@ describe("QdrantVectorStore", () => {
 					port: 443,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("https://example.com/api/v1?key=value")
@@ -163,7 +163,7 @@ describe("QdrantVectorStore", () => {
 					port: 80,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://example.com")
@@ -177,7 +177,7 @@ describe("QdrantVectorStore", () => {
 					port: 8080,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://localhost:8080")
@@ -195,7 +195,7 @@ describe("QdrantVectorStore", () => {
 					port: 80,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://example.com/api/v1?key=value")
@@ -211,7 +211,7 @@ describe("QdrantVectorStore", () => {
 					port: 80,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://qdrant.example.com")
@@ -225,7 +225,7 @@ describe("QdrantVectorStore", () => {
 					port: 6333,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://localhost:6333")
@@ -239,7 +239,7 @@ describe("QdrantVectorStore", () => {
 					port: 9000,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://localhost:9000")
@@ -255,7 +255,7 @@ describe("QdrantVectorStore", () => {
 					port: 80,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://192.168.1.100")
@@ -269,7 +269,7 @@ describe("QdrantVectorStore", () => {
 					port: 6333,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://192.168.1.100:6333")
@@ -285,7 +285,7 @@ describe("QdrantVectorStore", () => {
 					port: 6333,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://localhost:6333")
@@ -299,7 +299,7 @@ describe("QdrantVectorStore", () => {
 					port: 6333,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://localhost:6333")
@@ -313,7 +313,7 @@ describe("QdrantVectorStore", () => {
 					port: 6333,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://localhost:6333")
@@ -329,7 +329,7 @@ describe("QdrantVectorStore", () => {
 					port: 80,
 					apiKey: undefined,
 					headers: {
-						"User-Agent": "Roo-Code",
+						"User-Agent": "ModelHarbor",
 					},
 				})
 				expect((vectorStore as any).qdrantUrl).toBe("http://invalid-url-format")

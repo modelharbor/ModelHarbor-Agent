@@ -59,7 +59,7 @@ export class QdrantVectorStore implements IVectorStore {
 				port: port,
 				apiKey,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 		} catch (urlError) {
@@ -68,7 +68,7 @@ export class QdrantVectorStore implements IVectorStore {
 				url: parsedUrl,
 				apiKey,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 		}
