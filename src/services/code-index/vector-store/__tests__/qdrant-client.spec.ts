@@ -357,7 +357,7 @@ describe("QdrantVectorStore", () => {
 				prefix: "/some/path",
 				apiKey: undefined,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 			expect((vectorStoreWithPrefix as any).qdrantUrl).toBe("http://localhost:6333/some/path")
@@ -376,7 +376,7 @@ describe("QdrantVectorStore", () => {
 				prefix: undefined,
 				apiKey: undefined,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 			expect((vectorStoreWithoutPrefix as any).qdrantUrl).toBe("http://localhost:6333/")
@@ -395,7 +395,7 @@ describe("QdrantVectorStore", () => {
 				prefix: "/api",
 				apiKey: undefined,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 			expect((vectorStoreWithHttpsPrefix as any).qdrantUrl).toBe("https://qdrant.ashbyfam.com/api")
@@ -414,7 +414,7 @@ describe("QdrantVectorStore", () => {
 				prefix: "/api", // Trailing slash should be removed
 				apiKey: undefined,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 			expect((vectorStoreWithTrailingSlash as any).qdrantUrl).toBe("http://localhost:6333/api/")
@@ -433,7 +433,7 @@ describe("QdrantVectorStore", () => {
 				prefix: "/api", // All trailing slashes should be removed
 				apiKey: undefined,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 			expect((vectorStoreWithMultipleTrailingSlashes as any).qdrantUrl).toBe("http://localhost:6333/api///")
@@ -452,7 +452,7 @@ describe("QdrantVectorStore", () => {
 				prefix: "/api/v1/qdrant",
 				apiKey: undefined,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 			expect((vectorStoreWithMultiSegment as any).qdrantUrl).toBe("http://localhost:6333/api/v1/qdrant")
@@ -468,7 +468,7 @@ describe("QdrantVectorStore", () => {
 				prefix: "/ollama/api/v1", // Trailing slash removed, query/fragment ignored
 				apiKey: undefined,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 			expect((vectorStoreComplex as any).qdrantUrl).toBe(complexUrl)
@@ -487,7 +487,7 @@ describe("QdrantVectorStore", () => {
 				prefix: "/api/path", // Query params and fragment should be ignored
 				apiKey: undefined,
 				headers: {
-					"User-Agent": "Roo-Code",
+					"User-Agent": "ModelHarbor",
 				},
 			})
 			expect((vectorStoreWithQueryParams as any).qdrantUrl).toBe(
