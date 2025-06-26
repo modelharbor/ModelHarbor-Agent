@@ -35,7 +35,6 @@ import {
 	claudeCodeDefaultModelId,
 	claudeCodeModels,
 	modelHarborDefaultModelId,
-	modelHarborModels,
 } from "@roo-code/types"
 
 import type { RouterModels } from "@roo/api"
@@ -124,10 +123,10 @@ function getSelectedModel({
 		}
 		case "modelharbor": {
 			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
-			const info = routerModels.modelharbor[id]
+			const info = routerModels.modelharbor?.[id]
 			return info
 				? { id, info }
-				: { id: modelHarborDefaultModelId, info: routerModels.modelharbor[modelHarborDefaultModelId] }
+				: { id: modelHarborDefaultModelId, info: routerModels.modelharbor?.[modelHarborDefaultModelId] }
 		}
 		case "xai": {
 			const id = apiConfiguration.apiModelId ?? xaiDefaultModelId
@@ -227,9 +226,11 @@ function getSelectedModel({
 		// case "human-relay":
 		// case "fake-ai":
 		default: {
-			const id = apiConfiguration.apiModelId ?? modelHarborDefaultModelId
-			const info = modelHarborModels[id as keyof typeof modelHarborModels]
-			return { id, info }
+			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
+			const info = routerModels.modelharbor?.[id]
+			return info
+				? { id, info }
+				: { id: modelHarborDefaultModelId, info: routerModels.modelharbor?.[modelHarborDefaultModelId] }
 		}
 	}
 }
