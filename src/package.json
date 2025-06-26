@@ -84,6 +84,11 @@
 				"icon": "$(server)"
 			},
 			{
+				"command": "modelharbor-agent.promptsButtonClicked",
+				"title": "%command.prompts.title%",
+				"icon": "$(symbol-snippet)"
+			},
+			{
 				"command": "modelharbor-agent.historyButtonClicked",
 				"title": "%command.history.title%",
 				"icon": "$(history)"
@@ -97,12 +102,6 @@
 				"command": "modelharbor-agent.popoutButtonClicked",
 				"title": "%command.openInEditor.title%",
 				"icon": "$(link-external)"
-			},
-			{
-				"command": "modelharbor-agent.accountButtonClicked",
-				"title": "Account",
-				"icon": "$(account)",
-				"when": "config.modelharbor-agent.rooCodeCloudEnabled"
 			},
 			{
 				"command": "modelharbor-agent.settingsButtonClicked",
@@ -246,11 +245,6 @@
 					"command": "modelharbor-agent.popoutButtonClicked",
 					"group": "navigation@5",
 					"when": "view == modelharbor-agent.SidebarProvider"
-				},
-				{
-					"command": "modelharbor-agent.accountButtonClicked",
-					"group": "navigation@6",
-					"when": "view == modelharbor-agent.SidebarProvider && config.modelharbor-agent.rooCodeCloudEnabled"
 				},
 				{
 					"command": "modelharbor-agent.settingsButtonClicked",
