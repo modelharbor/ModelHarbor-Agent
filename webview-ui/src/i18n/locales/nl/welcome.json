@@ -15,6 +15,7 @@
 	"chooseProvider": "Om zijn magie te doen, heeft ModelHarbor een API-sleutel nodig.",
 	"startRouter": "We raden aan om een LLM-router te gebruiken:",
 	"startCustom": "Of je kunt je eigen API-sleutel gebruiken:",
+	"modelHarbor": "Je kunt een API-sleutel verkrijgen op ModelHarbor.com",
 	"telemetry": {
 		"title": "Help ModelHarbor Agent verbeteren",
 		"anonymousTelemetry": "Stuur anonieme fout- en gebruiksgegevens om ons te helpen bugs op te lossen en de extensie te verbeteren. Er worden nooit code, prompts of persoonlijke gegevens verzonden.",

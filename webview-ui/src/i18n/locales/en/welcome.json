@@ -15,6 +15,7 @@
 	"chooseProvider": "To do its magic, ModelHarbor needs an API key.",
 	"startRouter": "We recommend using an LLM Router:",
 	"startCustom": "Or you can bring your provider API key:",
+	"modelHarbor": "You can obtain API key from ModelHarbor.com",
 	"telemetry": {
 		"title": "Help Improve ModelHarbor Agent",
 		"anonymousTelemetry": "Send anonymous error and usage data to help us fix bugs and improve the extension. No code, prompts, or personal information is ever sent.",

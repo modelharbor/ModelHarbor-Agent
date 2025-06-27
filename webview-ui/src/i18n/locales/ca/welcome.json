@@ -15,6 +15,7 @@
 	"chooseProvider": "Per fer la seva màgia, ModelHarbor necessita una clau API.",
 	"startRouter": "Recomanem utilitzar un router LLM:",
 	"startCustom": "O pots utilitzar la teva pròpia clau API:",
+	"modelHarbor": "Pots obtenir la clau API a ModelHarbor.com",
 	"telemetry": {
 		"title": "Ajuda a millorar ModelHarbor Agent",
 		"anonymousTelemetry": "Envia dades d'ús i errors anònims per ajudar-nos a corregir errors i millorar l'extensió. No s'envia mai cap codi, text o informació personal.",
