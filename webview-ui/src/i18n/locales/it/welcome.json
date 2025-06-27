@@ -15,6 +15,7 @@
 	"chooseProvider": "Per fare la sua magia, ModelHarbor ha bisogno di una chiave API.",
 	"startRouter": "Consigliamo di utilizzare un router LLM:",
 	"startCustom": "Oppure puoi utilizzare la tua chiave API:",
+	"modelHarbor": "Puoi ottenere la chiave API su ModelHarbor.com",
 	"telemetry": {
 		"title": "Aiuta a migliorare ModelHarbor Agent",
 		"anonymousTelemetry": "Invia dati di utilizzo ed errori anonimi per aiutarci a correggere bug e migliorare l'estensione. Non viene mai inviato codice, testo o informazioni personali.",

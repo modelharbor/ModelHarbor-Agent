@@ -15,6 +15,7 @@
 	"chooseProvider": "Pour faire sa magie, ModelHarbor a besoin d'une clé API.",
 	"startRouter": "Nous recommandons d'utiliser un routeur LLM :",
 	"startCustom": "Ou tu peux apporter ta propre clé API :",
+	"modelHarbor": "Tu peux obtenir la clé API sur ModelHarbor.com",
 	"telemetry": {
 		"title": "Aide à améliorer ModelHarbor Agent",
 		"anonymousTelemetry": "Envoie des données d'utilisation et d'erreurs anonymes pour nous aider à corriger les bugs et améliorer l'extension. Aucun code, texte ou information personnelle n'est jamais envoyé.",

@@ -15,6 +15,7 @@
 	"chooseProvider": "Untuk melakukan keajaibannya, ModelHarbor membutuhkan API key.",
 	"startRouter": "Kami merekomendasikan menggunakan Router LLM:",
 	"startCustom": "Atau Anda dapat menggunakan API key Anda sendiri:",
+	"modelHarbor": "Anda dapat memperoleh API key dari ModelHarbor.com",
 	"telemetry": {
 		"title": "Bantu Tingkatkan ModelHarbor Agent",
 		"anonymousTelemetry": "Kirim data error dan penggunaan anonim untuk membantu kami memperbaiki bug dan meningkatkan ekstensi. Tidak ada kode, prompt, atau informasi pribadi yang pernah dikirim.",

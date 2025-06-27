@@ -134,6 +134,30 @@ vi.mock("@/components/ui", () => ({
 	),
 	SelectTrigger: ({ children }: any) => <div data-testid="select-trigger">{children}</div>,
 	SelectValue: ({ placeholder }: any) => <div data-testid="select-value">{placeholder}</div>,
+	Popover: ({ children, open, onOpenChange }: any) => (
+		<div data-testid="popover" data-open={open}>
+			{children}
+		</div>
+	),
+	PopoverTrigger: ({ children, asChild }: any) => <div data-testid="popover-trigger">{children}</div>,
+	PopoverContent: ({ children }: any) => <div data-testid="popover-content">{children}</div>,
+	Command: ({ children }: any) => <div data-testid="command">{children}</div>,
+	CommandInput: ({ placeholder, value, onValueChange }: any) => (
+		<input
+			placeholder={placeholder}
+			value={value}
+			onChange={(e) => onValueChange?.(e.target.value)}
+			data-testid="command-input"
+		/>
+	),
+	CommandList: ({ children }: any) => <div data-testid="command-list">{children}</div>,
+	CommandEmpty: ({ children }: any) => <div data-testid="command-empty">{children}</div>,
+	CommandGroup: ({ children }: any) => <div data-testid="command-group">{children}</div>,
+	CommandItem: ({ children, value, onSelect }: any) => (
+		<div data-testid={`command-item-${value}`} onClick={() => onSelect?.(value)}>
+			{children}
+		</div>
+	),
 	AlertDialog: ({ children, open }: any) => (
 		<div data-testid="alert-dialog" data-open={open}>
 			{children}

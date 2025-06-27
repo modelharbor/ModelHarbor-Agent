@@ -54,9 +54,7 @@ const WelcomeView = () => {
 					</p>
 				</div>
 				<p>
-					<VSCodeLink href="https://www.modelharbor.com">
-						You can obtain API key from ModelHarbor.com
-					</VSCodeLink>
+					<VSCodeLink href="https://www.modelharbor.com">{t("welcome:modelHarbor")}</VSCodeLink>
 				</p>
 
 				<div className="mb-4">

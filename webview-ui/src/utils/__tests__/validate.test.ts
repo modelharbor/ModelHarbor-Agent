@@ -3,6 +3,24 @@ import { RouterModels } from "@roo/api"
 
 import { getModelValidationError, validateApiConfigurationExcludingModelErrors } from "../validate"
 
+// Mock i18next
+vi.mock("i18next", () => ({
+	default: {
+		t: vi.fn((key: string, options?: any) => {
+			// Return the key for consistency in tests
+			if (options && typeof options === "object") {
+				// Handle interpolation for keys with variables
+				let result = key
+				Object.keys(options).forEach((param) => {
+					result = result.replace(`{{${param}}}`, options[param])
+				})
+				return result
+			}
+			return key
+		}),
+	},
+}))
+
 describe("Model Validation Functions", () => {
 	const mockRouterModels: RouterModels = {
 		openrouter: {
