@@ -56,11 +56,14 @@ vi.mock("@/components/ui", () => ({
 		</option>
 	),
 	SelectSeparator: ({ children }: any) => <div className="select-separator-mock">{children}</div>,
-	Button: ({ children, onClick, _variant, role, className }: any) => (
-		<button onClick={onClick} className={`button-mock ${className || ""}`} role={role}>
-			{children}
-		</button>
-	),
+	Button: (props: any) => {
+		const { children, onClick, _variant, role, className, ...rest } = props
+		return (
+			<button onClick={onClick} className={`button-mock ${className || ""}`} role={role} {...rest}>
+				{children}
+			</button>
+		)
+	},
 	StandardTooltip: ({ children, content }: any) => <div title={content}>{children}</div>,
 	// Add missing components used by ModelPicker
 	Command: ({ children }: any) => <div className="command-mock">{children}</div>,
@@ -484,5 +487,15 @@ describe("ApiOptions", () => {
 
 			expect(screen.queryByTestId("litellm-provider")).not.toBeInTheDocument()
 		})
+	})
+	it("renders only one ModelPicker for modelharbor provider", () => {
+		renderApiOptions({
+			apiConfiguration: {
+				apiProvider: "modelharbor",
+			},
+		})
+		// Should only see one ModelPicker trigger button
+		const modelPickerButtons = screen.getAllByTestId("model-picker-button")
+		expect(modelPickerButtons).toHaveLength(1)
 	})
 })
