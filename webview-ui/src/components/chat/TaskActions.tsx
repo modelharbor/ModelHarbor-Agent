@@ -28,12 +28,14 @@ export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 				disabled={buttonsDisabled}
 				onClick={() => vscode.postMessage({ type: "exportCurrentTask" })}
 			/>
-			<IconButton
-				iconClass="codicon-folder-opened"
-				title={t("chat:task.openFolder")}
-				disabled={buttonsDisabled}
-				onClick={() => vscode.postMessage({ type: "openChatFolder" })}
-			/>
+			{item?.id && (
+				<IconButton
+					iconClass="codicon-folder-opened"
+					title={t("chat:task.openFolder")}
+					disabled={buttonsDisabled}
+					onClick={() => vscode.postMessage({ type: "openChatFolder" })}
+				/>
+			)}
 			{!!item?.size && item.size > 0 && (
 				<>
 					<div className="flex items-center">

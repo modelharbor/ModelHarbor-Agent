@@ -154,7 +154,7 @@ describe("ShareService", () => {
 			;(vscode.Uri.file as any).mockReturnValue(mockUri)
 			;(vscode.env.openExternal as any).mockResolvedValue(undefined)
 
-			const result = await shareService.shareTask("task-123", "organization", "/workspace")
+			const result = await shareService.shareTask("task-123", "/workspace")
 
 			expect(result.success).toBe(true)
 			expect(fs.existsSync).toHaveBeenCalledWith("/workspace/.roo/tasks/task-123")
@@ -162,7 +162,7 @@ describe("ShareService", () => {
 		})
 
 		it("should return error when workspace path is not provided", async () => {
-			const result = await shareService.shareTask("task-123", "organization")
+			const result = await shareService.shareTask("task-123")
 
 			expect(result.success).toBe(false)
 			expect(result.error).toBe("No active task")
