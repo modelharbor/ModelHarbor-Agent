@@ -31,15 +31,16 @@ export const MODELS_BY_PROVIDER: Partial<Record<ProviderName, Record<string, Mod
 	groq: groqModels,
 	chutes: chutesModels,
 }
+// PROVIDER LIST
 
 export const PROVIDERS = [
 	{ value: "modelharbor", label: "ModelHarbor" },
 	...[
 		{ value: "openrouter", label: "OpenRouter" },
 		{ value: "anthropic", label: "Anthropic" },
-		{ value: "claude-code", label: "Claude Code" },
+		// { value: "claude-code", label: "Claude Code" },
 		{ value: "gemini", label: "Google Gemini" },
-		{ value: "gemini-cli", label: "Gemini CLI" },
+		// { value: "gemini-cli", label: "Gemini CLI" },
 		{ value: "deepseek", label: "DeepSeek" },
 		{ value: "openai-native", label: "OpenAI" },
 		{ value: "openai", label: "OpenAI Compatible" },
