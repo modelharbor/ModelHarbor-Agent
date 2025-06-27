@@ -96,7 +96,7 @@
 	"scrollToBottom": "Gulir ke bawah chat",
 	"about": "Buat, refaktor, dan debug kode dengan bantuan AI.<br />Lihat <DocsLink>dokumentasi</DocsLink> kami untuk mempelajari lebih lanjut.",
 	"onboarding": "Daftar tugas di workspace ini kosong.",
-	"ModelHarborTips": {
+	"rooTips": {
 		"boomerangTasks": {
 			"title": "Orkestrasi Tugas",
 			"description": "Bagi tugas menjadi bagian-bagian kecil yang dapat dikelola"
