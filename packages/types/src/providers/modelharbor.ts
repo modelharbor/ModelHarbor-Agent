@@ -152,11 +152,18 @@ async function fetchModelHarborModels(): Promise<Record<string, ModelInfo>> {
 			credentials: "omit",
 		})
 
+		const headerObj: Record<string, string> = {}
+		if (response.headers) {
+			response.headers.forEach((value, key) => {
+				headerObj[key] = value
+			})
+		}
+
 		logToChannel("📡 Received response", {
 			status: response.status,
 			statusText: response.statusText,
 			ok: response.ok,
-			headers: Object.fromEntries(response.headers.entries()),
+			headers: headerObj,
 		})
 
 		if (!response.ok) {
