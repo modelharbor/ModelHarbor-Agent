@@ -12,5 +12,7 @@ if [ -z "$LATEST_VSIX" ]; then
   exit 1
 fi
 
+echo "Uninstalling extension"
+code --uninstall-extension modelharbor.modelharbor-agent
 echo "Installing extension: $LATEST_VSIX"
 code --install-extension "$LATEST_VSIX"
