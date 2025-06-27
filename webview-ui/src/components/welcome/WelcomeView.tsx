@@ -53,6 +53,11 @@ const WelcomeView = () => {
 						<Trans i18nKey="welcome:chooseProvider" />
 					</p>
 				</div>
+				<p>
+					<VSCodeLink href="https://www.modelharbor.com">
+						You can obtain API key from ModelHarbor.com
+					</VSCodeLink>
+				</p>
 
 				<div className="mb-4">
 					<h4 className="mt-3 mb-2 text-center">{t("welcome:startCustom")}</h4>

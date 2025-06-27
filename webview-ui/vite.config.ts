@@ -88,6 +88,7 @@ export default defineConfig(({ mode }) => {
 				"@": resolve(__dirname, "./src"),
 				"@src": resolve(__dirname, "./src"),
 				"@roo": resolve(__dirname, "../src/shared"),
+				i18next: resolve(__dirname, "../node_modules/i18next/dist/cjs/i18next.js"),
 			},
 		},
 		build: {
