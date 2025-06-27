@@ -10,6 +10,7 @@
 		"contextWindow": "Lunghezza del contesto:",
 		"closeAndStart": "Chiudi attività e iniziane una nuova",
 		"export": "Esporta cronologia attività",
+		"openFolder": "Apri cartella chat",
 		"delete": "Elimina attività (Shift + Clic per saltare la conferma)",
 		"condenseContext": "Condensa contesto in modo intelligente",
 		"share": "Condividi attività",
@@ -21,7 +22,8 @@
 		"connectToCloudDescription": "Accedi a ModelHarbor Agent Cloud per condividere attività",
 		"sharingDisabledByOrganization": "Condivisione disabilitata dall'organizzazione",
 		"shareSuccessOrganization": "Link organizzazione copiato negli appunti",
-		"shareSuccessPublic": "Link pubblico copiato negli appunti"
+		"shareSuccessPublic": "Link pubblico copiato negli appunti",
+		"openInExplorer": "Apri in Windows Explorer/Finder"
 	},
 	"unpin": "Rilascia",
 	"pin": "Fissa",

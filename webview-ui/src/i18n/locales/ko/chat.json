@@ -10,6 +10,7 @@
 		"contextWindow": "컨텍스트 창:",
 		"closeAndStart": "작업 닫고 새 작업 시작",
 		"export": "작업 기록 내보내기",
+		"openFolder": "채팅 폴더 열기",
 		"delete": "작업 삭제 (Shift + 클릭으로 확인 생략)",
 		"condenseContext": "컨텍스트 지능적으로 압축",
 		"share": "작업 공유",
@@ -21,7 +22,8 @@
 		"connectToCloudDescription": "작업을 공유하려면 ModelHarbor Agent Cloud에 로그인하세요",
 		"sharingDisabledByOrganization": "조직에서 공유가 비활성화됨",
 		"shareSuccessOrganization": "조직 링크가 클립보드에 복사되었습니다",
-		"shareSuccessPublic": "공개 링크가 클립보드에 복사되었습니다"
+		"shareSuccessPublic": "공개 링크가 클립보드에 복사되었습니다",
+		"openInExplorer": "Windows Explorer/Finder에서 열기"
 	},
 	"unpin": "고정 해제하기",
 	"pin": "고정하기",

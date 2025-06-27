@@ -10,6 +10,7 @@
 		"contextWindow": "コンテキストウィンドウ:",
 		"closeAndStart": "タスクを閉じて新しいタスクを開始",
 		"export": "タスク履歴をエクスポート",
+		"openFolder": "チャットフォルダーを開く",
 		"delete": "タスクを削除（Shift + クリックで確認をスキップ）",
 		"condenseContext": "コンテキストをインテリジェントに圧縮",
 		"share": "タスクを共有",
@@ -21,7 +22,8 @@
 		"connectToCloudDescription": "タスクを共有するためにModelHarbor Agent Cloudにサインイン",
 		"sharingDisabledByOrganization": "組織により共有が無効化されています",
 		"shareSuccessOrganization": "組織リンクをクリップボードにコピーしました",
-		"shareSuccessPublic": "公開リンクをクリップボードにコピーしました"
+		"shareSuccessPublic": "公開リンクをクリップボードにコピーしました",
+		"openInExplorer": "Windows Explorer/Finderで開く"
 	},
 	"unpin": "ピン留めを解除",
 	"pin": "ピン留め",

@@ -10,6 +10,7 @@
 		"contextWindow": "Contextlengte:",
 		"closeAndStart": "Taak sluiten en een nieuwe starten",
 		"export": "Taakgeschiedenis exporteren",
+		"openFolder": "Chatmap openen",
 		"delete": "Taak verwijderen (Shift + Klik om bevestiging over te slaan)",
 		"condenseContext": "Context intelligent samenvatten",
 		"share": "Taak delen",
@@ -21,7 +22,8 @@
 		"connectToCloudDescription": "Meld je aan bij ModelHarbor Agent Cloud om taken te delen",
 		"sharingDisabledByOrganization": "Delen uitgeschakeld door organisatie",
 		"shareSuccessOrganization": "Organisatielink gekopieerd naar klembord",
-		"shareSuccessPublic": "Openbare link gekopieerd naar klembord"
+		"shareSuccessPublic": "Openbare link gekopieerd naar klembord",
+		"openInExplorer": "Openen in Windows Explorer/Finder"
 	},
 	"unpin": "Losmaken",
 	"pin": "Vastmaken",

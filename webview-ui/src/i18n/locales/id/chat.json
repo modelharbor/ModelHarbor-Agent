@@ -21,7 +21,8 @@
 		"connectToCloudDescription": "Masuk ke ModelHarbor Agent Cloud untuk berbagi tugas",
 		"sharingDisabledByOrganization": "Berbagi dinonaktifkan oleh organisasi",
 		"shareSuccessOrganization": "Tautan organisasi disalin ke clipboard",
-		"shareSuccessPublic": "Tautan publik disalin ke clipboard"
+		"shareSuccessPublic": "Tautan publik disalin ke clipboard",
+		"openInExplorer": "Buka di Windows Explorer/Finder"
 	},
 	"history": {
 		"title": "Riwayat"

@@ -21,7 +21,8 @@
 		"connectToCloudDescription": "Görevleri paylaşmak için ModelHarbor Agent Cloud'a giriş yap",
 		"sharingDisabledByOrganization": "Paylaşım kuruluş tarafından devre dışı bırakıldı",
 		"shareSuccessOrganization": "Organizasyon bağlantısı panoya kopyalandı",
-		"shareSuccessPublic": "Genel bağlantı panoya kopyalandı"
+		"shareSuccessPublic": "Genel bağlantı panoya kopyalandı",
+		"openInExplorer": "Windows Explorer/Finder'da Aç"
 	},
 	"unpin": "Sabitlemeyi iptal et",
 	"pin": "Sabitle",

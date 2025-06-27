@@ -10,6 +10,7 @@
 		"contextWindow": "上下文長度：",
 		"closeAndStart": "關閉現有工作並開始一項新的工作",
 		"export": "匯出工作紀錄",
+		"openFolder": "開啟聊天資料夾",
 		"delete": "刪除工作（按住 Shift 並點選可跳過確認）",
 		"condenseContext": "智慧壓縮上下文",
 		"share": "分享工作",

@@ -2,6 +2,8 @@
 
 import type { MockedFunction } from "vitest"
 import * as vscode from "vscode"
+import * as fs from "fs"
+import * as path from "path"
 
 import { ShareService, TaskNotFoundError } from "../ShareService"
 import type { AuthService } from "../AuthService"
@@ -10,6 +12,16 @@ import type { SettingsService } from "../SettingsService"
 // Mock fetch
 const mockFetch = vi.fn()
 global.fetch = mockFetch as any
+
+// Mock fs
+vi.mock("fs", () => ({
+	existsSync: vi.fn(),
+}))
+
+// Mock path
+vi.mock("path", () => ({
+	join: vi.fn(),
+}))
 
 // Mock vscode
 vi.mock("vscode", () => ({
@@ -26,6 +38,7 @@ vi.mock("vscode", () => ({
 	},
 	Uri: {
 		parse: vi.fn(),
+		file: vi.fn(),
 	},
 	extensions: {
 		getExtension: vi.fn(() => ({
@@ -68,165 +81,91 @@ describe("ShareService", () => {
 		shareService = new ShareService(mockAuthService, mockSettingsService, mockLog)
 	})
 
+	describe("openChatFolder", () => {
+		it("should open chat folder when task folder exists", async () => {
+			// Mock the task folder exists
+			;(fs.existsSync as any).mockReturnValue(true)
+			;(path.join as any).mockReturnValue("/workspace/.roo/tasks/task-123")
+			const mockUri = { fsPath: "/workspace/.roo/tasks/task-123" }
+			;(vscode.Uri.file as any).mockReturnValue(mockUri)
+			;(vscode.env.openExternal as any).mockResolvedValue(undefined)
+
+			const result = await shareService.openChatFolder("task-123", "/workspace")
+
+			expect(result.success).toBe(true)
+			expect(fs.existsSync).toHaveBeenCalledWith("/workspace/.roo/tasks/task-123")
+			expect(vscode.env.openExternal).toHaveBeenCalledWith(mockUri)
+		})
+
+		it("should return error when task folder does not exist", async () => {
+			// Mock the task folder does not exist
+			;(fs.existsSync as any).mockReturnValue(false)
+			;(path.join as any).mockReturnValue("/workspace/.roo/tasks/task-123")
+
+			const result = await shareService.openChatFolder("task-123", "/workspace")
+
+			expect(result.success).toBe(false)
+			expect(result.error).toBe("Task folder not found")
+			expect(fs.existsSync).toHaveBeenCalledWith("/workspace/.roo/tasks/task-123")
+			expect(vscode.env.openExternal).not.toHaveBeenCalled()
+		})
+
+		it("should return error when workspace path is not provided", async () => {
+			const result = await shareService.openChatFolder("task-123", "")
+
+			expect(result.success).toBe(false)
+			expect(result.error).toBe("No active task")
+			expect(fs.existsSync).not.toHaveBeenCalled()
+			expect(vscode.env.openExternal).not.toHaveBeenCalled()
+		})
+
+		it("should return error when task ID is not provided", async () => {
+			const result = await shareService.openChatFolder("", "/workspace")
+
+			expect(result.success).toBe(false)
+			expect(result.error).toBe("No active task")
+			expect(fs.existsSync).not.toHaveBeenCalled()
+			expect(vscode.env.openExternal).not.toHaveBeenCalled()
+		})
+
+		it("should handle errors when opening external folder", async () => {
+			// Mock the task folder exists
+			;(fs.existsSync as any).mockReturnValue(true)
+			;(path.join as any).mockReturnValue("/workspace/.roo/tasks/task-123")
+			const mockUri = { fsPath: "/workspace/.roo/tasks/task-123" }
+			;(vscode.Uri.file as any).mockReturnValue(mockUri)
+			;(vscode.env.openExternal as any).mockRejectedValue(new Error("Failed to open"))
+
+			const result = await shareService.openChatFolder("task-123", "/workspace")
+
+			expect(result.success).toBe(false)
+			expect(result.error).toBe("Failed to open chat folder")
+			expect(fs.existsSync).toHaveBeenCalledWith("/workspace/.roo/tasks/task-123")
+			expect(vscode.env.openExternal).toHaveBeenCalledWith(mockUri)
+		})
+	})
+
 	describe("shareTask", () => {
-		it("should share task with organization visibility and copy to clipboard", async () => {
-			const mockResponseData = {
-				success: true,
-				shareUrl: "https://app.roocode.com/share/abc123",
-			}
+		it("should delegate to openChatFolder", async () => {
+			// Mock the task folder exists
+			;(fs.existsSync as any).mockReturnValue(true)
+			;(path.join as any).mockReturnValue("/workspace/.roo/tasks/task-123")
+			const mockUri = { fsPath: "/workspace/.roo/tasks/task-123" }
+			;(vscode.Uri.file as any).mockReturnValue(mockUri)
+			;(vscode.env.openExternal as any).mockResolvedValue(undefined)
 
-			;(mockAuthService.getSessionToken as any).mockReturnValue("session-token")
-			mockFetch.mockResolvedValue({
-				ok: true,
-				json: vi.fn().mockResolvedValue(mockResponseData),
-			})
-
-			const result = await shareService.shareTask("task-123", "organization")
+			const result = await shareService.shareTask("task-123", "organization", "/workspace")
 
 			expect(result.success).toBe(true)
-			expect(result.shareUrl).toBe("https://app.roocode.com/share/abc123")
-			expect(mockFetch).toHaveBeenCalledWith("https://app.roocode.com/api/extension/share", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: "Bearer session-token",
-					"User-Agent": "Roo-Code 1.0.0",
-				},
-				body: JSON.stringify({ taskId: "task-123", visibility: "organization" }),
-				signal: expect.any(AbortSignal),
-			})
-			expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith("https://app.roocode.com/share/abc123")
+			expect(fs.existsSync).toHaveBeenCalledWith("/workspace/.roo/tasks/task-123")
+			expect(vscode.env.openExternal).toHaveBeenCalledWith(mockUri)
 		})
 
-		it("should share task with public visibility", async () => {
-			const mockResponseData = {
-				success: true,
-				shareUrl: "https://app.roocode.com/share/abc123",
-			}
-
-			;(mockAuthService.getSessionToken as any).mockReturnValue("session-token")
-			mockFetch.mockResolvedValue({
-				ok: true,
-				json: vi.fn().mockResolvedValue(mockResponseData),
-			})
-
-			const result = await shareService.shareTask("task-123", "public")
-
-			expect(result.success).toBe(true)
-			expect(mockFetch).toHaveBeenCalledWith("https://app.roocode.com/api/extension/share", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: "Bearer session-token",
-					"User-Agent": "Roo-Code 1.0.0",
-				},
-				body: JSON.stringify({ taskId: "task-123", visibility: "public" }),
-				signal: expect.any(AbortSignal),
-			})
-		})
-
-		it("should default to organization visibility when not specified", async () => {
-			const mockResponseData = {
-				success: true,
-				shareUrl: "https://app.roocode.com/share/abc123",
-			}
-
-			;(mockAuthService.getSessionToken as any).mockReturnValue("session-token")
-			mockFetch.mockResolvedValue({
-				ok: true,
-				json: vi.fn().mockResolvedValue(mockResponseData),
-			})
-
-			const result = await shareService.shareTask("task-123")
-
-			expect(result.success).toBe(true)
-			expect(mockFetch).toHaveBeenCalledWith("https://app.roocode.com/api/extension/share", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: "Bearer session-token",
-					"User-Agent": "Roo-Code 1.0.0",
-				},
-				body: JSON.stringify({ taskId: "task-123", visibility: "organization" }),
-				signal: expect.any(AbortSignal),
-			})
-		})
-
-		it("should handle API error response", async () => {
-			const mockResponseData = {
-				success: false,
-				error: "Task not found",
-			}
-
-			;(mockAuthService.getSessionToken as any).mockReturnValue("session-token")
-			mockFetch.mockResolvedValue({
-				ok: true,
-				json: vi.fn().mockResolvedValue(mockResponseData),
-			})
-
+		it("should return error when workspace path is not provided", async () => {
 			const result = await shareService.shareTask("task-123", "organization")
 
 			expect(result.success).toBe(false)
-			expect(result.error).toBe("Task not found")
-		})
-
-		it("should handle authentication errors", async () => {
-			;(mockAuthService.getSessionToken as any).mockReturnValue(null)
-
-			await expect(shareService.shareTask("task-123", "organization")).rejects.toThrow("Authentication required")
-		})
-
-		it("should handle unexpected errors", async () => {
-			;(mockAuthService.getSessionToken as any).mockReturnValue("session-token")
-			mockFetch.mockRejectedValue(new Error("Network error"))
-
-			await expect(shareService.shareTask("task-123", "organization")).rejects.toThrow("Network error")
-		})
-
-		it("should throw TaskNotFoundError for 404 responses", async () => {
-			;(mockAuthService.getSessionToken as any).mockReturnValue("session-token")
-			mockFetch.mockResolvedValue({
-				ok: false,
-				status: 404,
-				statusText: "Not Found",
-			})
-
-			await expect(shareService.shareTask("task-123", "organization")).rejects.toThrow(TaskNotFoundError)
-			await expect(shareService.shareTask("task-123", "organization")).rejects.toThrow(
-				"Task 'task-123' not found",
-			)
-		})
-
-		it("should throw generic Error for non-404 HTTP errors", async () => {
-			;(mockAuthService.getSessionToken as any).mockReturnValue("session-token")
-			mockFetch.mockResolvedValue({
-				ok: false,
-				status: 500,
-				statusText: "Internal Server Error",
-			})
-
-			await expect(shareService.shareTask("task-123", "organization")).rejects.toThrow(
-				"HTTP 500: Internal Server Error",
-			)
-			await expect(shareService.shareTask("task-123", "organization")).rejects.not.toThrow(TaskNotFoundError)
-		})
-
-		it("should create TaskNotFoundError with correct properties", async () => {
-			;(mockAuthService.getSessionToken as any).mockReturnValue("session-token")
-			mockFetch.mockResolvedValue({
-				ok: false,
-				status: 404,
-				statusText: "Not Found",
-			})
-
-			try {
-				await shareService.shareTask("task-123", "organization")
-				expect.fail("Expected TaskNotFoundError to be thrown")
-			} catch (error) {
-				expect(error).toBeInstanceOf(TaskNotFoundError)
-				expect(error).toBeInstanceOf(Error)
-				expect((error as TaskNotFoundError).message).toBe("Task 'task-123' not found")
-			}
+			expect(result.error).toBe("No active task")
 		})
 	})
 

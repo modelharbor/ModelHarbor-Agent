@@ -21,7 +21,8 @@
 		"connectToCloudDescription": "Войди в ModelHarbor Agent Cloud, чтобы делиться задачами",
 		"sharingDisabledByOrganization": "Обмен отключен организацией",
 		"shareSuccessOrganization": "Ссылка организации скопирована в буфер обмена",
-		"shareSuccessPublic": "Публичная ссылка скопирована в буфер обмена"
+		"shareSuccessPublic": "Публичная ссылка скопирована в буфер обмена",
+		"openInExplorer": "Открыть в Windows Explorer/Finder"
 	},
 	"unpin": "Открепить",
 	"pin": "Закрепить",

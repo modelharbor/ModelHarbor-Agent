@@ -10,6 +10,7 @@
 		"contextWindow": "Kontextfenster:",
 		"closeAndStart": "Aufgabe schließen und neue starten",
 		"export": "Aufgabenverlauf exportieren",
+		"openFolder": "Chat-Ordner öffnen",
 		"delete": "Aufgabe löschen (Shift + Klick zum Überspringen der Bestätigung)",
 		"share": "Aufgabe teilen",
 		"condenseContext": "Kontext intelligent komprimieren",
