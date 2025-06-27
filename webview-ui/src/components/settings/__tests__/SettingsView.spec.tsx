@@ -134,12 +134,12 @@ vi.mock("@/components/ui", () => ({
 	),
 	SelectTrigger: ({ children }: any) => <div data-testid="select-trigger">{children}</div>,
 	SelectValue: ({ placeholder }: any) => <div data-testid="select-value">{placeholder}</div>,
-	Popover: ({ children, open, onOpenChange }: any) => (
+	Popover: ({ children, open, _ }: any) => (
 		<div data-testid="popover" data-open={open}>
 			{children}
 		</div>
 	),
-	PopoverTrigger: ({ children, asChild }: any) => <div data-testid="popover-trigger">{children}</div>,
+	PopoverTrigger: ({ children, _ }: any) => <div data-testid="popover-trigger">{children}</div>,
 	PopoverContent: ({ children }: any) => <div data-testid="popover-content">{children}</div>,
 	Command: ({ children }: any) => <div data-testid="command">{children}</div>,
 	CommandInput: ({ placeholder, value, onValueChange }: any) => (
