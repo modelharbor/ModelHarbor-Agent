@@ -10,6 +10,7 @@
 		"contextWindow": "Durée du contexte :",
 		"closeAndStart": "Fermer la tâche et en commencer une nouvelle",
 		"export": "Exporter l'historique des tâches",
+		"openFolder": "Ouvrir le dossier de chat",
 		"delete": "Supprimer la tâche (Shift + Clic pour ignorer la confirmation)",
 		"condenseContext": "Condenser intelligemment le contexte",
 		"share": "Partager la tâche",

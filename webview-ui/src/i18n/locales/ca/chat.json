@@ -10,6 +10,7 @@
 		"contextWindow": "Finestra de context:",
 		"closeAndStart": "Tancar tasca i iniciar-ne una de nova",
 		"export": "Exportar historial de tasques",
+		"openFolder": "Obrir carpeta de xat",
 		"delete": "Eliminar tasca (Shift + Clic per ometre confirmació)",
 		"condenseContext": "Condensar context de forma intel·ligent",
 		"share": "Compartir tasca",

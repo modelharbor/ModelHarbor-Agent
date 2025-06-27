@@ -10,6 +10,7 @@
 		"contextWindow": "संदर्भ लंबाई:",
 		"closeAndStart": "कार्य बंद करें और नया शुरू करें",
 		"export": "कार्य इतिहास निर्यात करें",
+		"openFolder": "चैट फ़ोल्डर खोलें",
 		"delete": "कार्य हटाएं (पुष्टि को छोड़ने के लिए Shift + क्लिक)",
 		"condenseContext": "संदर्भ को बुद्धिमानी से संघनित करें",
 		"share": "कार्य साझा करें",
@@ -21,7 +22,8 @@
 		"connectToCloudDescription": "कार्य साझा करने के लिए ModelHarbor Agent Cloud में साइन इन करें",
 		"sharingDisabledByOrganization": "संगठन द्वारा साझाकरण अक्षम किया गया",
 		"shareSuccessOrganization": "संगठन लिंक क्लिपबोर्ड में कॉपी किया गया",
-		"shareSuccessPublic": "सार्वजनिक लिंक क्लिपबोर्ड में कॉपी किया गया"
+		"shareSuccessPublic": "सार्वजनिक लिंक क्लिपबोर्ड में कॉपी किया गया",
+		"openInExplorer": "Windows Explorer/Finder में खोलें"
 	},
 	"unpin": "पिन करें",
 	"pin": "अवपिन करें",

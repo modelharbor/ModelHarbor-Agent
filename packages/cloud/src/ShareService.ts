@@ -1,4 +1,6 @@
 import * as vscode from "vscode"
+import * as fs from "fs"
+import * as path from "path"
 
 import { shareResponseSchema } from "@roo-code/types"
 import { getRooCodeApiUrl } from "./Config"
@@ -27,47 +29,47 @@ export class ShareService {
 	}
 
 	/**
-	 * Share a task with specified visibility
-	 * Returns the share response data
+	 * Open the chat folder for a task in the system's file explorer
 	 */
-	async shareTask(taskId: string, visibility: ShareVisibility = "organization") {
+	async openChatFolder(taskId: string, workspacePath: string): Promise<{ success: boolean; error?: string }> {
 		try {
-			const sessionToken = this.authService.getSessionToken()
-			if (!sessionToken) {
-				throw new Error("Authentication required")
+			if (!taskId || !workspacePath) {
+				return { success: false, error: "No active task" }
 			}
 
-			const response = await fetch(`${getRooCodeApiUrl()}/api/extension/share`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${sessionToken}`,
-					"User-Agent": getUserAgent(),
-				},
-				body: JSON.stringify({ taskId, visibility }),
-				signal: AbortSignal.timeout(10000),
-			})
+			const taskFolder = path.join(workspacePath, ".roo", "tasks", taskId)
 
-			if (!response.ok) {
-				if (response.status === 404) {
-					throw new TaskNotFoundError(taskId)
-				}
-				throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+			if (!fs.existsSync(taskFolder)) {
+				return { success: false, error: "Task folder not found" }
 			}
 
-			const data = shareResponseSchema.parse(await response.json())
-			this.log("[share] Share link created successfully:", data)
+			// Open the folder in the system's file explorer
+			await vscode.env.openExternal(vscode.Uri.file(taskFolder))
 
-			if (data.success && data.shareUrl) {
-				// Copy to clipboard
-				await vscode.env.clipboard.writeText(data.shareUrl)
-			}
-
-			return data
+			return { success: true }
 		} catch (error) {
-			this.log("[share] Error sharing task:", error)
-			throw error
+			this.log("[share] Error opening chat folder:", error)
+			return { success: false, error: "Failed to open chat folder" }
 		}
+	}
+
+	/**
+	 * Share a task by opening its chat folder
+	 * @deprecated Use openChatFolder directly
+	 */
+	async shareTask(
+		taskId: string,
+		visibility: ShareVisibility = "organization",
+		workspacePath?: string,
+	): Promise<{ success: boolean; error?: string; shareUrl?: string }> {
+		if (workspacePath) {
+			// Use the new folder opening approach
+			const result = await this.openChatFolder(taskId, workspacePath)
+			return result
+		}
+
+		// Return error if no workspace path is provided
+		return { success: false, error: "No active task" }
 	}
 
 	/**
