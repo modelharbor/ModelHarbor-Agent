@@ -90,7 +90,7 @@
 	"scrollToBottom": "Scroll to bottom of chat",
 	"about": "Generate, refactor, and debug code with AI assistance. Check out our <DocsLink>documentation</DocsLink> to learn more.",
 	"onboarding": "Your task list in this workspace is empty.",
-	"ModelHarborTips": {
+	"rooTips": {
 		"boomerangTasks": {
 			"title": "Task Orchestration",
 			"description": "Split tasks into smaller, manageable parts"
