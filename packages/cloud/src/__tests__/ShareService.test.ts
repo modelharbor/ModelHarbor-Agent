@@ -5,7 +5,7 @@ import * as vscode from "vscode"
 import * as fs from "fs"
 import * as path from "path"
 
-import { ShareService, TaskNotFoundError } from "../ShareService"
+import { ShareService } from "../ShareService"
 import type { AuthService } from "../AuthService"
 import type { SettingsService } from "../SettingsService"
 

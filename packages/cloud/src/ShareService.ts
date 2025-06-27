@@ -2,11 +2,11 @@ import * as vscode from "vscode"
 import * as fs from "fs"
 import * as path from "path"
 
-import { shareResponseSchema } from "@roo-code/types"
-import { getRooCodeApiUrl } from "./Config"
+// import { shareResponseSchema } from "@roo-code/types"
+// import { getRooCodeApiUrl } from "./Config"
 import type { AuthService } from "./AuthService"
 import type { SettingsService } from "./SettingsService"
-import { getUserAgent } from "./utils"
+// import { getUserAgent } from "./utils"
 
 export type ShareVisibility = "organization" | "public"
 
@@ -59,7 +59,7 @@ export class ShareService {
 	 */
 	async shareTask(
 		taskId: string,
-		visibility: ShareVisibility = "organization",
+		// visibility: ShareVisibility = "organization",
 		workspacePath?: string,
 	): Promise<{ success: boolean; error?: string; shareUrl?: string }> {
 		if (workspacePath) {
