@@ -15,6 +15,7 @@
 	"chooseProvider": "Um seine Magie zu entfalten, benötigt ModelHarbor einen API-Schlüssel.",
 	"startRouter": "Wir empfehlen die Verwendung eines LLM-Routers:",
 	"startCustom": "Oder du kannst deinen eigenen API-Schlüssel verwenden:",
+	"modelHarbor": "Du kannst einen API-Schlüssel auf ModelHarbor.com erhalten.",
 	"telemetry": {
 		"title": "Hilf, ModelHarbor Agent zu verbessern",
 		"anonymousTelemetry": "Sende anonyme Fehler- und Nutzungsdaten, um uns bei der Fehlerbehebung und Verbesserung der Erweiterung zu helfen. Es werden niemals Code, Texte oder persönliche Informationen gesendet.",

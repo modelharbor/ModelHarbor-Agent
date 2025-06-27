@@ -15,6 +15,7 @@
 	"chooseProvider": "Sihirini yapabilmesi için ModelHarbor'nun bir API anahtarına ihtiyacı var.",
 	"startRouter": "Bir LLM yönlendiricisi kullanmanı öneririz:",
 	"startCustom": "Veya kendi API anahtarını kullanabilirsin:",
+	"modelHarbor": "API anahtarını ModelHarbor.com'dan alabilirsin",
 	"telemetry": {
 		"title": "ModelHarbor Agent'u Geliştirmeye Yardım Et",
 		"anonymousTelemetry": "Hataları düzeltmemize ve eklentiyi geliştirmemize yardımcı olmak için anonim hata ve kullanım verileri gönder. Hiçbir zaman kod, metin veya kişisel bilgi gönderilmez.",
