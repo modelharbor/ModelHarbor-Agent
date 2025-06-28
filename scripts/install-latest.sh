@@ -3,6 +3,7 @@
 
 set -e
 pnpm build
+pnpm lint
 pnpm vsix
 # Find the latest .vsix file by version
 LATEST_VSIX=$(ls bin/modelharbor-agent-*.vsix 2>/dev/null | sort -V | tail -n 1)
