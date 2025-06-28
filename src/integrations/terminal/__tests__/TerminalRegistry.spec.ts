@@ -180,16 +180,16 @@ describe("TerminalRegistry", () => {
 			consoleSpy.mockRestore()
 		})
 
-		it("handles shell execution from non-Roo terminals gracefully", () => {
-			// Create a mock terminal that's NOT in the Roo registry
-			const mockNonRooTerminal = {
+		it("handles shell execution from non-ModelHarbor terminals gracefully", () => {
+			// Create a mock terminal that's NOT in the ModelHarbor registry
+			const mockNonModelHarborTerminal = {
 				name: "User Terminal",
 				exitStatus: undefined,
 			}
 
 			// Create a mock shell execution start event
 			const mockStartEvent = {
-				terminal: mockNonRooTerminal,
+				terminal: mockNonModelHarborTerminal,
 				execution: {
 					commandLine: { value: "ls -la" },
 					read: () =>
@@ -202,14 +202,14 @@ describe("TerminalRegistry", () => {
 			// Get the event handlers from the mock
 			const eventHandlers = (vscode as any).__eventHandlers
 
-			// Simulate shell execution start from non-Roo terminal
+			// Simulate shell execution start from non-ModelHarbor terminal
 			if (eventHandlers.startTerminalShellExecution) {
 				eventHandlers.startTerminalShellExecution(mockStartEvent)
 			}
 
 			// Should log debug message instead of error
 			expect(consoleSpy).toHaveBeenCalledWith(
-				"[onDidStartTerminalShellExecution] Shell execution started from non-Roo terminal (this is normal):",
+				"[onDidStartTerminalShellExecution] Shell execution started from non-ModelHarbor terminal (this is normal):",
 				{
 					terminalName: "User Terminal",
 					command: "ls -la",
@@ -217,16 +217,16 @@ describe("TerminalRegistry", () => {
 			)
 		})
 
-		it("handles shell execution end from non-Roo terminals gracefully", () => {
-			// Create a mock terminal that's NOT in the Roo registry
-			const mockNonRooTerminal = {
+		it("handles shell execution end from non-ModelHarbor terminals gracefully", () => {
+			// Create a mock terminal that's NOT in the ModelHarbor registry
+			const mockNonModelHarborTerminal = {
 				name: "User Terminal",
 				exitStatus: undefined,
 			}
 
 			// Create a mock shell execution end event
 			const mockEndEvent = {
-				terminal: mockNonRooTerminal,
+				terminal: mockNonModelHarborTerminal,
 				execution: {
 					commandLine: { value: "ls -la" },
 				},
@@ -236,14 +236,14 @@ describe("TerminalRegistry", () => {
 			// Get the event handlers from the mock
 			const eventHandlers = (vscode as any).__eventHandlers
 
-			// Simulate shell execution end from non-Roo terminal
+			// Simulate shell execution end from non-ModelHarbor terminal
 			if (eventHandlers.endTerminalShellExecution) {
 				eventHandlers.endTerminalShellExecution(mockEndEvent)
 			}
 
 			// Should log debug message instead of error
 			expect(consoleSpy).toHaveBeenCalledWith(
-				"[onDidEndTerminalShellExecution] Shell execution ended from non-Roo terminal (this is normal):",
+				"[onDidEndTerminalShellExecution] Shell execution ended from non-ModelHarbor terminal (this is normal):",
 				{
 					terminalName: "User Terminal",
 					command: "ls -la",

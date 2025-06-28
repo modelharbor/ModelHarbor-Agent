@@ -63,7 +63,7 @@ export class TerminalRegistry {
 					} else {
 						// This is expected behavior when users create their own terminals
 						console.debug(
-							"[onDidStartTerminalShellExecution] Shell execution started from non-Roo terminal (this is normal):",
+							"[onDidStartTerminalShellExecution] Shell execution started from non-ModelHarbor terminal (this is normal):",
 							{
 								terminalName: e.terminal.name,
 								command: e.execution?.commandLine?.value,
@@ -92,7 +92,7 @@ export class TerminalRegistry {
 					if (!terminal) {
 						// This is expected behavior when users create their own terminals
 						console.debug(
-							"[onDidEndTerminalShellExecution] Shell execution ended from non-Roo terminal (this is normal):",
+							"[onDidEndTerminalShellExecution] Shell execution ended from non-ModelHarbor terminal (this is normal):",
 							{
 								terminalName: e.terminal.name,
 								command: e.execution?.commandLine?.value,
