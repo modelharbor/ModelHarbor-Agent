@@ -86,6 +86,10 @@
 			"outsideWorkspace": {
 				"label": "Include files outside workspace",
 				"description": "Allow ModelHarbor to create and edit files outside the current workspace without requiring approval."
+			},
+			"protected": {
+				"label": "Include protected files",
+				"description": "Allow Roo to create and edit protected files (like .rooignore and .roo/ configuration files) without requiring approval."
 			}
 		},
 		"browser": {
@@ -403,9 +407,9 @@
 			"label": "Workspace files context limit",
 			"description": "Maximum number of files to include in current working directory details. Higher values provide more context but increase token usage."
 		},
-		"ModelHarborignore": {
-			"label": "Show .ModelHarborignore'd files in lists and searches",
-			"description": "When enabled, files matching patterns in .ModelHarborignore will be shown in lists with a lock symbol. When disabled, these files will be completely hidden from file lists and searches."
+		"rooIgnore": {
+			"label": "Show .rooIgnore'd files in lists and searches",
+			"description": "When enabled, files matching patterns in .rooIgnore will be shown in lists with a lock symbol. When disabled, these files will be completely hidden from file lists and searches."
 		},
 		"maxConcurrentFileReads": {
 			"label": "Concurrent file reads limit",
