@@ -1,10 +1,10 @@
 {
-	"extension.displayName": "ModelHarbor Agent",
+	"extension.displayName": "Roo Code (voorheen Roo Cline)",
 	"extension.description": "Een compleet ontwikkelteam van AI-agents in je editor.",
-	"views.contextMenu.label": "ModelHarbor Agent",
-	"views.terminalMenu.label": "ModelHarbor Agent",
-	"views.activitybar.title": "ModelHarbor Agent",
-	"views.sidebar.name": "ModelHarbor Agent",
+	"views.contextMenu.label": "Roo Code",
+	"views.terminalMenu.label": "Roo Code",
+	"views.activitybar.title": "Roo Code",
+	"views.sidebar.name": "Roo Code",
 	"command.newTask.title": "Nieuwe Taak",
 	"command.mcpServers.title": "MCP Servers",
 	"command.prompts.title": "Modi",
@@ -25,11 +25,12 @@
 	"command.terminal.fixCommand.title": "Repareer Dit Commando",
 	"command.terminal.explainCommand.title": "Leg Dit Commando Uit",
 	"command.acceptInput.title": "Invoer/Suggestie Accepteren",
-	"configuration.title": "ModelHarbor Agent",
+	"configuration.title": "Roo Code",
 	"commands.allowedCommands.description": "Commando's die automatisch kunnen worden uitgevoerd wanneer 'Altijd goedkeuren uitvoerbewerkingen' is ingeschakeld",
 	"settings.vsCodeLmModelSelector.description": "Instellingen voor VSCode Language Model API",
 	"settings.vsCodeLmModelSelector.vendor.description": "De leverancier van het taalmodel (bijv. copilot)",
 	"settings.vsCodeLmModelSelector.family.description": "De familie van het taalmodel (bijv. gpt-4)",
 	"settings.customStoragePath.description": "Aangepast opslagpad. Laat leeg om de standaardlocatie te gebruiken. Ondersteunt absolute paden (bijv. 'D:\\RooCodeStorage')",
-	"settings.enableCodeActions.description": "Snelle correcties van ModelHarbor Agent inschakelen."
+	"settings.enableCodeActions.description": "Snelle correcties van Roo Code inschakelen.",
+	"settings.autoImportSettingsPath.description": "Pad naar een RooCode-configuratiebestand om automatisch te importeren bij het opstarten van de extensie. Ondersteunt absolute paden en paden ten opzichte van de thuismap (bijv. '~/Documents/roo-code-settings.json'). Laat leeg om automatisch importeren uit te schakelen."
 }
