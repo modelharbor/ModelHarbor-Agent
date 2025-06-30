@@ -13,6 +13,15 @@ vi.mock("vscode", () => ({
 	window: {
 		showErrorMessage: vi.fn(),
 	},
+	workspace: {
+		workspaceFolders: [
+			{
+				uri: {
+					fsPath: "/test/workspace",
+				},
+			},
+		],
+	},
 }))
 
 // Mock other dependencies
