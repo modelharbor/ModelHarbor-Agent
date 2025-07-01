@@ -206,9 +206,10 @@
 		"didViewDefinitionsOutsideWorkspace": "ModelHarbor melihat nama definisi source code yang digunakan di direktori ini (di luar workspace):"
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "ModelHarbor ingin mencari codebase untuk <code>{{query}}</code>:",
-		"wantsToSearchWithPath": "ModelHarbor ingin mencari codebase untuk <code>{{query}}</code> di <code>{{path}}</code>:",
-		"didSearch": "Ditemukan {{count}} hasil untuk <code>{{query}}</code>:"
+		"wantsToSearch": "Roo ingin mencari codebase untuk <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "Roo ingin mencari codebase untuk <code>{{query}}</code> di <code>{{path}}</code>:",
+		"didSearch": "Ditemukan {{count}} hasil untuk <code>{{query}}</code>:",
+		"resultTooltip": "Skor kemiripan: {{score}} (klik untuk membuka file)"
 	},
 	"commandOutput": "Output Perintah",
 	"response": "Respons",

@@ -191,9 +191,10 @@
 		"didSearch": "ModelHarbor searched this directory for <code>{{regex}}</code>:"
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "ModelHarbor wants to search the codebase for <code>{{query}}</code>:",
-		"wantsToSearchWithPath": "ModelHarbor wants to search the codebase for <code>{{query}}</code> in <code>{{path}}</code>:",
-		"didSearch": "Found {{count}} result(s) for <code>{{query}}</code>:"
+		"wantsToSearch": "Roo wants to search the codebase for <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "Roo wants to search the codebase for <code>{{query}}</code> in <code>{{path}}</code>:",
+		"didSearch": "Found {{count}} result(s) for <code>{{query}}</code>:",
+		"resultTooltip": "Similarity score: {{score}} (click to open file)"
 	},
 	"commandOutput": "Command Output",
 	"response": "Response",

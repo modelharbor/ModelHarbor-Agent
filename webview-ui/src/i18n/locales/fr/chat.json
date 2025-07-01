@@ -293,9 +293,10 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "ModelHarbor veut rechercher dans la base de code <code>{{query}}</code> :",
-		"wantsToSearchWithPath": "ModelHarbor veut rechercher dans la base de code <code>{{query}}</code> dans <code>{{path}}</code> :",
-		"didSearch": "{{count}} résultat(s) trouvé(s) pour <code>{{query}}</code> :"
+		"wantsToSearch": "Roo veut rechercher dans la base de code <code>{{query}}</code> :",
+		"wantsToSearchWithPath": "Roo veut rechercher dans la base de code <code>{{query}}</code> dans <code>{{path}}</code> :",
+		"didSearch": "{{count}} résultat(s) trouvé(s) pour <code>{{query}}</code> :",
+		"resultTooltip": "Score de similarité : {{score}} (cliquer pour ouvrir le fichier)"
 	},
 	"read-batch": {
 		"approve": {
