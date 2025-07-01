@@ -250,7 +250,9 @@
 		"seconds": "{{count}}s"
 	},
 	"followUpSuggest": {
-		"copyToInput": "Copy to input (same as shift + click)"
+		"copyToInput": "Copy to input (same as shift + click)",
+		"autoSelectCountdown": "Auto-selecting in {{count}}s",
+		"countdownDisplay": "{{count}}s"
 	},
 	"browser": {
 		"ModelHarborWantsToUse": "ModelHarbor wants to use the browser:",

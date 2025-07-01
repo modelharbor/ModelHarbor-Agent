@@ -235,7 +235,9 @@
 		"tokens": "tokens"
 	},
 	"followUpSuggest": {
-		"copyToInput": "Copiar a la entrada (o Shift + clic)"
+		"copyToInput": "Copiar a la entrada (o Shift + clic)",
+		"autoSelectCountdown": "Selección automática en {{count}}s",
+		"countdownDisplay": "{{count}}s"
 	},
 	"announcement": {
 		"title": "🎉 ModelHarbor Agent {{version}} publicado",

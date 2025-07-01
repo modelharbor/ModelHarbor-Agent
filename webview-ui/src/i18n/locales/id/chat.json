@@ -265,7 +265,9 @@
 		"seconds": "{{count}}d"
 	},
 	"followUpSuggest": {
-		"copyToInput": "Salin ke input (sama dengan shift + klik)"
+		"copyToInput": "Salin ke input (sama dengan shift + klik)",
+		"autoSelectCountdown": "Pemilihan otomatis dalam {{count}}dtk",
+		"countdownDisplay": "{{count}}dtk"
 	},
 	"browser": {
 		"ModelHarborWantsToUse": "ModelHarbor ingin menggunakan browser:",
