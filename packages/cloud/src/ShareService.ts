@@ -4,7 +4,7 @@ import * as path from "path"
 
 // import { shareResponseSchema } from "@roo-code/types"
 // import { getRooCodeApiUrl } from "./Config"
-import type { AuthService } from "./AuthService"
+import type { AuthService } from "./auth/AuthService"
 import type { SettingsService } from "./SettingsService"
 // import { getUserAgent } from "./utils"
 

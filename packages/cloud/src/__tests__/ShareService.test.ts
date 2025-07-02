@@ -6,7 +6,7 @@ import * as fs from "fs"
 import * as path from "path"
 
 import { ShareService } from "../ShareService"
-import type { AuthService } from "../AuthService"
+import type { AuthService } from "../auth/AuthService"
 import type { SettingsService } from "../SettingsService"
 
 // Mock fetch
