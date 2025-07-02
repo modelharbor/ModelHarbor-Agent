@@ -248,7 +248,7 @@
 		"feature2": "<bold>Gemini 2.5 모델</bold>: 새로운 Gemini 2.5 Pro, Flash, Flash Lite 모델 지원을 추가했습니다.",
 		"feature3": "<bold>Excel 파일 지원 및 기타</bold>: Excel (.xlsx) 파일 지원과 수많은 버그 수정 및 개선사항 추가!",
 		"hideButton": "공지 숨기기",
-		"detailsDiscussLinks": "<discordLink>Discord</discordLink>와 <redditLink>Reddit</redditLink>에서 더 자세한 정보를 확인하고 논의하세요 🚀"
+		"detailsDiscussLinks": "<discordLink>Discord</discordLink>와 <redditLink>Reddit</redditLink>에서 자세한 내용을 확인하고 토론에 참여하세요 🚀"
 	},
 	"browser": {
 		"ModelHarborWantsToUse": "ModelHarbor가 브라우저를 사용하고 싶어합니다:",
