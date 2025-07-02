@@ -172,10 +172,10 @@ If you prefer to install the VSIX package manually:
     ```sh
     pnpm vsix
     ```
-2.  A `.vsix` file will be generated in the `bin/` directory (e.g., `bin/roo-cline-<version>.vsix`).
+2.  A `.vsix` file will be generated in the `bin/` directory (e.g., `bin/modelharbor-agent-<version>.vsix`).
 3.  Install it manually using the VSCode CLI:
     ```sh
-    code --install-extension bin/roo-cline-<version>.vsix
+    code --install-extension bin/modelharbor-agent-<version>.vsix
     ```
 
 ---

@@ -157,7 +157,7 @@ npm run build
 Plik `.vsix` pojawi się w katalogu `bin/` i można go zainstalować za pomocą:
 
 ```sh
-code --install-extension bin/roo-cline-<version>.vsix
+code --install-extension bin/modelharbor-agent-<version>.vsix
 ```
 
 Używamy [changesets](https://github.com/changesets/changesets) do wersjonowania i publikowania. Sprawdź nasz `CHANGELOG.md`, aby zobaczyć informacje o wydaniu.

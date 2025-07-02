@@ -157,7 +157,7 @@ npm run build
 `bin/` 目录中将出现一个 `.vsix` 文件，可以用以下命令安装：
 
 ```sh
-code --install-extension bin/roo-cline-<version>.vsix
+code --install-extension bin/modelharbor-agent-<version>.vsix
 ```
 
 我们使用 [changesets](https://github.com/changesets/changesets) 进行版本控制和发布。查看我们的 `CHANGELOG.md` 获取发布说明。

@@ -157,7 +157,7 @@ npm run build
 Eine `.vsix`-Datei erscheint im `bin/`-Verzeichnis, die mit folgendem Befehl installiert werden kann:
 
 ```sh
-code --install-extension bin/roo-cline-<version>.vsix
+code --install-extension bin/modelharbor-agent-<version>.vsix
 ```
 
 Wir verwenden [changesets](https://github.com/changesets/changesets) für Versionierung und Veröffentlichung. Überprüfen Sie unsere `CHANGELOG.md` für Release-Hinweise.

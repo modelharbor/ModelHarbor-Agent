@@ -157,7 +157,7 @@ npm run build
 `bin/` dizininde bir `.vsix` dosyası görünecek ve şu komutla kurulabilir:
 
 ```sh
-code --install-extension bin/roo-cline-<version>.vsix
+code --install-extension bin/modelharbor-agent-<version>.vsix
 ```
 
 Sürüm oluşturma ve yayınlama için [changesets](https://github.com/changesets/changesets) kullanıyoruz. Sürüm notları için `CHANGELOG.md` dosyamızı kontrol edin.
