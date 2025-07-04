@@ -247,7 +247,7 @@
 		"feature2": "<bold>Gemini 2.5 Modelleri</bold> - Yeni Gemini 2.5 Pro, Flash ve Flash Lite modelleri için destek eklendi.",
 		"feature3": "<bold>Excel Dosya Desteği ve Daha Fazlası</bold> - Excel (.xlsx) dosya desteği eklendi ve sayısız hata düzeltmesi ve iyileştirme!",
 		"hideButton": "Duyuruyu gizle",
-		"detailsDiscussLinks": "<discordLink>Discord</discordLink> ve <redditLink>Reddit</redditLink>'te daha fazla ayrıntı alın ve tartışmalara katılın 🚀"
+		"detailsDiscussLinks": "Daha fazla ayrıntı alın ve <discordLink>Modelharbor.com</discordLink> adresinde tartışın"
 	},
 	"browser": {
 		"ModelHarborWantsToUse": "ModelHarbor tarayıcıyı kullanmak istiyor:",

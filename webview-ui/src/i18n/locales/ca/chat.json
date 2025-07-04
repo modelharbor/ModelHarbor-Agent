@@ -247,7 +247,7 @@
 		"feature2": "<bold>Models Gemini 2.5</bold> - S'ha afegit suport per als nous models Gemini 2.5 Pro, Flash i Flash Lite.",
 		"feature3": "<bold>Suport per a fitxers Excel i més</bold> - S'ha afegit suport per a fitxers Excel (.xlsx) i nombroses correccions d'errors i millores!",
 		"hideButton": "Amagar anunci",
-		"detailsDiscussLinks": "Obtingues més detalls i participa a <discordLink>Discord</discordLink> i <redditLink>Reddit</redditLink> 🚀"
+		"detailsDiscussLinks": "Obtén més detalls i comenta a <discordLink>Modelharbor.com</discordLink>"
 	},
 	"browser": {
 		"ModelHarborWantsToUse": "ModelHarbor vol utilitzar el navegador:",

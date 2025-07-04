@@ -52,7 +52,7 @@
 			"openingImage": "Erreur lors de l'ouverture de l'image : {{error}}",
 			"pathNotExists": "Le chemin n'existe pas : {{path}}",
 			"couldNotOpen": "Impossible d'ouvrir le fichier : {{error}}",
-			"couldNotOpenGeneric": "Impossible d'ouvrir le fichier !"
+			"couldNotOpenGeneric": "Impossible d'ouvrir le fichier!"
 		},
 		"success": {
 			"imageDataUriCopied": "URI de données d'image copiée dans le presse-papiers"

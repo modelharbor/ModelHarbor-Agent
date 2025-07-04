@@ -247,7 +247,7 @@
 		"feature2": "<bold>Modelos Gemini 2.5</bold>: Se agregó soporte para los nuevos modelos Gemini 2.5 Pro, Flash y Flash Lite.",
 		"feature3": "<bold>Soporte de archivos Excel y más</bold>: ¡Se agregó soporte para archivos Excel (.xlsx) y numerosas correcciones de errores y mejoras!",
 		"hideButton": "Ocultar anuncio",
-		"detailsDiscussLinks": "Obtén más detalles y participa en <discordLink>Discord</discordLink> y <redditLink>Reddit</redditLink> 🚀"
+		"detailsDiscussLinks": "Obtén más detalles y discute en <discordLink>Modelharbor.com</discordLink>"
 	},
 	"browser": {
 		"ModelHarborWantsToUse": "ModelHarbor quiere usar el navegador:",

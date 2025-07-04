@@ -247,7 +247,7 @@
 		"feature2": "<bold>Gemini 2.5 模型</bold>: 新增对新版 Gemini 2.5 Pro、Flash 和 Flash Lite 模型的支持。",
 		"feature3": "<bold>Excel 文件支持及更多</bold>: 新增 Excel (.xlsx) 文件支持以及大量错误修复和改进！",
 		"hideButton": "隐藏公告",
-		"detailsDiscussLinks": "在 <discordLink>Discord</discordLink> 和 <redditLink>Reddit</redditLink> 获取更多详情并参与讨论 🚀"
+		"detailsDiscussLinks": "在 <discordLink>Modelharbor.com</discordLink> 获取更多详情并参与讨论"
 	},
 	"browser": {
 		"ModelHarborWantsToUse": "ModelHarbor想使用浏览器:",
