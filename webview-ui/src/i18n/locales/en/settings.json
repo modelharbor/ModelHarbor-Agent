@@ -63,6 +63,8 @@
 		"openAiCompatibleModelDimensionPlaceholder": "e.g., 1536",
 		"openAiCompatibleModelDimensionDescription": "The embedding dimension (output size) for your model. Check your provider's documentation for this value. Common values: 384, 768, 1536, 3072.",
 		"modelharborProvider": "ModelHarbor",
+		"modelharborApiKeyLabel": "ModelHarbor API Key",
+		"modelharborApiKeyPlaceholder": "Enter your ModelHarbor API key",
 		"modelLabel": "Model",
 		"modelPlaceholder": "Enter model name",
 		"selectModel": "Select a model",
