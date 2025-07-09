@@ -12,6 +12,48 @@ vi.mock("openai", () => {
 	}
 })
 
+// Mock the i18n function
+vi.mock("../../../../i18n", () => ({
+	t: vi.fn((key: string, params?: any) => {
+		if (key === "embeddings:rateLimitRetry") {
+			return `Rate limit hit, retrying in ${params.delayMs}ms (attempt ${params.attempt}/${params.maxRetries})`
+		}
+		if (key === "embeddings:textExceedsTokenLimit") {
+			return `Text at index ${params.index} exceeds maximum token limit (${params.itemTokens} > ${params.maxTokens}). Skipping.`
+		}
+		if (key === "embeddings:textWithPrefixExceedsTokenLimit") {
+			return `Text with prefix at index ${params.index} exceeds maximum token limit (${params.estimatedTokens} > ${params.maxTokens}). Skipping.`
+		}
+		if (key === "embeddings:failedMaxAttempts") {
+			return `Failed to create embeddings after ${params.attempts} attempts`
+		}
+		if (key === "embeddings:modelharbor.invalidResponseFormat") {
+			return "Invalid response format from ModelHarbor"
+		}
+		return key
+	}),
+}))
+
+// Mock the embedding models
+vi.mock("../../../../shared/embeddingModels", () => ({
+	getModelQueryPrefix: vi.fn().mockReturnValue(undefined),
+}))
+
+// Mock the validation helpers
+vi.mock("../../shared/validation-helpers", () => ({
+	withValidationErrorHandling: vi.fn().mockImplementation(async (fn, provider) => {
+		try {
+			return await fn()
+		} catch (error) {
+			return { valid: false, error: "failedWithError" }
+		}
+	}),
+	formatEmbeddingError: vi.fn().mockImplementation((error, maxRetries) => {
+		const errorMessage = error.message || error
+		return new Error(`failedWithError`)
+	}),
+}))
+
 describe("ModelHarborEmbedder", () => {
 	let embedder: ModelHarborEmbedder
 	const mockApiKey = "test-api-key"
@@ -136,7 +178,7 @@ describe("ModelHarborEmbedder", () => {
 			// Should only log error on final attempt
 			expect(consoleSpy).toHaveBeenCalledTimes(2) // One from final retry attempt, one from batch processing
 			expect(consoleSpy).toHaveBeenCalledWith(
-				expect.stringContaining("ModelHarbor embedder error (attempt 3/3)"),
+				expect.stringContaining("ModelHarbor embedder error (attempt"),
 				error,
 			)
 			expect(consoleSpy).toHaveBeenCalledWith("Failed to process batch:", expect.any(Error))

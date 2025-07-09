@@ -9,5 +9,5 @@ export const DEFAULT_HEADERS = {
 export const MODELHARBOR_HEADERS = {
 	"HTTP-Referer": "https://github.com/ModelHarbor/ModelHarbor-Agent",
 	"X-Title": "ModelHarbor Agent",
-	"User-Agent": `ModelHarborAgent/${Package.version}`,
+	"User-Agent": `ModelHarbor/${Package.version}`,
 }
