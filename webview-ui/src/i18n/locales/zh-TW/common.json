@@ -47,6 +47,12 @@
 			"copyError": "複製圖片時發生錯誤"
 		}
 	},
+	"errors": {
+		"share_no_active_task": "沒有作用中的任務可分享",
+		"no_active_task": "沒有作用中的任務",
+		"task_folder_not_found": "找不到任務資料夾",
+		"open_chat_folder_failed": "開啟聊天資料夾失敗"
+	},
 	"file": {
 		"errors": {
 			"invalidDataUri": "無效的資料 URI 格式",

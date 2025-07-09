@@ -326,6 +326,53 @@ describe("CodeIndexServiceFactory", () => {
 			expect(() => factory.createEmbedder()).toThrow("serviceFactory.geminiConfigMissing")
 		})
 
+		it("should create ModelHarborEmbedder when using ModelHarbor provider", () => {
+			// Arrange
+			const testModelId = "qwen/qwen3-embedding-4b"
+			const testConfig = {
+				embedderProvider: "modelharbor",
+				modelId: testModelId,
+				modelHarborOptions: {
+					apiKey: "test-modelharbor-api-key",
+				},
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+
+			// Act
+			factory.createEmbedder()
+
+			// Assert - Note: ModelHarborEmbedder is not mocked, but this tests the factory logic
+			expect(true).toBe(true) // This will pass if no error is thrown
+		})
+
+		it("should throw error when ModelHarbor API key is missing", () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "modelharbor",
+				modelId: "qwen/qwen3-embedding-4b",
+				modelHarborOptions: {
+					apiKey: undefined,
+				},
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+
+			// Act & Assert
+			expect(() => factory.createEmbedder()).toThrow("ModelHarbor configuration missing for embedder creation")
+		})
+
+		it("should throw error when ModelHarbor options are missing", () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "modelharbor",
+				modelId: "qwen/qwen3-embedding-4b",
+				modelHarborOptions: undefined,
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+
+			// Act & Assert
+			expect(() => factory.createEmbedder()).toThrow("ModelHarbor configuration missing for embedder creation")
+		})
+
 		it("should throw error for invalid embedder provider", () => {
 			// Arrange
 			const testConfig = {
@@ -367,6 +414,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				3072,
 				"test-key",
+				testModelId,
 			)
 		})
 
@@ -392,6 +440,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				768,
 				"test-key",
+				testModelId,
 			)
 		})
 
@@ -417,6 +466,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				3072,
 				"test-key",
+				testModelId,
 			)
 		})
 
@@ -449,6 +499,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				modelDimension, // Should use model's built-in dimension, not manual
 				"test-key",
+				testModelId,
 			)
 		})
 
@@ -480,6 +531,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				manualDimension, // Should use manual dimension as fallback
 				"test-key",
+				testModelId,
 			)
 		})
 
@@ -509,6 +561,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				768,
 				"test-key",
+				testModelId,
 			)
 		})
 
@@ -578,6 +631,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				3072,
 				"test-key",
+				"gemini-embedding-001",
 			)
 		})
 
@@ -603,6 +657,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				3072,
 				"test-key",
+				"gemini-embedding-001",
 			)
 		})
 
@@ -627,6 +682,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				1536,
 				"test-key",
+				"default-model",
 			)
 		})
 
@@ -634,6 +690,47 @@ describe("CodeIndexServiceFactory", () => {
 			// Arrange
 			const testConfig = {
 				embedderProvider: "openai",
+				modelId: "unknown-model",
+				qdrantUrl: "http://localhost:6333",
+				qdrantApiKey: "test-key",
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+			mockGetModelDimension.mockReturnValue(undefined)
+
+			// Act & Assert
+			expect(() => factory.createVectorStore()).toThrow("serviceFactory.vectorDimensionNotDetermined")
+		})
+
+		it("should use config.modelId for ModelHarbor provider with qwen3-embedding-4b", () => {
+			// Arrange
+			const testModelId = "qwen/qwen3-embedding-4b"
+			const testConfig = {
+				embedderProvider: "modelharbor",
+				modelId: testModelId,
+				qdrantUrl: "http://localhost:6333",
+				qdrantApiKey: "test-key",
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+			mockGetModelDimension.mockReturnValue(2560)
+
+			// Act
+			factory.createVectorStore()
+
+			// Assert
+			expect(mockGetModelDimension).toHaveBeenCalledWith("modelharbor", testModelId)
+			expect(MockedQdrantVectorStore).toHaveBeenCalledWith(
+				"/test/workspace",
+				"http://localhost:6333",
+				2560,
+				"test-key",
+				testModelId,
+			)
+		})
+
+		it("should throw error when vector dimension cannot be determined for ModelHarbor", () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "modelharbor",
 				modelId: "unknown-model",
 				qdrantUrl: "http://localhost:6333",
 				qdrantApiKey: "test-key",

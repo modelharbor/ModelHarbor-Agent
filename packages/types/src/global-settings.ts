@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { type Keys } from "./type-fu.js"
+import { type Keys, keysOf } from "./type-fu.js"
 import {
 	type ProviderSettings,
 	PROVIDER_SETTINGS_KEYS,
@@ -148,7 +148,36 @@ export type RooCodeSettings = GlobalSettings & ProviderSettings
 /**
  * SecretState
  */
-export const SECRET_STATE_KEYS = [
+
+export type SecretState = Pick<
+	ProviderSettings,
+	| "apiKey"
+	| "glamaApiKey"
+	| "openRouterApiKey"
+	| "awsAccessKey"
+	| "awsSecretKey"
+	| "awsSessionToken"
+	| "openAiApiKey"
+	| "geminiApiKey"
+	| "openAiNativeApiKey"
+	| "deepSeekApiKey"
+	| "mistralApiKey"
+	| "unboundApiKey"
+	| "requestyApiKey"
+	| "xaiApiKey"
+	| "groqApiKey"
+	| "chutesApiKey"
+	| "litellmApiKey"
+	| "modelharborApiKey"
+	| "codeIndexOpenAiKey"
+	| "codeIndexQdrantApiKey"
+	| "codebaseIndexOpenAiCompatibleApiKey"
+	| "codebaseIndexGeminiApiKey"
+	| "codeIndexModelHarborApiKey"
+	| "codebaseIndexMistralApiKey"
+>
+
+export const SECRET_STATE_KEYS = keysOf<SecretState>()([
 	"apiKey",
 	"glamaApiKey",
 	"openRouterApiKey",
@@ -159,7 +188,6 @@ export const SECRET_STATE_KEYS = [
 	"geminiApiKey",
 	"openAiNativeApiKey",
 	"deepSeekApiKey",
-	"moonshotApiKey",
 	"mistralApiKey",
 	"unboundApiKey",
 	"requestyApiKey",
@@ -167,13 +195,14 @@ export const SECRET_STATE_KEYS = [
 	"groqApiKey",
 	"chutesApiKey",
 	"litellmApiKey",
+	"modelharborApiKey",
 	"codeIndexOpenAiKey",
 	"codeIndexQdrantApiKey",
 	"codebaseIndexOpenAiCompatibleApiKey",
 	"codebaseIndexGeminiApiKey",
+	"codeIndexModelHarborApiKey",
 	"codebaseIndexMistralApiKey",
-] as const satisfies readonly (keyof ProviderSettings)[]
-export type SecretState = Pick<ProviderSettings, (typeof SECRET_STATE_KEYS)[number]>
+])
 
 export const isSecretStateKey = (key: string): key is Keys<SecretState> =>
 	SECRET_STATE_KEYS.includes(key as Keys<SecretState>)
