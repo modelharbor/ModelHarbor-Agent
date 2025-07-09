@@ -53,6 +53,10 @@ export const ModelHarbor = memo(
 					{t("settings:providers.getModelHarborApiKey")}
 				</VSCodeLink>
 
+				<VSCodeLink href="https://www.facebook.com/modelharbor/">
+					{t("settings:providers.modelHarborFacebook")}
+				</VSCodeLink>
+
 				{/* Model status */}
 				<div className="text-sm text-vscode-descriptionForeground">
 					{modelCount} models available

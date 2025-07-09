@@ -56,6 +56,11 @@ const WelcomeView = () => {
 				<p>
 					<VSCodeLink href="https://www.modelharbor.com">{t("welcome:modelHarbor")}</VSCodeLink>
 				</p>
+				<p>
+					<VSCodeLink href="https://www.facebook.com/modelharbor/">
+						{t("welcome:modelHarborFacebook")}
+					</VSCodeLink>
+				</p>
 
 				<div className="mb-4">
 					<h4 className="mt-3 mb-2 text-center">{t("welcome:startCustom")}</h4>
