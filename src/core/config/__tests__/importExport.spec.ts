@@ -593,7 +593,9 @@ describe("importExport", () => {
 				defaultUri: expect.anything(),
 			})
 
-			expect(vscode.Uri.file).toHaveBeenCalledWith(path.join("/mock/home", "Documents", "roo-code-settings.json"))
+			expect(vscode.Uri.file).toHaveBeenCalledWith(
+				path.join("/mock/home", "Documents", "modelharbor-agent-settings.json"),
+			)
 		})
 
 		describe("codebase indexing export", () => {

@@ -11,8 +11,9 @@ export interface CodeIndexConfig {
 	modelDimension?: number // Generic dimension property for all providers
 	openAiOptions?: ApiHandlerOptions
 	ollamaOptions?: ApiHandlerOptions
-	openAiCompatibleOptions?: { baseUrl: string; apiKey: string }
+	openAiCompatibleOptions?: { baseUrl: string; apiKey: string; modelDimension?: number }
 	geminiOptions?: { apiKey: string }
+	modelHarborOptions?: { apiKey: string }
 	qdrantUrl?: string
 	qdrantApiKey?: string
 	searchMinScore?: number
@@ -33,6 +34,8 @@ export type PreviousConfigSnapshot = {
 	openAiCompatibleBaseUrl?: string
 	openAiCompatibleApiKey?: string
 	geminiApiKey?: string
+	openAiCompatibleModelDimension?: number
+	modelHarborApiKey?: string
 	qdrantUrl?: string
 	qdrantApiKey?: string
 }
