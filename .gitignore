@@ -5,7 +5,7 @@ out-*
 node_modules
 coverage/
 mock/
-
+.upstream
 .DS_Store
 
 # IDEs
