@@ -324,15 +324,8 @@ const ApiOptions = ({
 			return undefined
 		}
 
-		// Get the URL slug - use custom mapping if available, otherwise use the provider key.
-		const slugs: Record<string, string> = {
-			"openai-native": "openai",
-			openai: "openai-compatible",
-		}
-
-		const slug = slugs[selectedProvider] || selectedProvider
 		return {
-			url: buildDocLink(`providers/${slug}`, "provider_docs"),
+			url: buildDocLink("", "provider_docs"),
 			name,
 		}
 	}, [selectedProvider])
