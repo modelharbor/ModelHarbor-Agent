@@ -258,6 +258,7 @@ export interface WebviewMessage {
 		codeIndexQdrantApiKey?: string
 		codebaseIndexOpenAiCompatibleApiKey?: string
 		codebaseIndexGeminiApiKey?: string
+		codeIndexModelHarborApiKey?: string
 	}
 }
 

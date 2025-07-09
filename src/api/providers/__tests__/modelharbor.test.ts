@@ -5,6 +5,7 @@ import OpenAI from "openai"
 
 import { ModelHarborHandler } from "../modelharbor"
 import { ApiHandlerOptions } from "../../../shared/api"
+import { Package } from "../../../shared/package"
 
 // Mock dependencies
 vi.mock("openai")
@@ -109,7 +110,7 @@ describe("ModelHarborHandler", () => {
 			defaultHeaders: {
 				"HTTP-Referer": "https://github.com/ModelHarbor/ModelHarbor-Agent",
 				"X-Title": "ModelHarbor Agent",
-				"User-Agent": "ModelHarborAgent/3.23.0",
+				"User-Agent": `ModelHarbor/${Package.version}`,
 			},
 		})
 	})
