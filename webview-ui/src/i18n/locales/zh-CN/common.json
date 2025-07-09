@@ -39,6 +39,12 @@
 			"copyError": "复制图片时出错"
 		}
 	},
+	"errors": {
+		"share_no_active_task": "没有活动任务可分享",
+		"no_active_task": "没有活动任务",
+		"task_folder_not_found": "未找到任务文件夹",
+		"open_chat_folder_failed": "打开聊天文件夹失败"
+	},
 	"file": {
 		"errors": {
 			"invalidDataUri": "无效的数据 URI 格式",

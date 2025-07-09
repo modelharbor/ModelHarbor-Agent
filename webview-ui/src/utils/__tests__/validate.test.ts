@@ -3,6 +3,24 @@ import { RouterModels } from "@roo/api"
 
 import { getModelValidationError, validateApiConfigurationExcludingModelErrors } from "../validate"
 
+// Mock i18next
+vi.mock("i18next", () => ({
+	default: {
+		t: vi.fn((key: string, options?: any) => {
+			// Return the key for consistency in tests
+			if (options && typeof options === "object") {
+				// Handle interpolation for keys with variables
+				let result = key
+				Object.keys(options).forEach((param) => {
+					result = result.replace(`{{${param}}}`, options[param])
+				})
+				return result
+			}
+			return key
+		}),
+	},
+}))
+
 describe("Model Validation Functions", () => {
 	const mockRouterModels: RouterModels = {
 		openrouter: {
@@ -24,6 +42,16 @@ describe("Model Validation Functions", () => {
 			},
 		},
 		glama: {
+			"valid-model": {
+				maxTokens: 8192,
+				contextWindow: 200000,
+				supportsImages: true,
+				supportsPromptCache: false,
+				inputPrice: 3.0,
+				outputPrice: 15.0,
+			},
+		},
+		modelharbor: {
 			"valid-model": {
 				maxTokens: 8192,
 				contextWindow: 200000,
@@ -73,7 +101,7 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("validation.modelAvailability")
+			expect(result).toBe("settings:validation.modelAvailability")
 		})
 
 		it("returns error for model not allowed by organization", () => {
@@ -123,7 +151,7 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("validation.modelId")
+			expect(result).toBe("settings:validation.modelId")
 		})
 
 		it("handles undefined model IDs gracefully", () => {
@@ -133,7 +161,7 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("validation.modelId")
+			expect(result).toBe("settings:validation.modelId")
 		})
 	})
 
@@ -157,7 +185,7 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = validateApiConfigurationExcludingModelErrors(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("validation.apiKey")
+			expect(result).toBe("settings:validation.apiKey")
 		})
 
 		it("excludes model-specific errors", () => {

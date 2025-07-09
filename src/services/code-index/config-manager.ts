@@ -15,8 +15,9 @@ export class CodeIndexConfigManager {
 	private modelDimension?: number
 	private openAiOptions?: ApiHandlerOptions
 	private ollamaOptions?: ApiHandlerOptions
-	private openAiCompatibleOptions?: { baseUrl: string; apiKey: string }
+	private openAiCompatibleOptions?: { baseUrl: string; apiKey: string; modelDimension?: number }
 	private geminiOptions?: { apiKey: string }
+	private modelHarborOptions?: { apiKey: string }
 	private qdrantUrl?: string = "http://localhost:6333"
 	private qdrantApiKey?: string
 	private searchMinScore?: number
@@ -62,13 +63,15 @@ export class CodeIndexConfigManager {
 
 		const openAiKey = this.contextProxy?.getSecret("codeIndexOpenAiKey") ?? ""
 		const qdrantApiKey = this.contextProxy?.getSecret("codeIndexQdrantApiKey") ?? ""
-		// Fix: Read OpenAI Compatible settings from the correct location within codebaseIndexConfig
 		const openAiCompatibleBaseUrl = codebaseIndexConfig.codebaseIndexOpenAiCompatibleBaseUrl ?? ""
 		const openAiCompatibleApiKey = this.contextProxy?.getSecret("codebaseIndexOpenAiCompatibleApiKey") ?? ""
 		const geminiApiKey = this.contextProxy?.getSecret("codebaseIndexGeminiApiKey") ?? ""
+		const openAiCompatibleModelDimension = this.contextProxy?.getGlobalState(
+			"codebaseIndexOpenAiCompatibleModelDimension",
+		) as number | undefined
+		const modelHarborApiKey = this.contextProxy?.getSecret("codeIndexModelHarborApiKey") ?? ""
 
 		// Update instance variables with configuration
-		// Note: codebaseIndexEnabled is no longer used as the feature is always enabled
 		this.qdrantUrl = codebaseIndexQdrantUrl
 		this.qdrantApiKey = qdrantApiKey ?? ""
 		this.searchMinScore = codebaseIndexSearchMinScore
@@ -92,13 +95,15 @@ export class CodeIndexConfigManager {
 
 		this.openAiOptions = { openAiNativeApiKey: openAiKey }
 
-		// Set embedder provider with support for openai-compatible
+		// Set embedder provider
 		if (codebaseIndexEmbedderProvider === "ollama") {
 			this.embedderProvider = "ollama"
 		} else if (codebaseIndexEmbedderProvider === "openai-compatible") {
 			this.embedderProvider = "openai-compatible"
 		} else if (codebaseIndexEmbedderProvider === "gemini") {
 			this.embedderProvider = "gemini"
+		} else if (codebaseIndexEmbedderProvider === "modelharbor") {
+			this.embedderProvider = "modelharbor"
 		} else {
 			this.embedderProvider = "openai"
 		}
@@ -118,6 +123,7 @@ export class CodeIndexConfigManager {
 				: undefined
 
 		this.geminiOptions = geminiApiKey ? { apiKey: geminiApiKey } : undefined
+		this.modelHarborOptions = modelHarborApiKey ? { apiKey: modelHarborApiKey } : undefined
 	}
 
 	/**
@@ -134,6 +140,7 @@ export class CodeIndexConfigManager {
 			ollamaOptions?: ApiHandlerOptions
 			openAiCompatibleOptions?: { baseUrl: string; apiKey: string }
 			geminiOptions?: { apiKey: string }
+			modelHarborOptions?: { apiKey: string }
 			qdrantUrl?: string
 			qdrantApiKey?: string
 			searchMinScore?: number
@@ -142,7 +149,7 @@ export class CodeIndexConfigManager {
 	}> {
 		// Capture the ACTUAL previous state before loading new configuration
 		const previousConfigSnapshot: PreviousConfigSnapshot = {
-			enabled: true, // Feature is always enabled
+			enabled: true,
 			configured: this.isConfigured(),
 			embedderProvider: this.embedderProvider,
 			modelId: this.modelId,
@@ -152,11 +159,13 @@ export class CodeIndexConfigManager {
 			openAiCompatibleBaseUrl: this.openAiCompatibleOptions?.baseUrl ?? "",
 			openAiCompatibleApiKey: this.openAiCompatibleOptions?.apiKey ?? "",
 			geminiApiKey: this.geminiOptions?.apiKey ?? "",
+			openAiCompatibleModelDimension: this.openAiCompatibleOptions?.modelDimension,
+			modelHarborApiKey: this.modelHarborOptions?.apiKey ?? "",
 			qdrantUrl: this.qdrantUrl ?? "",
 			qdrantApiKey: this.qdrantApiKey ?? "",
 		}
 
-		// Refresh secrets from VSCode storage to ensure we have the latest values
+		// Refresh secrets from VSCode storage
 		await this.contextProxy.refreshSecrets()
 
 		// Load new configuration from storage and update instance variables
@@ -175,6 +184,7 @@ export class CodeIndexConfigManager {
 				ollamaOptions: this.ollamaOptions,
 				openAiCompatibleOptions: this.openAiCompatibleOptions,
 				geminiOptions: this.geminiOptions,
+				modelHarborOptions: this.modelHarborOptions,
 				qdrantUrl: this.qdrantUrl,
 				qdrantApiKey: this.qdrantApiKey,
 				searchMinScore: this.currentSearchMinScore,
@@ -192,7 +202,6 @@ export class CodeIndexConfigManager {
 			const qdrantUrl = this.qdrantUrl
 			return !!(openAiKey && qdrantUrl)
 		} else if (this.embedderProvider === "ollama") {
-			// Ollama model ID has a default, so only base URL is strictly required for config
 			const ollamaBaseUrl = this.ollamaOptions?.ollamaBaseUrl
 			const qdrantUrl = this.qdrantUrl
 			return !!(ollamaBaseUrl && qdrantUrl)
@@ -200,32 +209,21 @@ export class CodeIndexConfigManager {
 			const baseUrl = this.openAiCompatibleOptions?.baseUrl
 			const apiKey = this.openAiCompatibleOptions?.apiKey
 			const qdrantUrl = this.qdrantUrl
-			const isConfigured = !!(baseUrl && apiKey && qdrantUrl)
-			return isConfigured
+			return !!(baseUrl && apiKey && qdrantUrl)
 		} else if (this.embedderProvider === "gemini") {
 			const apiKey = this.geminiOptions?.apiKey
 			const qdrantUrl = this.qdrantUrl
-			const isConfigured = !!(apiKey && qdrantUrl)
-			return isConfigured
+			return !!(apiKey && qdrantUrl)
+		} else if (this.embedderProvider === "modelharbor") {
+			const apiKey = this.modelHarborOptions?.apiKey
+			const qdrantUrl = this.qdrantUrl
+			return !!(apiKey && qdrantUrl)
 		}
-		return false // Should not happen if embedderProvider is always set correctly
+		return false
 	}
 
 	/**
 	 * Determines if a configuration change requires restarting the indexing process.
-	 * Simplified logic: only restart for critical changes that affect service functionality.
-	 *
-	 * CRITICAL CHANGES (require restart):
-	 * - Provider changes (openai -> ollama, etc.)
-	 * - Authentication changes (API keys, base URLs)
-	 * - Vector dimension changes (model changes that affect embedding size)
-	 * - Qdrant connection changes (URL, API key)
-	 * - Feature enable/disable transitions
-	 *
-	 * MINOR CHANGES (no restart needed):
-	 * - Search minimum score adjustments
-	 * - UI-only settings
-	 * - Non-functional configuration tweaks
 	 */
 	doesConfigChangeRequireRestart(prev: PreviousConfigSnapshot): boolean {
 		const nowConfigured = this.isConfigured()
@@ -240,35 +238,33 @@ export class CodeIndexConfigManager {
 		const prevOpenAiCompatibleApiKey = prev?.openAiCompatibleApiKey ?? ""
 		const prevModelDimension = prev?.modelDimension
 		const prevGeminiApiKey = prev?.geminiApiKey ?? ""
+		const prevModelHarborApiKey = prev?.modelHarborApiKey ?? ""
 		const prevQdrantUrl = prev?.qdrantUrl ?? ""
 		const prevQdrantApiKey = prev?.qdrantApiKey ?? ""
 
-		// 1. Transition from unconfigured to configured
-		// Since the feature is always enabled, we only check configuration status
+		// Transition from unconfigured to configured
 		if (!prevConfigured && nowConfigured) {
 			return true
 		}
 
-		// 3. If wasn't ready before and isn't ready now, no restart needed
+		// If wasn't ready before and isn't ready now, no restart needed
 		if (!prevConfigured && !nowConfigured) {
 			return false
 		}
 
-		// 4. CRITICAL CHANGES - Always restart for these
-		// Since feature is always enabled, we always check for critical changes
-
-		// Provider change
+		// Critical changes - always restart
 		if (prevProvider !== this.embedderProvider) {
 			return true
 		}
 
-		// Authentication changes (API keys)
+		// Authentication changes
 		const currentOpenAiKey = this.openAiOptions?.openAiNativeApiKey ?? ""
 		const currentOllamaBaseUrl = this.ollamaOptions?.ollamaBaseUrl ?? ""
 		const currentOpenAiCompatibleBaseUrl = this.openAiCompatibleOptions?.baseUrl ?? ""
 		const currentOpenAiCompatibleApiKey = this.openAiCompatibleOptions?.apiKey ?? ""
 		const currentModelDimension = this.modelDimension
 		const currentGeminiApiKey = this.geminiOptions?.apiKey ?? ""
+		const currentModelHarborApiKey = this.modelHarborOptions?.apiKey ?? ""
 		const currentQdrantUrl = this.qdrantUrl ?? ""
 		const currentQdrantApiKey = this.qdrantApiKey ?? ""
 
@@ -287,16 +283,25 @@ export class CodeIndexConfigManager {
 			return true
 		}
 
-		// Check for model dimension changes (generic for all providers)
+		if (prevGeminiApiKey !== currentGeminiApiKey) {
+			return true
+		}
+
+		if (prevModelHarborApiKey !== currentModelHarborApiKey) {
+			return true
+		}
+
+		// Model dimension changes
 		if (prevModelDimension !== currentModelDimension) {
 			return true
 		}
 
+		// Qdrant configuration changes
 		if (prevQdrantUrl !== currentQdrantUrl || prevQdrantApiKey !== currentQdrantApiKey) {
 			return true
 		}
 
-		// Vector dimension changes (still important for compatibility)
+		// Vector dimension changes
 		if (this._hasVectorDimensionChanged(prevProvider, prev?.modelId)) {
 			return true
 		}
@@ -343,6 +348,7 @@ export class CodeIndexConfigManager {
 			ollamaOptions: this.ollamaOptions,
 			openAiCompatibleOptions: this.openAiCompatibleOptions,
 			geminiOptions: this.geminiOptions,
+			modelHarborOptions: this.modelHarborOptions,
 			qdrantUrl: this.qdrantUrl,
 			qdrantApiKey: this.qdrantApiKey,
 			searchMinScore: this.currentSearchMinScore,
@@ -365,7 +371,7 @@ export class CodeIndexConfigManager {
 	}
 
 	/**
-	 * Gets the current embedder type (openai or ollama)
+	 * Gets the current embedder type
 	 */
 	public get currentEmbedderProvider(): EmbedderProvider {
 		return this.embedderProvider
@@ -390,23 +396,19 @@ export class CodeIndexConfigManager {
 
 	/**
 	 * Gets the current model dimension being used for embeddings.
-	 * Returns the explicitly configured dimension or undefined if not set.
 	 */
 	public get currentModelDimension(): number | undefined {
 		return this.modelDimension
 	}
 
 	/**
-	 * Gets the configured minimum search score based on user setting, model-specific threshold, or fallback.
-	 * Priority: 1) User setting, 2) Model-specific threshold, 3) Default DEFAULT_SEARCH_MIN_SCORE constant.
+	 * Gets the configured minimum search score
 	 */
 	public get currentSearchMinScore(): number {
-		// First check if user has configured a custom score threshold
 		if (this.searchMinScore !== undefined) {
 			return this.searchMinScore
 		}
 
-		// Fall back to model-specific threshold
 		const currentModelId = this.modelId ?? getDefaultModelId(this.embedderProvider)
 		const modelSpecificThreshold = getModelScoreThreshold(this.embedderProvider, currentModelId)
 		return modelSpecificThreshold ?? DEFAULT_SEARCH_MIN_SCORE
@@ -414,7 +416,6 @@ export class CodeIndexConfigManager {
 
 	/**
 	 * Gets the configured maximum search results.
-	 * Returns user setting if configured, otherwise returns default.
 	 */
 	public get currentSearchMaxResults(): number {
 		return this.searchMaxResults ?? DEFAULT_MAX_SEARCH_RESULTS
