@@ -215,11 +215,20 @@ function getSelectedModel({
 			const info = claudeCodeModels[id as keyof typeof claudeCodeModels]
 			return { id, info: { ...openAiModelInfoSaneDefaults, ...info } }
 		}
-		// case "anthropic":
-		// case "human-relay":
-		// case "fake-ai":
+		case "anthropic":
+		case "human-relay":
+		case "fake-ai":
 		default: {
-			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
+			// For anthropic and other providers that use apiModelId, use the default logic
+			if (provider === "anthropic" || provider === "human-relay" || provider === "fake-ai") {
+				const id = apiConfiguration.apiModelId ?? modelHarborDefaultModelId
+				const info = routerModels.modelharbor?.[id]
+				return info
+					? { id, info }
+					: { id: modelHarborDefaultModelId, info: routerModels.modelharbor?.[modelHarborDefaultModelId] }
+			}
+			// For any other provider, fall back to modelharbor default
+			const id = modelHarborDefaultModelId
 			const info = routerModels.modelharbor?.[id]
 			return info
 				? { id, info }

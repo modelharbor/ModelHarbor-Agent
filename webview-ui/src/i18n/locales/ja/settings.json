@@ -643,7 +643,7 @@
 		"useCustomModel": "カスタムを使用: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "質問やフィードバックがある場合は、<githubLink>github.com/RooCodeInc/Roo-Code</githubLink>で問題を開くか、<redditLink>reddit.com/r/RooCode</redditLink>や<discordLink>discord.gg/roocode</discordLink>に参加してください",
+		"feedback": "ご質問やフィードバックがありましたら、info@modelharbor.comまでご連絡ください",
 		"telemetry": {
 			"label": "匿名のエラーと使用状況レポートを許可",
 			"description": "匿名の使用データとエラーレポートを送信してModelHarbor Agentの改善にご協力ください。コード、プロンプト、個人情報が送信されることはありません。詳細については、プライバシーポリシーをご覧ください。"
