@@ -21,7 +21,9 @@
 		"connectToCloudDescription": "タスクを共有するためにRoo Code Cloudにサインイン",
 		"sharingDisabledByOrganization": "組織により共有が無効化されています",
 		"shareSuccessOrganization": "組織リンクをクリップボードにコピーしました",
-		"shareSuccessPublic": "公開リンクをクリップボードにコピーしました"
+		"shareSuccessPublic": "公開リンクをクリップボードにコピーしました",
+		"openFolder": "チャットフォルダーを開く",
+		"openInExplorer": "Windows Explorer/Finderで開く"
 	},
 	"unpin": "ピン留めを解除",
 	"pin": "ピン留め",
@@ -273,7 +275,8 @@
 			"scrollDown": "下にスクロール",
 			"scrollUp": "上にスクロール",
 			"close": "ブラウザを閉じる"
-		}
+		},
+		"ModelHarborWantsToUse": "ModelHarborはブラウザを使用したい:"
 	},
 	"codeblock": {
 		"tooltips": {

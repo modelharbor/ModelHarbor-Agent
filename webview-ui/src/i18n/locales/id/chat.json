@@ -21,7 +21,8 @@
 		"connectToCloudDescription": "Masuk ke Roo Code Cloud untuk berbagi tugas",
 		"sharingDisabledByOrganization": "Berbagi dinonaktifkan oleh organisasi",
 		"shareSuccessOrganization": "Tautan organisasi disalin ke clipboard",
-		"shareSuccessPublic": "Tautan publik disalin ke clipboard"
+		"shareSuccessPublic": "Tautan publik disalin ke clipboard",
+		"openInExplorer": "Buka di Windows Explorer/Finder"
 	},
 	"history": {
 		"title": "Riwayat"
@@ -294,7 +295,8 @@
 			"scrollDown": "Gulir ke bawah",
 			"scrollUp": "Gulir ke atas",
 			"close": "Tutup browser"
-		}
+		},
+		"ModelHarborWantsToUse": "ModelHarbor ingin menggunakan browser:"
 	},
 	"codeblock": {
 		"tooltips": {

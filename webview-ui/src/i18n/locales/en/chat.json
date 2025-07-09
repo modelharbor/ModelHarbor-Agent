@@ -21,7 +21,8 @@
 		"connectToCloudDescription": "Sign in to Roo Code Cloud to share tasks",
 		"sharingDisabledByOrganization": "Sharing disabled by organization",
 		"shareSuccessOrganization": "Organization link copied to clipboard",
-		"shareSuccessPublic": "Public link copied to clipboard"
+		"shareSuccessPublic": "Public link copied to clipboard",
+		"openFolder": "Open chat folder"
 	},
 	"unpin": "Unpin",
 	"pin": "Pin",
@@ -259,7 +260,8 @@
 		"feature1": "<bold>Codebase Indexing Graduated from Experimental</bold>: Full codebase indexing is now stable and ready for production use with improved search and context understanding.",
 		"feature2": "<bold>New Todo List Feature</bold>: Keep your tasks on track with integrated todo management that helps you stay organized and focused on your development goals.",
 		"hideButton": "Hide announcement",
-		"detailsDiscussLinks": "Get more details and discuss in <discordLink>Discord</discordLink> and <redditLink>Reddit</redditLink> 🚀"
+		"detailsDiscussLinks": "Get more details and discuss in <discordLink>Discord</discordLink> and <redditLink>Reddit</redditLink> 🚀",
+		"feature3": "<bold>Excel File Support & More</bold>: Added Excel (.xlsx) file support and numerous bug fixes and improvements!"
 	},
 	"reasoning": {
 		"thinking": "Thinking",
@@ -290,7 +292,8 @@
 			"scrollDown": "Scroll down",
 			"scrollUp": "Scroll up",
 			"close": "Close browser"
-		}
+		},
+		"ModelHarborWantsToUse": "ModelHarbor wants to use the browser:"
 	},
 	"codeblock": {
 		"tooltips": {

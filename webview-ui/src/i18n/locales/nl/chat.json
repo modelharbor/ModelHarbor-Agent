@@ -21,7 +21,9 @@
 		"connectToCloudDescription": "Meld je aan bij Roo Code Cloud om taken te delen",
 		"sharingDisabledByOrganization": "Delen uitgeschakeld door organisatie",
 		"shareSuccessOrganization": "Organisatielink gekopieerd naar klembord",
-		"shareSuccessPublic": "Openbare link gekopieerd naar klembord"
+		"shareSuccessPublic": "Openbare link gekopieerd naar klembord",
+		"openFolder": "Chatmap openen",
+		"openInExplorer": "Openen in Windows Explorer/Finder"
 	},
 	"unpin": "Losmaken",
 	"pin": "Vastmaken",
@@ -273,7 +275,8 @@
 			"scrollDown": "Scroll naar beneden",
 			"scrollUp": "Scroll naar boven",
 			"close": "Browser sluiten"
-		}
+		},
+		"ModelHarborWantsToUse": "ModelHarbor wil de browser gebruiken:"
 	},
 	"codeblock": {
 		"tooltips": {

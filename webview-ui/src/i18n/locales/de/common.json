@@ -39,6 +39,12 @@
 			"copyError": "Fehler beim Kopieren des Bildes"
 		}
 	},
+	"errors": {
+		"share_no_active_task": "Keine aktive Aufgabe zum Teilen",
+		"no_active_task": "Keine aktive Aufgabe",
+		"task_folder_not_found": "Aufgabenordner nicht gefunden",
+		"open_chat_folder_failed": "Fehler beim Öffnen des Chat-Ordners"
+	},
 	"file": {
 		"errors": {
 			"invalidDataUri": "Ungültiges Daten-URI-Format",

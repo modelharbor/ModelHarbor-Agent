@@ -24,6 +24,7 @@ import {
 	chutesDefaultModelId,
 	bedrockDefaultModelId,
 	vertexDefaultModelId,
+	modelHarborDefaultModelId,
 } from "@roo-code/types"
 
 import { vscode } from "@src/utils/vscode"
@@ -70,6 +71,7 @@ import {
 	Vertex,
 	VSCodeLM,
 	XAI,
+	ModelHarbor,
 } from "./providers"
 
 import { MODELS_BY_PROVIDER, PROVIDERS } from "./constants"
@@ -281,6 +283,7 @@ const ApiOptions = ({
 				unbound: { field: "unboundModelId", default: unboundDefaultModelId },
 				requesty: { field: "requestyModelId", default: requestyDefaultModelId },
 				litellm: { field: "litellmModelId", default: litellmDefaultModelId },
+				modelharbor: { field: "modelharborModelId", default: modelHarborDefaultModelId },
 				anthropic: { field: "apiModelId", default: anthropicDefaultModelId },
 				"claude-code": { field: "apiModelId", default: claudeCodeDefaultModelId },
 				"openai-native": { field: "apiModelId", default: openAiNativeDefaultModelId },
@@ -492,6 +495,14 @@ const ApiOptions = ({
 				/>
 			)}
 
+			{selectedProvider === "modelharbor" && (
+				<ModelHarbor
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					organizationAllowList={organizationAllowList}
+				/>
+			)}
+
 			{selectedProvider === "human-relay" && (
 				<>
 					<div className="text-sm text-vscode-descriptionForeground">
@@ -503,7 +514,7 @@ const ApiOptions = ({
 				</>
 			)}
 
-			{selectedProviderModels.length > 0 && (
+			{selectedProviderModels.length > 0 && selectedProvider !== "modelharbor" && (
 				<>
 					<div>
 						<label className="block font-medium mb-1">{t("settings:providers.model")}</label>
