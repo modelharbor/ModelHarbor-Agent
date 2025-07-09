@@ -33,12 +33,16 @@ import { getOpenRouterModels } from "../openrouter"
 import { getRequestyModels } from "../requesty"
 import { getGlamaModels } from "../glama"
 import { getUnboundModels } from "../unbound"
+import { getModelHarborModels } from "../modelharbor"
+
+vi.mock("../modelharbor")
 
 const mockGetLiteLLMModels = getLiteLLMModels as Mock<typeof getLiteLLMModels>
 const mockGetOpenRouterModels = getOpenRouterModels as Mock<typeof getOpenRouterModels>
 const mockGetRequestyModels = getRequestyModels as Mock<typeof getRequestyModels>
 const mockGetGlamaModels = getGlamaModels as Mock<typeof getGlamaModels>
 const mockGetUnboundModels = getUnboundModels as Mock<typeof getUnboundModels>
+const mockGetModelHarborModels = getModelHarborModels as Mock<typeof getModelHarborModels>
 
 const DUMMY_REQUESTY_KEY = "requesty-key-for-testing"
 const DUMMY_UNBOUND_KEY = "unbound-key-for-testing"
@@ -134,6 +138,31 @@ describe("getModels with new GetModelsOptions", () => {
 		const result = await getModels({ provider: "unbound", apiKey: DUMMY_UNBOUND_KEY })
 
 		expect(mockGetUnboundModels).toHaveBeenCalledWith(DUMMY_UNBOUND_KEY)
+		expect(result).toEqual(mockModels)
+	})
+
+	it("calls getModelHarborModels for modelharbor provider", async () => {
+		const mockModels = {
+			"qwen/qwen2.5-coder-32b": {
+				maxTokens: 8192,
+				contextWindow: 131072,
+				supportsImages: false,
+				supportsPromptCache: false,
+				supportsComputerUse: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				inputPrice: 0.06,
+				outputPrice: 0.18,
+				cacheReadsPrice: 0,
+				description: "Qwen 2.5 Coder 32B - ModelHarbor model",
+			},
+		}
+		mockGetModelHarborModels.mockResolvedValue(mockModels)
+
+		const result = await getModels({ provider: "modelharbor" })
+
+		expect(mockGetModelHarborModels).toHaveBeenCalled()
 		expect(result).toEqual(mockModels)
 	})
 
