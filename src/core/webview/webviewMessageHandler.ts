@@ -468,6 +468,27 @@ export const webviewMessageHandler = async (
 				vscode.window.showErrorMessage(t("common:errors.share_task_failed"))
 			}
 			break
+		case "openChatFolder":
+			const openTaskId = provider.getCurrentCline()?.taskId
+			if (!openTaskId) {
+				vscode.window.showErrorMessage(t("common:errors.no_active_task"))
+				break
+			}
+
+			try {
+				const { taskDirPath } = await provider.getTaskWithId(openTaskId)
+				if (taskDirPath) {
+					// Open the task directory in file explorer
+					const taskDirUri = vscode.Uri.file(taskDirPath)
+					await vscode.commands.executeCommand("revealFileInOS", taskDirUri)
+				} else {
+					vscode.window.showErrorMessage(t("common:errors.task_folder_not_found"))
+				}
+			} catch (error) {
+				provider.log(`[openChatFolder] Error: ${error}`)
+				vscode.window.showErrorMessage(t("common:errors.open_chat_folder_failed"))
+			}
+			break
 		case "showTaskWithId":
 			provider.showTaskWithId(message.text!)
 			break
@@ -557,6 +578,7 @@ export const webviewMessageHandler = async (
 				glama: {},
 				unbound: {},
 				litellm: {},
+				modelharbor: {},
 				ollama: {},
 				lmstudio: {},
 			}
@@ -578,6 +600,7 @@ export const webviewMessageHandler = async (
 				{ key: "requesty", options: { provider: "requesty", apiKey: apiConfiguration.requestyApiKey } },
 				{ key: "glama", options: { provider: "glama" } },
 				{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
+				{ key: "modelharbor", options: { provider: "modelharbor" } },
 			]
 
 			// Don't fetch Ollama and LM Studio models by default anymore
