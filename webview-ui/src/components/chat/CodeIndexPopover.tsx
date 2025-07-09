@@ -68,6 +68,7 @@ interface LocalCodeIndexSettings {
 	codebaseIndexOpenAiCompatibleBaseUrl?: string
 	codebaseIndexOpenAiCompatibleApiKey?: string
 	codebaseIndexGeminiApiKey?: string
+	codeIndexModelHarborApiKey?: string
 }
 
 // Validation schema for codebase index settings
@@ -122,6 +123,14 @@ const createValidationSchema = (provider: EmbedderProvider, t: any) => {
 					.min(1, t("settings:codeIndex.validation.modelSelectionRequired")),
 			})
 
+		case "modelharbor":
+			return baseSchema.extend({
+				codeIndexModelHarborApiKey: z.string().min(1, t("settings:codeIndex.validation.apiKeyRequired")),
+				codebaseIndexEmbedderModelId: z
+					.string()
+					.min(1, t("settings:codeIndex.validation.modelSelectionRequired")),
+			})
+
 		default:
 			return baseSchema
 	}
@@ -165,6 +174,7 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 		codebaseIndexOpenAiCompatibleBaseUrl: "",
 		codebaseIndexOpenAiCompatibleApiKey: "",
 		codebaseIndexGeminiApiKey: "",
+		codeIndexModelHarborApiKey: "",
 	})
 
 	// Initial settings state - stores the settings when popover opens
@@ -198,6 +208,7 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 				codebaseIndexOpenAiCompatibleBaseUrl: codebaseIndexConfig.codebaseIndexOpenAiCompatibleBaseUrl || "",
 				codebaseIndexOpenAiCompatibleApiKey: "",
 				codebaseIndexGeminiApiKey: "",
+				codeIndexModelHarborApiKey: "",
 			}
 			setInitialSettings(settings)
 			setCurrentSettings(settings)
@@ -289,6 +300,9 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 					if (!prev.codebaseIndexGeminiApiKey || prev.codebaseIndexGeminiApiKey === SECRET_PLACEHOLDER) {
 						updated.codebaseIndexGeminiApiKey = secretStatus.hasGeminiApiKey ? SECRET_PLACEHOLDER : ""
 					}
+					if (!prev.codeIndexModelHarborApiKey || prev.codeIndexModelHarborApiKey === SECRET_PLACEHOLDER) {
+						updated.codeIndexModelHarborApiKey = secretStatus.hasModelHarborApiKey ? SECRET_PLACEHOLDER : ""
+					}
 
 					return updated
 				}
@@ -360,7 +374,8 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 				if (
 					key === "codeIndexOpenAiKey" ||
 					key === "codebaseIndexOpenAiCompatibleApiKey" ||
-					key === "codebaseIndexGeminiApiKey"
+					key === "codebaseIndexGeminiApiKey" ||
+					key === "codeIndexModelHarborApiKey"
 				) {
 					dataToValidate[key] = "placeholder-valid"
 				}
@@ -590,6 +605,9 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent>
+												<SelectItem value="modelharbor">
+													{t("settings:codeIndex.modelharborProvider")}
+												</SelectItem>
 												<SelectItem value="openai">
 													{t("settings:codeIndex.openaiProvider")}
 												</SelectItem>
@@ -909,6 +927,56 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 															</VSCodeOption>
 														)
 													})}
+												</VSCodeDropdown>
+												{formErrors.codebaseIndexEmbedderModelId && (
+													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
+														{formErrors.codebaseIndexEmbedderModelId}
+													</p>
+												)}
+											</div>
+										</>
+									)}
+
+									{currentSettings.codebaseIndexEmbedderProvider === "modelharbor" && (
+										<>
+											<div className="space-y-2">
+												<label className="text-sm font-medium">
+													{t("settings:codeIndex.modelharborApiKeyLabel")}
+												</label>
+												<VSCodeTextField
+													type="password"
+													value={currentSettings.codeIndexModelHarborApiKey || ""}
+													onInput={(e: any) =>
+														updateSetting("codeIndexModelHarborApiKey", e.target.value)
+													}
+													placeholder={t("settings:codeIndex.modelharborApiKeyPlaceholder")}
+													className={cn("w-full", {
+														"border-red-500": formErrors.codeIndexModelHarborApiKey,
+													})}
+												/>
+												{formErrors.codeIndexModelHarborApiKey && (
+													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
+														{formErrors.codeIndexModelHarborApiKey}
+													</p>
+												)}
+											</div>
+
+											<div className="space-y-2">
+												<label className="text-sm font-medium">
+													{t("settings:codeIndex.modelLabel")}
+												</label>
+												<VSCodeDropdown
+													value={currentSettings.codebaseIndexEmbedderModelId}
+													onChange={(e: any) =>
+														updateSetting("codebaseIndexEmbedderModelId", e.target.value)
+													}
+													className={cn("w-full", {
+														"border-red-500": formErrors.codebaseIndexEmbedderModelId,
+													})}>
+													<VSCodeOption value="">
+														{t("settings:codeIndex.selectModel")}
+													</VSCodeOption>
+													<VSCodeOption value="baai/bge-m3">baai/bge-m3</VSCodeOption>
 												</VSCodeDropdown>
 												{formErrors.codebaseIndexEmbedderModelId && (
 													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
