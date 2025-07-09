@@ -1,5 +1,5 @@
 {
-	"greeting": "Bem-vindo ao Roo Code",
+	"greeting": "Bem-vindo ao ModelHarbor Agent",
 	"task": {
 		"title": "Tarefa",
 		"seeMore": "Ver mais",
@@ -18,10 +18,11 @@
 		"sharePublicly": "Compartilhar publicamente",
 		"sharePubliclyDescription": "Qualquer pessoa com o link pode acessar",
 		"connectToCloud": "Conectar ao Cloud",
-		"connectToCloudDescription": "Entre no Roo Code Cloud para compartilhar tarefas",
+		"connectToCloudDescription": "Entre no ModelHarbor Agent Cloud para compartilhar tarefas",
 		"sharingDisabledByOrganization": "Compartilhamento desabilitado pela organização",
 		"shareSuccessOrganization": "Link da organização copiado para a área de transferência",
-		"shareSuccessPublic": "Link público copiado para a área de transferência"
+		"shareSuccessPublic": "Link público copiado para a área de transferência",
+		"openInExplorer": "Abrir no Windows Explorer/Finder"
 	},
 	"unpin": "Desfixar",
 	"pin": "Fixar",
@@ -81,7 +82,7 @@
 	},
 	"scrollToBottom": "Rolar para o final do chat",
 	"about": "Gere, refatore e depure código com assistência de IA. Confira nossa <DocsLink>documentação</DocsLink> para saber mais.",
-	"onboarding": "<strong>Sua lista de tarefas neste espaço de trabalho está vazia.</strong> Comece digitando uma tarefa abaixo. Não sabe como começar? Leia mais sobre o que o Roo pode fazer por você nos <DocsLink>documentos</DocsLink>.",
+	"onboarding": "<strong>Sua lista de tarefas neste espaço de trabalho está vazia.</strong> Comece digitando uma tarefa abaixo. Não sabe como começar? Leia mais sobre o que o ModelHarbor pode fazer por você nos <DocsLink>documentos</DocsLink>.",
 	"rooTips": {
 		"boomerangTasks": {
 			"title": "Orquestração de Tarefas",
@@ -126,7 +127,7 @@
 	"diffError": {
 		"title": "Edição mal-sucedida"
 	},
-	"troubleMessage": "Roo está tendo problemas...",
+	"troubleMessage": "ModelHarbor está tendo problemas...",
 	"apiRequest": {
 		"title": "Requisição API",
 		"failed": "Requisição API falhou",
@@ -152,59 +153,59 @@
 		"current": "Atual"
 	},
 	"instructions": {
-		"wantsToFetch": "Roo quer buscar instruções detalhadas para ajudar com a tarefa atual"
+		"wantsToFetch": "ModelHarbor quer buscar instruções detalhadas para ajudar com a tarefa atual"
 	},
 	"fileOperations": {
-		"wantsToRead": "Roo quer ler este arquivo:",
-		"wantsToReadOutsideWorkspace": "Roo quer ler este arquivo fora do espaço de trabalho:",
-		"didRead": "Roo leu este arquivo:",
-		"wantsToEdit": "Roo quer editar este arquivo:",
-		"wantsToEditOutsideWorkspace": "Roo quer editar este arquivo fora do espaço de trabalho:",
-		"wantsToEditProtected": "Roo quer editar um arquivo de configuração protegido:",
-		"wantsToCreate": "Roo quer criar um novo arquivo:",
-		"wantsToSearchReplace": "Roo quer realizar busca e substituição neste arquivo:",
-		"didSearchReplace": "Roo realizou busca e substituição neste arquivo:",
-		"wantsToInsert": "Roo quer inserir conteúdo neste arquivo:",
-		"wantsToInsertWithLineNumber": "Roo quer inserir conteúdo neste arquivo na linha {{lineNumber}}:",
-		"wantsToInsertAtEnd": "Roo quer adicionar conteúdo ao final deste arquivo:",
-		"wantsToReadAndXMore": "Roo quer ler este arquivo e mais {{count}}:",
-		"wantsToReadMultiple": "Roo deseja ler múltiplos arquivos:",
-		"wantsToApplyBatchChanges": "Roo quer aplicar alterações a múltiplos arquivos:"
+		"wantsToRead": "ModelHarbor quer ler este arquivo:",
+		"wantsToReadOutsideWorkspace": "ModelHarbor quer ler este arquivo fora do espaço de trabalho:",
+		"didRead": "ModelHarbor leu este arquivo:",
+		"wantsToEdit": "ModelHarbor quer editar este arquivo:",
+		"wantsToEditOutsideWorkspace": "ModelHarbor quer editar este arquivo fora do espaço de trabalho:",
+		"wantsToEditProtected": "ModelHarbor quer editar um arquivo de configuração protegido:",
+		"wantsToCreate": "ModelHarbor quer criar um novo arquivo:",
+		"wantsToSearchReplace": "ModelHarbor quer realizar busca e substituição neste arquivo:",
+		"didSearchReplace": "ModelHarbor realizou busca e substituição neste arquivo:",
+		"wantsToInsert": "ModelHarbor quer inserir conteúdo neste arquivo:",
+		"wantsToInsertWithLineNumber": "ModelHarbor quer inserir conteúdo neste arquivo na linha {{lineNumber}}:",
+		"wantsToInsertAtEnd": "ModelHarbor quer adicionar conteúdo ao final deste arquivo:",
+		"wantsToReadAndXMore": "ModelHarbor quer ler este arquivo e mais {{count}}:",
+		"wantsToReadMultiple": "ModelHarbor deseja ler múltiplos arquivos:",
+		"wantsToApplyBatchChanges": "ModelHarbor quer aplicar alterações a múltiplos arquivos:"
 	},
 	"directoryOperations": {
-		"wantsToViewTopLevel": "Roo quer visualizar os arquivos de nível superior neste diretório:",
-		"didViewTopLevel": "Roo visualizou os arquivos de nível superior neste diretório:",
-		"wantsToViewRecursive": "Roo quer visualizar recursivamente todos os arquivos neste diretório:",
-		"didViewRecursive": "Roo visualizou recursivamente todos os arquivos neste diretório:",
-		"wantsToViewDefinitions": "Roo quer visualizar nomes de definição de código-fonte usados neste diretório:",
-		"didViewDefinitions": "Roo visualizou nomes de definição de código-fonte usados neste diretório:",
-		"wantsToSearch": "Roo quer pesquisar neste diretório por <code>{{regex}}</code>:",
-		"didSearch": "Roo pesquisou neste diretório por <code>{{regex}}</code>:",
-		"wantsToSearchOutsideWorkspace": "Roo quer pesquisar neste diretório (fora do espaço de trabalho) por <code>{{regex}}</code>:",
-		"didSearchOutsideWorkspace": "Roo pesquisou neste diretório (fora do espaço de trabalho) por <code>{{regex}}</code>:",
-		"wantsToViewTopLevelOutsideWorkspace": "Roo quer visualizar os arquivos de nível superior neste diretório (fora do espaço de trabalho):",
-		"didViewTopLevelOutsideWorkspace": "Roo visualizou os arquivos de nível superior neste diretório (fora do espaço de trabalho):",
-		"wantsToViewRecursiveOutsideWorkspace": "Roo quer visualizar recursivamente todos os arquivos neste diretório (fora do espaço de trabalho):",
-		"didViewRecursiveOutsideWorkspace": "Roo visualizou recursivamente todos os arquivos neste diretório (fora do espaço de trabalho):",
-		"wantsToViewDefinitionsOutsideWorkspace": "Roo quer visualizar nomes de definição de código-fonte usados neste diretório (fora do espaço de trabalho):",
-		"didViewDefinitionsOutsideWorkspace": "Roo visualizou nomes de definição de código-fonte usados neste diretório (fora do espaço de trabalho):"
+		"wantsToViewTopLevel": "ModelHarbor quer visualizar os arquivos de nível superior neste diretório:",
+		"didViewTopLevel": "ModelHarbor visualizou os arquivos de nível superior neste diretório:",
+		"wantsToViewRecursive": "ModelHarbor quer visualizar recursivamente todos os arquivos neste diretório:",
+		"didViewRecursive": "ModelHarbor visualizou recursivamente todos os arquivos neste diretório:",
+		"wantsToViewDefinitions": "ModelHarbor quer visualizar nomes de definição de código-fonte usados neste diretório:",
+		"didViewDefinitions": "ModelHarbor visualizou nomes de definição de código-fonte usados neste diretório:",
+		"wantsToSearch": "ModelHarbor quer pesquisar neste diretório por <code>{{regex}}</code>:",
+		"didSearch": "ModelHarbor pesquisou neste diretório por <code>{{regex}}</code>:",
+		"wantsToSearchOutsideWorkspace": "ModelHarbor quer pesquisar neste diretório (fora do espaço de trabalho) por <code>{{regex}}</code>:",
+		"didSearchOutsideWorkspace": "ModelHarbor pesquisou neste diretório (fora do espaço de trabalho) por <code>{{regex}}</code>:",
+		"wantsToViewTopLevelOutsideWorkspace": "ModelHarbor quer visualizar os arquivos de nível superior neste diretório (fora do espaço de trabalho):",
+		"didViewTopLevelOutsideWorkspace": "ModelHarbor visualizou os arquivos de nível superior neste diretório (fora do espaço de trabalho):",
+		"wantsToViewRecursiveOutsideWorkspace": "ModelHarbor quer visualizar recursivamente todos os arquivos neste diretório (fora do espaço de trabalho):",
+		"didViewRecursiveOutsideWorkspace": "ModelHarbor visualizou recursivamente todos os arquivos neste diretório (fora do espaço de trabalho):",
+		"wantsToViewDefinitionsOutsideWorkspace": "ModelHarbor quer visualizar nomes de definição de código-fonte usados neste diretório (fora do espaço de trabalho):",
+		"didViewDefinitionsOutsideWorkspace": "ModelHarbor visualizou nomes de definição de código-fonte usados neste diretório (fora do espaço de trabalho):"
 	},
 	"commandOutput": "Saída do comando",
 	"response": "Resposta",
 	"arguments": "Argumentos",
 	"mcp": {
-		"wantsToUseTool": "Roo quer usar uma ferramenta no servidor MCP {{serverName}}:",
-		"wantsToAccessResource": "Roo quer acessar um recurso no servidor MCP {{serverName}}:"
+		"wantsToUseTool": "ModelHarbor quer usar uma ferramenta no servidor MCP {{serverName}}:",
+		"wantsToAccessResource": "ModelHarbor quer acessar um recurso no servidor MCP {{serverName}}:"
 	},
 	"modes": {
-		"wantsToSwitch": "Roo quer mudar para o modo <code>{{mode}}</code>",
-		"wantsToSwitchWithReason": "Roo quer mudar para o modo <code>{{mode}}</code> porque: {{reason}}",
-		"didSwitch": "Roo mudou para o modo <code>{{mode}}</code>",
-		"didSwitchWithReason": "Roo mudou para o modo <code>{{mode}}</code> porque: {{reason}}"
+		"wantsToSwitch": "ModelHarbor quer mudar para o modo <code>{{mode}}</code>",
+		"wantsToSwitchWithReason": "ModelHarbor quer mudar para o modo <code>{{mode}}</code> porque: {{reason}}",
+		"didSwitch": "ModelHarbor mudou para o modo <code>{{mode}}</code>",
+		"didSwitchWithReason": "ModelHarbor mudou para o modo <code>{{mode}}</code> porque: {{reason}}"
 	},
 	"subtasks": {
-		"wantsToCreate": "Roo quer criar uma nova subtarefa no modo <code>{{mode}}</code>:",
-		"wantsToFinish": "Roo quer finalizar esta subtarefa",
+		"wantsToCreate": "ModelHarbor quer criar uma nova subtarefa no modo <code>{{mode}}</code>:",
+		"wantsToFinish": "ModelHarbor quer finalizar esta subtarefa",
 		"newTaskContent": "Instruções da subtarefa",
 		"completionContent": "Subtarefa concluída",
 		"resultContent": "Resultados da subtarefa",
@@ -212,7 +213,7 @@
 		"completionInstructions": "Subtarefa concluída! Você pode revisar os resultados e sugerir correções ou próximos passos. Se tudo parecer bom, confirme para retornar o resultado à tarefa principal."
 	},
 	"questions": {
-		"hasQuestion": "Roo tem uma pergunta:"
+		"hasQuestion": "ModelHarbor tem uma pergunta:"
 	},
 	"taskCompleted": "Tarefa concluída",
 	"powershell": {
@@ -221,7 +222,7 @@
 	"autoApprove": {
 		"title": "Aprovação automática:",
 		"none": "Nenhuma",
-		"description": "A aprovação automática permite que o Roo Code execute ações sem pedir permissão. Ative apenas para ações nas quais você confia totalmente. Configuração mais detalhada disponível nas <settingsLink>Configurações</settingsLink>."
+		"description": "A aprovação automática permite que o ModelHarbor Agent execute ações sem pedir permissão. Ative apenas para ações nas quais você confia totalmente. Configuração mais detalhada disponível nas <settingsLink>Configurações</settingsLink>."
 	},
 	"reasoning": {
 		"thinking": "Pensando",
@@ -239,17 +240,17 @@
 		"countdownDisplay": "{{count}}s"
 	},
 	"announcement": {
-		"title": "🎉 Roo Code {{version}} Lançado",
-		"description": "Roo Code {{version}} traz novos recursos poderosos e melhorias significativas para aprimorar seu fluxo de trabalho de desenvolvimento.",
+		"title": "🎉 ModelHarbor Agent {{version}} Lançado",
+		"description": "ModelHarbor Agent {{version}} traz importantes novos recursos e melhorias baseados no seu feedback.",
 		"whatsNew": "O que há de novo",
-		"feature1": "<bold>Indexação de Base de Código Graduada do Experimental</bold>: A indexação completa da base de código agora é estável e pronta para uso em produção com busca aprimorada e compreensão de contexto.",
-		"feature2": "<bold>Nova Funcionalidade de Lista de Tarefas</bold>: Mantenha suas tarefas no caminho certo com gerenciamento integrado de tarefas que ajuda você a se manter organizado e focado em seus objetivos de desenvolvimento.",
-		"feature3": "<bold>Transições Aprimoradas de Arquiteto para Código</bold>: Transferências suaves do planejamento no modo Arquiteto para implementação no modo Código.",
+		"feature1": "<bold>Lançamento do Marketplace ModelHarbor</bold>: O marketplace está agora no ar! Descubra e instale modos e MCPs mais facilmente do que nunca.",
+		"feature2": "<bold>Modelos Gemini 2.5</bold>: Adicionado suporte para novos modelos Gemini 2.5 Pro, Flash e Flash Lite.",
+		"feature3": "<bold>Suporte a Arquivos Excel e Mais</bold>: Adicionado suporte a arquivos Excel (.xlsx) e numerosas correções de bugs e melhorias!",
 		"hideButton": "Ocultar anúncio",
-		"detailsDiscussLinks": "Obtenha mais detalhes e participe da discussão no <discordLink>Discord</discordLink> e <redditLink>Reddit</redditLink> 🚀"
+		"detailsDiscussLinks": "Obtenha mais detalhes e discuta em <discordLink>Modelharbor.com</discordLink>"
 	},
 	"browser": {
-		"rooWantsToUse": "Roo quer usar o navegador:",
+		"ModelHarborWantsToUse": "ModelHarbor quer usar o navegador:",
 		"consoleLogs": "Logs do console",
 		"noNewLogs": "(Sem novos logs)",
 		"screenshot": "Captura de tela do navegador",
@@ -283,19 +284,19 @@
 	"profileViolationWarning": "O perfil atual viola as configurações da sua organização",
 	"shellIntegration": {
 		"title": "Aviso de execução de comando",
-		"description": "Seu comando está sendo executado sem a integração de shell do terminal VSCode. Para suprimir este aviso, você pode desativar a integração de shell na seção <strong>Terminal</strong> das <settingsLink>configurações do Roo Code</settingsLink> ou solucionar problemas de integração do terminal VSCode usando o link abaixo.",
+		"description": "Seu comando está sendo executado sem a integração de shell do terminal VSCode. Para suprimir este aviso, você pode desativar a integração de shell na seção <strong>Terminal</strong> das <settingsLink>configurações do ModelHarbor Agent</settingsLink> ou solucionar problemas de integração do terminal VSCode usando o link abaixo.",
 		"troubleshooting": "Clique aqui para a documentação de integração de shell."
 	},
 	"ask": {
 		"autoApprovedRequestLimitReached": {
 			"title": "Limite de Solicitações Auto-aprovadas Atingido",
-			"description": "Roo atingiu o limite auto-aprovado de {{count}} solicitação(ões) de API. Deseja redefinir a contagem e prosseguir com a tarefa?",
+			"description": "ModelHarbor atingiu o limite auto-aprovado de {{count}} solicitação(ões) de API. Deseja redefinir a contagem e prosseguir com a tarefa?",
 			"button": "Redefinir e Continuar"
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo quer pesquisar na base de código por <code>{{query}}</code>:",
-		"wantsToSearchWithPath": "Roo quer pesquisar na base de código por <code>{{query}}</code> em <code>{{path}}</code>:",
+		"wantsToSearch": "ModelHarbor quer pesquisar na base de código por <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "ModelHarbor quer pesquisar na base de código por <code>{{query}}</code> em <code>{{path}}</code>:",
 		"didSearch": "Encontrado {{count}} resultado(s) para <code>{{query}}</code>:",
 		"resultTooltip": "Pontuação de similaridade: {{score}} (clique para abrir o arquivo)"
 	},
