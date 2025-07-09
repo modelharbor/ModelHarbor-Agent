@@ -2019,6 +2019,12 @@ export const webviewMessageHandler = async (
 						settings.codebaseIndexGeminiApiKey,
 					)
 				}
+				if (settings.codeIndexModelHarborApiKey !== undefined) {
+					await provider.contextProxy.storeSecret(
+						"codeIndexModelHarborApiKey",
+						settings.codeIndexModelHarborApiKey,
+					)
+				}
 				if (settings.codebaseIndexMistralApiKey !== undefined) {
 					await provider.contextProxy.storeSecret(
 						"codebaseIndexMistralApiKey",
@@ -2118,6 +2124,7 @@ export const webviewMessageHandler = async (
 			))
 			const hasGeminiApiKey = !!(await provider.context.secrets.get("codebaseIndexGeminiApiKey"))
 			const hasMistralApiKey = !!(await provider.context.secrets.get("codebaseIndexMistralApiKey"))
+			const hasModelHarborApiKey = !!(await provider.context.secrets.get("codeIndexModelHarborApiKey"))
 
 			provider.postMessageToWebview({
 				type: "codeIndexSecretStatus",
@@ -2127,6 +2134,7 @@ export const webviewMessageHandler = async (
 					hasOpenAiCompatibleApiKey,
 					hasGeminiApiKey,
 					hasMistralApiKey,
+					hasModelHarborApiKey,
 				},
 			})
 			break
