@@ -39,6 +39,12 @@
 			"copyError": "Erreur lors de la copie de l'image"
 		}
 	},
+	"errors": {
+		"share_no_active_task": "Aucune tâche active à partager",
+		"no_active_task": "Aucune tâche active",
+		"task_folder_not_found": "Dossier de tâche introuvable",
+		"open_chat_folder_failed": "Échec de l'ouverture du dossier de conversation"
+	},
 	"file": {
 		"errors": {
 			"invalidDataUri": "Format d'URI de données invalide",
@@ -46,7 +52,7 @@
 			"openingImage": "Erreur lors de l'ouverture de l'image : {{error}}",
 			"pathNotExists": "Le chemin n'existe pas : {{path}}",
 			"couldNotOpen": "Impossible d'ouvrir le fichier : {{error}}",
-			"couldNotOpenGeneric": "Impossible d'ouvrir le fichier !"
+			"couldNotOpenGeneric": "Impossible d'ouvrir le fichier!"
 		},
 		"success": {
 			"imageDataUriCopied": "URI de données d'image copiée dans le presse-papiers"

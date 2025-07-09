@@ -54,6 +54,7 @@ export interface WebviewMessage {
 		| "selectImages"
 		| "exportCurrentTask"
 		| "shareCurrentTask"
+		| "openChatFolder"
 		| "showTaskWithId"
 		| "deleteTaskWithId"
 		| "exportTaskWithId"

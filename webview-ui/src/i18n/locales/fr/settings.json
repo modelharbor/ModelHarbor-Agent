@@ -31,10 +31,10 @@
 		"prompts": "Invites",
 		"experimental": "Expérimental",
 		"language": "Langue",
-		"about": "À propos de Roo Code"
+		"about": "À propos de ModelHarbor Agent"
 	},
 	"prompts": {
-		"description": "Configurez les invites de support utilisées pour les actions rapides comme l'amélioration des invites, l'explication du code et la résolution des problèmes. Ces invites aident Roo à fournir une meilleure assistance pour les tâches de développement courantes."
+		"description": "Configurez les invites de support utilisées pour les actions rapides comme l'amélioration des invites, l'explication du code et la résolution des problèmes. Ces invites aident ModelHarbor à fournir une meilleure assistance pour les tâches de développement courantes."
 	},
 	"codeIndex": {
 		"title": "Indexation de la base de code",
@@ -122,13 +122,13 @@
 		"resetToDefault": "Réinitialiser par défaut"
 	},
 	"autoApprove": {
-		"description": "Permettre à Roo d'effectuer automatiquement des opérations sans requérir d'approbation. Activez ces paramètres uniquement si vous faites entièrement confiance à l'IA et que vous comprenez les risques de sécurité associés.",
+		"description": "Permettre à ModelHarbor d'effectuer automatiquement des opérations sans requérir d'approbation. Activez ces paramètres uniquement si vous faites entièrement confiance à l'IA et que vous comprenez les risques de sécurité associés.",
 		"readOnly": {
 			"label": "Lecture",
-			"description": "Lorsque cette option est activée, Roo affichera automatiquement le contenu des répertoires et lira les fichiers sans que vous ayez à cliquer sur le bouton Approuver.",
+			"description": "Lorsque cette option est activée, ModelHarbor affichera automatiquement le contenu des répertoires et lira les fichiers sans que vous ayez à cliquer sur le bouton Approuver.",
 			"outsideWorkspace": {
 				"label": "Inclure les fichiers en dehors de l'espace de travail",
-				"description": "Permettre à Roo de lire des fichiers en dehors de l'espace de travail actuel sans nécessiter d'approbation."
+				"description": "Permettre à ModelHarbor de lire des fichiers en dehors de l'espace de travail actuel sans nécessiter d'approbation."
 			}
 		},
 		"write": {
@@ -137,11 +137,11 @@
 			"delayLabel": "Délai après les écritures pour permettre aux diagnostics de détecter les problèmes potentiels",
 			"outsideWorkspace": {
 				"label": "Inclure les fichiers en dehors de l'espace de travail",
-				"description": "Permettre à Roo de créer et modifier des fichiers en dehors de l'espace de travail actuel sans nécessiter d'approbation."
+				"description": "Permettre à ModelHarbor de créer et modifier des fichiers en dehors de l'espace de travail actuel sans nécessiter d'approbation."
 			},
 			"protected": {
 				"label": "Inclure les fichiers protégés",
-				"description": "Permettre à Roo de créer et modifier des fichiers protégés (comme .rooignore et les fichiers de configuration .roo/) sans nécessiter d'approbation."
+				"description": "Permettre à ModelHarbor de créer et modifier des fichiers protégés (comme .rooignore et les fichiers de configuration .roo/) sans nécessiter d'approbation."
 			}
 		},
 		"browser": {
@@ -258,6 +258,8 @@
 		"getXaiApiKey": "Obtenir la clé API xAI",
 		"litellmApiKey": "Clé API LiteLLM",
 		"litellmBaseUrl": "URL de base LiteLLM",
+		"modelharborApiKey": "Clé API ModelHarbor",
+		"getModelHarborApiKey": "Obtenir la clé API ModelHarbor",
 		"awsCredentials": "Identifiants AWS",
 		"awsProfile": "Profil AWS",
 		"awsProfileName": "Nom du profil AWS",
@@ -278,7 +280,7 @@
 		"vscodeLmWarning": "Remarque : Il s'agit d'une intégration très expérimentale et le support des fournisseurs variera. Si vous recevez une erreur concernant un modèle non pris en charge, c'est un problème du côté du fournisseur.",
 		"googleCloudSetup": {
 			"title": "Pour utiliser Google Cloud Vertex AI, vous devez :",
-			"step1": "1. Créer un compte Google Cloud, activer l'API Vertex AI et activer les modèles Claude souhaités.",
+			"step1": "1. Créer un compte Google Cloud, activer l'API de Vertex AI et activer les modèles Claude souhaités.",
 			"step2": "2. Installer Google Cloud CLI et configurer les identifiants par défaut de l'application.",
 			"step3": "3. Ou créer un compte de service avec des identifiants."
 		},
@@ -294,13 +296,13 @@
 			"draftModelDesc": "Le modèle brouillon doit être de la même famille de modèles pour que le décodage spéculatif fonctionne correctement.",
 			"selectDraftModel": "Sélectionner le modèle brouillon",
 			"noModelsFound": "Aucun modèle brouillon trouvé. Veuillez vous assurer que LM Studio est en cours d'exécution avec le mode serveur activé.",
-			"description": "LM Studio vous permet d'exécuter des modèles localement sur votre ordinateur. Pour obtenir des instructions sur la mise en route, consultez leur <a>guide de démarrage rapide</a>. Vous devrez également démarrer la fonction <b>serveur local</b> de LM Studio pour l'utiliser avec cette extension. <span>Remarque :</span> Roo Code utilise des prompts complexes et fonctionne mieux avec les modèles Claude. Les modèles moins performants peuvent ne pas fonctionner comme prévu."
+			"description": "LM Studio vous permet d'exécuter des modèles localement sur votre ordinateur. Pour obtenir des instructions sur la mise en route, consultez leur <a>guide de démarrage rapide</a>. Vous devrez également démarrer la fonction <b>serveur local</b> de LM Studio pour l'utiliser avec cette extension. <span>Remarque :</span> ModelHarbor Agent utilise des prompts complexes et fonctionne mieux avec les modèles Claude. Les modèles moins performants peuvent ne pas fonctionner comme prévu."
 		},
 		"ollama": {
 			"baseUrl": "URL de base (optionnel)",
 			"modelId": "ID du modèle",
 			"description": "Ollama vous permet d'exécuter des modèles localement sur votre ordinateur. Pour obtenir des instructions sur la mise en route, consultez le guide de démarrage rapide.",
-			"warning": "Remarque : Roo Code utilise des prompts complexes et fonctionne mieux avec les modèles Claude. Les modèles moins performants peuvent ne pas fonctionner comme prévu."
+			"warning": "Remarque : ModelHarbor Agent utilise des prompts complexes et fonctionne mieux avec les modèles Claude. Les modèles moins performants peuvent ne pas fonctionner comme prévu."
 		},
 		"unboundApiKey": "Clé API Unbound",
 		"getUnboundApiKey": "Obtenir la clé API Unbound",
@@ -318,7 +320,7 @@
 			}
 		},
 		"customModel": {
-			"capabilities": "Configurez les capacités et les prix pour votre modèle personnalisé compatible OpenAI. Soyez prudent lors de la spécification des capacités du modèle, car elles peuvent affecter le fonctionnement de Roo Code.",
+			"capabilities": "Configurez les capacités et les prix pour votre modèle personnalisé compatible OpenAI. Soyez prudent lors de la spécification des capacités du modèle, car elles peuvent affecter le fonctionnement de ModelHarbor Agent.",
 			"maxTokens": {
 				"label": "Tokens de sortie maximum",
 				"description": "Nombre maximum de tokens que le modèle peut générer dans une réponse. (Spécifiez -1 pour permettre au serveur de définir les tokens maximum.)"
@@ -381,7 +383,7 @@
 	"browser": {
 		"enable": {
 			"label": "Activer l'outil de navigateur",
-			"description": "Lorsque cette option est activée, Roo peut utiliser un navigateur pour interagir avec des sites web lors de l'utilisation de modèles qui prennent en charge l'utilisation de l'ordinateur. <0>En savoir plus</0>"
+			"description": "Lorsque cette option est activée, ModelHarbor peut utiliser un navigateur pour interagir avec des sites web lors de l'utilisation de modèles qui prennent en charge l'utilisation de l'ordinateur. <0>En savoir plus</0>"
 		},
 		"viewport": {
 			"label": "Taille de la fenêtre d'affichage",
@@ -409,18 +411,18 @@
 	"checkpoints": {
 		"enable": {
 			"label": "Activer les points de contrôle automatiques",
-			"description": "Lorsque cette option est activée, Roo créera automatiquement des points de contrôle pendant l'exécution des tâches, facilitant la révision des modifications ou le retour à des états antérieurs. <0>En savoir plus</0>"
+			"description": "Lorsque cette option est activée, ModelHarbor créera automatiquement des points de contrôle pendant l'exécution des tâches, facilitant la révision des modifications ou le retour à des états antérieurs. <0>En savoir plus</0>"
 		}
 	},
 	"notifications": {
 		"sound": {
 			"label": "Activer les effets sonores",
-			"description": "Lorsque cette option est activée, Roo jouera des effets sonores pour les notifications et les événements.",
+			"description": "Lorsque cette option est activée, ModelHarbor jouera des effets sonores pour les notifications et les événements.",
 			"volumeLabel": "Volume"
 		},
 		"tts": {
 			"label": "Activer la synthèse vocale",
-			"description": "Lorsque cette option est activée, Roo lira ses réponses à haute voix en utilisant la synthèse vocale.",
+			"description": "Lorsque cette option est activée, ModelHarbor lira ses réponses à haute voix en utilisant la synthèse vocale.",
 			"speedLabel": "Vitesse"
 		}
 	},
@@ -428,7 +430,7 @@
 		"description": "Contrôlez quelles informations sont incluses dans la fenêtre de contexte de l'IA, affectant l'utilisation de token et la qualité des réponses",
 		"autoCondenseContextPercent": {
 			"label": "Seuil de déclenchement de la condensation intelligente du contexte",
-			"description": "Lorsque la fenêtre de contexte atteint ce seuil, Roo la condensera automatiquement."
+			"description": "Lorsque la fenêtre de contexte atteint ce seuil, ModelHarbor la condensera automatiquement."
 		},
 		"condensingApiConfiguration": {
 			"label": "Configuration API pour la condensation du contexte",
@@ -444,7 +446,7 @@
 		},
 		"autoCondenseContext": {
 			"name": "Déclencher automatiquement la condensation intelligente du contexte",
-			"description": "Lorsque cette option est activée, Roo condensera automatiquement le contexte lorsque le seuil est atteint. Lorsqu'elle est désactivée, vous pouvez toujours déclencher manuellement la condensation du contexte."
+			"description": "Lorsque cette option est activée, ModelHarbor condensera automatiquement le contexte lorsque le seuil est atteint. Lorsqu'elle est désactivée, vous pouvez toujours déclencher manuellement la condensation du contexte."
 		},
 		"openTabs": {
 			"label": "Limite de contexte des onglets ouverts",
@@ -460,7 +462,7 @@
 		},
 		"maxReadFile": {
 			"label": "Seuil d'auto-troncature de lecture de fichier",
-			"description": "Roo lit ce nombre de lignes lorsque le modèle omet les valeurs de début/fin. Si ce nombre est inférieur au total du fichier, Roo génère un index des numéros de ligne des définitions de code. Cas spéciaux : -1 indique à Roo de lire le fichier entier (sans indexation), et 0 indique de ne lire aucune ligne et de fournir uniquement les index de ligne pour un contexte minimal. Des valeurs plus basses minimisent l'utilisation initiale du contexte, permettant des lectures ultérieures de plages de lignes précises. Les requêtes avec début/fin explicites ne sont pas limitées par ce paramètre.",
+			"description": "ModelHarbor lit ce nombre de lignes lorsque le modèle omet les valeurs de début/fin. Si ce nombre est inférieur au total du fichier, ModelHarbor génère un index des numéros de ligne des définitions de code. Cas spéciaux : -1 indique à ModelHarbor de lire le fichier entier (sans indexation), et 0 indique de ne lire aucune ligne et de fournir uniquement les index de ligne pour un contexte minimal. Des valeurs plus basses minimisent l'utilisation initiale du contexte, permettant des lectures ultérieures de plages de lignes précises. Les requêtes avec début/fin explicites ne sont pas limitées par ce paramètre.",
 			"lines": "lignes",
 			"always_full_read": "Toujours lire le fichier entier"
 		},
@@ -501,7 +503,7 @@
 		},
 		"commandDelay": {
 			"label": "Délai de commande du terminal",
-			"description": "Délai en millisecondes à ajouter après l'exécution de la commande. Le paramètre par défaut de 0 désactive complètement le délai. Cela peut aider à garantir que la sortie de la commande est entièrement capturée dans les terminaux avec des problèmes de synchronisation. Dans la plupart des terminaux, cela est implémenté en définissant `PROMPT_COMMAND='sleep N'` et Powershell ajoute `start-sleep` à la fin de chaque commande. À l'origine, c'était une solution pour le bug VSCode#237208 et peut ne pas être nécessaire. <0>En savoir plus</0>"
+			"description": "Délai en millisecondes à ajouter après l'exécution de la comande. Le paramètre par défaut de 0 désactive complètement le délai. Cela peut aider à garantir que la sortie de la commande est entièrement capturée dans les terminaux avec des problèmes de synchronisation. Dans la plupart des terminaux, cela est implémenté en définissant `PROMPT_COMMAND='sleep N'` et Powershell ajoute `start-sleep` à la fin de chaque commande. À l'origine, c'était une solution pour le bug VSCode#237208 et peut ne pas être nécessaire. <0>En savoir plus</0>"
 		},
 		"compressProgressBar": {
 			"label": "Compresser la sortie des barres de progression",
@@ -535,7 +537,7 @@
 	"advanced": {
 		"diff": {
 			"label": "Activer l'édition via des diffs",
-			"description": "Lorsque cette option est activée, Roo pourra éditer des fichiers plus rapidement et rejettera automatiquement les écritures de fichiers complets tronqués. Fonctionne mieux avec le dernier modèle Claude 3.7 Sonnet.",
+			"description": "Lorsque cette option est activée, ModelHarbor pourra éditer des fichiers plus rapidement et rejettera automatiquement les écritures de fichiers complets tronqués. Fonctionne mieux avec le dernier modèle Claude 3.7 Sonnet.",
 			"strategy": {
 				"label": "Stratégie de diff",
 				"options": {
@@ -551,7 +553,7 @@
 			},
 			"matchPrecision": {
 				"label": "Précision de correspondance",
-				"description": "Ce curseur contrôle la précision avec laquelle les sections de code doivent correspondre lors de l'application des diffs. Des valeurs plus basses permettent des correspondances plus flexibles mais augmentent le risque de remplacements incorrects. Utilisez des valeurs inférieures à 100 % avec une extrême prudence."
+				"description": "Ce curseur contrôle la précision avec laquelle les sections de code doivent correspondre lors de l'application des diffs. Des valeurs plus faibles permettent des correspondances plus flexibles mais augmentent le risque de remplacements incorrects. Utilisez des valeurs inférieures à 100 % avec une extrême prudence."
 			}
 		}
 	},
@@ -562,36 +564,36 @@
 		},
 		"SEARCH_AND_REPLACE": {
 			"name": "Utiliser l'outil de recherche et remplacement expérimental",
-			"description": "Activer l'outil de recherche et remplacement expérimental, permettant à Roo de remplacer plusieurs occurrences d'un terme de recherche en une seule requête."
+			"description": "Activer l'outil de recherche et remplacement expérimental, permettant à ModelHarbor de remplacer plusieurs occurrences d'un terme de recherche en une seule requête."
 		},
 		"INSERT_BLOCK": {
 			"name": "Utiliser l'outil d'insertion de contenu expérimental",
-			"description": "Activer l'outil d'insertion de contenu expérimental, permettant à Roo d'insérer du contenu à des numéros de ligne spécifiques sans avoir besoin de créer un diff."
+			"description": "Activer l'outil d'insertion de contenu expérimental, permettant à ModelHarbor d'insérer du contenu à des numéros de ligne spécifiques sans avoir besoin de créer un diff."
 		},
 		"POWER_STEERING": {
 			"name": "Utiliser le mode \"direction assistée\" expérimental",
-			"description": "Lorsqu'il est activé, Roo rappellera plus fréquemment au modèle les détails de sa définition de mode actuelle. Cela conduira à une adhérence plus forte aux définitions de rôles et aux instructions personnalisées, mais utilisera plus de tokens par message."
+			"description": "Lorsqu'il est activé, ModelHarbor rappellera plus fréquemment au modèle les détails de sa définition de mode actuelle. Cela conduira à une adhérence plus forte aux définitions de rôles et aux instructions personnalisées, mais utilisera plus de tokens par message."
 		},
 		"MULTI_SEARCH_AND_REPLACE": {
 			"name": "Utiliser l'outil diff multi-blocs expérimental",
-			"description": "Lorsqu'il est activé, Roo utilisera l'outil diff multi-blocs. Cela tentera de mettre à jour plusieurs blocs de code dans le fichier en une seule requête."
+			"description": "Lorsqu'il est activé, ModelHarbor utilisera l'outil diff multi-blocs. Cela tentera de mettre à jour plusieurs blocs de code dans le fichier en une seule requête."
 		},
 		"CONCURRENT_FILE_READS": {
 			"name": "Activer la lecture simultanée de fichiers",
-			"description": "Lorsqu'activé, Roo peut lire plusieurs fichiers dans une seule requête. Lorsque désactivé, Roo doit lire les fichiers un par un. La désactivation peut aider lors du travail avec des modèles moins performants ou lorsque tu souhaites plus de contrôle sur l'accès aux fichiers."
+			"description": "Lorsqu'activé, ModelHarbor peut lire plusieurs fichiers dans une seule requête. Lorsque désactivé, ModelHarbor doit lire les fichiers un par un. La désactivation peut aider lors du travail avec des modèles moins performants ou lorsque tu souhaites plus de contrôle sur l'accès aux fichiers."
 		},
 		"MARKETPLACE": {
 			"name": "Activer le Marketplace",
-			"description": "Lorsque cette option est activée, tu peux installer des MCP et des modes personnalisés depuis le Marketplace."
+			"description": "Lorsque cette option est activée, tu peux installer MCP et modes personnalisés depuis le Marketplace."
 		},
 		"MULTI_FILE_APPLY_DIFF": {
 			"name": "Activer les éditions de fichiers concurrentes",
-			"description": "Lorsque cette option est activée, Roo peut éditer plusieurs fichiers en une seule requête. Lorsqu'elle est désactivée, Roo doit éditer les fichiers un par un. Désactiver cette option peut aider lorsque tu travailles avec des modèles moins capables ou lorsque tu veux plus de contrôle sur les modifications de fichiers."
+			"description": "Lorsque cette option est activée, ModelHarbor peut éditer plusieurs fichiers en une seule requête. Lorsqu'elle est désactivée, ModelHarbor doit éditer les fichiers un par un. Désactiver cette option peut aider lorsque tu travailles avec des modèles moins capables ou lorsque tu veux plus de contrôle sur les modifications de fichiers."
 		}
 	},
 	"promptCaching": {
 		"label": "Désactiver la mise en cache des prompts",
-		"description": "Lorsque cette option est cochée, Roo n'utilisera pas la mise en cache des prompts pour ce modèle."
+		"description": "Lorsque cette option est cochée, ModelHarbor n'utilisera pas la mise en cache des prompts pour ce modèle."
 	},
 	"temperature": {
 		"useCustom": "Utiliser une température personnalisée",
@@ -622,17 +624,17 @@
 		}
 	},
 	"modelPicker": {
-		"automaticFetch": "L'extension récupère automatiquement la liste la plus récente des modèles disponibles sur <serviceLink>{{serviceName}}</serviceLink>. Si vous ne savez pas quel modèle choisir, Roo Code fonctionne mieux avec <defaultModelLink>{{defaultModelId}}</defaultModelLink>. Vous pouvez également rechercher \"free\" pour les options gratuites actuellement disponibles.",
+		"automaticFetch": "L'extension récupère automatiquement la liste la plus récente des modèles disponibles sur <serviceLink>{{serviceName}}</serviceLink>. Si vous ne savez pas quel modèle choisir, ModelHarbor Agent fonctionne mieux avec <defaultModelLink>{{defaultModelId}}</defaultModelLink>. Vous pouvez également rechercher \"free\" pour les options gratuites actuellement disponibles.",
 		"label": "Modèle",
 		"searchPlaceholder": "Rechercher",
 		"noMatchFound": "Aucune correspondance trouvée",
 		"useCustomModel": "Utiliser personnalisé : {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Si vous avez des questions ou des commentaires, n'hésitez pas à ouvrir un problème sur <githubLink>github.com/RooCodeInc/Roo-Code</githubLink> ou à rejoindre <redditLink>reddit.com/r/RooCode</redditLink> ou <discordLink>discord.gg/roocode</discordLink>",
+		"feedback": "Si vous avez des questions ou des commentaires, n'hésitez pas à ouvrir un problème sur <githubLink>github.com/ModelHarbor/ModelHarbor-Agent</githubLink> ou à rejoindre <redditLink>reddit.com/r/ModelHarbor</redditLink> ou <discordLink>discord.gg/modelharbor</discordLink>",
 		"telemetry": {
 			"label": "Autoriser les rapports anonymes d'erreurs et d'utilisation",
-			"description": "Aidez à améliorer Roo Code en envoyant des données d'utilisation anonymes et des rapports d'erreurs. Aucun code, prompt ou information personnelle n'est jamais envoyé. Consultez notre politique de confidentialité pour plus de détails."
+			"description": "Aidez à améliorer ModelHarbor Agent en envoyant des données d'utilisation anonymes et des rapports d'erreurs. Aucun code, prompt ou information personnelle n'est jamais envoyé. Consultez notre politique de confidentialité pour plus de détails."
 		},
 		"settings": {
 			"import": "Importer",
