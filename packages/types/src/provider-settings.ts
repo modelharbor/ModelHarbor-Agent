@@ -2,6 +2,7 @@ import { z } from "zod"
 
 import { reasoningEffortsSchema, modelInfoSchema } from "./model.js"
 import { codebaseIndexProviderSchema } from "./codebase-index.js"
+import { keysOf } from "./type-fu.js"
 
 /**
  * ProviderName
@@ -32,6 +33,7 @@ export const providerNames = [
 	"groq",
 	"chutes",
 	"litellm",
+	"modelharbor",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -229,6 +231,11 @@ const litellmSchema = baseProviderSettingsSchema.extend({
 	litellmModelId: z.string().optional(),
 })
 
+const modelharborSchema = baseProviderSettingsSchema.extend({
+	modelharborApiKey: z.string().optional(),
+	modelharborModelId: z.string().optional(),
+})
+
 const defaultSchema = z.object({
 	apiProvider: z.undefined(),
 })
@@ -258,6 +265,7 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	groqSchema.merge(z.object({ apiProvider: z.literal("groq") })),
 	chutesSchema.merge(z.object({ apiProvider: z.literal("chutes") })),
 	litellmSchema.merge(z.object({ apiProvider: z.literal("litellm") })),
+	modelharborSchema.merge(z.object({ apiProvider: z.literal("modelharbor") })),
 	defaultSchema,
 ])
 
@@ -287,11 +295,119 @@ export const providerSettingsSchema = z.object({
 	...groqSchema.shape,
 	...chutesSchema.shape,
 	...litellmSchema.shape,
+	...modelharborSchema.shape,
 	...codebaseIndexProviderSchema.shape,
 })
 
 export type ProviderSettings = z.infer<typeof providerSettingsSchema>
-export const PROVIDER_SETTINGS_KEYS = providerSettingsSchema.keyof().options
+
+export const PROVIDER_SETTINGS_KEYS = keysOf<ProviderSettings>()([
+	"apiProvider",
+	// Anthropic
+	"apiModelId",
+	"apiKey",
+	"anthropicBaseUrl",
+	"anthropicUseAuthToken",
+	// Glama
+	"glamaModelId",
+	"glamaApiKey",
+	// OpenRouter
+	"openRouterApiKey",
+	"openRouterModelId",
+	"openRouterBaseUrl",
+	"openRouterSpecificProvider",
+	"openRouterUseMiddleOutTransform",
+	// Amazon Bedrock
+	"awsAccessKey",
+	"awsSecretKey",
+	"awsSessionToken",
+	"awsRegion",
+	"awsUseCrossRegionInference",
+	"awsUsePromptCache",
+	"awsProfile",
+	"awsUseProfile",
+	"awsCustomArn",
+	"awsModelContextWindow",
+	"awsBedrockEndpointEnabled",
+	"awsBedrockEndpoint",
+	// Google Vertex
+	"vertexKeyFile",
+	"vertexJsonCredentials",
+	"vertexProjectId",
+	"vertexRegion",
+	// OpenAI
+	"openAiBaseUrl",
+	"openAiApiKey",
+	"openAiLegacyFormat",
+	"openAiR1FormatEnabled",
+	"openAiModelId",
+	"openAiCustomModelInfo",
+	"openAiUseAzure",
+	"azureApiVersion",
+	"openAiStreamingEnabled",
+	"openAiHostHeader", // Keep temporarily for backward compatibility during migration.
+	"openAiHeaders",
+	// Ollama
+	"ollamaModelId",
+	"ollamaBaseUrl",
+	// VS Code LM
+	"vsCodeLmModelSelector",
+	"lmStudioModelId",
+	"lmStudioBaseUrl",
+	"lmStudioDraftModelId",
+	"lmStudioSpeculativeDecodingEnabled",
+	// Gemini
+	"geminiApiKey",
+	"googleGeminiBaseUrl",
+	// OpenAI Native
+	"openAiNativeApiKey",
+	"openAiNativeBaseUrl",
+	// Mistral
+	"mistralApiKey",
+	"mistralCodestralUrl",
+	// DeepSeek
+	"deepSeekBaseUrl",
+	"deepSeekApiKey",
+	// Unbound
+	"unboundApiKey",
+	"unboundModelId",
+	// Requesty
+	"requestyApiKey",
+	"requestyModelId",
+	// Code Index
+	"codeIndexOpenAiKey",
+	"codeIndexQdrantApiKey",
+	"codebaseIndexOpenAiCompatibleBaseUrl",
+	"codebaseIndexOpenAiCompatibleApiKey",
+	"codebaseIndexOpenAiCompatibleModelDimension",
+	"codeIndexModelHarborApiKey",
+	// Reasoning
+	"enableReasoningEffort",
+	"reasoningEffort",
+	"modelMaxTokens",
+	"modelMaxThinkingTokens",
+	// Generic
+	"includeMaxTokens",
+	"diffEnabled",
+	"fuzzyMatchThreshold",
+	"modelTemperature",
+	"rateLimitSeconds",
+	// Fake AI
+	"fakeAi",
+	// X.AI (Grok)
+	"xaiApiKey",
+	// Groq
+	"groqApiKey",
+	// Chutes AI
+	"chutesApiKey",
+	// LiteLLM
+	"litellmBaseUrl",
+	"litellmApiKey",
+	"litellmModelId",
+	// ModelHarbor
+	"modelharborApiKey",
+	"modelharborModelId",
+])
 
 export const MODEL_ID_KEYS: Partial<keyof ProviderSettings>[] = [
 	"apiModelId",
@@ -304,6 +420,7 @@ export const MODEL_ID_KEYS: Partial<keyof ProviderSettings>[] = [
 	"unboundModelId",
 	"requestyModelId",
 	"litellmModelId",
+	"modelharborModelId",
 ]
 
 export const getModelId = (settings: ProviderSettings): string | undefined => {

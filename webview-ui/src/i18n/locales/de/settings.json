@@ -31,17 +31,21 @@
 		"prompts": "Eingabeaufforderungen",
 		"experimental": "Experimentell",
 		"language": "Sprache",
-		"about": "Über Roo Code"
+		"about": "Über ModelHarbor Agent"
 	},
 	"prompts": {
 		"description": "Konfiguriere Support-Prompts, die für schnelle Aktionen wie das Verbessern von Prompts, das Erklären von Code und das Beheben von Problemen verwendet werden. Diese Prompts helfen Roo dabei, bessere Unterstützung für häufige Entwicklungsaufgaben zu bieten."
 	},
 	"codeIndex": {
 		"title": "Codebase-Indexierung",
-		"description": "Konfiguriere Codebase-Indexierungseinstellungen, um semantische Suche in deinem Projekt zu aktivieren. <0>Mehr erfahren</0>",
+		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
+		"modelharborApiKeyLabel": "ModelHarbor API-Schlüssel",
+		"modelharborApiKeyPlaceholder": "Geben Sie Ihren ModelHarbor API-Schlüssel ein",
+		"description": "Konfigurieren Sie die Einstellungen für die Codebasis-Indizierung, um die semantische Suche Ihres Projekts zu ermöglichen. qwen/qwen3-embeddings und baai/bge-m3 werden für beste Ergebnisse empfohlen, die beim ModelHarbor-Anbieter verfügbar sind.",
 		"statusTitle": "Status",
 		"enableLabel": "Codebase-Indexierung aktivieren",
-		"enableDescription": "Aktiviere die Code-Indizierung für eine verbesserte Suche und ein besseres Kontextverständnis",
+		"enableDescription": "<0>Codebase-Indexierung</0> ist eine experimentelle Funktion, die einen semantischen Suchindex deines Projekts mit KI-Embeddings erstellt. Dies ermöglicht es ModelHarbor Agent, große Codebasen besser zu verstehen und zu navigieren, indem relevanter Code basierend auf Bedeutung statt nur Schlüsselwörtern gefunden wird.",
 		"settingsTitle": "Indexierungseinstellungen",
 		"disabledMessage": "Codebase-Indexierung ist derzeit deaktiviert. Aktiviere sie in den globalen Einstellungen, um Indexierungsoptionen zu konfigurieren.",
 		"providerLabel": "Embeddings-Anbieter",
@@ -308,13 +312,13 @@
 			"draftModelDesc": "Das Entwurfsmodell muss aus derselben Modellfamilie stammen, damit das spekulative Dekodieren korrekt funktioniert.",
 			"selectDraftModel": "Entwurfsmodell auswählen",
 			"noModelsFound": "Keine Entwurfsmodelle gefunden. Bitte stelle sicher, dass LM Studio mit aktiviertem Servermodus läuft.",
-			"description": "LM Studio ermöglicht es dir, Modelle lokal auf deinem Computer auszuführen. Eine Anleitung zum Einstieg findest du in ihrem <a>Schnellstart-Guide</a>. Du musst auch die <b>lokale Server</b>-Funktion von LM Studio starten, um es mit dieser Erweiterung zu verwenden. <span>Hinweis:</span> Roo Code verwendet komplexe Prompts und funktioniert am besten mit Claude-Modellen. Weniger leistungsfähige Modelle funktionieren möglicherweise nicht wie erwartet."
+			"description": "LM Studio ermöglicht es dir, Modelle lokal auf deinem Computer auszuführen. Eine Anleitung zum Einstieg findest du in ihrem <a>Schnellstart-Guide</a>. Du musst auch die <b>lokale Server</b>-Funktion von LM Studio starten, um es mit dieser Erweiterung zu verwenden. <span>Hinweis:</span> ModelHarbor Agent verwendet komplexe Prompts und funktioniert am besten mit Claude-Modellen. Weniger leistungsfähige Modelle funktionieren möglicherweise nicht wie erwartet."
 		},
 		"ollama": {
 			"baseUrl": "Basis-URL (optional)",
 			"modelId": "Modell-ID",
 			"description": "Ollama ermöglicht es dir, Modelle lokal auf deinem Computer auszuführen. Eine Anleitung zum Einstieg findest du im Schnellstart-Guide.",
-			"warning": "Hinweis: Roo Code verwendet komplexe Prompts und funktioniert am besten mit Claude-Modellen. Weniger leistungsfähige Modelle funktionieren möglicherweise nicht wie erwartet."
+			"warning": "Hinweis: ModelHarbor Agent verwendet komplexe Prompts und funktioniert am besten mit Claude-Modellen. Weniger leistungsfähige Modelle funktionieren möglicherweise nicht wie erwartet."
 		},
 		"unboundApiKey": "Unbound API-Schlüssel",
 		"getUnboundApiKey": "Unbound API-Schlüssel erhalten",
@@ -332,7 +336,7 @@
 			}
 		},
 		"customModel": {
-			"capabilities": "Konfiguriere die Fähigkeiten und Preise für dein benutzerdefiniertes OpenAI-kompatibles Modell. Sei vorsichtig bei der Angabe der Modellfähigkeiten, da diese beeinflussen können, wie Roo Code funktioniert.",
+			"capabilities": "Konfiguriere die Fähigkeiten und Preise für dein benutzerdefiniertes OpenAI-kompatibles Modell. Sei vorsichtig bei der Angabe der Modellfähigkeiten, da diese beeinflussen können, wie ModelHarbor Agent funktioniert.",
 			"maxTokens": {
 				"label": "Maximale Ausgabe-Tokens",
 				"description": "Maximale Anzahl von Tokens, die das Modell in einer Antwort generieren kann. (Geben Sie -1 an, damit der Server die maximalen Tokens festlegt.)"
@@ -396,7 +400,9 @@
 			"placeholder": "Standard: claude",
 			"maxTokensLabel": "Maximale Ausgabe-Tokens",
 			"maxTokensDescription": "Maximale Anzahl an Ausgabe-Tokens für Claude Code-Antworten. Standard ist 8000."
-		}
+		},
+		"modelharborApiKey": "ModelHarbor API Key",
+		"getModelHarborApiKey": "Get ModelHarbor API Key"
 	},
 	"browser": {
 		"enable": {
@@ -653,17 +659,17 @@
 		}
 	},
 	"modelPicker": {
-		"automaticFetch": "Die Erweiterung ruft automatisch die neueste Liste der auf <serviceLink>{{serviceName}}</serviceLink> verfügbaren Modelle ab. Wenn du dir nicht sicher bist, welches Modell du wählen sollst, funktioniert Roo Code am besten mit <defaultModelLink>{{defaultModelId}}</defaultModelLink>. Du kannst auch versuchen, nach \"kostenlos\" zu suchen, um die derzeit verfügbaren kostenlosen Optionen zu finden.",
+		"automaticFetch": "Die Erweiterung ruft automatisch die neueste Liste der auf <serviceLink>{{serviceName}}</serviceLink> verfügbaren Modelle ab. Wenn du dir nicht sicher bist, welches Modell du wählen sollst, funktioniert ModelHarbor Agent am besten mit <defaultModelLink>{{defaultModelId}}</defaultModelLink>. Du kannst auch versuchen, nach \"kostenlos\" zu suchen, um die derzeit verfügbaren kostenlosen Optionen zu finden.",
 		"label": "Modell",
 		"searchPlaceholder": "Suchen",
 		"noMatchFound": "Keine Übereinstimmung gefunden",
 		"useCustomModel": "Benutzerdefiniert verwenden: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Wenn du Fragen oder Feedback hast, kannst du gerne ein Issue auf <githubLink>github.com/RooCodeInc/Roo-Code</githubLink> eröffnen oder <redditLink>reddit.com/r/RooCode</redditLink> oder <discordLink>discord.gg/roocode</discordLink> beitreten",
+		"feedback": "Wenn Sie Fragen oder Feedback haben, können Sie gerne ein Problem unter info@modelharbor.com öffnen",
 		"telemetry": {
 			"label": "Anonyme Fehler- und Nutzungsberichte zulassen",
-			"description": "Hilf mit, Roo Code zu verbessern, indem du anonyme Nutzungsdaten und Fehlerberichte sendest. Es werden niemals Code, Prompts oder persönliche Informationen gesendet (es sei denn, du verbindest dich mit Roo Code Cloud). Weitere Einzelheiten findest du in unserer <privacyLink>Datenschutzrichtlinie</privacyLink>."
+			"description": "Hilf mit, ModelHarbor Agent zu verbessern, indem du anonyme Nutzungsdaten und Fehlerberichte sendest. Es werden niemals Code, Prompts oder persönliche Informationen gesendet (es sei denn, du verbindest dich mit ModelHarbor Agent Cloud). Weitere Einzelheiten findest du in unserer <privacyLink>Datenschutzrichtlinie</privacyLink>."
 		},
 		"settings": {
 			"import": "Importieren",

@@ -348,7 +348,7 @@ describe("useSelectedModel", () => {
 	})
 
 	describe("default behavior", () => {
-		it("should return anthropic default when no configuration is provided", () => {
+		it("should return modelharbor default when no configuration is provided", () => {
 			mockUseRouterModels.mockReturnValue({
 				data: undefined,
 				isLoading: false,
@@ -364,8 +364,8 @@ describe("useSelectedModel", () => {
 			const wrapper = createWrapper()
 			const { result } = renderHook(() => useSelectedModel(), { wrapper })
 
-			expect(result.current.provider).toBe("anthropic")
-			expect(result.current.id).toBe("claude-sonnet-4-20250514")
+			expect(result.current.provider).toBe("modelharbor")
+			expect(result.current.id).toBe("deepseek/deepseek-v3-0324")
 			expect(result.current.info).toBeUndefined()
 		})
 	})
@@ -439,6 +439,147 @@ describe("useSelectedModel", () => {
 			expect(result.current.id).toBe("claude-sonnet-4-20250514") // Default model
 			expect(result.current.info).toBeDefined()
 			expect(result.current.info?.supportsImages).toBe(false)
+		})
+	})
+
+	describe("modelharbor provider", () => {
+		it("should return modelharbor model with correct default", () => {
+			mockUseRouterModels.mockReturnValue({
+				data: {
+					openrouter: {},
+					requesty: {},
+					glama: {},
+					unbound: {},
+					litellm: {},
+					modelharbor: {
+						"deepseek/deepseek-v3-0324": {
+							maxTokens: 8192,
+							contextWindow: 163840,
+							supportsImages: false,
+							supportsPromptCache: false,
+							inputPrice: 0.6,
+							outputPrice: 1.5,
+							description: "DeepSeek V3 model with advanced coding and reasoning capabilities.",
+						},
+						"anthropic/claude-sonnet-4": {
+							maxTokens: 8192,
+							contextWindow: 128000,
+							supportsImages: true,
+							supportsPromptCache: false,
+							inputPrice: 3.0,
+							outputPrice: 15.0,
+							description:
+								"Anthropic Claude Sonnet 4 with advanced language understanding and generation.",
+						},
+					},
+				},
+				isLoading: false,
+				isError: false,
+			} as any)
+
+			mockUseOpenRouterModelProviders.mockReturnValue({
+				data: {},
+				isLoading: false,
+				isError: false,
+			} as any)
+
+			const apiConfiguration: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "anthropic/claude-sonnet-4",
+			}
+
+			const wrapper = createWrapper()
+			const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper })
+
+			expect(result.current.provider).toBe("modelharbor")
+			expect(result.current.id).toBe("anthropic/claude-sonnet-4")
+			expect(result.current.info).toBeDefined()
+			expect(result.current.info?.maxTokens).toBe(8192)
+			expect(result.current.info?.contextWindow).toBe(128000)
+			expect(result.current.info?.supportsImages).toBe(true)
+			expect(result.current.info?.inputPrice).toBe(3.0)
+			expect(result.current.info?.outputPrice).toBe(15.0)
+		})
+
+		it("should use default modelharbor model when no modelId is specified", () => {
+			mockUseRouterModels.mockReturnValue({
+				data: {
+					openrouter: {},
+					requesty: {},
+					glama: {},
+					unbound: {},
+					litellm: {},
+					modelharbor: {
+						"deepseek/deepseek-v3-0324": {
+							maxTokens: 8192,
+							contextWindow: 163840,
+							supportsImages: false,
+							supportsPromptCache: false,
+							inputPrice: 0.6,
+							outputPrice: 1.5,
+							description: "DeepSeek V3 model with advanced coding and reasoning capabilities.",
+						},
+					},
+				},
+				isLoading: false,
+				isError: false,
+			} as any)
+
+			mockUseOpenRouterModelProviders.mockReturnValue({
+				data: {},
+				isLoading: false,
+				isError: false,
+			} as any)
+
+			const apiConfiguration: ProviderSettings = {
+				apiProvider: "modelharbor",
+			}
+
+			const wrapper = createWrapper()
+			const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper })
+
+			expect(result.current.provider).toBe("modelharbor")
+			expect(result.current.id).toBe("deepseek/deepseek-v3-0324") // Default model
+			expect(result.current.info).toBeDefined()
+			expect(result.current.info?.maxTokens).toBe(8192)
+			expect(result.current.info?.contextWindow).toBe(163840)
+			expect(result.current.info?.supportsImages).toBe(false)
+			expect(result.current.info?.inputPrice).toBe(0.6)
+			expect(result.current.info?.outputPrice).toBe(1.5)
+		})
+
+		it("should fall back to default when modelharbor model info is missing", () => {
+			mockUseRouterModels.mockReturnValue({
+				data: {
+					openrouter: {},
+					requesty: {},
+					glama: {},
+					unbound: {},
+					litellm: {},
+					modelharbor: {}, // No models available
+				},
+				isLoading: false,
+				isError: false,
+			} as any)
+
+			mockUseOpenRouterModelProviders.mockReturnValue({
+				data: {},
+				isLoading: false,
+				isError: false,
+			} as any)
+
+			const apiConfiguration: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "non-existent-model",
+			}
+
+			const wrapper = createWrapper()
+			const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper })
+
+			expect(result.current.provider).toBe("modelharbor")
+			// When model is not found, it falls back to default model
+			expect(result.current.id).toBe("deepseek/deepseek-v3-0324") // Default model
+			expect(result.current.info).toBeUndefined()
 		})
 	})
 })
