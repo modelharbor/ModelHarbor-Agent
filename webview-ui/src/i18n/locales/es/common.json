@@ -39,6 +39,12 @@
 			"copyError": "Error copiando la imagen"
 		}
 	},
+	"errors": {
+		"share_no_active_task": "No hay tarea activa para compartir",
+		"no_active_task": "No hay tarea activa",
+		"task_folder_not_found": "Carpeta de tarea no encontrada",
+		"open_chat_folder_failed": "Error al abrir la carpeta de chat"
+	},
 	"file": {
 		"errors": {
 			"invalidDataUri": "Formato de URI de datos inválido",

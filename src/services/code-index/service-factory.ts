@@ -3,6 +3,7 @@ import { OpenAiEmbedder } from "./embedders/openai"
 import { CodeIndexOllamaEmbedder } from "./embedders/ollama"
 import { OpenAICompatibleEmbedder } from "./embedders/openai-compatible"
 import { GeminiEmbedder } from "./embedders/gemini"
+import { ModelHarborEmbedder } from "./embedders/modelharbor"
 import { EmbedderProvider, getDefaultModelId, getModelDimension } from "../../shared/embeddingModels"
 import { QdrantVectorStore } from "./vector-store/qdrant-client"
 import { codeParser, DirectoryScanner, FileWatcher } from "./processors"
@@ -63,7 +64,12 @@ export class CodeIndexServiceFactory {
 			if (!config.geminiOptions?.apiKey) {
 				throw new Error(t("embeddings:serviceFactory.geminiConfigMissing"))
 			}
-			return new GeminiEmbedder(config.geminiOptions.apiKey, config.modelId)
+			return new GeminiEmbedder(config.geminiOptions.apiKey)
+		} else if (provider === "modelharbor") {
+			if (!config.modelHarborOptions?.apiKey) {
+				throw new Error("ModelHarbor configuration missing for embedder creation")
+			}
+			return new ModelHarborEmbedder(config.modelHarborOptions.apiKey)
 		}
 
 		throw new Error(
@@ -121,6 +127,8 @@ export class CodeIndexServiceFactory {
 				throw new Error(
 					t("embeddings:serviceFactory.vectorDimensionNotDeterminedOpenAiCompatible", { modelId, provider }),
 				)
+			} else if (provider === "modelharbor") {
+				throw new Error(t("embeddings:serviceFactory.vectorDimensionNotDeterminedModelHarbor", { modelId }))
 			} else {
 				throw new Error(t("embeddings:serviceFactory.vectorDimensionNotDetermined", { modelId, provider }))
 			}
