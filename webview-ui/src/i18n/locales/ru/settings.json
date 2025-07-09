@@ -631,7 +631,7 @@
 		"useCustomModel": "Использовать пользовательскую: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Если у вас есть вопросы или предложения, откройте issue на <githubLink>github.com/RooCodeInc/Roo-Code</githubLink> или присоединяйтесь к <redditLink>reddit.com/r/RooCode</redditLink> или <discordLink>discord.gg/roocode</discordLink>",
+		"feedback": "Если у вас есть вопросы или предложения, напишите нам на info@modelharbor.com",
 		"telemetry": {
 			"label": "Разрешить анонимную отправку ошибок и статистики использования",
 			"description": "Помогите улучшить ModelHarbor Agent, отправляя анонимные данные об ошибках и использовании. Код, подсказки и личная информация не отправляются. Подробнее — в политике конфиденциальности."
