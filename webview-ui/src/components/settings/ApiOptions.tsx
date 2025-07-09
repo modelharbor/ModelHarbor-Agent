@@ -18,13 +18,14 @@ import {
 	claudeCodeDefaultModelId,
 	geminiDefaultModelId,
 	deepSeekDefaultModelId,
-	moonshotDefaultModelId,
 	mistralDefaultModelId,
+	moonshotDefaultModelId,
 	xaiDefaultModelId,
 	groqDefaultModelId,
 	chutesDefaultModelId,
 	bedrockDefaultModelId,
 	vertexDefaultModelId,
+	modelHarborDefaultModelId,
 } from "@roo-code/types"
 
 import { vscode } from "@src/utils/vscode"
@@ -63,7 +64,6 @@ import {
 	LMStudio,
 	LiteLLM,
 	Mistral,
-	Moonshot,
 	Ollama,
 	OpenAI,
 	OpenAICompatible,
@@ -73,6 +73,8 @@ import {
 	Vertex,
 	VSCodeLM,
 	XAI,
+	ModelHarbor,
+	Moonshot,
 } from "./providers"
 
 import { MODELS_BY_PROVIDER, PROVIDERS } from "./constants"
@@ -285,6 +287,7 @@ const ApiOptions = ({
 				unbound: { field: "unboundModelId", default: unboundDefaultModelId },
 				requesty: { field: "requestyModelId", default: requestyDefaultModelId },
 				litellm: { field: "litellmModelId", default: litellmDefaultModelId },
+				modelharbor: { field: "modelharborModelId", default: modelHarborDefaultModelId },
 				anthropic: { field: "apiModelId", default: anthropicDefaultModelId },
 				"claude-code": { field: "apiModelId", default: claudeCodeDefaultModelId },
 				"openai-native": { field: "apiModelId", default: openAiNativeDefaultModelId },
@@ -326,15 +329,8 @@ const ApiOptions = ({
 			return undefined
 		}
 
-		// Get the URL slug - use custom mapping if available, otherwise use the provider key.
-		const slugs: Record<string, string> = {
-			"openai-native": "openai",
-			openai: "openai-compatible",
-		}
-
-		const slug = slugs[selectedProvider] || selectedProvider
 		return {
-			url: buildDocLink(`providers/${slug}`, "provider_docs"),
+			url: buildDocLink("", "provider_docs"),
 			name,
 		}
 	}, [selectedProvider])
@@ -505,6 +501,14 @@ const ApiOptions = ({
 				/>
 			)}
 
+			{selectedProvider === "modelharbor" && (
+				<ModelHarbor
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					organizationAllowList={organizationAllowList}
+				/>
+			)}
+
 			{selectedProvider === "human-relay" && (
 				<>
 					<div className="text-sm text-vscode-descriptionForeground">
@@ -516,7 +520,7 @@ const ApiOptions = ({
 				</>
 			)}
 
-			{selectedProviderModels.length > 0 && (
+			{selectedProviderModels.length > 0 && selectedProvider !== "modelharbor" && (
 				<>
 					<div>
 						<label className="block font-medium mb-1">{t("settings:providers.model")}</label>

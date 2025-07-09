@@ -61,9 +61,13 @@ export class TerminalRegistry {
 						terminal.setActiveStream(stream)
 						terminal.busy = true // Mark terminal as busy when shell execution starts
 					} else {
-						console.error(
-							"[onDidStartTerminalShellExecution] Shell execution started, but not from a Roo-registered terminal:",
-							e,
+						// This is expected behavior when users create their own terminals
+						console.debug(
+							"[onDidStartTerminalShellExecution] Shell execution started from non-ModelHarbor terminal (this is normal):",
+							{
+								terminalName: e.terminal.name,
+								command: e.execution?.commandLine?.value,
+							},
 						)
 					}
 				},
@@ -86,9 +90,14 @@ export class TerminalRegistry {
 					})
 
 					if (!terminal) {
-						console.error(
-							"[onDidEndTerminalShellExecution] Shell execution ended, but not from a Roo-registered terminal:",
-							e,
+						// This is expected behavior when users create their own terminals
+						console.debug(
+							"[onDidEndTerminalShellExecution] Shell execution ended from non-ModelHarbor terminal (this is normal):",
+							{
+								terminalName: e.terminal.name,
+								command: e.execution?.commandLine?.value,
+								exitCode: e.exitCode,
+							},
 						)
 
 						return

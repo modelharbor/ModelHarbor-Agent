@@ -68,6 +68,7 @@ interface LocalCodeIndexSettings {
 	codebaseIndexOpenAiCompatibleBaseUrl?: string
 	codebaseIndexOpenAiCompatibleApiKey?: string
 	codebaseIndexGeminiApiKey?: string
+	codeIndexModelHarborApiKey?: string
 	codebaseIndexMistralApiKey?: string
 }
 
@@ -127,6 +128,14 @@ const createValidationSchema = (provider: EmbedderProvider, t: any) => {
 					.min(1, t("settings:codeIndex.validation.modelSelectionRequired")),
 			})
 
+		case "modelharbor":
+			return baseSchema.extend({
+				codeIndexModelHarborApiKey: z.string().min(1, t("settings:codeIndex.validation.apiKeyRequired")),
+				codebaseIndexEmbedderModelId: z
+					.string()
+					.min(1, t("settings:codeIndex.validation.modelSelectionRequired")),
+			})
+
 		case "mistral":
 			return baseSchema.extend({
 				codebaseIndexMistralApiKey: z.string().min(1, t("settings:codeIndex.validation.mistralApiKeyRequired")),
@@ -178,6 +187,7 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 		codebaseIndexOpenAiCompatibleBaseUrl: "",
 		codebaseIndexOpenAiCompatibleApiKey: "",
 		codebaseIndexGeminiApiKey: "",
+		codeIndexModelHarborApiKey: "",
 		codebaseIndexMistralApiKey: "",
 	})
 
@@ -212,6 +222,7 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 				codebaseIndexOpenAiCompatibleBaseUrl: codebaseIndexConfig.codebaseIndexOpenAiCompatibleBaseUrl || "",
 				codebaseIndexOpenAiCompatibleApiKey: "",
 				codebaseIndexGeminiApiKey: "",
+				codeIndexModelHarborApiKey: "",
 				codebaseIndexMistralApiKey: "",
 			}
 			setInitialSettings(settings)
@@ -304,6 +315,9 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 					if (!prev.codebaseIndexGeminiApiKey || prev.codebaseIndexGeminiApiKey === SECRET_PLACEHOLDER) {
 						updated.codebaseIndexGeminiApiKey = secretStatus.hasGeminiApiKey ? SECRET_PLACEHOLDER : ""
 					}
+					if (!prev.codeIndexModelHarborApiKey || prev.codeIndexModelHarborApiKey === SECRET_PLACEHOLDER) {
+						updated.codeIndexModelHarborApiKey = secretStatus.hasModelHarborApiKey ? SECRET_PLACEHOLDER : ""
+					}
 					if (!prev.codebaseIndexMistralApiKey || prev.codebaseIndexMistralApiKey === SECRET_PLACEHOLDER) {
 						updated.codebaseIndexMistralApiKey = secretStatus.hasMistralApiKey ? SECRET_PLACEHOLDER : ""
 					}
@@ -379,6 +393,7 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 					key === "codeIndexOpenAiKey" ||
 					key === "codebaseIndexOpenAiCompatibleApiKey" ||
 					key === "codebaseIndexGeminiApiKey" ||
+					key === "codeIndexModelHarborApiKey" ||
 					key === "codebaseIndexMistralApiKey"
 				) {
 					dataToValidate[key] = "placeholder-valid"
@@ -609,6 +624,9 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent>
+												<SelectItem value="modelharbor">
+													{t("settings:codeIndex.modelharborProvider")}
+												</SelectItem>
 												<SelectItem value="openai">
 													{t("settings:codeIndex.openaiProvider")}
 												</SelectItem>
@@ -932,6 +950,71 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 															]?.[modelId]
 														return (
 															<VSCodeOption key={modelId} value={modelId} className="p-2">
+																{modelId}{" "}
+																{model
+																	? t("settings:codeIndex.modelDimensions", {
+																			dimension: model.dimension,
+																		})
+																	: ""}
+															</VSCodeOption>
+														)
+													})}
+												</VSCodeDropdown>
+												{formErrors.codebaseIndexEmbedderModelId && (
+													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
+														{formErrors.codebaseIndexEmbedderModelId}
+													</p>
+												)}
+											</div>
+										</>
+									)}
+
+									{currentSettings.codebaseIndexEmbedderProvider === "modelharbor" && (
+										<>
+											<div className="space-y-2">
+												<label className="text-sm font-medium">
+													{t("settings:codeIndex.modelharborApiKeyLabel")}
+												</label>
+												<VSCodeTextField
+													type="password"
+													value={currentSettings.codeIndexModelHarborApiKey || ""}
+													onInput={(e: any) =>
+														updateSetting("codeIndexModelHarborApiKey", e.target.value)
+													}
+													placeholder={t("settings:codeIndex.modelharborApiKeyPlaceholder")}
+													className={cn("w-full", {
+														"border-red-500": formErrors.codeIndexModelHarborApiKey,
+													})}
+												/>
+												{formErrors.codeIndexModelHarborApiKey && (
+													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
+														{formErrors.codeIndexModelHarborApiKey}
+													</p>
+												)}
+											</div>
+
+											<div className="space-y-2">
+												<label className="text-sm font-medium">
+													{t("settings:codeIndex.modelLabel")}
+												</label>
+												<VSCodeDropdown
+													value={currentSettings.codebaseIndexEmbedderModelId}
+													onChange={(e: any) =>
+														updateSetting("codebaseIndexEmbedderModelId", e.target.value)
+													}
+													className={cn("w-full", {
+														"border-red-500": formErrors.codebaseIndexEmbedderModelId,
+													})}>
+													<VSCodeOption value="">
+														{t("settings:codeIndex.selectModel")}
+													</VSCodeOption>
+													{getAvailableModels().map((modelId) => {
+														const model =
+															codebaseIndexModels?.[
+																currentSettings.codebaseIndexEmbedderProvider
+															]?.[modelId]
+														return (
+															<VSCodeOption key={modelId} value={modelId}>
 																{modelId}{" "}
 																{model
 																	? t("settings:codeIndex.modelDimensions", {

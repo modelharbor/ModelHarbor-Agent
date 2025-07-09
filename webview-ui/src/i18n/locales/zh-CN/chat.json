@@ -1,5 +1,5 @@
 {
-	"greeting": "欢迎使用 Roo Code",
+	"greeting": "欢迎使用 ModelHarbor Agent",
 	"task": {
 		"title": "任务",
 		"seeMore": "展开",
@@ -10,6 +10,7 @@
 		"contextWindow": "上下文长度：",
 		"closeAndStart": "关闭任务并开始新任务",
 		"export": "导出任务历史",
+		"openFolder": "打开聊天文件夹",
 		"delete": "删除任务（Shift + 点击跳过确认）",
 		"share": "分享任务",
 		"condenseContext": "智能压缩上下文",
@@ -18,7 +19,7 @@
 		"sharePublicly": "公开分享",
 		"sharePubliclyDescription": "任何拥有链接的人都可访问",
 		"connectToCloud": "连接到云端",
-		"connectToCloudDescription": "登录 Roo Code Cloud 以分享任务",
+		"connectToCloudDescription": "登录 ModelHarbor Agent Cloud 以分享任务",
 		"sharingDisabledByOrganization": "组织已禁用分享功能",
 		"shareSuccessOrganization": "组织链接已复制到剪贴板",
 		"shareSuccessPublic": "公开链接已复制到剪贴板"
@@ -81,7 +82,7 @@
 	},
 	"scrollToBottom": "滚动到聊天底部",
 	"about": "通过 AI 辅助生成、重构和调试代码。查看我们的 <DocsLink>文档</DocsLink> 了解更多信息。",
-	"onboarding": "<strong>此工作区中的任务列表为空。</strong> 请在下方输入任务开始。 不确定如何开始？ 在 <DocsLink>文档</DocsLink> 中阅读更多关于 Roo 可以为您做什么的信息。",
+	"onboarding": "<strong>此工作区中的任务列表为空。</strong> 请在下方输入任务开始。 不确定如何开始？ 在 <DocsLink>文档</DocsLink> 中阅读更多关于 ModelHarbor 可以为您做什么的信息。",
 	"rooTips": {
 		"boomerangTasks": {
 			"title": "任务编排",
@@ -116,7 +117,7 @@
 		"title": "模式",
 		"marketplace": "模式市场",
 		"settings": "模式设置",
-		"description": "专门定制Roo行为的角色。"
+		"description": "专门定制ModelHarbor行为的角色。"
 	},
 	"errorReadingFile": "读取文件时出错:",
 	"noValidImages": "没有处理有效图片",
@@ -128,7 +129,7 @@
 	"diffError": {
 		"title": "编辑失败"
 	},
-	"troubleMessage": "Roo遇到问题...",
+	"troubleMessage": "ModelHarbor遇到问题...",
 	"apiRequest": {
 		"title": "API请求",
 		"failed": "API请求失败",
@@ -154,7 +155,7 @@
 		"current": "当前"
 	},
 	"instructions": {
-		"wantsToFetch": "Roo 想要获取详细指示以协助当前任务"
+		"wantsToFetch": "ModelHarbor 想要获取详细指示以协助当前任务"
 	},
 	"fileOperations": {
 		"wantsToRead": "需要读取文件:",
@@ -169,17 +170,17 @@
 		"wantsToInsert": "需要在此文件中插入内容:",
 		"wantsToInsertWithLineNumber": "需要在第 {{lineNumber}} 行插入内容:",
 		"wantsToInsertAtEnd": "需要在文件末尾添加内容:",
-		"wantsToReadAndXMore": "Roo 想读取此文件以及另外 {{count}} 个文件：",
-		"wantsToReadMultiple": "Roo 想要读取多个文件：",
-		"wantsToApplyBatchChanges": "Roo 想要对多个文件应用更改："
+		"wantsToReadAndXMore": "ModelHarbor 想读取此文件以及另外 {{count}} 个文件：",
+		"wantsToReadMultiple": "ModelHarbor 想要读取多个文件：",
+		"wantsToApplyBatchChanges": "ModelHarbor 想要对多个文件应用更改："
 	},
 	"directoryOperations": {
 		"wantsToViewTopLevel": "需要查看目录文件列表:",
 		"didViewTopLevel": "已查看目录文件列表:",
 		"wantsToViewRecursive": "需要查看目录所有文件:",
 		"didViewRecursive": "已查看目录所有文件:",
-		"wantsToViewDefinitions": "Roo想查看此目录中使用的源代码定义名称:",
-		"didViewDefinitions": "Roo已查看此目录中使用的源代码定义名称:",
+		"wantsToViewDefinitions": "ModelHarbor想查看此目录中使用的源代码定义名称:",
+		"didViewDefinitions": "ModelHarbor已查看此目录中使用的源代码定义名称:",
 		"wantsToSearch": "需要搜索内容: {{regex}}",
 		"didSearch": "已完成内容搜索: {{regex}}",
 		"wantsToSearchOutsideWorkspace": "需要搜索内容（工作区外）: {{regex}}",
@@ -188,8 +189,8 @@
 		"didViewTopLevelOutsideWorkspace": "已查看目录文件列表（工作区外）:",
 		"wantsToViewRecursiveOutsideWorkspace": "需要查看目录所有文件（工作区外）:",
 		"didViewRecursiveOutsideWorkspace": "已查看目录所有文件（工作区外）:",
-		"wantsToViewDefinitionsOutsideWorkspace": "Roo想查看此目录中使用的源代码定义名称（工作区外）:",
-		"didViewDefinitionsOutsideWorkspace": "Roo已查看此目录中使用的源代码定义名称（工作区外）:"
+		"wantsToViewDefinitionsOutsideWorkspace": "ModelHarbor想查看此目录中使用的源代码定义名称（工作区外）:",
+		"didViewDefinitionsOutsideWorkspace": "ModelHarbor已查看此目录中使用的源代码定义名称（工作区外）:"
 	},
 	"commandOutput": "命令输出",
 	"commandExecution": {
@@ -211,8 +212,8 @@
 	"response": "响应",
 	"arguments": "参数",
 	"mcp": {
-		"wantsToUseTool": "Roo想在{{serverName}} MCP上使用工具:",
-		"wantsToAccessResource": "Roo想访问{{serverName}} MCP服务上的资源:"
+		"wantsToUseTool": "ModelHarbor想在{{serverName}} MCP上使用工具:",
+		"wantsToAccessResource": "ModelHarbor想访问{{serverName}} MCP服务上的资源:"
 	},
 	"modes": {
 		"wantsToSwitch": "即将切换至{{mode}}模式",
@@ -221,8 +222,8 @@
 		"didSwitchWithReason": "已切换至{{mode}}模式（原因：{{reason}}）"
 	},
 	"subtasks": {
-		"wantsToCreate": "Roo想在<code>{{mode}}</code>模式下创建新子任务:",
-		"wantsToFinish": "Roo想完成此子任务",
+		"wantsToCreate": "ModelHarbor想在<code>{{mode}}</code>模式下创建新子任务:",
+		"wantsToFinish": "ModelHarbor想完成此子任务",
 		"newTaskContent": "子任务说明",
 		"completionContent": "子任务已完成",
 		"resultContent": "子任务结果",
@@ -230,7 +231,7 @@
 		"completionInstructions": "子任务已完成！您可以查看结果并提出修改或下一步建议。如果一切正常，请确认以将结果返回给主任务。"
 	},
 	"questions": {
-		"hasQuestion": "Roo有一个问题:"
+		"hasQuestion": "ModelHarbor有一个问题:"
 	},
 	"taskCompleted": "任务完成",
 	"powershell": {
@@ -260,17 +261,17 @@
 		"countdownDisplay": "{{count}}秒"
 	},
 	"announcement": {
-		"title": "🎉 Roo Code {{version}} 已发布",
-		"description": "Roo Code {{version}} 带来强大的新功能和重大改进，提升您的开发工作流程。",
+		"title": "🎉 ModelHarbor Agent {{version}} 已发布",
+		"description": "ModelHarbor Agent {{version}} 带来基于您反馈的重要新功能和改进。",
 		"whatsNew": "新特性",
-		"feature1": "<bold>Hugging Face 提供商</bold>: 通过新的 Hugging Face 提供商直接访问大量优秀的开源模型，具备无缝集成和模型选择功能。",
-		"feature2": "<bold>内联命令控制</bold>: 新的自动批准和拒绝命令执行控制，为您提供对终端操作的精确控制和可自定义权限。",
-		"feature3": "<bold>AGENTS.md 规则支持</bold>: 添加对项目根目录中社区标准 AGENTS.md 文件的支持。",
+		"feature1": "<bold>ModelHarbor 市场正式上线</bold>: 市场现已上线！比以往更轻松地发现和安装模式及 MCP。",
+		"feature2": "<bold>Gemini 2.5 模型</bold>: 新增对新版 Gemini 2.5 Pro、Flash 和 Flash Lite 模型的支持。",
+		"feature3": "<bold>Excel 文件支持及更多</bold>: 新增 Excel (.xlsx) 文件支持以及大量错误修复和改进！",
 		"hideButton": "隐藏公告",
-		"detailsDiscussLinks": "在 <discordLink>Discord</discordLink> 和 <redditLink>Reddit</redditLink> 获取更多详情并参与讨论 🚀"
+		"detailsDiscussLinks": "在 <discordLink>Modelharbor.com</discordLink> 获取更多详情并参与讨论"
 	},
 	"browser": {
-		"rooWantsToUse": "Roo想使用浏览器:",
+		"ModelHarborWantsToUse": "ModelHarbor想使用浏览器:",
 		"consoleLogs": "控制台日志",
 		"noNewLogs": "(没有新日志)",
 		"screenshot": "浏览器截图",
@@ -304,19 +305,19 @@
 	"profileViolationWarning": "当前配置文件与您的组织设置不兼容",
 	"shellIntegration": {
 		"title": "命令执行警告",
-		"description": "您的命令正在没有 VSCode 终端 shell 集成的情况下执行。要隐藏此警告，您可以在 <settingsLink>Roo Code 设置</settingsLink>的 <strong>Terminal</strong> 部分禁用 shell 集成，或使用下方链接排查 VSCode 终端集成问题。",
+		"description": "您的命令正在没有 VSCode 终端 shell 集成的情况下执行。要隐藏此警告，您可以在 <settingsLink>ModelHarbor Agent 设置</settingsLink>的 <strong>Terminal</strong> 部分禁用 shell 集成，或使用下方链接排查 VSCode 终端集成问题。",
 		"troubleshooting": "点击此处查看 shell 集成文档。"
 	},
 	"ask": {
 		"autoApprovedRequestLimitReached": {
 			"title": "已达自动批准请求限制",
-			"description": "Roo 已达到 {{count}} 次 API 请求的自动批准限制。您想重置计数并继续任务吗？",
+			"description": "ModelHarbor 已达到 {{count}} 次 API 请求的自动批准限制。您想重置计数并继续任务吗？",
 			"button": "重置并继续"
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo 需要搜索代码库: <code>{{query}}</code>",
-		"wantsToSearchWithPath": "Roo 需要在 <code>{{path}}</code> 中搜索: <code>{{query}}</code>",
+		"wantsToSearch": "ModelHarbor 需要搜索代码库: <code>{{query}}</code>",
+		"wantsToSearchWithPath": "ModelHarbor 需要在 <code>{{path}}</code> 中搜索: <code>{{query}}</code>",
 		"didSearch_one": "找到 1 个结果",
 		"didSearch_other": "找到 {{count}} 个结果",
 		"resultTooltip": "相似度评分: {{score}} (点击打开文件)"

@@ -55,6 +55,7 @@ export interface WebviewMessage {
 		| "selectImages"
 		| "exportCurrentTask"
 		| "shareCurrentTask"
+		| "openChatFolder"
 		| "showTaskWithId"
 		| "deleteTaskWithId"
 		| "exportTaskWithId"
@@ -248,7 +249,7 @@ export interface WebviewMessage {
 		// Global state settings
 		codebaseIndexEnabled: boolean
 		codebaseIndexQdrantUrl: string
-		codebaseIndexEmbedderProvider: "openai" | "ollama" | "openai-compatible" | "gemini" | "mistral"
+		codebaseIndexEmbedderProvider: "openai" | "ollama" | "openai-compatible" | "modelharbor" | "gemini" | "mistral"
 		codebaseIndexEmbedderBaseUrl?: string
 		codebaseIndexEmbedderModelId: string
 		codebaseIndexEmbedderModelDimension?: number // Generic dimension for all providers
@@ -261,6 +262,7 @@ export interface WebviewMessage {
 		codeIndexQdrantApiKey?: string
 		codebaseIndexOpenAiCompatibleApiKey?: string
 		codebaseIndexGeminiApiKey?: string
+		codeIndexModelHarborApiKey?: string
 		codebaseIndexMistralApiKey?: string
 	}
 }

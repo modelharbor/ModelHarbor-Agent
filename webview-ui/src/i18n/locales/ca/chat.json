@@ -1,5 +1,5 @@
 {
-	"greeting": "Benvingut a Roo Code",
+	"greeting": "Benvingut a ModelHarbor Agent",
 	"task": {
 		"title": "Tasca",
 		"seeMore": "Veure més",
@@ -18,10 +18,11 @@
 		"sharePublicly": "Compartir públicament",
 		"sharePubliclyDescription": "Qualsevol amb l'enllaç pot accedir",
 		"connectToCloud": "Connecta al núvol",
-		"connectToCloudDescription": "Inicia sessió a Roo Code Cloud per compartir tasques",
+		"connectToCloudDescription": "Inicia sessió a ModelHarbor Agent Cloud per compartir tasques",
 		"sharingDisabledByOrganization": "Compartició deshabilitada per l'organització",
 		"shareSuccessOrganization": "Enllaç d'organització copiat al porta-retalls",
-		"shareSuccessPublic": "Enllaç públic copiat al porta-retalls"
+		"shareSuccessPublic": "Enllaç públic copiat al porta-retalls",
+		"openFolder": "Obrir carpeta de xat"
 	},
 	"unpin": "Desfixar",
 	"pin": "Fixar",
@@ -81,7 +82,7 @@
 	},
 	"scrollToBottom": "Desplaça't al final del xat",
 	"about": "Genera, refactoritza i depura codi amb l'ajuda de la IA. Consulta la nostra <DocsLink>documentació</DocsLink> per obtenir més informació.",
-	"onboarding": "<strong> La vostra llista de tasques en aquest espai de treball està buida. </strong> Comença escrivint una tasca a continuació. \nNo esteu segur per on començar? \nMés informació sobre què pot fer Roo als documents.",
+	"onboarding": "<strong> La vostra llista de tasques en aquest espai de treball està buida. </strong> Comença escrivint una tasca a continuació. \nNo esteu segur per on començar? \nMés informació sobre què pot fer ModelHarbor als documents.",
 	"rooTips": {
 		"boomerangTasks": {
 			"title": "Orquestració de Tasques",
@@ -116,7 +117,7 @@
 		"title": "Modes",
 		"marketplace": "Marketplace de Modes",
 		"settings": "Configuració de Modes",
-		"description": "Personalitats especialitzades que adapten el comportament de Roo."
+		"description": "Personalitats especialitzades que adapten el comportament de ModelHarbor."
 	},
 	"errorReadingFile": "Error en llegir el fitxer:",
 	"noValidImages": "No s'ha processat cap imatge vàlida",
@@ -128,7 +129,7 @@
 	"diffError": {
 		"title": "Edició fallida"
 	},
-	"troubleMessage": "Roo està tenint problemes...",
+	"troubleMessage": "ModelHarbor està tenint problemes...",
 	"apiRequest": {
 		"title": "Sol·licitud API",
 		"failed": "Sol·licitud API ha fallat",
@@ -154,42 +155,42 @@
 		"current": "Actual"
 	},
 	"instructions": {
-		"wantsToFetch": "Roo vol obtenir instruccions detallades per ajudar amb la tasca actual."
+		"wantsToFetch": "ModelHarbor vol obtenir instruccions detallades per ajudar amb la tasca actual."
 	},
 	"fileOperations": {
-		"wantsToRead": "Roo vol llegir aquest fitxer:",
-		"wantsToReadOutsideWorkspace": "Roo vol llegir aquest fitxer fora de l'espai de treball:",
-		"didRead": "Roo ha llegit aquest fitxer:",
-		"wantsToEdit": "Roo vol editar aquest fitxer:",
-		"wantsToEditOutsideWorkspace": "Roo vol editar aquest fitxer fora de l'espai de treball:",
-		"wantsToEditProtected": "Roo vol editar un fitxer de configuració protegit:",
-		"wantsToCreate": "Roo vol crear un nou fitxer:",
-		"wantsToSearchReplace": "Roo vol realitzar cerca i substitució en aquest fitxer:",
-		"didSearchReplace": "Roo ha realitzat cerca i substitució en aquest fitxer:",
-		"wantsToInsert": "Roo vol inserir contingut en aquest fitxer:",
-		"wantsToInsertWithLineNumber": "Roo vol inserir contingut a la línia {{lineNumber}} d'aquest fitxer:",
-		"wantsToInsertAtEnd": "Roo vol afegir contingut al final d'aquest fitxer:",
-		"wantsToReadAndXMore": "En Roo vol llegir aquest fitxer i {{count}} més:",
-		"wantsToReadMultiple": "Roo vol llegir diversos fitxers:",
-		"wantsToApplyBatchChanges": "Roo vol aplicar canvis a múltiples fitxers:"
+		"wantsToRead": "ModelHarbor vol llegir aquest fitxer:",
+		"wantsToReadOutsideWorkspace": "ModelHarbor vol llegir aquest fitxer fora de l'espai de treball:",
+		"didRead": "ModelHarbor ha llegit aquest fitxer:",
+		"wantsToEdit": "ModelHarbor vol editar aquest fitxer:",
+		"wantsToEditOutsideWorkspace": "ModelHarbor vol editar aquest fitxer fora de l'espai de treball:",
+		"wantsToEditProtected": "ModelHarbor vol editar un fitxer de configuració protegit:",
+		"wantsToCreate": "ModelHarbor vol crear un nou fitxer:",
+		"wantsToSearchReplace": "ModelHarbor vol realitzar cerca i substitució en aquest fitxer:",
+		"didSearchReplace": "ModelHarbor ha realitzat cerca i substitució en aquest fitxer:",
+		"wantsToInsert": "ModelHarbor vol inserir contingut en aquest fitxer:",
+		"wantsToInsertWithLineNumber": "ModelHarbor vol inserir contingut a la línia {{lineNumber}} d'aquest fitxer:",
+		"wantsToInsertAtEnd": "ModelHarbor vol afegir contingut al final d'aquest fitxer:",
+		"wantsToReadAndXMore": "En ModelHarbor vol llegir aquest fitxer i {{count}} més:",
+		"wantsToReadMultiple": "ModelHarbor vol llegir diversos fitxers:",
+		"wantsToApplyBatchChanges": "ModelHarbor vol aplicar canvis a múltiples fitxers:"
 	},
 	"directoryOperations": {
-		"wantsToViewTopLevel": "Roo vol veure els fitxers de nivell superior en aquest directori:",
-		"didViewTopLevel": "Roo ha vist els fitxers de nivell superior en aquest directori:",
-		"wantsToViewRecursive": "Roo vol veure recursivament tots els fitxers en aquest directori:",
-		"didViewRecursive": "Roo ha vist recursivament tots els fitxers en aquest directori:",
-		"wantsToViewDefinitions": "Roo vol veure noms de definicions de codi font utilitzats en aquest directori:",
-		"didViewDefinitions": "Roo ha vist noms de definicions de codi font utilitzats en aquest directori:",
-		"wantsToSearch": "Roo vol cercar en aquest directori <code>{{regex}}</code>:",
-		"didSearch": "Roo ha cercat en aquest directori <code>{{regex}}</code>:",
-		"wantsToSearchOutsideWorkspace": "Roo vol cercar en aquest directori (fora de l'espai de treball) <code>{{regex}}</code>:",
-		"didSearchOutsideWorkspace": "Roo ha cercat en aquest directori (fora de l'espai de treball) <code>{{regex}}</code>:",
-		"wantsToViewTopLevelOutsideWorkspace": "Roo vol veure els fitxers de nivell superior en aquest directori (fora de l'espai de treball):",
-		"didViewTopLevelOutsideWorkspace": "Roo ha vist els fitxers de nivell superior en aquest directori (fora de l'espai de treball):",
-		"wantsToViewRecursiveOutsideWorkspace": "Roo vol veure recursivament tots els fitxers en aquest directori (fora de l'espai de treball):",
-		"didViewRecursiveOutsideWorkspace": "Roo ha vist recursivament tots els fitxers en aquest directori (fora de l'espai de treball):",
-		"wantsToViewDefinitionsOutsideWorkspace": "Roo vol veure noms de definicions de codi font utilitzats en aquest directori (fora de l'espai de treball):",
-		"didViewDefinitionsOutsideWorkspace": "Roo ha vist noms de definicions de codi font utilitzats en aquest directori (fora de l'espai de treball):"
+		"wantsToViewTopLevel": "ModelHarbor vol veure els fitxers de nivell superior en aquest directori:",
+		"didViewTopLevel": "ModelHarbor ha vist els fitxers de nivell superior en aquest directori:",
+		"wantsToViewRecursive": "ModelHarbor vol veure recursivament tots els fitxers en aquest directori:",
+		"didViewRecursive": "ModelHarbor ha vist recursivament tots els fitxers en aquest directori:",
+		"wantsToViewDefinitions": "ModelHarbor vol veure noms de definicions de codi font utilitzats en aquest directori:",
+		"didViewDefinitions": "ModelHarbor ha vist noms de definicions de codi font utilitzats en aquest directori:",
+		"wantsToSearch": "ModelHarbor vol cercar en aquest directori <code>{{regex}}</code>:",
+		"didSearch": "ModelHarbor ha cercat en aquest directori <code>{{regex}}</code>:",
+		"wantsToSearchOutsideWorkspace": "ModelHarbor vol cercar en aquest directori (fora de l'espai de treball) <code>{{regex}}</code>:",
+		"didSearchOutsideWorkspace": "ModelHarbor ha cercat en aquest directori (fora de l'espai de treball) <code>{{regex}}</code>:",
+		"wantsToViewTopLevelOutsideWorkspace": "ModelHarbor vol veure els fitxers de nivell superior en aquest directori (fora de l'espai de treball):",
+		"didViewTopLevelOutsideWorkspace": "ModelHarbor ha vist els fitxers de nivell superior en aquest directori (fora de l'espai de treball):",
+		"wantsToViewRecursiveOutsideWorkspace": "ModelHarbor vol veure recursivament tots els fitxers en aquest directori (fora de l'espai de treball):",
+		"didViewRecursiveOutsideWorkspace": "ModelHarbor ha vist recursivament tots els fitxers en aquest directori (fora de l'espai de treball):",
+		"wantsToViewDefinitionsOutsideWorkspace": "ModelHarbor vol veure noms de definicions de codi font utilitzats en aquest directori (fora de l'espai de treball):",
+		"didViewDefinitionsOutsideWorkspace": "ModelHarbor ha vist noms de definicions de codi font utilitzats en aquest directori (fora de l'espai de treball):"
 	},
 	"commandOutput": "Sortida de l'ordre",
 	"commandExecution": {
@@ -211,18 +212,18 @@
 	"response": "Resposta",
 	"arguments": "Arguments",
 	"mcp": {
-		"wantsToUseTool": "Roo vol utilitzar una eina al servidor MCP {{serverName}}:",
-		"wantsToAccessResource": "Roo vol accedir a un recurs al servidor MCP {{serverName}}:"
+		"wantsToUseTool": "ModelHarbor vol utilitzar una eina al servidor MCP {{serverName}}:",
+		"wantsToAccessResource": "ModelHarbor vol accedir a un recurs al servidor MCP {{serverName}}:"
 	},
 	"modes": {
-		"wantsToSwitch": "Roo vol canviar a mode <code>{{mode}}</code>",
-		"wantsToSwitchWithReason": "Roo vol canviar a mode <code>{{mode}}</code> perquè: {{reason}}",
-		"didSwitch": "Roo ha canviat a mode <code>{{mode}}</code>",
-		"didSwitchWithReason": "Roo ha canviat a mode <code>{{mode}}</code> perquè: {{reason}}"
+		"wantsToSwitch": "ModelHarbor vol canviar a mode <code>{{mode}}</code>",
+		"wantsToSwitchWithReason": "ModelHarbor vol canviar a mode <code>{{mode}}</code> perquè: {{reason}}",
+		"didSwitch": "ModelHarbor ha canviat a mode <code>{{mode}}</code>",
+		"didSwitchWithReason": "ModelHarbor ha canviat a mode <code>{{mode}}</code> perquè: {{reason}}"
 	},
 	"subtasks": {
-		"wantsToCreate": "Roo vol crear una nova subtasca en mode <code>{{mode}}</code>:",
-		"wantsToFinish": "Roo vol finalitzar aquesta subtasca",
+		"wantsToCreate": "ModelHarbor vol crear una nova subtasca en mode <code>{{mode}}</code>:",
+		"wantsToFinish": "ModelHarbor vol finalitzar aquesta subtasca",
 		"newTaskContent": "Instruccions de la subtasca",
 		"completionContent": "Subtasca completada",
 		"resultContent": "Resultats de la subtasca",
@@ -230,7 +231,7 @@
 		"completionInstructions": "Subtasca completada! Pots revisar els resultats i suggerir correccions o següents passos. Si tot sembla correcte, confirma per tornar el resultat a la tasca principal."
 	},
 	"questions": {
-		"hasQuestion": "Roo té una pregunta:"
+		"hasQuestion": "ModelHarbor té una pregunta:"
 	},
 	"taskCompleted": "Tasca completada",
 	"powershell": {
@@ -239,7 +240,7 @@
 	"autoApprove": {
 		"title": "Aprovació automàtica:",
 		"none": "Cap",
-		"description": "L'aprovació automàtica permet a Roo Code realitzar accions sense demanar permís. Activa-la només per a accions en les que confies plenament. Configuració més detallada disponible a la <settingsLink>Configuració</settingsLink>.",
+		"description": "L'aprovació automàtica permet a ModelHarbor Agent realitzar accions sense demanar permís. Activa-la només per a accions en les que confies plenament. Configuració més detallada disponible a la <settingsLink>Configuració</settingsLink>.",
 		"selectOptionsFirst": "Selecciona almenys una opció a continuació per activar l'aprovació automàtica",
 		"toggleAriaLabel": "Commuta l'aprovació automàtica",
 		"disabledAriaLabel": "Aprovació automàtica desactivada: seleccioneu primer les opcions"
@@ -260,8 +261,8 @@
 		"countdownDisplay": "{{count}}s"
 	},
 	"announcement": {
-		"title": "🎉 Roo Code {{version}} Llançat",
-		"description": "Roo Code {{version}} porta noves funcions potents i millores significatives per millorar el vostre flux de treball de desenvolupament.",
+		"title": "🎉 ModelHarbor Agent {{version}} Llançat",
+		"description": "ModelHarbor Agent {{version}} porta noves funcions potents i millores significatives per millorar el vostre flux de treball de desenvolupament.",
 		"whatsNew": "Novetats",
 		"feature1": "<bold>Proveïdor de Hugging Face</bold>: Accedeix a molts models de codi obert excel·lents directament a través del nou proveïdor de Hugging Face amb integració perfecta i selecció de models.",
 		"feature2": "<bold>Controls de Comandament en Línia</bold>: Nous controls d'aprovació automàtica i denegació per a l'execució de comandaments et donen control precís sobre les operacions de terminal amb permisos personalitzables.",
@@ -270,7 +271,7 @@
 		"detailsDiscussLinks": "Obtén més detalls i uneix-te a les discussions a <discordLink>Discord</discordLink> i <redditLink>Reddit</redditLink> 🚀"
 	},
 	"browser": {
-		"rooWantsToUse": "Roo vol utilitzar el navegador:",
+		"rooWantsToUse": "ModelHarbor vol utilitzar el navegador:",
 		"consoleLogs": "Registres de consola",
 		"noNewLogs": "(Cap registre nou)",
 		"screenshot": "Captura de pantalla del navegador",
@@ -289,7 +290,8 @@
 			"scrollDown": "Desplaçar avall",
 			"scrollUp": "Desplaçar amunt",
 			"close": "Tancar navegador"
-		}
+		},
+		"ModelHarborWantsToUse": "ModelHarbor vol utilitzar el navegador:"
 	},
 	"codeblock": {
 		"tooltips": {
@@ -304,19 +306,19 @@
 	"profileViolationWarning": "El perfil actual no és compatible amb la configuració de la teva organització",
 	"shellIntegration": {
 		"title": "Advertència d'execució d'ordres",
-		"description": "La teva ordre s'està executant sense la integració de shell del terminal VSCode. Per suprimir aquest advertiment, pots desactivar la integració de shell a la secció <strong>Terminal</strong> de la <settingsLink>configuració de Roo Code</settingsLink> o solucionar problemes d'integració del terminal VSCode utilitzant l'enllaç a continuació.",
+		"description": "La teva ordre s'està executant sense la integració de shell del terminal VSCode. Per suprimir aquest advertiment, pots desactivar la integració de shell a la secció <strong>Terminal</strong> de la <settingsLink>configuració de ModelHarbor Agent</settingsLink> o solucionar problemes d'integració del terminal VSCode utilitzant l'enllaç a continuació.",
 		"troubleshooting": "Fes clic aquí per a la documentació d'integració de shell."
 	},
 	"ask": {
 		"autoApprovedRequestLimitReached": {
 			"title": "S'ha arribat al límit de sol·licituds aprovades automàticament",
-			"description": "Roo ha arribat al límit aprovat automàticament de {{count}} sol·licitud(s) d'API. Vols reiniciar el comptador i continuar amb la tasca?",
+			"description": "ModelHarbor ha arribat al límit aprovat automàticament de {{count}} sol·licitud(s) d'API. Vols reiniciar el comptador i continuar amb la tasca?",
 			"button": "Reiniciar i continuar"
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo vol cercar a la base de codi <code>{{query}}</code>:",
-		"wantsToSearchWithPath": "Roo vol cercar a la base de codi <code>{{query}}</code> a <code>{{path}}</code>:",
+		"wantsToSearch": "ModelHarbor vol cercar a la base de codi <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "ModelHarbor vol cercar a la base de codi <code>{{query}}</code> a <code>{{path}}</code>:",
 		"didSearch_one": "S'ha trobat 1 resultat",
 		"didSearch_other": "S'han trobat {{count}} resultats",
 		"resultTooltip": "Puntuació de similitud: {{score}} (fes clic per obrir el fitxer)"

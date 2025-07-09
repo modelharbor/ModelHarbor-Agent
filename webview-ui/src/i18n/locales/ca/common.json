@@ -47,6 +47,12 @@
 			"copyError": "Error copiant la imatge"
 		}
 	},
+	"errors": {
+		"share_no_active_task": "No hi ha cap tasca activa per compartir",
+		"no_active_task": "No hi ha cap tasca activa",
+		"task_folder_not_found": "Carpeta de tasca no trobada",
+		"open_chat_folder_failed": "Error obrint la carpeta de xat"
+	},
 	"file": {
 		"errors": {
 			"invalidDataUri": "Format d'URI de dades no vàlid",
