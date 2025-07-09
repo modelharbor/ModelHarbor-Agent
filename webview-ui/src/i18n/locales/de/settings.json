@@ -1,40 +1,40 @@
 {
 	"common": {
-		"save": "Speichern",
-		"done": "Fertig",
-		"cancel": "Abbrechen",
-		"reset": "Zurücksetzen",
-		"select": "Auswählen",
-		"add": "Header hinzufügen",
-		"remove": "Entfernen"
+		"save": "Guardar",
+		"done": "Hecho",
+		"cancel": "Cancelar",
+		"reset": "Restablecer",
+		"select": "Seleccionar",
+		"add": "Añadir encabezado",
+		"remove": "Eliminar"
 	},
 	"header": {
-		"title": "Einstellungen",
-		"saveButtonTooltip": "Änderungen speichern",
-		"nothingChangedTooltip": "Nichts geändert",
-		"doneButtonTooltip": "Ungespeicherte Änderungen verwerfen und Einstellungsbereich schließen"
+		"title": "Configuración",
+		"saveButtonTooltip": "Guardar cambios",
+		"nothingChangedTooltip": "Nada ha cambiado",
+		"doneButtonTooltip": "Descartar cambios no guardados y cerrar el panel de configuración"
 	},
 	"unsavedChangesDialog": {
-		"title": "Ungespeicherte Änderungen",
-		"description": "Möchtest du die Änderungen verwerfen und fortfahren?",
-		"cancelButton": "Abbrechen",
-		"discardButton": "Änderungen verwerfen"
+		"title": "Cambios no guardados",
+		"description": "¿Desea descartar los cambios y continuar?",
+		"cancelButton": "Cancelar",
+		"discardButton": "Descartar cambios"
 	},
 	"sections": {
-		"providers": "Anbieter",
-		"autoApprove": "Auto-Genehmigung",
-		"browser": "Computerzugriff",
-		"checkpoints": "Kontrollpunkte",
-		"notifications": "Benachrichtigungen",
-		"contextManagement": "Kontext",
+		"providers": "Proveedores",
+		"autoApprove": "Auto-aprobación",
+		"browser": "Acceso al ordenador",
+		"checkpoints": "Puntos de control",
+		"notifications": "Notificaciones",
+		"contextManagement": "Contexto",
 		"terminal": "Terminal",
-		"prompts": "Eingabeaufforderungen",
-		"experimental": "Experimentell",
-		"language": "Sprache",
-		"about": "Über Roo Code"
+		"prompts": "Indicaciones",
+		"experimental": "Experimental",
+		"language": "Idioma",
+		"about": "Acerca de ModelHarbor Agent"
 	},
 	"prompts": {
-		"description": "Konfiguriere Support-Prompts, die für schnelle Aktionen wie das Verbessern von Prompts, das Erklären von Code und das Beheben von Problemen verwendet werden. Diese Prompts helfen Roo dabei, bessere Unterstützung für häufige Entwicklungsaufgaben zu bieten."
+		"description": "Configura indicaciones de soporte que se utilizan para acciones rápidas como mejorar indicaciones, explicar código y solucionar problemas. Estas indicaciones ayudan a ModelHarbor a brindar mejor asistencia para tareas comunes de desarrollo."
 	},
 	"codeIndex": {
 		"title": "Codebase-Indexierung",
@@ -122,70 +122,70 @@
 		"resetToDefault": "Auf Standard zurücksetzen"
 	},
 	"autoApprove": {
-		"description": "Erlaubt Roo, Operationen automatisch ohne Genehmigung durchzuführen. Aktiviere diese Einstellungen nur, wenn du der KI vollständig vertraust und die damit verbundenen Sicherheitsrisiken verstehst.",
+		"description": "Permitir que ModelHarbor realice operaciones automáticamente sin requerir aprobación. Habilite esta configuración solo si confía plenamente en la IA y comprende los riesgos de seguridad asociados.",
 		"readOnly": {
-			"label": "Lesen",
-			"description": "Wenn aktiviert, wird Roo automatisch Verzeichnisinhalte anzeigen und Dateien lesen, ohne dass du auf die Genehmigen-Schaltfläche klicken musst.",
+			"label": "Lectura",
+			"description": "Cuando está habilitado, ModelHarbor verá automáticamente el contenido del directorio y leerá archivos sin que necesite hacer clic en el botón Aprobar.",
 			"outsideWorkspace": {
-				"label": "Dateien außerhalb des Arbeitsbereichs einbeziehen",
-				"description": "Roo erlauben, Dateien außerhalb des aktuellen Arbeitsbereichs ohne Genehmigung zu lesen."
+				"label": "Incluir archivos fuera del espacio de trabajo",
+				"description": "Permitir a ModelHarbor leer archivos fuera del espacio de trabajo actual sin requerir aprobación."
 			}
 		},
 		"write": {
-			"label": "Schreiben",
-			"description": "Dateien automatisch erstellen und bearbeiten ohne Genehmigung",
-			"delayLabel": "Verzögerung nach Schreibvorgängen, damit Diagnosefunktionen potenzielle Probleme erkennen können",
+			"label": "Escritura",
+			"description": "Crear y editar archivos automáticamente sin requerir aprobación",
+			"delayLabel": "Retraso después de escritura para permitir que los diagnósticos detecten posibles problemas",
 			"outsideWorkspace": {
-				"label": "Dateien außerhalb des Arbeitsbereichs einbeziehen",
-				"description": "Roo erlauben, Dateien außerhalb des aktuellen Arbeitsbereichs ohne Genehmigung zu erstellen und zu bearbeiten."
+				"label": "Incluir archivos fuera del espacio de trabajo",
+				"description": "Permitir a ModelHarbor crear y editar archivos fuera del espacio de trabajo actual sin requerir aprobación."
 			},
 			"protected": {
-				"label": "Geschützte Dateien einbeziehen",
-				"description": "Roo erlauben, geschützte Dateien (wie .rooignore und .roo/ Konfigurationsdateien) ohne Genehmigung zu erstellen und zu bearbeiten."
+				"label": "Incluir archivos protegidos",
+				"description": "Permitir a ModelHarbor crear y editar archivos protegidos (como .rooignore y archivos de configuración .roo/) sin requerir aprobación."
 			}
 		},
 		"browser": {
-			"label": "Browser",
-			"description": "Browser-Aktionen automatisch ohne Genehmigung durchführen. Hinweis: Gilt nur, wenn das Modell Computer-Nutzung unterstützt"
+			"label": "Navegador",
+			"description": "Realizar acciones del navegador automáticamente sin requerir aprobación. Nota: Solo se aplica cuando el modelo admite el uso del ordenador"
 		},
 		"retry": {
-			"label": "Wiederholung",
-			"description": "Fehlgeschlagene API-Anfragen automatisch wiederholen, wenn der Server eine Fehlerantwort zurückgibt",
-			"delayLabel": "Verzögerung vor dem Wiederholen der Anfrage"
+			"label": "Reintentar",
+			"description": "Reintentar automáticamente solicitudes de API fallidas cuando el servidor devuelve una respuesta de error",
+			"delayLabel": "Retraso antes de reintentar la solicitud"
 		},
 		"mcp": {
 			"label": "MCP",
-			"description": "Automatische Genehmigung einzelner MCP-Tools in der MCP-Server-Ansicht aktivieren (erfordert sowohl diese Einstellung als auch das 'Immer erlauben'-Kontrollkästchen des Tools)"
+			"description": "Habilitar la aprobación automática de herramientas MCP individuales en la vista de Servidores MCP (requiere tanto esta configuración como la casilla \"Permitir siempre\" de la herramienta)"
 		},
 		"modeSwitch": {
-			"label": "Modus",
-			"description": "Automatisch zwischen verschiedenen Modi wechseln ohne Genehmigung"
+			"label": "Modo",
+			"description": "Cambiar automáticamente entre diferentes modos sin requerir aprobación"
 		},
 		"subtasks": {
-			"label": "Teilaufgaben",
-			"description": "Erstellung und Abschluss von Unteraufgaben ohne Genehmigung erlauben"
+			"label": "Subtareas",
+			"description": "Permitir la creación y finalización de subtareas sin requerir aprobación"
 		},
 		"followupQuestions": {
-			"label": "Frage",
-			"description": "Automatisch die erste vorgeschlagene Antwort für Folgefragen nach der konfigurierten Zeitüberschreitung auswählen",
-			"timeoutLabel": "Wartezeit vor der automatischen Auswahl der ersten Antwort"
+			"label": "Pregunta",
+			"description": "Seleccionar automáticamente la primera respuesta sugerida para preguntas de seguimiento después del tiempo de espera configurado",
+			"timeoutLabel": "Tiempo de espera antes de seleccionar automáticamente la primera respuesta"
 		},
 		"execute": {
-			"label": "Ausführen",
-			"description": "Erlaubte Terminal-Befehle automatisch ohne Genehmigung ausführen",
-			"allowedCommands": "Erlaubte Auto-Ausführungsbefehle",
-			"allowedCommandsDescription": "Befehlspräfixe, die automatisch ausgeführt werden können, wenn 'Ausführungsoperationen immer genehmigen' aktiviert ist. Fügen Sie * hinzu, um alle Befehle zu erlauben (mit Vorsicht verwenden).",
-			"commandPlaceholder": "Befehlspräfix eingeben (z.B. 'git ')",
-			"addButton": "Hinzufügen"
+			"label": "Ejecutar",
+			"description": "Ejecutar automáticamente comandos de terminal permitidos sin requerir aprobación",
+			"allowedCommands": "Comandos de auto-ejecución permitidos",
+			"allowedCommandsDescription": "Prefijos de comandos que pueden ser ejecutados automáticamente cuando \"Aprobar siempre operaciones de ejecución\" está habilitado. Añade * para permitir todos los comandos (usar con precaución).",
+			"commandPlaceholder": "Ingrese prefijo de comando (ej. 'git ')",
+			"addButton": "Añadir"
 		},
 		"updateTodoList": {
 			"label": "Todo",
 			"description": "To-Do-Liste wird automatisch aktualisiert, ohne dass du zustimmen musst"
 		},
 		"apiRequestLimit": {
-			"title": "Maximale Anfragen",
-			"description": "Automatisch so viele API-Anfragen stellen, bevor du um die Erlaubnis gebeten wirst, mit der Aufgabe fortzufahren.",
-			"unlimited": "Unbegrenzt"
+			"title": "Solicitudes máximas",
+			"description": "Realizar automáticamente esta cantidad de solicitudes a la API antes de pedir aprobación para continuar con la tarea.",
+			"unlimited": "Ilimitado"
 		}
 	},
 	"providers": {
@@ -227,149 +227,151 @@
 		"noCustomHeaders": "Keine benutzerdefinierten Headers definiert. Klicke auf die + Schaltfläche, um einen hinzuzufügen.",
 		"requestyApiKey": "Requesty API-Schlüssel",
 		"refreshModels": {
-			"label": "Modelle aktualisieren",
-			"hint": "Bitte öffne die Einstellungen erneut, um die neuesten Modelle zu sehen.",
-			"loading": "Modellliste wird aktualisiert...",
-			"success": "Modellliste erfolgreich aktualisiert!",
-			"error": "Fehler beim Aktualisieren der Modellliste. Bitte versuche es erneut."
+			"label": "Refresh Models",
+			"hint": "Please reopen the settings to see the latest models.",
+			"loading": "Refreshing models list...",
+			"success": "Models list refreshed successfully!",
+			"error": "Failed to refresh models list. Please try again."
 		},
-		"getRequestyApiKey": "Requesty API-Schlüssel erhalten",
-		"openRouterTransformsText": "Prompts und Nachrichtenketten auf Kontextgröße komprimieren (<a>OpenRouter Transformationen</a>)",
-		"anthropicApiKey": "Anthropic API-Schlüssel",
-		"getAnthropicApiKey": "Anthropic API-Schlüssel erhalten",
-		"anthropicUseAuthToken": "Anthropic API-Schlüssel als Authorization-Header anstelle von X-Api-Key übergeben",
-		"chutesApiKey": "Chutes API-Schlüssel",
-		"getChutesApiKey": "Chutes API-Schlüssel erhalten",
-		"deepSeekApiKey": "DeepSeek API-Schlüssel",
-		"getDeepSeekApiKey": "DeepSeek API-Schlüssel erhalten",
-		"geminiApiKey": "Gemini API-Schlüssel",
-		"getGroqApiKey": "Groq API-Schlüssel erhalten",
-		"groqApiKey": "Groq API-Schlüssel",
-		"getGeminiApiKey": "Gemini API-Schlüssel erhalten",
-		"openAiApiKey": "OpenAI API-Schlüssel",
-		"apiKey": "API-Schlüssel",
-		"openAiBaseUrl": "Basis-URL",
-		"getOpenAiApiKey": "OpenAI API-Schlüssel erhalten",
-		"mistralApiKey": "Mistral API-Schlüssel",
-		"getMistralApiKey": "Mistral / Codestral API-Schlüssel erhalten",
-		"codestralBaseUrl": "Codestral Basis-URL (Optional)",
-		"codestralBaseUrlDesc": "Legen Sie eine alternative URL für das Codestral-Modell fest.",
-		"xaiApiKey": "xAI API-Schlüssel",
-		"getXaiApiKey": "xAI API-Schlüssel erhalten",
-		"litellmApiKey": "LiteLLM API-Schlüssel",
-		"litellmBaseUrl": "LiteLLM Basis-URL",
-		"awsCredentials": "AWS Anmeldedaten",
-		"awsProfile": "AWS Profil",
-		"awsProfileName": "AWS Profilname",
-		"awsAccessKey": "AWS Zugangsschlüssel",
-		"awsSecretKey": "AWS Geheimschlüssel",
-		"awsSessionToken": "AWS Sitzungstoken",
+		"getRequestyApiKey": "Get Requesty API Key",
+		"openRouterTransformsText": "Compress prompts and message chains to the context size (<a>OpenRouter Transforms</a>)",
+		"anthropicApiKey": "Anthropic API Key",
+		"getAnthropicApiKey": "Get Anthropic API Key",
+		"anthropicUseAuthToken": "Pass Anthropic API Key as Authorization header instead of X-Api-Key",
+		"chutesApiKey": "Chutes API Key",
+		"getChutesApiKey": "Get Chutes API Key",
+		"deepSeekApiKey": "DeepSeek API Key",
+		"getDeepSeekApiKey": "Get DeepSeek API Key",
+		"geminiApiKey": "Gemini API Key",
+		"getGroqApiKey": "Get Groq API Key",
+		"groqApiKey": "Groq API Key",
+		"getGeminiApiKey": "Get Gemini API Key",
+		"openAiApiKey": "OpenAI API Key",
+		"apiKey": "API Key",
+		"openAiBaseUrl": "Base URL",
+		"getOpenAiApiKey": "Get OpenAI API Key",
+		"mistralApiKey": "Mistral API Key",
+		"getMistralApiKey": "Get Mistral / Codestral API Key",
+		"codestralBaseUrl": "Codestral Base URL (Optional)",
+		"codestralBaseUrlDesc": "Set an alternative URL for the Codestral model.",
+		"xaiApiKey": "xAI API Key",
+		"getXaiApiKey": "Get xAI API Key",
+		"litellmApiKey": "LiteLLM API Key",
+		"litellmBaseUrl": "LiteLLM Base URL",
+		"modelharborApiKey": "ModelHarbor API Key",
+		"getModelHarborApiKey": "Get ModelHarbor API Key",
+		"awsCredentials": "AWS Credentials",
+		"awsProfile": "AWS Profile",
+		"awsProfileName": "AWS Profile Name",
+		"awsAccessKey": "AWS Access Key",
+		"awsSecretKey": "AWS Secret Key",
+		"awsSessionToken": "AWS Session Token",
 		"awsRegion": "AWS Region",
-		"awsCrossRegion": "Regionsübergreifende Inferenz verwenden",
+		"awsCrossRegion": "Use cross-region inference",
 		"awsBedrockVpc": {
-			"useCustomVpcEndpoint": "Benutzerdefinierten VPC-Endpunkt verwenden",
-			"vpcEndpointUrlPlaceholder": "VPC-Endpunkt-URL eingeben (optional)",
-			"examples": "Beispiele:"
+			"useCustomVpcEndpoint": "Use custom VPC endpoint",
+			"vpcEndpointUrlPlaceholder": "Enter VPC Endpoint URL (optional)",
+			"examples": "Examples:"
 		},
-		"enablePromptCaching": "Prompt-Caching aktivieren",
-		"enablePromptCachingTitle": "Prompt-Caching aktivieren, um die Leistung zu verbessern und Kosten für unterstützte Modelle zu reduzieren.",
-		"cacheUsageNote": "Hinweis: Wenn Sie keine Cache-Nutzung sehen, versuchen Sie ein anderes Modell auszuwählen und dann Ihr gewünschtes Modell erneut auszuwählen.",
-		"vscodeLmModel": "Sprachmodell",
-		"vscodeLmWarning": "Hinweis: Dies ist eine sehr experimentelle Integration und die Anbieterunterstützung variiert. Wenn Sie einen Fehler über ein nicht unterstütztes Modell erhalten, liegt das Problem auf Anbieterseite.",
+		"enablePromptCaching": "Enable prompt caching",
+		"enablePromptCachingTitle": "Enable prompt caching to improve performance and reduce costs for supported models.",
+		"cacheUsageNote": "Note: If you don't see cache usage, try selecting a different model and then selecting your desired model again.",
+		"vscodeLmModel": "Language Model",
+		"vscodeLmWarning": "Note: This is a very experimental integration and provider support will vary. If you get an error about a model not being supported, that's an issue on the provider's end.",
 		"googleCloudSetup": {
-			"title": "Um Google Cloud Vertex AI zu verwenden, müssen Sie:",
-			"step1": "1. Ein Google Cloud-Konto erstellen, die Vertex AI API aktivieren & die gewünschten Claude-Modelle aktivieren.",
-			"step2": "2. Die Google Cloud CLI installieren & Standardanmeldeinformationen für die Anwendung konfigurieren.",
-			"step3": "3. Oder ein Servicekonto mit Anmeldeinformationen erstellen."
+			"title": "To use Google Cloud Vertex AI, you need to:",
+			"step1": "1. Create a Google Cloud account, enable the Vertex AI API & enable the desired Claude models.",
+			"step2": "2. Install the Google Cloud CLI & configure application default credentials.",
+			"step3": "3. Or create a service account with credentials."
 		},
-		"googleCloudCredentials": "Google Cloud Anmeldedaten",
-		"googleCloudKeyFile": "Google Cloud Schlüsseldateipfad",
-		"googleCloudProjectId": "Google Cloud Projekt-ID",
+		"googleCloudCredentials": "Google Cloud Credentials",
+		"googleCloudKeyFile": "Google Cloud Key File Path",
+		"googleCloudProjectId": "Google Cloud Project ID",
 		"googleCloudRegion": "Google Cloud Region",
 		"lmStudio": {
-			"baseUrl": "Basis-URL (optional)",
-			"modelId": "Modell-ID",
-			"speculativeDecoding": "Spekulatives Dekodieren aktivieren",
-			"draftModelId": "Entwurfsmodell-ID",
-			"draftModelDesc": "Das Entwurfsmodell muss aus derselben Modellfamilie stammen, damit das spekulative Dekodieren korrekt funktioniert.",
-			"selectDraftModel": "Entwurfsmodell auswählen",
-			"noModelsFound": "Keine Entwurfsmodelle gefunden. Bitte stelle sicher, dass LM Studio mit aktiviertem Servermodus läuft.",
-			"description": "LM Studio ermöglicht es dir, Modelle lokal auf deinem Computer auszuführen. Eine Anleitung zum Einstieg findest du in ihrem <a>Schnellstart-Guide</a>. Du musst auch die <b>lokale Server</b>-Funktion von LM Studio starten, um es mit dieser Erweiterung zu verwenden. <span>Hinweis:</span> Roo Code verwendet komplexe Prompts und funktioniert am besten mit Claude-Modellen. Weniger leistungsfähige Modelle funktionieren möglicherweise nicht wie erwartet."
+			"baseUrl": "Base URL (optional)",
+			"modelId": "Model ID",
+			"speculativeDecoding": "Enable Speculative Decoding",
+			"draftModelId": "Draft Model ID",
+			"draftModelDesc": "Draft model must be from the same model family for speculative decoding to work correctly.",
+			"selectDraftModel": "Select Draft Model",
+			"noModelsFound": "No draft models found. Please ensure LM Studio is running with Server Mode enabled.",
+			"description": "LM Studio allows you to run models locally on your computer. For instructions on how to get started, see their <a>quickstart guide</a>. You will also need to start LM Studio's <b>local server</b> feature to use it with this extension. <span>Note:</span> ModelHarbor Agent uses complex prompts and works best with Claude models. Less capable models may not work as expected."
 		},
 		"ollama": {
-			"baseUrl": "Basis-URL (optional)",
-			"modelId": "Modell-ID",
-			"description": "Ollama ermöglicht es dir, Modelle lokal auf deinem Computer auszuführen. Eine Anleitung zum Einstieg findest du im Schnellstart-Guide.",
-			"warning": "Hinweis: Roo Code verwendet komplexe Prompts und funktioniert am besten mit Claude-Modellen. Weniger leistungsfähige Modelle funktionieren möglicherweise nicht wie erwartet."
+			"baseUrl": "Base URL (optional)",
+			"modelId": "Model ID",
+			"description": "Ollama allows you to run models locally on your computer. For instructions on how to get started, see their quickstart guide.",
+			"warning": "Note: ModelHarbor Agent uses complex prompts and works best with Claude models. Less capable models may not work as expected."
 		},
-		"unboundApiKey": "Unbound API-Schlüssel",
-		"getUnboundApiKey": "Unbound API-Schlüssel erhalten",
-		"unboundRefreshModelsSuccess": "Modellliste aktualisiert! Sie können jetzt aus den neuesten Modellen auswählen.",
-		"unboundInvalidApiKey": "Ungültiger API-Schlüssel. Bitte überprüfen Sie Ihren API-Schlüssel und versuchen Sie es erneut.",
+		"unboundApiKey": "Unbound API Key",
+		"getUnboundApiKey": "Get Unbound API Key",
+		"unboundRefreshModelsSuccess": "Models list updated! You can now select from the latest models.",
+		"unboundInvalidApiKey": "Invalid API key. Please check your API key and try again.",
 		"humanRelay": {
-			"description": "Es ist kein API-Schlüssel erforderlich, aber der Benutzer muss beim Kopieren und Einfügen der Informationen in den Web-Chat-KI helfen.",
-			"instructions": "Während der Verwendung wird ein Dialogfeld angezeigt und die aktuelle Nachricht wird automatisch in die Zwischenablage kopiert. Du musst diese in Web-Versionen von KI (wie ChatGPT oder Claude) einfügen, dann die Antwort der KI zurück in das Dialogfeld kopieren und auf die Bestätigungsschaltfläche klicken."
+			"description": "No API key is required, but the user needs to help copy and paste the information to the web chat AI.",
+			"instructions": "During use, a dialog box will pop up and the current message will be copied to the clipboard automatically. You need to paste these to web versions of AI (such as ChatGPT or Claude), then copy the AI's reply back to the dialog box and click the confirm button."
 		},
 		"openRouter": {
 			"providerRouting": {
-				"title": "OpenRouter Anbieter-Routing",
-				"description": "OpenRouter leitet Anfragen an die besten verfügbaren Anbieter für dein Modell weiter. Standardmäßig werden Anfragen über die Top-Anbieter lastverteilt, um maximale Verfügbarkeit zu gewährleisten. Du kannst jedoch einen bestimmten Anbieter für dieses Modell auswählen.",
-				"learnMore": "Mehr über Anbieter-Routing erfahren"
+				"title": "OpenRouter Provider Routing",
+				"description": "OpenRouter routes requests to the best available providers for your model. By default, requests are load balanced across the top providers to maximize uptime. However, you can choose a specific provider to use for this model.",
+				"learnMore": "Learn more about provider routing"
 			}
 		},
 		"customModel": {
-			"capabilities": "Konfiguriere die Fähigkeiten und Preise für dein benutzerdefiniertes OpenAI-kompatibles Modell. Sei vorsichtig bei der Angabe der Modellfähigkeiten, da diese beeinflussen können, wie Roo Code funktioniert.",
+			"capabilities": "Configure the capabilities and pricing for your custom OpenAI-compatible model. Be careful when specifying the model capabilities, as they can affect how ModelHarbor Agent performs.",
 			"maxTokens": {
-				"label": "Maximale Ausgabe-Tokens",
-				"description": "Maximale Anzahl von Tokens, die das Modell in einer Antwort generieren kann. (Geben Sie -1 an, damit der Server die maximalen Tokens festlegt.)"
+				"label": "Max Output Tokens",
+				"description": "Maximum number of tokens the model can generate in a response. (Specify -1 to allow the server to set the max tokens.)"
 			},
 			"contextWindow": {
-				"label": "Kontextfenstergröße",
-				"description": "Gesamte Tokens (Eingabe + Ausgabe), die das Modell verarbeiten kann."
+				"label": "Context Window Size",
+				"description": "Total tokens (input + output) the model can process."
 			},
 			"imageSupport": {
-				"label": "Bildunterstützung",
-				"description": "Ist dieses Modell in der Lage, Bilder zu verarbeiten und zu verstehen?"
+				"label": "Image Support",
+				"description": "Is this model capable of processing and understanding images?"
 			},
 			"computerUse": {
-				"label": "Computer-Nutzung",
-				"description": "Ist dieses Modell in der Lage, mit einem Browser zu interagieren? (z.B. Claude 3.7 Sonnet)"
+				"label": "Computer Use",
+				"description": "Is this model capable of interacting with a browser? (e.g. Claude 3.7 Sonnet)."
 			},
 			"promptCache": {
-				"label": "Prompt-Caching",
-				"description": "Ist dieses Modell in der Lage, Prompts zu cachen?"
+				"label": "Prompt Caching",
+				"description": "Is this model capable of caching prompts?"
 			},
 			"pricing": {
 				"input": {
-					"label": "Eingabepreis",
-					"description": "Kosten pro Million Tokens in der Eingabe/Prompt. Dies beeinflusst die Kosten für das Senden von Kontext und Anweisungen an das Modell."
+					"label": "Input Price",
+					"description": "Cost per million tokens in the input/prompt. This affects the cost of sending context and instructions to the model."
 				},
 				"output": {
-					"label": "Ausgabepreis",
-					"description": "Kosten pro Million Tokens in der Modellantwort. Dies beeinflusst die Kosten für generierte Inhalte und Vervollständigungen."
+					"label": "Output Price",
+					"description": "Cost per million tokens in the model's response. This affects the cost of generated content and completions."
 				},
 				"cacheReads": {
-					"label": "Cache-Lesepreis",
-					"description": "Kosten pro Million Tokens für das Lesen aus dem Cache. Dies ist der Preis, der beim Abrufen einer gecachten Antwort berechnet wird."
+					"label": "Cache Reads Price",
+					"description": "Cost per million tokens for reading from the cache. This is the price charged when a cached response is retrieved."
 				},
 				"cacheWrites": {
-					"label": "Cache-Schreibpreis",
-					"description": "Kosten pro Million Tokens für das Schreiben in den Cache. Dies ist der Preis, der beim ersten Cachen eines Prompts berechnet wird."
+					"label": "Cache Writes Price",
+					"description": "Cost per million tokens for writing to the cache. This is the price charged when a prompt is cached for the first time."
 				}
 			},
-			"resetDefaults": "Auf Standardwerte zurücksetzen"
+			"resetDefaults": "Reset to Defaults"
 		},
 		"rateLimitSeconds": {
-			"label": "Ratenbegrenzung",
-			"description": "Minimale Zeit zwischen API-Anfragen."
+			"label": "Rate limit",
+			"description": "Minimum time between API requests."
 		},
 		"reasoningEffort": {
-			"label": "Modell-Denkaufwand",
-			"high": "Hoch",
-			"medium": "Mittel",
-			"low": "Niedrig"
+			"label": "Model Reasoning Effort",
+			"high": "High",
+			"medium": "Medium",
+			"low": "Low"
 		},
-		"setReasoningLevel": "Denkaufwand aktivieren",
+		"setReasoningLevel": "Enable Reasoning Effort",
 		"claudeCode": {
 			"pathLabel": "Claude-Code-Pfad",
 			"description": "Optionaler Pfad zu Ihrer Claude Code CLI. Standard ist 'claude', wenn nicht festgelegt.",
@@ -379,7 +381,7 @@
 	"browser": {
 		"enable": {
 			"label": "Browser-Tool aktivieren",
-			"description": "Wenn aktiviert, kann Roo einen Browser verwenden, um mit Websites zu interagieren, wenn Modelle verwendet werden, die Computer-Nutzung unterstützen. <0>Mehr erfahren</0>"
+			"description": "Wenn aktiviert, kann ModelHarbor einen Browser verwenden, um mit Websites zu interagieren, wenn Modelle verwendet werden, die Computer-Nutzung unterstützen. <0>Mehr erfahren</0>"
 		},
 		"viewport": {
 			"label": "Viewport-Größe",
@@ -407,18 +409,18 @@
 	"checkpoints": {
 		"enable": {
 			"label": "Automatische Kontrollpunkte aktivieren",
-			"description": "Wenn aktiviert, erstellt Roo automatisch Kontrollpunkte während der Aufgabenausführung, was die Überprüfung von Änderungen oder die Rückkehr zu früheren Zuständen erleichtert. <0>Mehr erfahren</0>"
+			"description": "Wenn aktiviert, erstellt ModelHarbor automatisch Kontrollpunkte während der Aufgabenausführung, was die Überprüfung von Änderungen oder die Rückkehr zu früheren Zuständen erleichtert. <0>Mehr erfahren</0>"
 		}
 	},
 	"notifications": {
 		"sound": {
 			"label": "Soundeffekte aktivieren",
-			"description": "Wenn aktiviert, spielt Roo Soundeffekte für Benachrichtigungen und Ereignisse ab.",
+			"description": "Wenn aktiviert, spielt ModelHarbor Soundeffekte für Benachrichtigungen und Ereignisse ab.",
 			"volumeLabel": "Lautstärke"
 		},
 		"tts": {
 			"label": "Text-zu-Sprache aktivieren",
-			"description": "Wenn aktiviert, liest Roo seine Antworten mit Text-zu-Sprache laut vor.",
+			"description": "Wenn aktiviert, liest ModelHarbor seine Antworten mit Text-zu-Sprache laut vor.",
 			"speedLabel": "Geschwindigkeit"
 		}
 	},
@@ -426,7 +428,7 @@
 		"description": "Steuern Sie, welche Informationen im KI-Kontextfenster enthalten sind, was den Token-Verbrauch und die Antwortqualität beeinflusst",
 		"autoCondenseContextPercent": {
 			"label": "Schwellenwert für intelligente Kontextkomprimierung",
-			"description": "Wenn das Kontextfenster diesen Schwellenwert erreicht, wird Roo es automatisch komprimieren."
+			"description": "Wenn das Kontextfenster diesen Schwellenwert erreicht, wird ModelHarbor es automatisch komprimieren."
 		},
 		"condensingApiConfiguration": {
 			"label": "API-Konfiguration für Kontextkomprimierung",
@@ -442,11 +444,11 @@
 		},
 		"autoCondenseContext": {
 			"name": "Intelligente Kontextkomprimierung automatisch auslösen",
-			"description": "Wenn aktiviert, wird Roo automatisch den Kontext komprimieren, wenn der Schwellenwert erreicht wird. Wenn deaktiviert, können Sie die Kontextkomprimierung weiterhin manuell auslösen."
+			"description": "Wenn aktiviert, wird ModelHarbor automatisch den Kontext komprimieren, wenn der Schwellenwert erreicht wird. Wenn deaktiviert, können Sie die Kontextkomprimierung weiterhin manuell auslösen."
 		},
 		"openTabs": {
 			"label": "Geöffnete Tabs Kontextlimit",
-			"description": "Maximale Anzahl von geöffneten VSCode-Tabs, die im Kontext enthalten sein sollen. Höhere Werte bieten mehr Kontext, erhöhen aber den Token-Verbrauch."
+			"description": "Maximale Anzahl von VSCode-Tabs, die im Kontext enthalten sein sollen. Höhere Werte bieten mehr Kontext, erhöhen aber den Token-Verbrauch."
 		},
 		"workspaceFiles": {
 			"label": "Workspace-Dateien Kontextlimit",
@@ -462,7 +464,7 @@
 		},
 		"maxReadFile": {
 			"label": "Schwellenwert für automatische Dateilesekürzung",
-			"description": "Roo liest diese Anzahl von Zeilen, wenn das Modell keine Start-/Endwerte angibt. Wenn diese Zahl kleiner als die Gesamtzahl der Zeilen ist, erstellt Roo einen Zeilennummernindex der Codedefinitionen. Spezialfälle: -1 weist Roo an, die gesamte Datei zu lesen (ohne Indexierung), und 0 weist an, keine Zeilen zu lesen und nur Zeilenindizes für minimalen Kontext bereitzustellen. Niedrigere Werte minimieren die anfängliche Kontextnutzung und ermöglichen präzise nachfolgende Zeilenbereich-Lesungen. Explizite Start-/End-Anfragen sind von dieser Einstellung nicht begrenzt.",
+			"description": "ModelHarbor liest diese Anzahl von Zeilen, wenn das Modell keine Start-/Endwerte angibt. Wenn diese Zahl kleiner als die Gesamtzahl der Zeilen ist, ModelHarbor erstellt einen Zeilennummernindex der Codedefinitionen. Spezialfälle: -1 weist ModelHarbor an, die gesamte Datei zu lesen (ohne Indexierung), und 0 weist an, keine Zeilen zu lesen und nur Zeilenindizes für minimalen Kontext bereitzustellen. Niedrigere Werte minimieren die anfängliche Kontextnutzung und ermöglichen präzise nachfolgende Zeilenbereich-Lesungen. Explizite Start-/End-Anfragen sind von dieser Einstellung nicht begrenzt.",
 			"lines": "Zeilen",
 			"always_full_read": "Immer die gesamte Datei lesen"
 		},
@@ -491,7 +493,7 @@
 		},
 		"shellIntegrationTimeout": {
 			"label": "Terminal-Shell-Integrationszeit-Limit",
-			"description": "Maximale Wartezeit für die Shell-Integration, bevor Befehle ausgeführt werden. Für Benutzer mit langen Shell-Startzeiten musst du diesen Wert möglicherweise erhöhen, wenn du Fehler vom Typ \"Shell Integration Unavailable\" im Terminal siehst. <0>Mehr erfahren</0>"
+			"description": "Maximale Wartezeit für die Shell-Integration, bevor Befehle ausgeführt werden. Für Benutzer mit langen Shell-Startzeiten, musst du diesen Wert möglicherweise erhöhen, wenn du Fehler vom Typ \"Shell Integration Unavailable\" im Terminal siehst. <0>Mehr erfahren</0>"
 		},
 		"shellIntegrationDisabled": {
 			"label": "Terminal-Shell-Integration deaktivieren",
@@ -515,7 +517,7 @@
 		},
 		"zshOhMy": {
 			"label": "Oh My Zsh-Integration aktivieren",
-			"description": "Wenn aktiviert, wird ITERM_SHELL_INTEGRATION_INSTALLED=Yes gesetzt, um die Shell-Integrationsfunktionen von Oh My Zsh zu aktivieren. Das Anwenden dieser Einstellung erfordert möglicherweise einen Neustart der IDE. <0>Mehr erfahren</0>"
+			"description": "Wenn aktiviert, wird ITERM_SHELL_INTEGRATION_INSTALLED=Yes gesetzt, um die Shell-Integrationsfunktionen von Oh My Zsh zu aktivieren. Das Anwenden dieser Einstellung kann erfordern, dass die IDE neu gestartet wird. <0>Mehr erfahren</0>"
 		},
 		"zshP10k": {
 			"label": "Powerlevel10k-Integration aktivieren",
@@ -589,7 +591,7 @@
 	},
 	"promptCaching": {
 		"label": "Prompt-Caching deaktivieren",
-		"description": "Wenn aktiviert, wird Roo für dieses Modell kein Prompt-Caching verwenden."
+		"description": "Wenn aktiviert, wird ModelHarbor für dieses Modell kein Prompt-Caching verwenden."
 	},
 	"temperature": {
 		"useCustom": "Benutzerdefinierte Temperatur verwenden",

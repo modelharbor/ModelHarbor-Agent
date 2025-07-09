@@ -1,5 +1,5 @@
 {
-	"greeting": "Selamat datang di Roo Code",
+	"greeting": "Selamat datang di ModelHarbor Agent",
 	"task": {
 		"title": "Tugas",
 		"seeMore": "Lihat lebih banyak",
@@ -18,10 +18,11 @@
 		"sharePublicly": "Bagikan secara publik",
 		"sharePubliclyDescription": "Siapa pun dengan tautan dapat mengakses",
 		"connectToCloud": "Hubungkan ke Cloud",
-		"connectToCloudDescription": "Masuk ke Roo Code Cloud untuk berbagi tugas",
+		"connectToCloudDescription": "Masuk ke ModelHarbor Agent Cloud untuk berbagi tugas",
 		"sharingDisabledByOrganization": "Berbagi dinonaktifkan oleh organisasi",
 		"shareSuccessOrganization": "Tautan organisasi disalin ke clipboard",
-		"shareSuccessPublic": "Tautan publik disalin ke clipboard"
+		"shareSuccessPublic": "Tautan publik disalin ke clipboard",
+		"openInExplorer": "Buka di Windows Explorer/Finder"
 	},
 	"history": {
 		"title": "Riwayat"
@@ -168,42 +169,42 @@
 		"tokens": "token"
 	},
 	"instructions": {
-		"wantsToFetch": "Roo ingin mengambil instruksi detail untuk membantu tugas saat ini"
+		"wantsToFetch": "ModelHarbor ingin mengambil instruksi detail untuk membantu tugas saat ini"
 	},
 	"fileOperations": {
-		"wantsToRead": "Roo ingin membaca file ini:",
-		"wantsToReadMultiple": "Roo ingin membaca beberapa file:",
-		"wantsToReadAndXMore": "Roo ingin membaca file ini dan {{count}} lainnya:",
-		"wantsToReadOutsideWorkspace": "Roo ingin membaca file ini di luar workspace:",
-		"didRead": "Roo membaca file ini:",
-		"wantsToEdit": "Roo ingin mengedit file ini:",
-		"wantsToEditOutsideWorkspace": "Roo ingin mengedit file ini di luar workspace:",
-		"wantsToEditProtected": "Roo ingin mengedit file konfigurasi yang dilindungi:",
-		"wantsToApplyBatchChanges": "Roo ingin menerapkan perubahan ke beberapa file:",
-		"wantsToCreate": "Roo ingin membuat file baru:",
-		"wantsToSearchReplace": "Roo ingin mencari dan mengganti di file ini:",
-		"didSearchReplace": "Roo melakukan pencarian dan penggantian pada file ini:",
-		"wantsToInsert": "Roo ingin menyisipkan konten ke file ini:",
-		"wantsToInsertWithLineNumber": "Roo ingin menyisipkan konten ke file ini di baris {{lineNumber}}:",
-		"wantsToInsertAtEnd": "Roo ingin menambahkan konten ke akhir file ini:"
+		"wantsToRead": "ModelHarbor ingin membaca file ini:",
+		"wantsToReadMultiple": "ModelHarbor ingin membaca beberapa file:",
+		"wantsToReadAndXMore": "ModelHarbor ingin membaca file ini dan {{count}} lainnya:",
+		"wantsToReadOutsideWorkspace": "ModelHarbor ingin membaca file ini di luar workspace:",
+		"didRead": "ModelHarbor membaca file ini:",
+		"wantsToEdit": "ModelHarbor ingin mengedit file ini:",
+		"wantsToEditOutsideWorkspace": "ModelHarbor ingin mengedit file ini di luar workspace:",
+		"wantsToEditProtected": "ModelHarbor ingin mengedit file konfigurasi yang dilindungi:",
+		"wantsToApplyBatchChanges": "ModelHarbor ingin menerapkan perubahan ke beberapa file:",
+		"wantsToCreate": "ModelHarbor ingin membuat file baru:",
+		"wantsToSearchReplace": "ModelHarbor ingin mencari dan mengganti di file ini:",
+		"didSearchReplace": "ModelHarbor melakukan pencarian dan penggantian pada file ini:",
+		"wantsToInsert": "ModelHarbor ingin menyisipkan konten ke file ini:",
+		"wantsToInsertWithLineNumber": "ModelHarbor ingin menyisipkan konten ke file ini di baris {{lineNumber}}:",
+		"wantsToInsertAtEnd": "ModelHarbor ingin menambahkan konten ke akhir file ini:"
 	},
 	"directoryOperations": {
-		"wantsToViewTopLevel": "Roo ingin melihat file tingkat atas di direktori ini:",
-		"didViewTopLevel": "Roo melihat file tingkat atas di direktori ini:",
-		"wantsToViewRecursive": "Roo ingin melihat semua file secara rekursif di direktori ini:",
-		"didViewRecursive": "Roo melihat semua file secara rekursif di direktori ini:",
-		"wantsToViewDefinitions": "Roo ingin melihat nama definisi source code yang digunakan di direktori ini:",
-		"didViewDefinitions": "Roo melihat nama definisi source code yang digunakan di direktori ini:",
-		"wantsToSearch": "Roo ingin mencari direktori ini untuk <code>{{regex}}</code>:",
-		"didSearch": "Roo mencari direktori ini untuk <code>{{regex}}</code>:",
-		"wantsToSearchOutsideWorkspace": "Roo ingin mencari direktori ini (di luar workspace) untuk <code>{{regex}}</code>:",
-		"didSearchOutsideWorkspace": "Roo mencari direktori ini (di luar workspace) untuk <code>{{regex}}</code>:",
-		"wantsToViewTopLevelOutsideWorkspace": "Roo ingin melihat file tingkat atas di direktori ini (di luar workspace):",
-		"didViewTopLevelOutsideWorkspace": "Roo melihat file tingkat atas di direktori ini (di luar workspace):",
-		"wantsToViewRecursiveOutsideWorkspace": "Roo ingin melihat semua file secara rekursif di direktori ini (di luar workspace):",
-		"didViewRecursiveOutsideWorkspace": "Roo melihat semua file secara rekursif di direktori ini (di luar workspace):",
-		"wantsToViewDefinitionsOutsideWorkspace": "Roo ingin melihat nama definisi source code yang digunakan di direktori ini (di luar workspace):",
-		"didViewDefinitionsOutsideWorkspace": "Roo melihat nama definisi source code yang digunakan di direktori ini (di luar workspace):"
+		"wantsToViewTopLevel": "ModelHarbor ingin melihat file tingkat atas di direktori ini:",
+		"didViewTopLevel": "ModelHarbor melihat file tingkat atas di direktori ini:",
+		"wantsToViewRecursive": "ModelHarbor ingin melihat semua file secara rekursif di direktori ini:",
+		"didViewRecursive": "ModelHarbor melihat semua file secara rekursif di direktori ini:",
+		"wantsToViewDefinitions": "ModelHarbor ingin melihat nama definisi source code yang digunakan di direktori ini:",
+		"didViewDefinitions": "ModelHarbor melihat nama definisi source code yang digunakan di direktori ini:",
+		"wantsToSearch": "ModelHarbor ingin mencari direktori ini untuk <code>{{regex}}</code>:",
+		"didSearch": "ModelHarbor mencari direktori ini untuk <code>{{regex}}</code>:",
+		"wantsToSearchOutsideWorkspace": "ModelHarbor ingin mencari direktori ini (di luar workspace) untuk <code>{{regex}}</code>:",
+		"didSearchOutsideWorkspace": "ModelHarbor mencari direktori ini (di luar workspace) untuk <code>{{regex}}</code>:",
+		"wantsToViewTopLevelOutsideWorkspace": "ModelHarbor ingin melihat file tingkat atas di direktori ini (di luar workspace):",
+		"didViewTopLevelOutsideWorkspace": "ModelHarbor melihat file tingkat atas di direktori ini (di luar workspace):",
+		"wantsToViewRecursiveOutsideWorkspace": "ModelHarbor ingin melihat semua file secara rekursif di direktori ini (di luar workspace):",
+		"didViewRecursiveOutsideWorkspace": "ModelHarbor melihat semua file secara rekursif di direktori ini (di luar workspace):",
+		"wantsToViewDefinitionsOutsideWorkspace": "ModelHarbor ingin melihat nama definisi source code yang digunakan di direktori ini (di luar workspace):",
+		"didViewDefinitionsOutsideWorkspace": "ModelHarbor melihat nama definisi source code yang digunakan di direktori ini (di luar workspace):"
 	},
 	"codebaseSearch": {
 		"wantsToSearch": "Roo ingin mencari codebase untuk <code>{{query}}</code>:",
@@ -215,18 +216,18 @@
 	"response": "Respons",
 	"arguments": "Argumen",
 	"mcp": {
-		"wantsToUseTool": "Roo ingin menggunakan tool di server MCP {{serverName}}:",
-		"wantsToAccessResource": "Roo ingin mengakses resource di server MCP {{serverName}}:"
+		"wantsToUseTool": "ModelHarbor ingin menggunakan tool di server MCP {{serverName}}:",
+		"wantsToAccessResource": "ModelHarbor ingin mengakses resource di server MCP {{serverName}}:"
 	},
 	"modes": {
-		"wantsToSwitch": "Roo ingin beralih ke mode {{mode}}",
-		"wantsToSwitchWithReason": "Roo ingin beralih ke mode {{mode}} karena: {{reason}}",
-		"didSwitch": "Roo beralih ke mode {{mode}}",
-		"didSwitchWithReason": "Roo beralih ke mode {{mode}} karena: {{reason}}"
+		"wantsToSwitch": "ModelHarbor ingin beralih ke mode {{mode}}",
+		"wantsToSwitchWithReason": "ModelHarbor ingin beralih ke mode {{mode}} karena: {{reason}}",
+		"didSwitch": "ModelHarbor beralih ke mode {{mode}}",
+		"didSwitchWithReason": "ModelHarbor beralih ke mode {{mode}} karena: {{reason}}"
 	},
 	"subtasks": {
-		"wantsToCreate": "Roo ingin membuat subtugas baru dalam mode {{mode}}:",
-		"wantsToFinish": "Roo ingin menyelesaikan subtugas ini",
+		"wantsToCreate": "ModelHarbor ingin membuat subtugas baru dalam mode {{mode}}:",
+		"wantsToFinish": "ModelHarbor ingin menyelesaikan subtugas ini",
 		"newTaskContent": "Instruksi Subtugas",
 		"completionContent": "Subtugas Selesai",
 		"resultContent": "Hasil Subtugas",
@@ -234,31 +235,31 @@
 		"completionInstructions": "Subtugas selesai! Kamu bisa meninjau hasilnya dan menyarankan koreksi atau langkah selanjutnya. Jika semuanya terlihat baik, konfirmasi untuk mengembalikan hasil ke tugas induk."
 	},
 	"questions": {
-		"hasQuestion": "Roo punya pertanyaan:"
+		"hasQuestion": "ModelHarbor punya pertanyaan:"
 	},
 	"taskCompleted": "Tugas Selesai",
 	"error": "Error",
 	"diffError": {
 		"title": "Edit Tidak Berhasil"
 	},
-	"troubleMessage": "Roo mengalami masalah...",
+	"troubleMessage": "ModelHarbor mengalami masalah...",
 	"powershell": {
 		"issues": "Sepertinya kamu mengalami masalah Windows PowerShell, silakan lihat ini"
 	},
 	"autoApprove": {
 		"title": "Auto-approve:",
 		"none": "Tidak Ada",
-		"description": "Auto-approve memungkinkan Roo Code melakukan aksi tanpa meminta izin. Hanya aktifkan untuk aksi yang benar-benar kamu percayai. Konfigurasi lebih detail tersedia di <settingsLink>Pengaturan</settingsLink>."
+		"description": "Auto-approve memungkinkan ModelHarbor Agent melakukan aksi tanpa meminta izin. Hanya aktifkan untuk aksi yang benar-benar kamu percayai. Konfigurasi lebih detail tersedia di <settingsLink>Pengaturan</settingsLink>."
 	},
 	"announcement": {
-		"title": "🎉 Roo Code {{version}} Dirilis",
-		"description": "Roo Code {{version}} menghadirkan fitur-fitur baru yang kuat dan peningkatan signifikan untuk meningkatkan alur kerja pengembangan Anda.",
-		"whatsNew": "Yang Baru",
-		"feature1": "<bold>Pengindeksan Codebase Lulus dari Eksperimental</bold>: Pengindeksan codebase lengkap kini stabil dan siap untuk penggunaan produksi dengan pencarian yang ditingkatkan dan pemahaman konteks.",
-		"feature2": "<bold>Fitur Daftar Todo Baru</bold>: Jaga tugas Anda tetap pada jalur dengan manajemen todo terintegrasi yang membantu Anda tetap terorganisir dan fokus pada tujuan pengembangan.",
-		"feature3": "<bold>Transisi Arsitektur ke Kode yang Ditingkatkan</bold>: Transfer yang mulus dari perencanaan di mode Arsitektur ke implementasi di mode Kode.",
+		"title": "🎉 ModelHarbor Agent {{version}} Dirilis",
+		"description": "ModelHarbor Agent {{version}} menghadirkan fitur baru yang powerful dan perbaikan berdasarkan feedback kamu.",
+		"whatsNew": "Apa yang Baru",
+		"feature1": "<bold>Peluncuran ModelHarbor Marketplace</bold> - Marketplace sekarang sudah live! Temukan dan install mode serta MCP lebih mudah dari sebelumnya.",
+		"feature2": "<bold>Model Gemini 2.5</bold> - Menambahkan dukungan untuk model Gemini 2.5 Pro, Flash, dan Flash Lite yang baru.",
+		"feature3": "<bold>Dukungan File Excel & Lainnya</bold> - Menambahkan dukungan file Excel (.xlsx) dan banyak perbaikan bug serta peningkatan!",
 		"hideButton": "Sembunyikan pengumuman",
-		"detailsDiscussLinks": "Dapatkan detail lebih lanjut dan bergabung dalam diskusi di <discordLink>Discord</discordLink> dan <redditLink>Reddit</redditLink> 🚀"
+		"detailsDiscussLinks": "Dapatkan detail lebih lanjut dan diskusikan di <discordLink>Modelharbor.com</discordLink>"
 	},
 	"reasoning": {
 		"thinking": "Berpikir",
@@ -270,7 +271,7 @@
 		"countdownDisplay": "{{count}}dtk"
 	},
 	"browser": {
-		"rooWantsToUse": "Roo ingin menggunakan browser:",
+		"ModelHarborWantsToUse": "ModelHarbor ingin menggunakan browser:",
 		"consoleLogs": "Log Konsol",
 		"noNewLogs": "(Tidak ada log baru)",
 		"screenshot": "Screenshot browser",
@@ -304,13 +305,13 @@
 	"profileViolationWarning": "Profil saat ini melanggar pengaturan organisasi kamu",
 	"shellIntegration": {
 		"title": "Peringatan Eksekusi Perintah",
-		"description": "Perintah kamu dijalankan tanpa integrasi shell terminal VSCode. Untuk menekan peringatan ini kamu bisa menonaktifkan integrasi shell di bagian <strong>Terminal</strong> dari <settingsLink>pengaturan Roo Code</settingsLink> atau troubleshoot integrasi terminal VSCode menggunakan link di bawah.",
+		"description": "Perintah kamu dijalankan tanpa integrasi shell terminal VSCode. Untuk menekan peringatan ini kamu bisa menonaktifkan integrasi shell di bagian <strong>Terminal</strong> dari <settingsLink>pengaturan ModelHarbor Agent</settingsLink> atau troubleshoot integrasi terminal VSCode menggunakan link di bawah.",
 		"troubleshooting": "Klik di sini untuk dokumentasi integrasi shell."
 	},
 	"ask": {
 		"autoApprovedRequestLimitReached": {
 			"title": "Batas Permintaan yang Disetujui Otomatis Tercapai",
-			"description": "Roo telah mencapai batas {{count}} permintaan API yang disetujui otomatis. Apakah kamu ingin mengatur ulang hitungan dan melanjutkan tugas?",
+			"description": "ModelHarbor telah mencapai batas {{count}} permintaan API yang disetujui otomatis. Apakah kamu ingin mengatur ulang hitungan dan melanjutkan tugas?",
 			"button": "Atur Ulang dan Lanjutkan"
 		}
 	},
