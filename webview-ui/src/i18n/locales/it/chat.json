@@ -21,7 +21,9 @@
 		"connectToCloudDescription": "Accedi a Roo Code Cloud per condividere attività",
 		"sharingDisabledByOrganization": "Condivisione disabilitata dall'organizzazione",
 		"shareSuccessOrganization": "Link organizzazione copiato negli appunti",
-		"shareSuccessPublic": "Link pubblico copiato negli appunti"
+		"shareSuccessPublic": "Link pubblico copiato negli appunti",
+		"openFolder": "Apri cartella chat",
+		"openInExplorer": "Apri in Windows Explorer/Finder"
 	},
 	"unpin": "Rilascia",
 	"pin": "Fissa",
@@ -273,7 +275,8 @@
 			"scrollDown": "Scorri verso il basso",
 			"scrollUp": "Scorri verso l'alto",
 			"close": "Chiudi browser"
-		}
+		},
+		"ModelHarborWantsToUse": "ModelHarbor vuole utilizzare il browser:"
 	},
 	"codeblock": {
 		"tooltips": {

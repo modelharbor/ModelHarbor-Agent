@@ -21,7 +21,8 @@
 		"connectToCloudDescription": "Entre no Roo Code Cloud para compartilhar tarefas",
 		"sharingDisabledByOrganization": "Compartilhamento desabilitado pela organização",
 		"shareSuccessOrganization": "Link da organização copiado para a área de transferência",
-		"shareSuccessPublic": "Link público copiado para a área de transferência"
+		"shareSuccessPublic": "Link público copiado para a área de transferência",
+		"openInExplorer": "Abrir no Windows Explorer/Finder"
 	},
 	"unpin": "Desfixar",
 	"pin": "Fixar",
@@ -273,7 +274,8 @@
 			"scrollDown": "Rolar para baixo",
 			"scrollUp": "Rolar para cima",
 			"close": "Fechar navegador"
-		}
+		},
+		"ModelHarborWantsToUse": "ModelHarbor quer usar o navegador:"
 	},
 	"codeblock": {
 		"tooltips": {

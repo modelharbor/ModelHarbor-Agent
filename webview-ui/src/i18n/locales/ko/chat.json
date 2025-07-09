@@ -21,7 +21,9 @@
 		"connectToCloudDescription": "작업을 공유하려면 Roo Code Cloud에 로그인하세요",
 		"sharingDisabledByOrganization": "조직에서 공유가 비활성화됨",
 		"shareSuccessOrganization": "조직 링크가 클립보드에 복사되었습니다",
-		"shareSuccessPublic": "공개 링크가 클립보드에 복사되었습니다"
+		"shareSuccessPublic": "공개 링크가 클립보드에 복사되었습니다",
+		"openFolder": "채팅 폴더 열기",
+		"openInExplorer": "Windows Explorer/Finder에서 열기"
 	},
 	"unpin": "고정 해제하기",
 	"pin": "고정하기",
@@ -273,7 +275,8 @@
 			"scrollDown": "아래로 스크롤",
 			"scrollUp": "위로 스크롤",
 			"close": "브라우저 닫기"
-		}
+		},
+		"ModelHarborWantsToUse": "ModelHarbor가 브라우저를 사용하고 싶어합니다:"
 	},
 	"codeblock": {
 		"tooltips": {

@@ -273,7 +273,8 @@
 			"scrollDown": "Cuộn xuống",
 			"scrollUp": "Cuộn lên",
 			"close": "Đóng trình duyệt"
-		}
+		},
+		"ModelHarborWantsToUse": "ModelHarbor muốn sử dụng trình duyệt:"
 	},
 	"codeblock": {
 		"tooltips": {

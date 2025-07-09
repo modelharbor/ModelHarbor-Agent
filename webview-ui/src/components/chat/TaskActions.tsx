@@ -36,6 +36,14 @@ export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 					onClick={(e) => copyWithFeedback(item.task, e)}
 				/>
 			)}
+			{item?.id && (
+				<IconButton
+					iconClass="codicon-folder-opened"
+					title={t("chat:task.openFolder")}
+					disabled={buttonsDisabled}
+					onClick={() => vscode.postMessage({ type: "openChatFolder" })}
+				/>
+			)}
 			{!!item?.size && item.size > 0 && (
 				<>
 					<div className="flex items-center">

@@ -699,7 +699,7 @@ export class ClineProvider
 						window.AUDIO_BASE_URI = "${audioUri}"
 						window.MATERIAL_ICONS_BASE_URI = "${materialIconsUri}"
 					</script>
-					<title>Roo Code</title>
+					<title>ModelHarbor Agent</title>
 				</head>
 				<body>
 					<div id="root"></div>
@@ -764,7 +764,7 @@ export class ClineProvider
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
             <meta name="theme-color" content="#000000">
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${webview.cspSource} data:; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https://storage.googleapis.com https://img.clerk.com data:; media-src ${webview.cspSource}; script-src ${webview.cspSource} 'wasm-unsafe-eval' 'nonce-${nonce}' https://us-assets.i.posthog.com 'strict-dynamic'; connect-src https://openrouter.ai https://api.requesty.ai https://us.i.posthog.com https://us-assets.i.posthog.com;">
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${webview.cspSource} data:; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https://storage.googleapis.com https://img.clerk.com data:; media-src ${webview.cspSource}; script-src ${webview.cspSource} 'wasm-unsafe-eval' 'nonce-${nonce}' https://us-assets.i.posthog.com 'strict-dynamic'; connect-src https://openrouter.ai https://api.requesty.ai https://api.modelharbor.com https://us.i.posthog.com https://us-assets.i.posthog.com;">
             <link rel="stylesheet" type="text/css" href="${stylesUri}">
 			<link href="${codiconsUri}" rel="stylesheet" />
 			<script nonce="${nonce}">
@@ -772,7 +772,7 @@ export class ClineProvider
 				window.AUDIO_BASE_URI = "${audioUri}"
 				window.MATERIAL_ICONS_BASE_URI = "${materialIconsUri}"
 			</script>
-            <title>Roo Code</title>
+            <title>ModelHarbor Agent</title>
           </head>
           <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>

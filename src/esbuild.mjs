@@ -57,7 +57,7 @@ async function main() {
 							["../webview-ui/audio", "webview-ui/audio"],
 						],
 						srcDir,
-						buildDir,
+						distDir,
 					)
 				})
 			},

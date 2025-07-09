@@ -52,6 +52,11 @@ function validateModelsAndKeysProvided(apiConfiguration: ProviderSettings): stri
 				return i18next.t("settings:validation.apiKey")
 			}
 			break
+		case "modelharbor":
+			if (!apiConfiguration.modelharborApiKey) {
+				return i18next.t("settings:validation.apiKey")
+			}
+			break
 		case "anthropic":
 			if (!apiConfiguration.apiKey) {
 				return i18next.t("settings:validation.apiKey")
@@ -157,6 +162,8 @@ function getModelIdForProvider(apiConfiguration: ProviderSettings, provider: str
 			return apiConfiguration.requestyModelId
 		case "litellm":
 			return apiConfiguration.litellmModelId
+		case "modelharbor":
+			return apiConfiguration.modelharborModelId
 		case "openai":
 			return apiConfiguration.openAiModelId
 		case "ollama":
@@ -235,6 +242,9 @@ export function validateModelId(apiConfiguration: ProviderSettings, routerModels
 			break
 		case "litellm":
 			modelId = apiConfiguration.litellmModelId
+			break
+		case "modelharbor":
+			modelId = apiConfiguration.modelharborModelId
 			break
 	}
 
