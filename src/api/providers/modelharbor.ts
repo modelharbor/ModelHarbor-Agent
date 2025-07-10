@@ -7,6 +7,11 @@ import {
 } from "@roo-code/types"
 import * as vscode from "vscode"
 import OpenAI from "openai"
+import { addCacheBreakpoints as addModelHarborCacheBreakpoints } from "../transform/caching/modelharbor"
+import type { Anthropic } from "@anthropic-ai/sdk"
+import type { ApiHandlerCreateMessageMetadata } from "../index"
+import { ApiStream } from "../transform/stream"
+import { convertToOpenAiMessages } from "../transform/openai-format"
 
 import type { ApiHandlerOptions } from "../../shared/api"
 
@@ -84,6 +89,57 @@ export class ModelHarborHandler extends BaseOpenAiCompatibleProvider<ModelHarbor
 			this.modelsCache = await getModelHarborModels()
 		} catch (error) {
 			console.error("Failed to refresh ModelHarbor models:", error)
+		}
+	}
+	// Add prompt caching support for models that support it
+	override async *createMessage(
+		systemPrompt: string,
+		messages: Anthropic.Messages.MessageParam[],
+		metadata?: ApiHandlerCreateMessageMetadata,
+	): ApiStream {
+		const { id, info } = this.getModel()
+		const temperature = this.options.modelTemperature ?? this.defaultTemperature
+
+		// Convert to OpenAI-compatible messages
+		const openAiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+			{ role: "system", content: systemPrompt },
+			...convertToOpenAiMessages(messages),
+		]
+
+		// Apply prompt caching if supported
+		if (info.supportsPromptCache) {
+			addModelHarborCacheBreakpoints(systemPrompt, openAiMessages)
+		}
+
+		const params: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
+			model: id,
+			max_tokens: info.maxTokens,
+			temperature,
+			messages: openAiMessages,
+			stream: true,
+			stream_options: { include_usage: true },
+		}
+
+		const stream = await this.client.chat.completions.create(params)
+
+		for await (const chunk of stream) {
+			const delta = chunk.choices[0]?.delta
+
+			if (delta?.content) {
+				yield {
+					type: "text",
+					text: delta.content,
+				}
+			}
+
+			if (chunk.usage) {
+				yield {
+					type: "usage",
+					inputTokens: chunk.usage.prompt_tokens || 0,
+					outputTokens: chunk.usage.completion_tokens || 0,
+					cacheReadTokens: chunk.usage.prompt_tokens_details?.cached_tokens,
+				}
+			}
 		}
 	}
 }
