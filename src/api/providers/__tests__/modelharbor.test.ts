@@ -216,6 +216,51 @@ describe("ModelHarborHandler", () => {
 				}),
 			)
 		})
+		it("injects prompt cache breakpoints for models that support prompt caching", async () => {
+			const { addCacheBreakpoints: addModelHarborCacheBreakpoints } = await import(
+				"../../transform/caching/modelharbor"
+			)
+			const spy = vi.spyOn(await import("../../transform/caching/modelharbor"), "addCacheBreakpoints")
+
+			const handler = new ModelHarborHandler({
+				modelharborApiKey: "test-key",
+				modelharborModelId: "cache-model",
+			})
+
+			// Mock getModel to return a model with supportsPromptCache: true
+			vi.spyOn(handler, "getModel").mockReturnValue({
+				id: "cache-model",
+				info: {
+					maxTokens: 2048,
+					contextWindow: 4096,
+					supportsImages: false,
+					supportsPromptCache: true,
+					description: "Cache Model",
+				},
+			})
+
+			const mockStream = {
+				async *[Symbol.asyncIterator]() {
+					yield {
+						id: "test-id",
+						choices: [{ delta: { content: "cached!" } }],
+					}
+				},
+			}
+
+			const mockCreate = vi.fn().mockResolvedValue(mockStream)
+			;(OpenAI as any).prototype.chat = {
+				completions: { create: mockCreate },
+			} as any
+
+			const systemPrompt = "cache system prompt"
+			const messages: Anthropic.Messages.MessageParam[] = [{ role: "user" as const, content: "cache test" }]
+
+			const generator = handler.createMessage(systemPrompt, messages)
+			await generator.next()
+
+			expect(spy).toHaveBeenCalledWith(systemPrompt, expect.any(Array))
+		})
 
 		it("handles reasoning budget for o1 models", async () => {
 			// For this test, we need to mock the getModelHarborModels to include o1-preview
