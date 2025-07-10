@@ -38,6 +38,7 @@
 	},
 	"codeIndex": {
 		"title": "코드베이스 인덱싱",
+		"modelharborProvider": "ModelHarbor",
 		"enableLabel": "코드베이스 인덱싱 활성화",
 		"enableDescription": "<0>코드베이스 인덱싱</0>은 AI 임베딩을 사용하여 프로젝트의 의미론적 검색 인덱스를 생성하는 실험적 기능입니다. 이를 통해 ModelHarbor Agent는 단순한 키워드가 아닌 의미를 기반으로 관련 코드를 찾아 대규모 코드베이스를 더 잘 이해하고 탐색할 수 있습니다.",
 		"providerLabel": "임베딩 제공자",
@@ -643,7 +644,7 @@
 		"useCustomModel": "사용자 정의 사용: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "질문이나 피드백이 있으시면 <githubLink>github.com/RooCodeInc/Roo-Code</githubLink>에서 이슈를 열거나 <redditLink>reddit.com/r/RooCode</redditLink> 또는 <discordLink>discord.gg/roocode</discordLink>에 가입하세요",
+		"feedback": "질문이나 피드백이 있으시면 언제든지 info@modelharbor.com으로 문제를 제기해 주세요",
 		"telemetry": {
 			"label": "익명 오류 및 사용 보고 허용",
 			"description": "익명 사용 데이터 및 오류 보고서를 보내 ModelHarbor Agent 개선에 도움을 주세요. 코드, 프롬프트 또는 개인 정보는 절대 전송되지 않습니다. 자세한 내용은 개인정보 보호정책을 참조하세요."

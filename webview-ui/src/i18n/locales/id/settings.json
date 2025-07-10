@@ -38,6 +38,7 @@
 	},
 	"codeIndex": {
 		"title": "Pengindeksan Codebase",
+		"modelharborProvider": "ModelHarbor",
 		"enableLabel": "Aktifkan Pengindeksan Codebase",
 		"enableDescription": "<0>Pengindeksan Codebase</0> adalah fitur eksperimental yang membuat indeks pencarian semantik dari proyek kamu menggunakan AI embeddings. Ini memungkinkan ModelHarbor Agent untuk lebih memahami dan menavigasi codebase besar dengan menemukan kode yang relevan berdasarkan makna daripada hanya kata kunci.",
 		"providerLabel": "Provider Embeddings",
@@ -674,7 +675,7 @@
 		"useCustomModel": "Gunakan kustom: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Jika Anda memiliki pertanyaan atau masukan, silakan hubungi kami di info@modelharbor.com",
+		"feedback": "Jika Anda memiliki pertanyaan atau umpan balik, jangan ragu untuk membuka masalah di info@modelharbor.com",
 		"telemetry": {
 			"label": "Izinkan pelaporan error dan penggunaan anonim",
 			"description": "Bantu tingkatkan ModelHarbor Agent dengan mengirim data penggunaan anonim dan laporan error. Tidak ada kode, prompt, atau informasi pribadi yang pernah dikirim. Lihat kebijakan privasi kami untuk detail lebih lanjut."
