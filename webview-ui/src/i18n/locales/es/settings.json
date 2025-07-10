@@ -38,10 +38,11 @@
 	},
 	"codeIndex": {
 		"title": "Indexación de código",
+		"modelharborProvider": "ModelHarbor",
 		"description": "Configura los ajustes de indexación de código para habilitar búsqueda semántica en tu proyecto. <0>Más información</0>",
 		"statusTitle": "Estado",
 		"enableLabel": "Habilitar indexación de código",
-		"enableDescription": "<0>La indexación de código</0> es una función experimental que crea un índice de búsqueda semántica de tu proyecto usando embeddings de IA. Esto permite a Roo Code entender mejor y navegar grandes bases de código encontrando código relevante basado en significado en lugar de solo palabras clave.",
+		"enableDescription": "<0>La indexación de código</0> es una función experimental que crea un índice de búsqueda semántica de tu proyecto usando embeddings de IA. Esto permite a ModelHarbor Agent entender mejor y navegar grandes bases de código encontrando código relevante basado en significado en lugar de solo palabras clave.",
 		"settingsTitle": "Configuración de indexación",
 		"disabledMessage": "La indexación de código está actualmente deshabilitada. Habilítala en la configuración global para configurar las opciones de indexación.",
 		"providerLabel": "Proveedor de embeddings",
@@ -631,7 +632,7 @@
 		"useCustomModel": "Usar personalizado: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Si tiene alguna pregunta o comentario, contáctenos en info@modelharbor.com",
+		"feedback": "Si tiene alguna pregunta o comentario, no dude en abrir un problema en info@modelharbor.com",
 		"telemetry": {
 			"label": "Permitir informes anónimos de errores y uso",
 			"description": "Ayude a mejorar ModelHarbor Agent enviando datos de uso anónimos e informes de errores. Nunca se envía código, prompts o información personal. Consulte nuestra política de privacidad para más detalles."
