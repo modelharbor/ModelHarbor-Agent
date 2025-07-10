@@ -25,6 +25,9 @@
 	"command.openInEditor.title": "在編輯器中開啟",
 	"command.settings.title": "設定",
 	"command.documentation.title": "文件",
+	"codeIndex": {
+		"modelharborProvider": "ModelHarbor"
+	},
 	"configuration.title": "ModelHarbor Agent",
 	"commands.allowedCommands.description": "當啟用'始終批准執行操作'時可以自動執行的命令",
 	"settings.vsCodeLmModelSelector.description": "VSCode 語言模型 API 的設定",

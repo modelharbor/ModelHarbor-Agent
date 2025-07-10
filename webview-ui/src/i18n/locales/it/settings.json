@@ -38,6 +38,7 @@
 	},
 	"codeIndex": {
 		"title": "Indicizzazione del codice",
+		"modelharborProvider": "ModelHarbor",
 		"enableLabel": "Abilita indicizzazione del codice",
 		"enableDescription": "<0>L'indicizzazione del codice</0> è una funzionalità sperimentale che crea un indice di ricerca semantica del tuo progetto utilizzando embedding AI. Questo permette a ModelHarbor Agent di comprendere meglio e navigare grandi basi di codice trovando codice rilevante basato sul significato piuttosto che solo su parole chiave.",
 		"providerLabel": "Fornitore di embedding",
@@ -629,7 +630,7 @@
 		"useCustomModel": "Usa personalizzato: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Se hai domande o feedback, contattaci a info@modelharbor.com",
+		"feedback": "In caso di domande o feedback, non esitare ad aprire un problema all'indirizzo info@modelharbor.com",
 		"telemetry": {
 			"label": "Consenti segnalazioni anonime di errori e utilizzo",
 			"description": "Aiuta a migliorare ModelHarbor Agent inviando dati di utilizzo anonimi e segnalazioni di errori. Non vengono mai inviati codice, prompt o informazioni personali. Consulta la nostra politica sulla privacy per maggiori dettagli."
