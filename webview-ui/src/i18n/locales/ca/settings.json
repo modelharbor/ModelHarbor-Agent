@@ -38,6 +38,7 @@
 	},
 	"codeIndex": {
 		"title": "Indexació de codi",
+		"modelharborProvider": "ModelHarbor",
 		"enableLabel": "Habilitar indexació de codi",
 <<<<<<< HEAD
 		"enableDescription": "Habilita la indexació de codi per millorar la cerca i la comprensió del context",
@@ -639,7 +640,7 @@
 		"useCustomModel": "Utilitzar personalitzat: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Si teniu qualsevol pregunta o comentari, poseu-vos en contacte amb nosaltres a info@modelharbor.com",
+		"feedback": "Si teniu cap pregunta o comentari, no dubteu a obrir un problema a info@modelharbor.com",
 		"telemetry": {
 			"label": "Permetre informes anònims d'errors i ús",
 			"description": "Ajudeu a millorar ModelHarbor Agent enviant dades d'ús anònimes i informes d'errors. Mai s'envia codi, prompts o informació personal. Vegeu la nostra política de privacitat per a més detalls."

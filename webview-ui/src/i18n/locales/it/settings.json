@@ -38,6 +38,7 @@
 	},
 	"codeIndex": {
 		"title": "Indicizzazione del codice",
+		"modelharborProvider": "ModelHarbor",
 		"enableLabel": "Abilita indicizzazione del codice",
 <<<<<<< HEAD
 		"enableDescription": "Abilita l'indicizzazione del codice per una ricerca e una comprensione del contesto migliorate",
@@ -639,7 +640,7 @@
 		"useCustomModel": "Usa personalizzato: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Se hai domande o feedback, contattaci a info@modelharbor.com",
+		"feedback": "In caso di domande o feedback, non esitare ad aprire un problema all'indirizzo info@modelharbor.com",
 		"telemetry": {
 			"label": "Consenti segnalazioni anonime di errori e utilizzo",
 			"description": "Aiuta a migliorare ModelHarbor Agent inviando dati di utilizzo anonimi e segnalazioni di errori. Non vengono mai inviati codice, prompt o informazioni personali. Consulta la nostra politica sulla privacy per maggiori dettagli."
