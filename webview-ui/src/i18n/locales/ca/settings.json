@@ -38,6 +38,7 @@
 	},
 	"codeIndex": {
 		"title": "Indexació de codi",
+		"modelharborProvider": "ModelHarbor",
 		"enableLabel": "Habilitar indexació de codi",
 		"enableDescription": "<0>Indexació de codi</0> és una característica experimental que crea un índex de cerca semàntica del vostre projecte utilitzant embeddings d'IA. Això permet a ModelHarbor Agent entendre millor i navegar per grans bases de codi trobant codi rellevant basat en significat en lloc de només paraules clau.",
 		"providerLabel": "Proveïdor d'embeddings",
@@ -629,7 +630,7 @@
 		"useCustomModel": "Utilitzar personalitzat: {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Si teniu qualsevol pregunta o comentari, poseu-vos en contacte amb nosaltres a info@modelharbor.com",
+		"feedback": "Si teniu cap pregunta o comentari, no dubteu a obrir un problema a info@modelharbor.com",
 		"telemetry": {
 			"label": "Permetre informes anònims d'errors i ús",
 			"description": "Ajudeu a millorar ModelHarbor Agent enviant dades d'ús anònimes i informes d'errors. Mai s'envia codi, prompts o informació personal. Vegeu la nostra política de privacitat per a més detalls."
