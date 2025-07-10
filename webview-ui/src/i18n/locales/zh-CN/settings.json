@@ -41,7 +41,7 @@
 		"description": "配置代码库索引设置以启用项目的语义搜索。<0>了解更多</0>",
 		"statusTitle": "状态",
 		"enableLabel": "启用代码库索引",
-		"enableDescription": "启用代码索引以改进搜索和上下文理解",
+		"enableDescription": "<0>代码库索引</0>是一个实验性功能，使用 AI 嵌入为您的项目创建语义搜索索引。这使 ModelHarbor Agent 能够通过基于含义而非仅仅关键词来查找相关代码，从而更好地理解和导航大型代码库。",
 		"settingsTitle": "索引设置",
 		"disabledMessage": "代码库索引当前已禁用。在全局设置中启用它以配置索引选项。",
 		"providerLabel": "嵌入提供商",
@@ -647,7 +647,7 @@
 		"useCustomModel": "使用自定义：{{modelId}}"
 	},
 	"footer": {
-		"feedback": "如果您有任何问题或反馈，请随时在 <githubLink>github.com/RooCodeInc/Roo-Code</githubLink> 上提出问题或加入 <redditLink>reddit.com/r/RooCode</redditLink> 或 <discordLink>discord.gg/roocode</discordLink>",
+		"feedback": "如果您有任何问题或反馈，请随时通过 info@modelharbor.com 提出问题",
 		"telemetry": {
 			"label": "允许匿名数据收集",
 			"description": "匿名收集错误报告和使用数据（不含代码/提示/个人信息），详情见隐私政策"
