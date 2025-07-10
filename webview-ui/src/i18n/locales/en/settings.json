@@ -53,6 +53,7 @@
 		"geminiApiKeyLabel": "API Key:",
 		"geminiApiKeyPlaceholder": "Enter your Gemini API key",
 		"openaiCompatibleProvider": "OpenAI Compatible",
+		"modelharborProvider": "ModelHarbor",
 		"openAiKeyLabel": "OpenAI API Key",
 		"openAiKeyPlaceholder": "Enter your OpenAI API key",
 		"openAiCompatibleBaseUrlLabel": "Base URL",

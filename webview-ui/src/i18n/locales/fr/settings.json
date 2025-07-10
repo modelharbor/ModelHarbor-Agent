@@ -38,10 +38,11 @@
 	},
 	"codeIndex": {
 		"title": "Indexation de la base de code",
+		"modelharborProvider": "ModelHarbor",
 		"description": "Configurez les paramètres d'indexation de la base de code pour activer la recherche sémantique dans votre projet. <0>En savoir plus</0>",
 		"statusTitle": "Statut",
 		"enableLabel": "Activer l'indexation de la base de code",
-		"enableDescription": "Activer l'indexation du code pour une recherche et une compréhension du contexte améliorées",
+		"enableDescription": "<0>L'indexation de la base de code</0> est une fonctionnalité expérimentale qui crée un index de recherche sémantique de votre projet en utilisant des embeddings IA. Cela permet à ModelHarbor Agent de mieux comprendre et naviguer dans de grandes bases de code en trouvant du code pertinent basé sur le sens plutôt que seulement sur des mots-clés.",
 		"settingsTitle": "Paramètres d'indexation",
 		"disabledMessage": "L'indexation de la base de code est actuellement désactivée. Activez-la dans les paramètres globaux pour configurer les options d'indexation.",
 		"providerLabel": "Fournisseur d'embeddings",
@@ -635,7 +636,7 @@
 		"useCustomModel": "Utiliser personnalisé : {{modelId}}"
 	},
 	"footer": {
-		"feedback": "Si vous avez des questions ou des commentaires, contactez-nous à info@modelharbor.com",
+		"feedback": "Si vous avez des questions ou des commentaires, n'hésitez pas à ouvrir un problème à info@modelharbor.com",
 		"telemetry": {
 			"label": "Autoriser les rapports anonymes d'erreurs et d'utilisation",
 			"description": "Aidez à améliorer ModelHarbor Agent en envoyant des données d'utilisation anonymes et des rapports d'erreurs. Aucun code, prompt ou information personnelle n'est jamais envoyé. Consultez notre politique de confidentialité pour plus de détails."
