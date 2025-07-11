@@ -95,29 +95,29 @@ const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 
 const DiscordLink = () => (
 	<VSCodeLink
-		href="https://discord.gg/roocode"
+		href="https://facebook.com/modelharbor"
 		onClick={(e) => {
 			e.preventDefault()
 			window.postMessage(
-				{ type: "action", action: "openExternal", data: { url: "https://discord.gg/roocode" } },
+				{ type: "action", action: "openExternal", data: { url: "https://facebook.com/modelharbor" } },
 				"*",
 			)
 		}}>
-		Discord
+		Facebook
 	</VSCodeLink>
 )
 
 const RedditLink = () => (
 	<VSCodeLink
-		href="https://reddit.com/r/RooCode"
+		href="https://x.com/modelharbor"
 		onClick={(e) => {
 			e.preventDefault()
 			window.postMessage(
-				{ type: "action", action: "openExternal", data: { url: "https://reddit.com/r/RooCode" } },
+				{ type: "action", action: "openExternal", data: { url: "https://x.com/modelharbor" } },
 				"*",
 			)
 		}}>
-		Reddit
+		X
 	</VSCodeLink>
 )
 
