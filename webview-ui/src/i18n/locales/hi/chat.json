@@ -116,7 +116,7 @@
 		"title": "मोड्स",
 		"marketplace": "मोड मार्केटप्लेस",
 		"settings": "मोड सेटिंग्स",
-		"description": "विशेष व्यक्तित्व जो Roo के व्यवहार को अनुकूलित करते हैं।"
+		"description": "विशेष व्यक्तित्व जो ModelHarbor के व्यवहार को अनुकूलित करते हैं।"
 	},
 	"errorReadingFile": "फ़ाइल पढ़ने में त्रुटि:",
 	"noValidImages": "कोई मान्य चित्र प्रोसेस नहीं किया गया",
@@ -299,8 +299,8 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo कोडबेस में <code>{{query}}</code> खोजना चाहता है:",
-		"wantsToSearchWithPath": "Roo <code>{{path}}</code> में कोडबेस में <code>{{query}}</code> खोजना चाहता है:",
+		"wantsToSearch": "ModelHarbor कोडबेस में <code>{{query}}</code> खोजना चाहता है:",
+		"wantsToSearchWithPath": "ModelHarbor <code>{{path}}</code> में कोडबेस में <code>{{query}}</code> खोजना चाहता है:",
 		"didSearch_one": "1 परिणाम मिला",
 		"didSearch_other": "{{count}} परिणाम मिले",
 		"resultTooltip": "समानता स्कोर: {{score}} (फ़ाइल खोलने के लिए क्लिक करें)"

@@ -57,9 +57,10 @@ vi.mock("../../shared/validation-helpers", () => ({
 describe("ModelHarborEmbedder", () => {
 	let embedder: ModelHarborEmbedder
 	const mockApiKey = "test-api-key"
+	const mockModelId = "baai/bge-m3"
 
 	beforeEach(() => {
-		embedder = new ModelHarborEmbedder(mockApiKey)
+		embedder = new ModelHarborEmbedder(mockApiKey, mockModelId)
 	})
 
 	afterEach(() => {
@@ -102,7 +103,7 @@ describe("ModelHarborEmbedder", () => {
 
 			expect(mockCreate).toHaveBeenCalledWith({
 				input: texts,
-				model: "baai/bge-m3",
+				model: mockModelId,
 			})
 
 			expect(result).toEqual({
@@ -117,7 +118,7 @@ describe("ModelHarborEmbedder", () => {
 			})
 		})
 
-		it("should use fixed model ID regardless of input", async () => {
+		it("should use provided model ID when specified", async () => {
 			const mockEmbeddingsResponse = {
 				data: [{ embedding: [0.1, 0.2, 0.3] }],
 				usage: {
@@ -130,11 +131,33 @@ describe("ModelHarborEmbedder", () => {
 			;(embedder as any).embeddingsClient.embeddings.create = mockCreate
 
 			const texts = ["test"]
-			await embedder.createEmbeddings(texts, "some-other-model")
+			const customModel = "some-other-model"
+			await embedder.createEmbeddings(texts, customModel)
 
 			expect(mockCreate).toHaveBeenCalledWith({
 				input: texts,
-				model: "baai/bge-m3", // Should always use baai/bge-m3
+				model: customModel, // Should use the provided model
+			})
+		})
+
+		it("should use constructor model ID when no model is provided", async () => {
+			const mockEmbeddingsResponse = {
+				data: [{ embedding: [0.1, 0.2, 0.3] }],
+				usage: {
+					prompt_tokens: 5,
+					total_tokens: 5,
+				},
+			}
+
+			const mockCreate = vi.fn().mockResolvedValue(mockEmbeddingsResponse)
+			;(embedder as any).embeddingsClient.embeddings.create = mockCreate
+
+			const texts = ["test"]
+			await embedder.createEmbeddings(texts) // No model provided
+
+			expect(mockCreate).toHaveBeenCalledWith({
+				input: texts,
+				model: mockModelId, // Should fall back to constructor model ID
 			})
 		})
 
@@ -210,7 +233,7 @@ describe("ModelHarborEmbedder", () => {
 			// Should only process the normal text
 			expect(mockCreate).toHaveBeenCalledWith({
 				input: [normalText],
-				model: "baai/bge-m3",
+				model: mockModelId,
 			})
 
 			consoleSpy.mockRestore()
