@@ -38,6 +38,10 @@
 	},
 	"codeIndex": {
 		"title": "Indeksowanie kodu",
+		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
+		"modelharborApiKeyLabel": "Klucz API ModelHarbor",
+		"modelharborApiKeyPlaceholder": "Wprowadź swój klucz API ModelHarbor",
 		"enableLabel": "Włącz indeksowanie kodu",
 		"enableDescription": "<0>Indeksowanie kodu</0> to eksperymentalna funkcja, która tworzy semantyczny indeks wyszukiwania Twojego projektu przy użyciu osadzeń AI. Umożliwia to ModelHarbor Agent lepsze zrozumienie i nawigację po dużych bazach kodu poprzez znajdowanie odpowiedniego kodu na podstawie znaczenia, a nie tylko słów kluczowych.",
 		"providerLabel": "Dostawca osadzania",
@@ -71,7 +75,7 @@
 			"cancelButton": "Anuluj",
 			"confirmButton": "Wyczyść dane"
 		},
-		"description": "Skonfiguruj ustawienia indeksowania bazy kodu, aby włączyć wyszukiwanie semantyczne w swoim projekcie. <0>Dowiedz się więcej</0>",
+		"description": "Skonfiguruj ustawienia indeksowania bazy kodu, aby umożliwić semantyczne wyszukiwanie w projekcie. qwen/qwen3-embeddings i baai/bge-m3 są zalecane dla uzyskania najlepszych wyników, które są dostępne u dostawcy ModelHarbor.",
 		"statusTitle": "Status",
 		"settingsTitle": "Ustawienia indeksowania",
 		"disabledMessage": "Indeksowanie bazy kodu jest obecnie wyłączone. Włącz je w ustawieniach globalnych, aby skonfigurować opcje indeksowania.",

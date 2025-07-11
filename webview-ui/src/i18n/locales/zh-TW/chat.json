@@ -117,7 +117,7 @@
 		"title": "模式",
 		"marketplace": "模式市集",
 		"settings": "模式設定",
-		"description": "專門定制Roo行為的角色。"
+		"description": "專門定制ModelHarbor行為的角色。"
 	},
 	"errorReadingFile": "讀取檔案時發生錯誤：",
 	"noValidImages": "未處理到任何有效圖片",
@@ -297,8 +297,8 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo 想要搜尋程式碼庫：<code>{{query}}</code>",
-		"wantsToSearchWithPath": "Roo 想要在 <code>{{path}}</code> 中搜尋：<code>{{query}}</code>",
+		"wantsToSearch": "ModelHarbor 想要搜尋程式碼庫：<code>{{query}}</code>",
+		"wantsToSearchWithPath": "ModelHarbor 想要在 <code>{{path}}</code> 中搜尋：<code>{{query}}</code>",
 		"didSearch_one": "找到 1 個結果",
 		"didSearch_other": "找到 {{count}} 個結果",
 		"resultTooltip": "相似度評分：{{score}} (點擊開啟檔案)"
