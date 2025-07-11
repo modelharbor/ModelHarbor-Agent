@@ -116,7 +116,7 @@
 		"title": "Chế độ",
 		"marketplace": "Chợ Chế độ",
 		"settings": "Cài đặt Chế độ",
-		"description": "Các nhân cách chuyên biệt điều chỉnh hành vi của Roo."
+		"description": "Các nhân cách chuyên biệt điều chỉnh hành vi của ModelHarbor."
 	},
 	"errorReadingFile": "Lỗi khi đọc tệp:",
 	"noValidImages": "Không có hình ảnh hợp lệ nào được xử lý",
@@ -296,8 +296,8 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo muốn tìm kiếm trong cơ sở mã cho <code>{{query}}</code>:",
-		"wantsToSearchWithPath": "Roo muốn tìm kiếm trong cơ sở mã cho <code>{{query}}</code> trong <code>{{path}}</code>:",
+		"wantsToSearch": "ModelHarbor muốn tìm kiếm trong cơ sở mã cho <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "ModelHarbor muốn tìm kiếm trong cơ sở mã cho <code>{{query}}</code> trong <code>{{path}}</code>:",
 		"didSearch_one": "Đã tìm thấy 1 kết quả",
 		"didSearch_other": "Đã tìm thấy {{count}} kết quả",
 		"resultTooltip": "Điểm tương tự: {{score}} (nhấp để mở tệp)"

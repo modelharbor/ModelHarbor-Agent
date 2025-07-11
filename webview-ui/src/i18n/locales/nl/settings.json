@@ -38,6 +38,10 @@
 	},
 	"codeIndex": {
 		"title": "Codebase indexering",
+		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
+		"modelharborApiKeyLabel": "ModelHarbor API-sleutel",
+		"modelharborApiKeyPlaceholder": "Voer uw ModelHarbor API-sleutel in",
 		"enableLabel": "Codebase indexering inschakelen",
 		"enableDescription": "<0>Codebase indexering</0> is een experimentele functie die een semantische zoekindex van je project creëert met behulp van AI-embeddings. Dit stelt ModelHarbor Agent in staat om grote codebases beter te begrijpen en te navigeren door relevante code te vinden op basis van betekenis in plaats van alleen trefwoorden.",
 		"providerLabel": "Embeddings provider",
@@ -71,7 +75,7 @@
 			"cancelButton": "Annuleren",
 			"confirmButton": "Gegevens wissen"
 		},
-		"description": "Configureer codebase-indexeringsinstellingen om semantisch zoeken voor je project in te schakelen. <0>Meer informatie</0>",
+		"description": "Configure codebase indexing settings to enable semantic search of your project. qwen/qwen3-embeddings and baai/bge-m3 are recommended for best results which are available at ModelHarbor provider.",
 		"statusTitle": "Status",
 		"settingsTitle": "Indexeringsinstellingen",
 		"disabledMessage": "Codebase-indexering is momenteel uitgeschakeld. Schakel het in de algemene instellingen in om indexeringsopties te configureren.",

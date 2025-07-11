@@ -38,6 +38,10 @@
 	},
 	"codeIndex": {
 		"title": "Kod Tabanı İndeksleme",
+		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
+		"modelharborApiKeyLabel": "ModelHarbor API Anahtarı",
+		"modelharborApiKeyPlaceholder": "ModelHarbor API anahtarınızı girin",
 		"enableLabel": "Kod Tabanı İndekslemeyi Etkinleştir",
 		"enableDescription": "<0>Kod Tabanı İndeksleme</0>, AI gömme teknolojisini kullanarak projenizin semantik arama indeksini oluşturan deneysel bir özelliktir. Bu, ModelHarbor Agent'un sadece anahtar kelimeler yerine anlam temelinde ilgili kodu bularak büyük kod tabanlarını daha iyi anlamasını ve gezinmesini sağlar.",
 		"providerLabel": "Gömme Sağlayıcısı",
@@ -71,7 +75,7 @@
 			"cancelButton": "İptal",
 			"confirmButton": "Verileri Temizle"
 		},
-		"description": "Projenizin anlamsal aramasını etkinleştirmek için kod tabanı indeksleme ayarlarını yapılandırın. <0>Daha fazla bilgi</0>",
+		"description": "Projenizin anlamsal aramasını etkinleştirmek için kod tabanı indeksleme ayarlarını yapılandırın. En iyi sonuçlar için ModelHarbor sağlayıcısında bulunan qwen/qwen3-embeddings ve baai/bge-m3 önerilir.",
 		"statusTitle": "Durum",
 		"settingsTitle": "İndeksleme Ayarları",
 		"disabledMessage": "Kod tabanı indeksleme şu anda devre dışı. İndeksleme seçeneklerini yapılandırmak için genel ayarlarda etkinleştirin.",

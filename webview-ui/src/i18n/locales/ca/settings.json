@@ -39,12 +39,11 @@
 	"codeIndex": {
 		"title": "Indexació de codi",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
+		"modelharborApiKeyLabel": "Clau de l'API de ModelHarbor",
+		"modelharborApiKeyPlaceholder": "Introduïu la vostra clau de l'API de ModelHarbor",
 		"enableLabel": "Habilitar indexació de codi",
-<<<<<<< HEAD
 		"enableDescription": "Habilita la indexació de codi per millorar la cerca i la comprensió del context",
-=======
-		"enableDescription": "<0>Indexació de codi</0> és una característica experimental que crea un índex de cerca semàntica del vostre projecte utilitzant embeddings d'IA. Això permet a ModelHarbor Agent entendre millor i navegar per grans bases de codi trobant codi rellevant basat en significat en lloc de només paraules clau.",
->>>>>>> 6f72f84e6 (Update 3.23.0)
 		"providerLabel": "Proveïdor d'embeddings",
 		"selectProviderPlaceholder": "Seleccionar proveïdor",
 		"openaiProvider": "OpenAI",
@@ -76,7 +75,7 @@
 			"cancelButton": "Cancel·lar",
 			"confirmButton": "Esborrar dades"
 		},
-		"description": "Configureu la configuració d'indexació de la base de codi per habilitar la cerca semàntica del vostre projecte. <0>Més informació</0>",
+		"description": "Configureu la configuració d'indexació del codi base per habilitar la cerca semàntica del vostre projecte. Es recomanen qwen/qwen3-embeddings i baai/bge-m3 per obtenir els millors resultats, disponibles al proveïdor ModelHarbor.",
 		"statusTitle": "Estat",
 		"settingsTitle": "Configuració d'indexació",
 		"disabledMessage": "La indexació de la base de codi està actualment deshabilitada. Habiliteu-la a la configuració global per configurar les opcions d'indexació.",

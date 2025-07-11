@@ -116,7 +116,7 @@
 		"title": "Modes",
 		"marketplace": "Mode Marketplace",
 		"settings": "Mode Settings",
-		"description": "Specialized personas that tailor Roo's behavior."
+		"description": "Specialized personas that tailor ModelHarbor's behavior."
 	},
 	"enhancePromptDescription": "The 'Enhance Prompt' button helps improve your prompt by providing additional context, clarification, or rephrasing. Try typing a prompt in here and clicking the button again to see how it works.",
 	"addImages": "Add images to message",
@@ -193,8 +193,8 @@
 		"didSearch": "ModelHarbor searched this directory for <code>{{regex}}</code>:"
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo wants to search the codebase for <code>{{query}}</code>:",
-		"wantsToSearchWithPath": "Roo wants to search the codebase for <code>{{query}}</code> in <code>{{path}}</code>:",
+		"wantsToSearch": "ModelHarbor wants to search the codebase for <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "ModelHarbor wants to search the codebase for <code>{{query}}</code> in <code>{{path}}</code>:",
 		"didSearch_one": "Found 1 result",
 		"didSearch_other": "Found {{count}} results",
 		"resultTooltip": "Similarity score: {{score}} (click to open file)"

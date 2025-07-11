@@ -38,6 +38,10 @@
 	},
 	"codeIndex": {
 		"title": "程式碼庫索引",
+		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
+		"modelharborApiKeyLabel": "ModelHarbor API 金鑰",
+		"modelharborApiKeyPlaceholder": "輸入您的 ModelHarbor API 金鑰",
 		"enableLabel": "啟用程式碼庫索引",
 		"enableDescription": "<0>程式碼庫索引</0>是一個實驗性功能，使用 AI 嵌入為您的專案建立語義搜尋索引。這使 ModelHarbor Agent 能夠透過基於含義而非僅僅關鍵詞來尋找相關程式碼，從而更好地理解和導覽大型程式碼庫。",
 		"providerLabel": "嵌入提供者",
@@ -71,7 +75,7 @@
 			"cancelButton": "取消",
 			"confirmButton": "清除資料"
 		},
-		"description": "設定程式碼庫索引設定以啟用專案的語意搜尋。<0>了解更多</0>",
+		"description": "配置程式碼庫索引設定，以啟用專案的語義搜尋功能。推薦使用 qwen/qwen3-embeddings 和 baai/bge-m3 以獲得最佳結果，這些模型可在 ModelHarbor 提供者處取得。",
 		"statusTitle": "狀態",
 		"settingsTitle": "索引設定",
 		"disabledMessage": "程式碼庫索引目前已停用。請在全域設定中啟用以設定索引選項。",
