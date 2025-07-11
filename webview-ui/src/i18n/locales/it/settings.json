@@ -39,12 +39,11 @@
 	"codeIndex": {
 		"title": "Indicizzazione del codice",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
+		"modelharborApiKeyLabel": "Chiave API ModelHarbor",
+		"modelharborApiKeyPlaceholder": "Inserisci la tua chiave API ModelHarbor",
 		"enableLabel": "Abilita indicizzazione del codice",
-<<<<<<< HEAD
 		"enableDescription": "Abilita l'indicizzazione del codice per una ricerca e una comprensione del contesto migliorate",
-=======
-		"enableDescription": "<0>L'indicizzazione del codice</0> è una funzionalità sperimentale che crea un indice di ricerca semantica del tuo progetto utilizzando embedding AI. Questo permette a ModelHarbor Agent di comprendere meglio e navigare grandi basi di codice trovando codice rilevante basato sul significato piuttosto che solo su parole chiave.",
->>>>>>> 6f72f84e6 (Update 3.23.0)
 		"providerLabel": "Fornitore di embedding",
 		"selectProviderPlaceholder": "Seleziona fornitore",
 		"openaiProvider": "OpenAI",
@@ -76,7 +75,7 @@
 			"cancelButton": "Annulla",
 			"confirmButton": "Cancella dati"
 		},
-		"description": "Configura le impostazioni di indicizzazione del codebase per abilitare la ricerca semantica del tuo progetto. <0>Scopri di più</0>",
+		"description": "Configura le impostazioni di indicizzazione del codebase per abilitare la ricerca semantica del tuo progetto. qwen/qwen3-embeddings e baai/bge-m3 sono consigliati per ottenere i migliori risultati, disponibili presso il provider ModelHarbor.",
 		"statusTitle": "Stato",
 		"settingsTitle": "Impostazioni di indicizzazione",
 		"disabledMessage": "L'indicizzazione del codebase è attualmente disabilitata. Abilitala nelle impostazioni globali per configurare le opzioni di indicizzazione.",

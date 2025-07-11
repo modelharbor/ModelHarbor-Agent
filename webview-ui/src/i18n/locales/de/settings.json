@@ -39,7 +39,10 @@
 	"codeIndex": {
 		"title": "Codebase-Indexierung",
 		"modelharborProvider": "ModelHarbor",
-		"description": "Konfiguriere Codebase-Indexierungseinstellungen, um semantische Suche in deinem Projekt zu aktivieren. <0>Mehr erfahren</0>",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
+		"modelharborApiKeyLabel": "ModelHarbor API-Schlüssel",
+		"modelharborApiKeyPlaceholder": "Geben Sie Ihren ModelHarbor API-Schlüssel ein",
+		"description": "Konfigurieren Sie die Einstellungen für die Codebasis-Indizierung, um die semantische Suche Ihres Projekts zu ermöglichen. qwen/qwen3-embeddings und baai/bge-m3 werden für beste Ergebnisse empfohlen, die beim ModelHarbor-Anbieter verfügbar sind.",
 		"statusTitle": "Status",
 		"enableLabel": "Codebase-Indexierung aktivieren",
 		"enableDescription": "<0>Codebase-Indexierung</0> ist eine experimentelle Funktion, die einen semantischen Suchindex deines Projekts mit KI-Embeddings erstellt. Dies ermöglicht es ModelHarbor Agent, große Codebasen besser zu verstehen und zu navigieren, indem relevanter Code basierend auf Bedeutung statt nur Schlüsselwörtern gefunden wird.",

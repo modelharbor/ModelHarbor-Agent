@@ -21,6 +21,7 @@ export type EmbeddingModelProfiles = {
 export const EMBEDDING_MODEL_PROFILES: EmbeddingModelProfiles = {
 	modelharbor: {
 		"baai/bge-m3": { dimension: 1024 },
+		"qwen/qwen3-embedding-4b": { dimension: 2560 },
 	},
 	openai: {
 		"text-embedding-3-small": { dimension: 1536, scoreThreshold: 0.4 },
