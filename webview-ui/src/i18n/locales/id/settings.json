@@ -39,6 +39,8 @@
 	"codeIndex": {
 		"title": "Pengindeksan Codebase",
 		"modelharborProvider": "ModelHarbor",
+		"modelharborApiKeyLabel": "Kunci API ModelHarbor",
+		"modelharborApiKeyPlaceholder": "Masukkan kunci API ModelHarbor Anda",
 		"enableLabel": "Aktifkan Pengindeksan Codebase",
 		"enableDescription": "<0>Pengindeksan Codebase</0> adalah fitur eksperimental yang membuat indeks pencarian semantik dari proyek kamu menggunakan AI embeddings. Ini memungkinkan ModelHarbor Agent untuk lebih memahami dan menavigasi codebase besar dengan menemukan kode yang relevan berdasarkan makna daripada hanya kata kunci.",
 		"providerLabel": "Provider Embeddings",

@@ -39,6 +39,8 @@
 	"codeIndex": {
 		"title": "Indexation de la base de code",
 		"modelharborProvider": "ModelHarbor",
+		"modelharborApiKeyLabel": "Clé API ModelHarbor",
+		"modelharborApiKeyPlaceholder": "Entrez votre clé API ModelHarbor",
 		"description": "Configurez les paramètres d'indexation de la base de code pour activer la recherche sémantique dans votre projet. <0>En savoir plus</0>",
 		"statusTitle": "Statut",
 		"enableLabel": "Activer l'indexation de la base de code",
