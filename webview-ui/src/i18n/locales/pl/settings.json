@@ -38,6 +38,9 @@
 	},
 	"codeIndex": {
 		"title": "Indeksowanie kodu",
+		"modelharborProvider": "ModelHarbor",
+		"modelharborApiKeyLabel": "Klucz API ModelHarbor",
+		"modelharborApiKeyPlaceholder": "Wprowadź swój klucz API ModelHarbor",
 		"enableLabel": "Włącz indeksowanie kodu",
 		"enableDescription": "<0>Indeksowanie kodu</0> to eksperymentalna funkcja, która tworzy semantyczny indeks wyszukiwania Twojego projektu przy użyciu osadzeń AI. Umożliwia to ModelHarbor Agent lepsze zrozumienie i nawigację po dużych bazach kodu poprzez znajdowanie odpowiedniego kodu na podstawie znaczenia, a nie tylko słów kluczowych.",
 		"providerLabel": "Dostawca osadzania",

@@ -38,6 +38,9 @@
 	},
 	"codeIndex": {
 		"title": "Индексация кодовой базы",
+		"modelharborProvider": "ModelHarbor",
+		"modelharborApiKeyLabel": "Ключ API ModelHarbor",
+		"modelharborApiKeyPlaceholder": "Введите свой API-ключ ModelHarbor",
 		"enableLabel": "Включить индексацию кодовой базы",
 		"enableDescription": "<0>Индексация кодовой базы</0> — это экспериментальная функция, которая создает семантический поисковый индекс вашего проекта с использованием ИИ-эмбеддингов. Это позволяет ModelHarbor Agent лучше понимать и навигировать по большим кодовым базам, находя релевантный код на основе смысла, а не только ключевых слов.",
 		"providerLabel": "Провайдер эмбеддингов",

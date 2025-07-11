@@ -39,6 +39,8 @@
 	"codeIndex": {
 		"title": "Indexació de codi",
 		"modelharborProvider": "ModelHarbor",
+		"modelharborApiKeyLabel": "Clau de l'API de ModelHarbor",
+		"modelharborApiKeyPlaceholder": "Introduïu la vostra clau de l'API de ModelHarbor",
 		"enableLabel": "Habilitar indexació de codi",
 		"enableDescription": "<0>Indexació de codi</0> és una característica experimental que crea un índex de cerca semàntica del vostre projecte utilitzant embeddings d'IA. Això permet a ModelHarbor Agent entendre millor i navegar per grans bases de codi trobant codi rellevant basat en significat en lloc de només paraules clau.",
 		"providerLabel": "Proveïdor d'embeddings",

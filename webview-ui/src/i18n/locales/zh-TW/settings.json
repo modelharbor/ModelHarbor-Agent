@@ -38,6 +38,9 @@
 	},
 	"codeIndex": {
 		"title": "程式碼庫索引",
+		"modelharborProvider": "ModelHarbor",
+		"modelharborApiKeyLabel": "ModelHarbor API 金鑰",
+		"modelharborApiKeyPlaceholder": "輸入您的 ModelHarbor API 金鑰",
 		"enableLabel": "啟用程式碼庫索引",
 		"enableDescription": "<0>程式碼庫索引</0>是一個實驗性功能，使用 AI 嵌入為您的專案建立語義搜尋索引。這使 ModelHarbor Agent 能夠透過基於含義而非僅僅關鍵詞來尋找相關程式碼，從而更好地理解和導覽大型程式碼庫。",
 		"providerLabel": "嵌入提供者",
