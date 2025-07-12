@@ -39,6 +39,7 @@
 	"codeIndex": {
 		"title": "코드베이스 인덱싱",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"modelharborApiKeyLabel": "ModelHarbor API 키",
 		"modelharborApiKeyPlaceholder": "ModelHarbor API 키를 입력하세요",
 		"enableLabel": "코드베이스 인덱싱 활성화",
@@ -74,7 +75,7 @@
 			"cancelButton": "취소",
 			"confirmButton": "데이터 지우기"
 		},
-		"description": "프로젝트의 시맨틱 검색을 활성화하기 위한 코드베이스 인덱싱 설정을 구성합니다. <0>자세히 알아보기</0>",
+		"description": "코드베이스 색인 설정을 구성하여 프로젝트의 의미론적 검색을 활성화하십시오. 최상의 결과를 위해 ModelHarbor 공급자에서 사용할 수 있는 qwen/qwen3-embeddings 및 baai/bge-m3를 권장합니다.",
 		"statusTitle": "상태",
 		"settingsTitle": "인덱싱 설정",
 		"disabledMessage": "코드베이스 인덱싱이 현재 비활성화되어 있습니다. 인덱싱 옵션을 구성하려면 전역 설정에서 활성화하세요.",

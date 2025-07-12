@@ -39,6 +39,7 @@
 	"codeIndex": {
 		"title": "Индексация кодовой базы",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"modelharborApiKeyLabel": "Ключ API ModelHarbor",
 		"modelharborApiKeyPlaceholder": "Введите свой API-ключ ModelHarbor",
 		"enableLabel": "Включить индексацию кодовой базы",
@@ -74,7 +75,7 @@
 			"cancelButton": "Отмена",
 			"confirmButton": "Очистить данные"
 		},
-		"description": "Настройте параметры индексации кодовой базы для включения семантического поиска в вашем проекте. <0>Узнать больше</0>",
+		"description": "Настройте параметры индексации кодовой базы, чтобы включить семантический поиск по вашему проекту. Для достижения наилучших результатов рекомендуются qwen/qwen3-embeddings и baai/bge-m3, доступные у провайдера ModelHarbor.",
 		"statusTitle": "Статус",
 		"settingsTitle": "Настройки индексации",
 		"disabledMessage": "Индексация кодовой базы в настоящее время отключена. Включите ее в глобальных настройках для настройки параметров индексации.",

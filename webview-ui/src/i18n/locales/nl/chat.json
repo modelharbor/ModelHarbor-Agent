@@ -110,7 +110,7 @@
 		"title": "Modi",
 		"marketplace": "Modus Marktplaats",
 		"settings": "Modus Instellingen",
-		"description": "Gespecialiseerde persona's die het gedrag van Roo aanpassen."
+		"description": "Gespecialiseerde persona's die het gedrag van ModelHarbor aanpassen."
 	},
 	"addImages": "Afbeeldingen toevoegen aan bericht",
 	"sendMessage": "Bericht verzenden",
@@ -297,8 +297,8 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo wil de codebase doorzoeken op <code>{{query}}</code>:",
-		"wantsToSearchWithPath": "Roo wil de codebase doorzoeken op <code>{{query}}</code> in <code>{{path}}</code>:",
+		"wantsToSearch": "ModelHarbor wil de codebase doorzoeken op <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "ModelHarbor wil de codebase doorzoeken op <code>{{query}}</code> in <code>{{path}}</code>:",
 		"didSearch_one": "1 resultaat gevonden",
 		"didSearch_other": "{{count}} resultaten gevonden",
 		"resultTooltip": "Gelijkenisscore: {{score}} (klik om bestand te openen)"

@@ -39,6 +39,7 @@
 	"codeIndex": {
 		"title": "コードベースのインデックス作成",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"modelharborApiKeyLabel": "ModelHarbor APIキー",
 		"modelharborApiKeyPlaceholder": "ModelHarbor APIキーを入力してください",
 		"enableLabel": "コードベースのインデックス作成を有効化",
@@ -74,7 +75,7 @@
 			"cancelButton": "キャンセル",
 			"confirmButton": "データをクリア"
 		},
-		"description": "プロジェクトのセマンティック検索を有効にするためのコードベースインデックス設定を構成します。<0>詳細はこちら</0>",
+		"description": "プロジェクトのセマンティック検索を有効にするには、コードベースのインデックス設定を構成してください。最良の結果を得るには、ModelHarbor プロバイダーで利用可能な qwen/qwen3-embeddings および baai/bge-m3 が推奨されます。",
 		"statusTitle": "ステータス",
 		"settingsTitle": "インデックス設定",
 		"disabledMessage": "コードベースインデックスは現在無効になっています。グローバル設定で有効にしてインデックスオプションを構成してください。",

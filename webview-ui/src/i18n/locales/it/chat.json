@@ -118,7 +118,7 @@
 		"title": "Modalità",
 		"marketplace": "Marketplace delle Modalità",
 		"settings": "Impostazioni Modalità",
-		"description": "Personalità specializzate che adattano il comportamento di Roo."
+		"description": "Personalità specializzate che adattano il comportamento di ModelHarbor."
 	},
 	"errorReadingFile": "Errore nella lettura del file:",
 	"noValidImages": "Nessuna immagine valida è stata elaborata",
@@ -297,8 +297,8 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo vuole cercare nella base di codice <code>{{query}}</code>:",
-		"wantsToSearchWithPath": "Roo vuole cercare nella base di codice <code>{{query}}</code> in <code>{{path}}</code>:",
+		"wantsToSearch": "ModelHarbor vuole cercare nella base di codice <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "ModelHarbor vuole cercare nella base di codice <code>{{query}}</code> in <code>{{path}}</code>:",
 		"didSearch_one": "Trovato 1 risultato",
 		"didSearch_other": "Trovati {{count}} risultati",
 		"resultTooltip": "Punteggio di somiglianza: {{score}} (clicca per aprire il file)"

@@ -39,9 +39,10 @@
 	"codeIndex": {
 		"title": "Indexation de la base de code",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"modelharborApiKeyLabel": "Clé API ModelHarbor",
 		"modelharborApiKeyPlaceholder": "Entrez votre clé API ModelHarbor",
-		"description": "Configurez les paramètres d'indexation de la base de code pour activer la recherche sémantique dans votre projet. <0>En savoir plus</0>",
+		"description": "Configurez les paramètres d'indexation de la base de code pour activer la recherche sémantique de votre projet. qwen/qwen3-embeddings et baai/bge-m3 sont recommandés pour de meilleurs résultats, disponibles auprès du fournisseur ModelHarbor.",
 		"statusTitle": "Statut",
 		"enableLabel": "Activer l'indexation de la base de code",
 		"enableDescription": "<0>L'indexation de la base de code</0> est une fonctionnalité expérimentale qui crée un index de recherche sémantique de votre projet en utilisant des embeddings IA. Cela permet à ModelHarbor Agent de mieux comprendre et naviguer dans de grandes bases de code en trouvant du code pertinent basé sur le sens plutôt que seulement sur des mots-clés.",

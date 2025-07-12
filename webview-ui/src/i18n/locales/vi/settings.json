@@ -39,6 +39,7 @@
 	"codeIndex": {
 		"title": "Lập chỉ mục mã nguồn",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"modelharborApiKeyLabel": "Khóa API ModelHarbor",
 		"modelharborApiKeyPlaceholder": "Nhập khóa API ModelHarbor của bạn",
 		"enableLabel": "Bật lập chỉ mục mã nguồn",
@@ -74,7 +75,7 @@
 			"cancelButton": "Hủy",
 			"confirmButton": "Xóa dữ liệu"
 		},
-		"description": "Cấu hình cài đặt lập chỉ mục mã nguồn để kích hoạt tìm kiếm ngữ nghĩa cho dự án của bạn. <0>Tìm hiểu thêm</0>",
+		"description": "Cấu hình cài đặt lập chỉ mục cơ sở mã để bật tìm kiếm ngữ nghĩa cho dự án của bạn. qwen/qwen3-embeddings và baai/bge-m3 được khuyến nghị để có kết quả tốt nhất, có sẵn tại nhà cung cấp ModelHarbor.",
 		"statusTitle": "Trạng thái",
 		"settingsTitle": "Cài đặt lập chỉ mục",
 		"disabledMessage": "Lập chỉ mục mã nguồn hiện đang bị tắt. Bật nó trong cài đặt chung để cấu hình các tùy chọn lập chỉ mục.",

@@ -39,6 +39,7 @@
 	"codeIndex": {
 		"title": "Indexação de Código",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"modelharborApiKeyLabel": "Chave de API ModelHarbor",
 		"modelharborApiKeyPlaceholder": "Digite sua chave de API ModelHarbor",
 		"enableLabel": "Ativar Indexação de Código",
@@ -74,7 +75,7 @@
 			"cancelButton": "Cancelar",
 			"confirmButton": "Limpar Dados"
 		},
-		"description": "Configure as configurações de indexação da base de código para habilitar a pesquisa semântica do seu projeto. <0>Saiba mais</0>",
+		"description": "Configure as configurações de indexação da base de código para habilitar a pesquisa semântica do seu projeto. qwen/qwen3-embeddings e baai/bge-m3 são recomendados para melhores resultados, e estão disponíveis no provedor ModelHarbor.",
 		"statusTitle": "Status",
 		"settingsTitle": "Configurações de Indexação",
 		"disabledMessage": "A indexação da base de código está atualmente desativada. Ative-a nas configurações globais para configurar as opções de indexação.",

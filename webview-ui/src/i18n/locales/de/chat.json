@@ -117,7 +117,7 @@
 		"title": "Modi",
 		"marketplace": "Modus-Marketplace",
 		"settings": "Modus-Einstellungen",
-		"description": "Spezialisierte Personas, die Roos Verhalten anpassen."
+		"description": "Spezialisierte Personas, die ModelHarbors Verhalten anpassen."
 	},
 	"errorReadingFile": "Fehler beim Lesen der Datei:",
 	"noValidImages": "Keine gültigen Bilder wurden verarbeitet",
@@ -296,8 +296,8 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo möchte den Codebase nach <code>{{query}}</code> durchsuchen:",
-		"wantsToSearchWithPath": "Roo möchte den Codebase nach <code>{{query}}</code> in <code>{{path}}</code> durchsuchen:",
+		"wantsToSearch": "ModelHarbor möchte den Codebase nach <code>{{query}}</code> durchsuchen:",
+		"wantsToSearchWithPath": "ModelHarbor möchte den Codebase nach <code>{{query}}</code> in <code>{{path}}</code> durchsuchen:",
 		"didSearch_one": "1 Ergebnis gefunden",
 		"didSearch_other": "{{count}} Ergebnisse gefunden",
 		"resultTooltip": "Ähnlichkeitswert: {{score}} (klicken zum Öffnen der Datei)"

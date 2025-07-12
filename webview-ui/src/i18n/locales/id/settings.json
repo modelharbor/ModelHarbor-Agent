@@ -39,6 +39,7 @@
 	"codeIndex": {
 		"title": "Pengindeksan Codebase",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"modelharborApiKeyLabel": "Kunci API ModelHarbor",
 		"modelharborApiKeyPlaceholder": "Masukkan kunci API ModelHarbor Anda",
 		"enableLabel": "Aktifkan Pengindeksan Codebase",
@@ -74,7 +75,7 @@
 			"cancelButton": "Batal",
 			"confirmButton": "Hapus Data"
 		},
-		"description": "Konfigurasi pengaturan pengindeksan codebase untuk mengaktifkan pencarian semantik proyek kamu. <0>Pelajari lebih lanjut</0>",
+		"description": "Konfigurasi pengaturan pengindeksan basis kode untuk mengaktifkan pencarian semantik proyek Anda. qwen/qwen3-embeddings dan baai/bge-m3 direkomendasikan untuk hasil terbaik yang tersedia di penyedia ModelHarbor.",
 		"statusTitle": "Status",
 		"settingsTitle": "Pengaturan Pengindeksan",
 		"disabledMessage": "Pengindeksan codebase saat ini dinonaktifkan. Aktifkan di pengaturan global untuk mengkonfigurasi opsi pengindeksan.",

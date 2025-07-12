@@ -39,6 +39,7 @@
 	"codeIndex": {
 		"title": "कोडबेस इंडेक्सिंग",
 		"modelharborProvider": "ModelHarbor",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"modelharborApiKeyLabel": "ModelHarbor API कुंजी",
 		"modelharborApiKeyPlaceholder": "अपना ModelHarbor API कुंजी दर्ज करें",
 		"enableLabel": "कोडबेस इंडेक्सिंग सक्षम करें",
@@ -74,7 +75,7 @@
 			"cancelButton": "रद्द करें",
 			"confirmButton": "डेटा साफ़ करें"
 		},
-		"description": "अपने प्रोजेक्ट की सिमेंटिक खोज को सक्षम करने के लिए कोडबेस इंडेक्सिंग सेटिंग्स कॉन्फ़िगर करें। <0>और जानें</0>",
+		"description": "अपने प्रोजेक्ट की सिमेंटिक खोज को सक्षम करने के लिए कोडबेस इंडेक्सिंग सेटिंग्स कॉन्फ़िगर करें। सर्वोत्तम परिणामों के लिए qwen/qwen3-embeddings और baai/bge-m3 की सिफारिश की जाती है जो ModelHarbor प्रदाता पर उपलब्ध हैं।",
 		"statusTitle": "स्थिति",
 		"settingsTitle": "इंडेक्सिंग सेटिंग्स",
 		"disabledMessage": "कोडबेस इंडेक्सिंग वर्तमान में अक्षम है। इंडेक्सिंग विकल्पों को कॉन्फ़िगर करने के लिए इसे ग्लोबल सेटिंग्स में सक्षम करें।",

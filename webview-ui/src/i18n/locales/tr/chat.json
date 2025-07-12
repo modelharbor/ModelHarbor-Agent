@@ -117,7 +117,7 @@
 		"title": "Modlar",
 		"marketplace": "Mod Pazaryeri",
 		"settings": "Mod Ayarları",
-		"description": "Roo'nun davranışını özelleştiren uzmanlaşmış kişilikler."
+		"description": "ModelHarbor'nun davranışını özelleştiren uzmanlaşmış kişilikler."
 	},
 	"errorReadingFile": "Dosya okuma hatası:",
 	"noValidImages": "Hiçbir geçerli resim işlenmedi",
@@ -296,8 +296,8 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo kod tabanında <code>{{query}}</code> aramak istiyor:",
-		"wantsToSearchWithPath": "Roo <code>{{path}}</code> içinde kod tabanında <code>{{query}}</code> aramak istiyor:",
+		"wantsToSearch": "ModelHarbor kod tabanında <code>{{query}}</code> aramak istiyor:",
+		"wantsToSearchWithPath": "ModelHarbor <code>{{path}}</code> içinde kod tabanında <code>{{query}}</code> aramak istiyor:",
 		"didSearch_one": "1 sonuç bulundu",
 		"didSearch_other": "{{count}} sonuç bulundu",
 		"resultTooltip": "Benzerlik puanı: {{score}} (dosyayı açmak için tıklayın)"

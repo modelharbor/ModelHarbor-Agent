@@ -109,7 +109,7 @@
 		"title": "Режимы",
 		"marketplace": "Маркетплейс режимов",
 		"settings": "Настройки режимов",
-		"description": "Специализированные персоны, которые настраивают поведение Roo."
+		"description": "Специализированные персоны, которые настраивают поведение ModelHarbor."
 	},
 	"addImages": "Добавить изображения к сообщению",
 	"sendMessage": "Отправить сообщение",
@@ -296,8 +296,8 @@
 		}
 	},
 	"codebaseSearch": {
-		"wantsToSearch": "Roo хочет выполнить поиск в кодовой базе по <code>{{query}}</code>:",
-		"wantsToSearchWithPath": "Roo хочет выполнить поиск в кодовой базе по <code>{{query}}</code> в <code>{{path}}</code>:",
+		"wantsToSearch": "ModelHarbor хочет выполнить поиск в кодовой базе по <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "ModelHarbor хочет выполнить поиск в кодовой базе по <code>{{query}}</code> в <code>{{path}}</code>:",
 		"didSearch_one": "Найден 1 результат",
 		"didSearch_other": "Найдено {{count}} результатов",
 		"resultTooltip": "Оценка схожести: {{score}} (нажмите, чтобы открыть файл)"
