@@ -662,9 +662,7 @@ describe("CodeIndexServiceFactory", () => {
 			mockGetModelDimension.mockReturnValue(undefined)
 
 			// Act & Assert
-			expect(() => factory.createVectorStore()).toThrow(
-				"embeddings:serviceFactory.vectorDimensionNotDeterminedModelHarbor",
-			)
+			expect(() => factory.createVectorStore()).toThrow("serviceFactory.vectorDimensionNotDetermined")
 		})
 
 		it("should throw error when Qdrant URL is missing", () => {
