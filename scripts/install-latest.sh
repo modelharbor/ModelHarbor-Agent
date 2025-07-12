@@ -2,8 +2,6 @@
 # Installs the latest version of the modelharbor-agent .vsix from bin/ using VSCode CLI
 
 set -e
-pnpm clean
-pnpm install
 pnpm build
 pnpm lint
 pnpm vsix

@@ -947,10 +947,22 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 													<VSCodeOption value="">
 														{t("settings:codeIndex.selectModel")}
 													</VSCodeOption>
-													<VSCodeOption value="baai/bge-m3">baai/bge-m3</VSCodeOption>
-													<VSCodeOption value="qwen/qwen3-embedding-4b">
-														qwen/qwen3-embedding-4b
-													</VSCodeOption>
+													{getAvailableModels().map((modelId) => {
+														const model =
+															codebaseIndexModels?.[
+																currentSettings.codebaseIndexEmbedderProvider
+															]?.[modelId]
+														return (
+															<VSCodeOption key={modelId} value={modelId}>
+																{modelId}{" "}
+																{model
+																	? t("settings:codeIndex.modelDimensions", {
+																			dimension: model.dimension,
+																		})
+																	: ""}
+															</VSCodeOption>
+														)
+													})}
 												</VSCodeDropdown>
 												{formErrors.codebaseIndexEmbedderModelId && (
 													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
