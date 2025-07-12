@@ -69,7 +69,7 @@ export class CodeIndexServiceFactory {
 			if (!config.modelHarborOptions?.apiKey) {
 				throw new Error("ModelHarbor configuration missing for embedder creation")
 			}
-			return new ModelHarborEmbedder(config.modelHarborOptions.apiKey)
+			return new ModelHarborEmbedder(config.modelHarborOptions.apiKey, config.modelId)
 		}
 
 		throw new Error(
@@ -115,7 +115,13 @@ export class CodeIndexServiceFactory {
 		let vectorSize: number | undefined
 
 		// First check if a manual dimension is provided (works for all providers)
-		if (config.modelDimension && config.modelDimension > 0) {
+		if (provider === "modelharbor") {
+			if (modelId === "qwen/qwen3-embedding-4b") {
+				vectorSize = 2560
+			} else {
+				vectorSize = 1024
+			}
+		} else if (config.modelDimension && config.modelDimension > 0) {
 			vectorSize = config.modelDimension
 		} else if (provider === "gemini") {
 			// Gemini's text-embedding-004 has a fixed dimension of 768
@@ -130,8 +136,6 @@ export class CodeIndexServiceFactory {
 				throw new Error(
 					t("embeddings:serviceFactory.vectorDimensionNotDeterminedOpenAiCompatible", { modelId, provider }),
 				)
-			} else if (provider === "modelharbor") {
-				throw new Error(t("embeddings:serviceFactory.vectorDimensionNotDeterminedModelHarbor", { modelId }))
 			} else {
 				throw new Error(t("embeddings:serviceFactory.vectorDimensionNotDetermined", { modelId, provider }))
 			}
@@ -141,8 +145,8 @@ export class CodeIndexServiceFactory {
 			throw new Error(t("embeddings:serviceFactory.qdrantUrlMissing"))
 		}
 
-		// Assuming constructor is updated: new QdrantVectorStore(workspacePath, url, vectorSize, apiKey?)
-		return new QdrantVectorStore(this.workspacePath, config.qdrantUrl, vectorSize, config.qdrantApiKey)
+		// Pass modelId for robust collection recreation with dimension isolation
+		return new QdrantVectorStore(this.workspacePath, config.qdrantUrl, vectorSize, config.qdrantApiKey, modelId)
 	}
 
 	/**
