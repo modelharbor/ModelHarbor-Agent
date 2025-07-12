@@ -52,7 +52,7 @@ describe("QdrantVectorStore", () => {
 		// Mock getWorkspacePath
 		;(getWorkspacePath as any).mockReturnValue(mockWorkspacePath)
 
-		vectorStore = new QdrantVectorStore(mockWorkspacePath, mockQdrantUrl, mockVectorSize, mockApiKey)
+		vectorStore = new QdrantVectorStore(mockWorkspacePath, mockQdrantUrl, mockVectorSize, mockApiKey, "modelharbor")
 	})
 
 	it("should correctly initialize QdrantClient and collectionName in constructor", () => {
@@ -67,14 +67,20 @@ describe("QdrantVectorStore", () => {
 			},
 		})
 		expect(createHash).toHaveBeenCalledWith("sha256")
-		expect(mockCreateHashInstance.update).toHaveBeenCalledWith(mockWorkspacePath + "modelharbor")
+		expect(mockCreateHashInstance.update).toHaveBeenCalledWith(mockWorkspacePath + "modelharbor" + "modelharbor")
 		expect(mockCreateHashInstance.digest).toHaveBeenCalledWith("hex")
 		// Access private member for testing constructor logic (not ideal, but necessary here)
 		expect((vectorStore as any).collectionName).toBe(expectedCollectionName)
 		expect((vectorStore as any).vectorSize).toBe(mockVectorSize)
 	})
 	it("should handle constructor with default URL when none provided", () => {
-		const vectorStoreWithDefaults = new QdrantVectorStore(mockWorkspacePath, undefined as any, mockVectorSize)
+		const vectorStoreWithDefaults = new QdrantVectorStore(
+			mockWorkspacePath,
+			undefined as any,
+			mockVectorSize,
+			undefined,
+			"modelharbor",
+		)
 
 		expect(QdrantClient).toHaveBeenLastCalledWith({
 			host: "localhost",
@@ -88,7 +94,13 @@ describe("QdrantVectorStore", () => {
 	})
 
 	it("should handle constructor without API key", () => {
-		const vectorStoreWithoutKey = new QdrantVectorStore(mockWorkspacePath, mockQdrantUrl, mockVectorSize)
+		const vectorStoreWithoutKey = new QdrantVectorStore(
+			mockWorkspacePath,
+			mockQdrantUrl,
+			mockVectorSize,
+			undefined,
+			"modelharbor",
+		)
 
 		expect(QdrantClient).toHaveBeenLastCalledWith({
 			host: "mock-qdrant",
@@ -108,6 +120,8 @@ describe("QdrantVectorStore", () => {
 					mockWorkspacePath,
 					"https://qdrant.ashbyfam.com",
 					mockVectorSize,
+					undefined,
+					"modelharbor",
 				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "qdrant.ashbyfam.com",
@@ -123,7 +137,13 @@ describe("QdrantVectorStore", () => {
 			})
 
 			it("should use explicit port for HTTPS URLs with explicit port", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "https://example.com:9000", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"https://example.com:9000",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "example.com",
 					https: true,
@@ -142,6 +162,8 @@ describe("QdrantVectorStore", () => {
 					mockWorkspacePath,
 					"https://example.com/api/v1?key=value",
 					mockVectorSize,
+					undefined,
+					"modelharbor",
 				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "example.com",
@@ -159,7 +181,13 @@ describe("QdrantVectorStore", () => {
 
 		describe("HTTP URL handling", () => {
 			it("should use explicit port 80 for HTTP URLs without port", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "http://example.com", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"http://example.com",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "example.com",
 					https: false,
@@ -174,7 +202,13 @@ describe("QdrantVectorStore", () => {
 			})
 
 			it("should use explicit port for HTTP URLs with explicit port", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "http://localhost:8080", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"http://localhost:8080",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "localhost",
 					https: false,
@@ -193,6 +227,8 @@ describe("QdrantVectorStore", () => {
 					mockWorkspacePath,
 					"http://example.com/api/v1?key=value",
 					mockVectorSize,
+					undefined,
+					"modelharbor",
 				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "example.com",
@@ -210,7 +246,13 @@ describe("QdrantVectorStore", () => {
 
 		describe("Hostname handling", () => {
 			it("should convert hostname to http with port 80", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "qdrant.example.com", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"qdrant.example.com",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "qdrant.example.com",
 					https: false,
@@ -224,7 +266,13 @@ describe("QdrantVectorStore", () => {
 			})
 
 			it("should handle hostname:port format with explicit port", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "localhost:6333", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"localhost:6333",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "localhost",
 					https: false,
@@ -238,7 +286,13 @@ describe("QdrantVectorStore", () => {
 			})
 
 			it("should handle explicit HTTP URLs correctly", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "http://localhost:9000", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"http://localhost:9000",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "localhost",
 					https: false,
@@ -254,7 +308,13 @@ describe("QdrantVectorStore", () => {
 
 		describe("IP address handling", () => {
 			it("should convert IP address to http with port 80", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "192.168.1.100", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"192.168.1.100",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "192.168.1.100",
 					https: false,
@@ -268,7 +328,13 @@ describe("QdrantVectorStore", () => {
 			})
 
 			it("should handle IP:port format with explicit port", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "192.168.1.100:6333", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"192.168.1.100:6333",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "192.168.1.100",
 					https: false,
@@ -284,7 +350,13 @@ describe("QdrantVectorStore", () => {
 
 		describe("Edge cases", () => {
 			it("should handle undefined URL with host-based config", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, undefined as any, mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					undefined as any,
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "localhost",
 					https: false,
@@ -298,7 +370,13 @@ describe("QdrantVectorStore", () => {
 			})
 
 			it("should handle empty string URL with host-based config", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "localhost",
 					https: false,
@@ -312,7 +390,13 @@ describe("QdrantVectorStore", () => {
 			})
 
 			it("should handle whitespace-only URL with host-based config", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "   ", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"   ",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "localhost",
 					https: false,
@@ -328,7 +412,13 @@ describe("QdrantVectorStore", () => {
 
 		describe("Invalid URL fallback", () => {
 			it("should treat invalid URLs as hostnames with port 80", () => {
-				const vectorStore = new QdrantVectorStore(mockWorkspacePath, "invalid-url-format", mockVectorSize)
+				const vectorStore = new QdrantVectorStore(
+					mockWorkspacePath,
+					"invalid-url-format",
+					mockVectorSize,
+					undefined,
+					"modelharbor",
+				)
 				expect(QdrantClient).toHaveBeenLastCalledWith({
 					host: "invalid-url-format",
 					https: false,
@@ -349,6 +439,8 @@ describe("QdrantVectorStore", () => {
 				mockWorkspacePath,
 				"http://localhost:6333/some/path",
 				mockVectorSize,
+				undefined,
+				"modelharbor",
 			)
 			expect(QdrantClient).toHaveBeenLastCalledWith({
 				host: "localhost",
@@ -368,6 +460,8 @@ describe("QdrantVectorStore", () => {
 				mockWorkspacePath,
 				"http://localhost:6333/",
 				mockVectorSize,
+				undefined,
+				"modelharbor",
 			)
 			expect(QdrantClient).toHaveBeenLastCalledWith({
 				host: "localhost",
@@ -387,6 +481,8 @@ describe("QdrantVectorStore", () => {
 				mockWorkspacePath,
 				"https://qdrant.ashbyfam.com/api",
 				mockVectorSize,
+				undefined,
+				"modelharbor",
 			)
 			expect(QdrantClient).toHaveBeenLastCalledWith({
 				host: "qdrant.ashbyfam.com",
@@ -406,6 +502,8 @@ describe("QdrantVectorStore", () => {
 				mockWorkspacePath,
 				"http://localhost:6333/api/",
 				mockVectorSize,
+				undefined,
+				"modelharbor",
 			)
 			expect(QdrantClient).toHaveBeenLastCalledWith({
 				host: "localhost",
@@ -425,6 +523,8 @@ describe("QdrantVectorStore", () => {
 				mockWorkspacePath,
 				"http://localhost:6333/api///",
 				mockVectorSize,
+				undefined,
+				"modelharbor",
 			)
 			expect(QdrantClient).toHaveBeenLastCalledWith({
 				host: "localhost",
@@ -444,6 +544,8 @@ describe("QdrantVectorStore", () => {
 				mockWorkspacePath,
 				"http://localhost:6333/api/v1/qdrant",
 				mockVectorSize,
+				undefined,
+				"modelharbor",
 			)
 			expect(QdrantClient).toHaveBeenLastCalledWith({
 				host: "localhost",
@@ -460,7 +562,13 @@ describe("QdrantVectorStore", () => {
 
 		it("should handle complex URL with multiple segments, multiple trailing slashes, query params, and fragment", () => {
 			const complexUrl = "https://example.com/ollama/api/v1///?key=value#pos"
-			const vectorStoreComplex = new QdrantVectorStore(mockWorkspacePath, complexUrl, mockVectorSize)
+			const vectorStoreComplex = new QdrantVectorStore(
+				mockWorkspacePath,
+				complexUrl,
+				mockVectorSize,
+				undefined,
+				"modelharbor",
+			)
 			expect(QdrantClient).toHaveBeenLastCalledWith({
 				host: "example.com",
 				https: true,
@@ -479,6 +587,8 @@ describe("QdrantVectorStore", () => {
 				mockWorkspacePath,
 				"http://localhost:6333/api/path?key=value#fragment",
 				mockVectorSize,
+				undefined,
+				"modelharbor",
 			)
 			expect(QdrantClient).toHaveBeenLastCalledWith({
 				host: "localhost",
