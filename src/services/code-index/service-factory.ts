@@ -106,13 +106,7 @@ export class CodeIndexServiceFactory {
 		let vectorSize: number | undefined
 
 		// First check if a manual dimension is provided (works for all providers)
-		if (provider === "modelharbor") {
-			if (modelId === "qwen/qwen3-embedding-4b") {
-				vectorSize = 2560
-			} else {
-				vectorSize = 1024
-			}
-		} else if (config.modelDimension && config.modelDimension > 0) {
+		if (config.modelDimension && config.modelDimension > 0) {
 			vectorSize = config.modelDimension
 		} else if (provider === "gemini") {
 			// Gemini's text-embedding-004 has a fixed dimension of 768
