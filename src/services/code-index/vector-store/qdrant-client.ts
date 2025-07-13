@@ -83,6 +83,9 @@ export class QdrantVectorStore implements IVectorStore {
 		const hash = createHash("sha256").update(hashInput).digest("hex")
 		this.vectorSize = vectorSize
 		this.collectionName = `ws-${hash.substring(0, 16)}`
+		console.log(
+			`[QdrantVectorStore] Creating collection ${this.collectionName} with dimension ${vectorSize} for model ${modelId}`,
+		)
 	}
 
 	/**
@@ -155,6 +158,9 @@ export class QdrantVectorStore implements IVectorStore {
 
 			if (collectionInfo === null) {
 				// Collection info not retrieved (assume not found or inaccessible), create it
+				console.log(
+					`[QdrantVectorStore] Creating new collection ${this.collectionName} with dimension ${this.vectorSize}`,
+				)
 				await this.client.createCollection(this.collectionName, {
 					vectors: {
 						size: this.vectorSize,
@@ -166,6 +172,9 @@ export class QdrantVectorStore implements IVectorStore {
 				// Collection exists, check vector size
 				const existingVectorSize = collectionInfo.config?.params?.vectors?.size
 				if (existingVectorSize === this.vectorSize) {
+					console.log(
+						`[QdrantVectorStore] Collection ${this.collectionName} exists with correct dimension ${this.vectorSize}`,
+					)
 					created = false // Exists and correct
 				} else {
 					// Exists but wrong vector size, recreate

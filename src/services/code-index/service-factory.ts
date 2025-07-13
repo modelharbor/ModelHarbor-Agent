@@ -114,15 +114,38 @@ export class CodeIndexServiceFactory {
 
 		let vectorSize: number | undefined
 
-		// First check if a manual dimension is provided (works for all providers)
-		if (config.modelDimension && config.modelDimension > 0) {
-			vectorSize = config.modelDimension
-		} else if (provider === "gemini") {
-			// Gemini's text-embedding-004 has a fixed dimension of 768
-			vectorSize = 768
+		if (provider === "modelharbor") {
+			if (modelId === "baai/bge-m3") {
+				// BGE-M3 has a fixed dimension of 1024
+				vectorSize = 1024
+				console.log(`[ServiceFactory] Using ModelHarbor BGE-M3 fixed dimension: ${vectorSize}`)
+			} else if (modelId === "qwen/qwen3-embedding-4b") {
+				// Qwen3 embedding model has a fixed dimension of 2560
+				vectorSize = 2560
+				console.log(`[ServiceFactory] Using ModelHarbor Qwen3 fixed dimension: ${vectorSize}`)
+			} else {
+				vectorSize = getModelDimension(provider, modelId)
+				if (vectorSize === undefined || vectorSize <= 0) {
+					throw new Error(
+						t("embeddings:serviceFactory.vectorDimensionNotDeterminedModelHarbor", { modelId, provider }),
+					)
+				}
+				console.log(`[ServiceFactory] Using ModelHarbor model dimension for ${modelId}: ${vectorSize}`)
+			}
 		} else {
-			// Fall back to model-specific dimension from profiles
-			vectorSize = getModelDimension(provider, modelId)
+			// First check if a manual dimension is provided (works for all providers)
+			if (config.modelDimension && config.modelDimension > 0) {
+				vectorSize = config.modelDimension
+				console.log(`[ServiceFactory] Using manual dimension: ${vectorSize}`)
+			} else if (provider === "gemini") {
+				// Gemini's text-embedding-004 has a fixed dimension of 768
+				vectorSize = 768
+				console.log(`[ServiceFactory] Using Gemini fixed dimension: ${vectorSize}`)
+			} else {
+				// Fall back to model-specific dimension from profiles
+				vectorSize = getModelDimension(provider, modelId)
+				console.log(`[ServiceFactory] Using model dimension for ${provider}/${modelId}: ${vectorSize}`)
+			}
 		}
 
 		if (vectorSize === undefined || vectorSize <= 0) {

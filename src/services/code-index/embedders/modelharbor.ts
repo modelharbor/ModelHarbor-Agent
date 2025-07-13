@@ -110,12 +110,32 @@ export class ModelHarborEmbedder implements IEmbedder {
 			if (currentBatch.length > 0) {
 				try {
 					const batchResult = await this._embedBatchWithRetries(currentBatch, modelToUse)
+
+					// Validate embedding dimensions are consistent
+					if (batchResult.embeddings.length > 0) {
+						const dimension = batchResult.embeddings[0].length
+						console.log(
+							`[ModelHarborEmbedder] Generated embeddings with dimension: ${dimension} for model: ${modelToUse}`,
+						)
+
+						// Check all embeddings have the same dimension
+						for (let i = 1; i < batchResult.embeddings.length; i++) {
+							if (batchResult.embeddings[i].length !== dimension) {
+								throw new Error(
+									`Inconsistent embedding dimensions: expected ${dimension}, got ${batchResult.embeddings[i].length}`,
+								)
+							}
+						}
+					}
+
 					allEmbeddings.push(...batchResult.embeddings)
 					usage.promptTokens += batchResult.usage.promptTokens
 					usage.totalTokens += batchResult.usage.totalTokens
 				} catch (error) {
 					console.error("Failed to process batch:", error)
-					throw new Error("Failed to create embeddings: batch processing error")
+					throw new Error(
+						`Failed to create embeddings: batch processing error - ${error instanceof Error ? error.message : String(error)}`,
+					)
 				}
 			}
 		}
@@ -194,6 +214,12 @@ export class ModelHarborEmbedder implements IEmbedder {
 					valid: false,
 					error: t("embeddings:modelharbor.invalidResponseFormat"),
 				}
+			}
+
+			// Log the actual dimension for debugging
+			const actualDimension = response.data[0]?.embedding?.length
+			if (actualDimension) {
+				console.log(`[ModelHarborEmbedder] Model ${this.modelId} has dimension: ${actualDimension}`)
 			}
 
 			return { valid: true }
