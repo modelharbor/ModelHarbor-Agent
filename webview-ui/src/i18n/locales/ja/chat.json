@@ -1,5 +1,5 @@
 {
-	"greeting": "Roo Code へようこそ",
+	"greeting": "ModelHarbor Agent へようこそ",
 	"task": {
 		"title": "タスク",
 		"seeMore": "もっと見る",
@@ -18,7 +18,7 @@
 		"sharePublicly": "公開で共有",
 		"sharePubliclyDescription": "リンクを持つ誰でもアクセスできます",
 		"connectToCloud": "クラウドに接続",
-		"connectToCloudDescription": "タスクを共有するためにRoo Code Cloudにサインイン",
+		"connectToCloudDescription": "タスクを共有するためにModelHarbor Agent Cloudにサインイン",
 		"sharingDisabledByOrganization": "組織により共有が無効化されています",
 		"shareSuccessOrganization": "組織リンクをクリップボードにコピーしました",
 		"shareSuccessPublic": "公開リンクをクリップボードにコピーしました",
@@ -130,7 +130,7 @@
 	"diffError": {
 		"title": "編集に失敗しました"
 	},
-	"troubleMessage": "Rooに問題が発生しています...",
+	"troubleMessage": "ModelHarborに問題が発生しています...",
 	"apiRequest": {
 		"title": "APIリクエスト",
 		"failed": "APIリクエスト失敗",
@@ -156,59 +156,59 @@
 		"current": "現在"
 	},
 	"instructions": {
-		"wantsToFetch": "Rooは現在のタスクを支援するための詳細な指示を取得したい"
+		"wantsToFetch": "ModelHarborは現在のタスクを支援するための詳細な指示を取得したい"
 	},
 	"fileOperations": {
-		"wantsToRead": "Rooはこのファイルを読みたい:",
-		"wantsToReadOutsideWorkspace": "Rooはワークスペース外のこのファイルを読みたい:",
-		"didRead": "Rooはこのファイルを読みました:",
-		"wantsToEdit": "Rooはこのファイルを編集したい:",
-		"wantsToEditOutsideWorkspace": "Rooはワークスペース外のこのファイルを編集したい:",
-		"wantsToEditProtected": "Rooは保護された設定ファイルを編集したい:",
-		"wantsToCreate": "Rooは新しいファイルを作成したい:",
-		"wantsToSearchReplace": "Rooはこのファイルで検索と置換を行う:",
-		"didSearchReplace": "Rooはこのファイルで検索と置換を実行しました:",
-		"wantsToInsert": "Rooはこのファイルにコンテンツを挿入したい:",
-		"wantsToInsertWithLineNumber": "Rooはこのファイルの{{lineNumber}}行目にコンテンツを挿入したい:",
-		"wantsToInsertAtEnd": "Rooはこのファイルの末尾にコンテンツを追加したい:",
-		"wantsToReadAndXMore": "Roo はこのファイルと他に {{count}} 個のファイルを読み込もうとしています:",
-		"wantsToReadMultiple": "Rooは複数のファイルを読み取ろうとしています：",
-		"wantsToApplyBatchChanges": "Rooは複数のファイルに変更を適用したい:"
+		"wantsToRead": "ModelHarborはこのファイルを読みたい:",
+		"wantsToReadOutsideWorkspace": "ModelHarborはワークスペース外のこのファイルを読みたい:",
+		"didRead": "ModelHarborはこのファイルを読みました:",
+		"wantsToEdit": "ModelHarborはこのファイルを編集したい:",
+		"wantsToEditOutsideWorkspace": "ModelHarborはワークスペース外のこのファイルを編集したい:",
+		"wantsToEditProtected": "ModelHarborは保護された設定ファイルを編集したい:",
+		"wantsToCreate": "ModelHarborは新しいファイルを作成したい:",
+		"wantsToSearchReplace": "ModelHarborはこのファイルで検索と置換を行う:",
+		"didSearchReplace": "ModelHarborはこのファイルで検索と置換を実行しました:",
+		"wantsToInsert": "ModelHarborはこのファイルにコンテンツを挿入したい:",
+		"wantsToInsertWithLineNumber": "ModelHarborはこのファイルの{{lineNumber}}行目にコンテンツを挿入したい:",
+		"wantsToInsertAtEnd": "ModelHarborはこのファイルの末尾にコンテンツを追加したい:",
+		"wantsToReadAndXMore": "ModelHarbor はこのファイルと他に {{count}} 個のファイルを読み込もうとしています:",
+		"wantsToReadMultiple": "ModelHarborは複数のファイルを読み取ろうとしています：",
+		"wantsToApplyBatchChanges": "ModelHarborは複数のファイルに変更を適用したい:"
 	},
 	"directoryOperations": {
-		"wantsToViewTopLevel": "Rooはこのディレクトリのトップレベルファイルを表示したい:",
-		"didViewTopLevel": "Rooはこのディレクトリのトップレベルファイルを表示しました:",
-		"wantsToViewRecursive": "Rooはこのディレクトリのすべてのファイルを再帰的に表示したい:",
-		"didViewRecursive": "Rooはこのディレクトリのすべてのファイルを再帰的に表示しました:",
-		"wantsToViewDefinitions": "Rooはこのディレクトリで使用されているソースコード定義名を表示したい:",
-		"didViewDefinitions": "Rooはこのディレクトリで使用されているソースコード定義名を表示しました:",
-		"wantsToSearch": "Rooはこのディレクトリで <code>{{regex}}</code> を検索したい:",
-		"didSearch": "Rooはこのディレクトリで <code>{{regex}}</code> を検索しました:",
-		"wantsToSearchOutsideWorkspace": "Rooはこのディレクトリ（ワークスペース外）で <code>{{regex}}</code> を検索したい:",
-		"didSearchOutsideWorkspace": "Rooはこのディレクトリ（ワークスペース外）で <code>{{regex}}</code> を検索しました:",
-		"wantsToViewTopLevelOutsideWorkspace": "Rooはこのディレクトリ（ワークスペース外）のトップレベルファイルを表示したい:",
-		"didViewTopLevelOutsideWorkspace": "Rooはこのディレクトリ（ワークスペース外）のトップレベルファイルを表示しました:",
-		"wantsToViewRecursiveOutsideWorkspace": "Rooはこのディレクトリ（ワークスペース外）のすべてのファイルを再帰的に表示したい:",
-		"didViewRecursiveOutsideWorkspace": "Rooはこのディレクトリ（ワークスペース外）のすべてのファイルを再帰的に表示しました:",
-		"wantsToViewDefinitionsOutsideWorkspace": "Rooはこのディレクトリ（ワークスペース外）で使用されているソースコード定義名を表示したい:",
-		"didViewDefinitionsOutsideWorkspace": "Rooはこのディレクトリ（ワークスペース外）で使用されているソースコード定義名を表示しました:"
+		"wantsToViewTopLevel": "ModelHarborはこのディレクトリのトップレベルファイルを表示したい:",
+		"didViewTopLevel": "ModelHarborはこのディレクトリのトップレベルファイルを表示しました:",
+		"wantsToViewRecursive": "ModelHarborはこのディレクトリのすべてのファイルを再帰的に表示したい:",
+		"didViewRecursive": "ModelHarborはこのディレクトリのすべてのファイルを再帰的に表示しました:",
+		"wantsToViewDefinitions": "ModelHarborはこのディレクトリで使用されているソースコード定義名を表示したい:",
+		"didViewDefinitions": "ModelHarborはこのディレクトリで使用されているソースコード定義名を表示しました:",
+		"wantsToSearch": "ModelHarborはこのディレクトリで <code>{{regex}}</code> を検索したい:",
+		"didSearch": "ModelHarborはこのディレクトリで <code>{{regex}}</code> を検索しました:",
+		"wantsToSearchOutsideWorkspace": "ModelHarborはこのディレクトリ（ワークスペース外）で <code>{{regex}}</code> を検索したい:",
+		"didSearchOutsideWorkspace": "ModelHarborはこのディレクトリ（ワークスペース外）で <code>{{regex}}</code> を検索しました:",
+		"wantsToViewTopLevelOutsideWorkspace": "ModelHarborはこのディレクトリ（ワークスペース外）のトップレベルファイルを表示したい:",
+		"didViewTopLevelOutsideWorkspace": "ModelHarborはこのディレクトリ（ワークスペース外）のトップレベルファイルを表示しました:",
+		"wantsToViewRecursiveOutsideWorkspace": "ModelHarborはこのディレクトリ（ワークスペース外）のすべてのファイルを再帰的に表示したい:",
+		"didViewRecursiveOutsideWorkspace": "ModelHarborはこのディレクトリ（ワークスペース外）のすべてのファイルを再帰的に表示しました:",
+		"wantsToViewDefinitionsOutsideWorkspace": "ModelHarborはこのディレクトリ（ワークスペース外）で使用されているソースコード定義名を表示したい:",
+		"didViewDefinitionsOutsideWorkspace": "ModelHarborはこのディレクトリ（ワークスペース外）で使用されているソースコード定義名を表示しました:"
 	},
 	"commandOutput": "コマンド出力",
 	"response": "応答",
 	"arguments": "引数",
 	"mcp": {
-		"wantsToUseTool": "RooはMCPサーバー{{serverName}}でツールを使用したい:",
-		"wantsToAccessResource": "RooはMCPサーバー{{serverName}}のリソースにアクセスしたい:"
+		"wantsToUseTool": "ModelHarborはMCPサーバー{{serverName}}でツールを使用したい:",
+		"wantsToAccessResource": "ModelHarborはMCPサーバー{{serverName}}のリソースにアクセスしたい:"
 	},
 	"modes": {
-		"wantsToSwitch": "Rooは<code>{{mode}}</code>モードに切り替えたい",
-		"wantsToSwitchWithReason": "Rooは次の理由で<code>{{mode}}</code>モードに切り替えたい: {{reason}}",
-		"didSwitch": "Rooは<code>{{mode}}</code>モードに切り替えました",
-		"didSwitchWithReason": "Rooは次の理由で<code>{{mode}}</code>モードに切り替えました: {{reason}}"
+		"wantsToSwitch": "ModelHarborは<code>{{mode}}</code>モードに切り替えたい",
+		"wantsToSwitchWithReason": "ModelHarborは次の理由で<code>{{mode}}</code>モードに切り替えたい: {{reason}}",
+		"didSwitch": "ModelHarborは<code>{{mode}}</code>モードに切り替えました",
+		"didSwitchWithReason": "ModelHarborは次の理由で<code>{{mode}}</code>モードに切り替えました: {{reason}}"
 	},
 	"subtasks": {
-		"wantsToCreate": "Rooは<code>{{mode}}</code>モードで新しいサブタスクを作成したい:",
-		"wantsToFinish": "Rooはこのサブタスクを終了したい",
+		"wantsToCreate": "ModelHarborは<code>{{mode}}</code>モードで新しいサブタスクを作成したい:",
+		"wantsToFinish": "ModelHarborはこのサブタスクを終了したい",
 		"newTaskContent": "サブタスク指示",
 		"completionContent": "サブタスク完了",
 		"resultContent": "サブタスク結果",
@@ -216,7 +216,7 @@
 		"completionInstructions": "サブタスク完了！結果を確認し、修正や次のステップを提案できます。問題なければ、親タスクに結果を返すために確認してください。"
 	},
 	"questions": {
-		"hasQuestion": "Rooは質問があります:"
+		"hasQuestion": "ModelHarborは質問があります:"
 	},
 	"taskCompleted": "タスク完了",
 	"powershell": {
@@ -225,7 +225,7 @@
 	"autoApprove": {
 		"title": "自動承認:",
 		"none": "なし",
-		"description": "自動承認はRoo Codeに許可を求めずに操作を実行する権限を与えます。完全に信頼できる操作のみ有効にしてください。より詳細な設定は<settingsLink>設定</settingsLink>で利用できます。",
+		"description": "自動承認はModelHarbor Agentに許可を求めずに操作を実行する権限を与えます。完全に信頼できる操作のみ有効にしてください。より詳細な設定は<settingsLink>設定</settingsLink>で利用できます。",
 		"selectOptionsFirst": "自動承認を有効にするには、以下のオプションを少なくとも1つ選択してください",
 		"toggleAriaLabel": "自動承認の切り替え",
 		"disabledAriaLabel": "自動承認が無効です - 最初にオプションを選択してください"
@@ -246,8 +246,8 @@
 		"countdownDisplay": "{{count}}秒"
 	},
 	"announcement": {
-		"title": "🎉 Roo Code {{version}} リリース",
-		"description": "Roo Code {{version}}は、開発ワークフローを向上させる強力な新機能と重要な改善をもたらします。",
+		"title": "🎉 ModelHarbor Agent {{version}} リリース",
+		"description": "ModelHarbor Agent {{version}}は、開発ワークフローを向上させる強力な新機能と重要な改善をもたらします。",
 		"whatsNew": "新機能",
 		"feature1": "<bold>コードベースインデックス機能が実験段階を卒業</bold>: 完全なコードベースインデックス機能が安定し、改善された検索とコンテキスト理解により本番環境での使用が可能になりました。",
 		"feature2": "<bold>新しいTodoリスト機能</bold>: 統合されたTodo管理でタスクを軌道に乗せ、開発目標に整理され集中した状態を維持できます。",
@@ -256,7 +256,7 @@
 		"detailsDiscussLinks": "詳細は<discordLink>Discord</discordLink>と<redditLink>Reddit</redditLink>でご確認・ディスカッションください 🚀"
 	},
 	"browser": {
-		"rooWantsToUse": "Rooはブラウザを使用したい:",
+		"rooWantsToUse": "ModelHarborはブラウザを使用したい:",
 		"consoleLogs": "コンソールログ",
 		"noNewLogs": "(新しいログはありません)",
 		"screenshot": "ブラウザのスクリーンショット",
@@ -291,13 +291,13 @@
 	"profileViolationWarning": "現在のプロファイルは組織の設定と互換性がありません",
 	"shellIntegration": {
 		"title": "コマンド実行警告",
-		"description": "コマンドはVSCodeターミナルシェル統合なしで実行されています。この警告を非表示にするには、<settingsLink>Roo Code設定</settingsLink>の<strong>Terminal</strong>セクションでシェル統合を無効にするか、以下のリンクを使用してVSCodeターミナル統合のトラブルシューティングを行ってください。",
+		"description": "コマンドはVSCodeターミナルシェル統合なしで実行されています。この警告を非表示にするには、<settingsLink>ModelHarbor Agent設定</settingsLink>の<strong>Terminal</strong>セクションでシェル統合を無効にするか、以下のリンクを使用してVSCodeターミナル統合のトラブルシューティングを行ってください。",
 		"troubleshooting": "シェル統合のドキュメントはこちらをクリック"
 	},
 	"ask": {
 		"autoApprovedRequestLimitReached": {
 			"title": "自動承認リクエスト制限に達しました",
-			"description": "Rooは{{count}}件のAPI自動承認リクエスト制限に達しました。カウントをリセットしてタスクを続行しますか？",
+			"description": "ModelHarborは{{count}}件のAPI自動承認リクエスト制限に達しました。カウントをリセットしてタスクを続行しますか？",
 			"button": "リセットして続行"
 		}
 	},
