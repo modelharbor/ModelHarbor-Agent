@@ -5,6 +5,7 @@ export const EXTERNAL_LINKS = {
 	X: "https://x.com/modelharbor",
 	LINKEDIN: "https://www.linkedin.com/company/modelharbor",
 	TIKTOK: "https://www.tiktok.com/@modelharbor",
+	YOUTUBE: "https://www.youtube.com/dr.utharn",
 	BLUESKY: "https://bsky.app/profile/modelharbor.bsky.social",
 	DOCUMENTATION: "https://www.modelharbor.com",
 	CAREERS: "https://www.modelharbor.com",
