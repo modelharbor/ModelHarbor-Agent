@@ -18,8 +18,8 @@ import {
 	claudeCodeDefaultModelId,
 	geminiDefaultModelId,
 	deepSeekDefaultModelId,
-	moonshotDefaultModelId,
 	mistralDefaultModelId,
+	moonshotDefaultModelId,
 	xaiDefaultModelId,
 	groqDefaultModelId,
 	chutesDefaultModelId,
@@ -63,7 +63,6 @@ import {
 	LMStudio,
 	LiteLLM,
 	Mistral,
-	Moonshot,
 	Ollama,
 	OpenAI,
 	OpenAICompatible,
@@ -74,6 +73,7 @@ import {
 	VSCodeLM,
 	XAI,
 	ModelHarbor,
+	Moonshot,
 } from "./providers"
 
 import { MODELS_BY_PROVIDER, PROVIDERS } from "./constants"

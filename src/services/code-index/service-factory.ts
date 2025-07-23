@@ -140,7 +140,8 @@ export class CodeIndexServiceFactory {
 					t("embeddings:serviceFactory.vectorDimensionNotDeterminedOpenAiCompatible", { modelId, provider }),
 				)
 			} else {
-				throw new Error(t("embeddings:serviceFactory.vectorDimensionNotDetermined", { modelId, provider }))
+				const errorMessage = t("embeddings:serviceFactory.vectorDimensionNotDetermined", { modelId, provider })
+				throw new Error(errorMessage)
 			}
 		}
 

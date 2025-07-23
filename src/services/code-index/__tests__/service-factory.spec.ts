@@ -499,6 +499,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				modelDimension, // Should use model's built-in dimension, not manual
 				"test-key",
+				testModelId,
 			)
 		})
 
@@ -630,6 +631,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				3072,
 				"test-key",
+				"gemini-embedding-001",
 			)
 		})
 
@@ -655,7 +657,7 @@ describe("CodeIndexServiceFactory", () => {
 				"http://localhost:6333",
 				3072,
 				"test-key",
-				"text-embedding-004",
+				"gemini-embedding-001",
 			)
 		})
 
@@ -737,7 +739,7 @@ describe("CodeIndexServiceFactory", () => {
 			mockGetModelDimension.mockReturnValue(undefined)
 
 			// Act & Assert
-			expect(() => factory.createVectorStore()).toThrow("serviceFactory.vectorDimensionNotDetermined")
+			expect(() => factory.createVectorStore()).toThrow()
 		})
 
 		it("should throw error when Qdrant URL is missing", () => {

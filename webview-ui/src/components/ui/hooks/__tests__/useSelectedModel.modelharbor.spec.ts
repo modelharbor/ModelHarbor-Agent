@@ -12,14 +12,14 @@ vi.mock("../useRouterModels", () => ({
 			unbound: {},
 			litellm: {},
 			modelharbor: {
-				"deepseek/deepseek-v3-0324": {
+				"qwen/qwen3-235b-a22b-instruct-2507": {
 					maxTokens: 8192,
 					contextWindow: 163840,
 					supportsImages: false,
 					supportsPromptCache: false,
 					inputPrice: 0.6,
 					outputPrice: 1.5,
-					description: "DeepSeek V3 model with advanced coding and reasoning capabilities.",
+					description: "Qwen3-235b-a22b-instruct-2507 model with advanced reasoning capabilities.",
 				},
 				"qwen/qwen3-32b": {
 					maxTokens: 8192,
@@ -75,7 +75,7 @@ describe("useSelectedModel - ModelHarbor", () => {
 
 		const { result } = renderHook(() => useSelectedModel(apiConfiguration))
 
-		expect(result.current.id).toBe("deepseek/deepseek-v3-0324")
+		expect(result.current.id).toBe("qwen/qwen3-235b-a22b-instruct-2507")
 		expect(result.current.info).toBeDefined()
 		expect(result.current.info?.maxTokens).toBe(8192)
 		expect(result.current.info?.contextWindow).toBe(163840)
@@ -117,7 +117,7 @@ describe("useSelectedModel - ModelHarbor", () => {
 
 		const { result } = renderHook(() => useSelectedModel(apiConfiguration))
 
-		expect(result.current.id).toBe("deepseek/deepseek-v3-0324")
+		expect(result.current.id).toBe("qwen/qwen3-235b-a22b-instruct-2507")
 		expect(result.current.info).toBeDefined()
 		expect(result.current.info?.maxTokens).toBe(8192)
 	})

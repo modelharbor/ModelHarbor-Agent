@@ -365,7 +365,7 @@ describe("useSelectedModel", () => {
 			const { result } = renderHook(() => useSelectedModel(), { wrapper })
 
 			expect(result.current.provider).toBe("modelharbor")
-			expect(result.current.id).toBe("deepseek/deepseek-v3-0324")
+			expect(result.current.id).toBe("qwen/qwen3-235b-a22b-instruct-2507")
 			expect(result.current.info).toBeUndefined()
 		})
 	})
@@ -452,14 +452,14 @@ describe("useSelectedModel", () => {
 					unbound: {},
 					litellm: {},
 					modelharbor: {
-						"deepseek/deepseek-v3-0324": {
+						"qwen/qwen3-235b-a22b-instruct-2507": {
 							maxTokens: 8192,
 							contextWindow: 163840,
 							supportsImages: false,
 							supportsPromptCache: false,
 							inputPrice: 0.6,
 							outputPrice: 1.5,
-							description: "DeepSeek V3 model with advanced coding and reasoning capabilities.",
+							description: "Qwen3-235b-a22b-instruct-2507 model with advanced reasoning capabilities.",
 						},
 						"anthropic/claude-sonnet-4": {
 							maxTokens: 8192,
@@ -510,14 +510,14 @@ describe("useSelectedModel", () => {
 					unbound: {},
 					litellm: {},
 					modelharbor: {
-						"deepseek/deepseek-v3-0324": {
+						"qwen/qwen3-235b-a22b-instruct-2507": {
 							maxTokens: 8192,
 							contextWindow: 163840,
 							supportsImages: false,
 							supportsPromptCache: false,
 							inputPrice: 0.6,
 							outputPrice: 1.5,
-							description: "DeepSeek V3 model with advanced coding and reasoning capabilities.",
+							description: "Qwen3-235b-a22b-instruct-2507 model with advanced reasoning capabilities.",
 						},
 					},
 				},
@@ -539,7 +539,7 @@ describe("useSelectedModel", () => {
 			const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper })
 
 			expect(result.current.provider).toBe("modelharbor")
-			expect(result.current.id).toBe("deepseek/deepseek-v3-0324") // Default model
+			expect(result.current.id).toBe("qwen/qwen3-235b-a22b-instruct-2507") // Default model
 			expect(result.current.info).toBeDefined()
 			expect(result.current.info?.maxTokens).toBe(8192)
 			expect(result.current.info?.contextWindow).toBe(163840)
@@ -578,7 +578,7 @@ describe("useSelectedModel", () => {
 
 			expect(result.current.provider).toBe("modelharbor")
 			// When model is not found, it falls back to default model
-			expect(result.current.id).toBe("deepseek/deepseek-v3-0324") // Default model
+			expect(result.current.id).toBe("qwen/qwen3-235b-a22b-instruct-2507") // Default model
 			expect(result.current.info).toBeUndefined()
 		})
 	})

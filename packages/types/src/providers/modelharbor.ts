@@ -393,7 +393,7 @@ export const modelHarborModels = new Proxy({} as Record<string, ModelInfo>, {
 
 export type ModelHarborModelId = string
 
-export const modelHarborDefaultModelId: ModelHarborModelId = "deepseek/deepseek-v3-0324"
+export const modelHarborDefaultModelId: ModelHarborModelId = "qwen/qwen3-235b-a22b-instruct-2507"
 
 // Initialize models cache on module load only in Node.js environment (extension host)
 // In webview/browser environments, models are fetched via message passing
