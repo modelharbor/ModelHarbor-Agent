@@ -44,7 +44,7 @@ export const PROVIDERS = [
 		{ value: "vertex", label: "GCP Vertex AI" },
 		{ value: "bedrock", label: "Amazon Bedrock" },
 		{ value: "glama", label: "Glama" },
-		{ value: "vscode-lm", label: "VS Code LM API" },
+		// { value: "vscode-lm", label: "VS Code LM API" },
 		{ value: "mistral", label: "Mistral" },
 		{ value: "lmstudio", label: "LM Studio" },
 		{ value: "ollama", label: "Ollama" },
@@ -53,7 +53,7 @@ export const PROVIDERS = [
 		{ value: "human-relay", label: "Human Relay" },
 		{ value: "xai", label: "xAI (Grok)" },
 		{ value: "groq", label: "Groq" },
-		{ value: "chutes", label: "Chutes AI" },
+		// { value: "chutes", label: "Chutes AI" },
 		{ value: "litellm", label: "LiteLLM" },
 	].sort((a, b) => a.label.localeCompare(b.label)),
 ]

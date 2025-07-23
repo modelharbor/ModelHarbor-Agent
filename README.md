@@ -1,210 +1,99 @@
-<div align="center">
-<sub>
+# ModelHarbor
 
-<b>English</b> • [Català](locales/ca/README.md) • [Deutsch](locales/de/README.md) • [Español](locales/es/README.md) • [Français](locales/fr/README.md) • [हिंदी](locales/hi/README.md) • [Bahasa Indonesia](locales/id/README.md) • [Italiano](locales/it/README.md) • [日本語](locales/ja/README.md)
+## [TH]
 
-</sub>©
-<sub>
+### ModelHarbor คืออะไร ❓
 
-[한국어](locales/ko/README.md) • [Nederlands](locales/nl/README.md) • [Polski](locales/pl/README.md) • [Português (BR)](locales/pt-BR/README.md) • [Русский](locales/ru/README.md) • [Türkçe](locales/tr/README.md) • [Tiếng Việt](locales/vi/README.md) • [简体中文](locales/zh-CN/README.md) • [繁體中文](locales/zh-TW/README.md)
+ModelHarbor คือผู้ให้บริการ AI Inference สัญชาติไทย ที่รวบรวม front-tier AI Models เช่น Deepseek, Kimi K2, Qwen3 235B, และ Qwen3 Coder และอีกหลากหลายโมเดลคุณภาพสูง ให้ใช้งานง่ายผ่าน API. เราเป็นผู้พัฒนา ModelHarbor Agent ซึ่งเป็น Extension สำหรับ Visual Studio Code ที่ช่วยให้สามารถใช้งาน Large Language Model ได้โดยตรงบน Code Editor ผ่านการเชื่อมต่อ API ของเรา.
 
-</sub>
-</div>
-<br>
-<div align="center">
-  <h1>ModelHarbor Agent</h1>
-  <p align="center">
-  <img src="https://media.githubusercontent.com/media/modelharbor/ModelHarbor-Agent/refs/heads/main/src/assets/docs/demo.gif" width="100%" />
-  </p>
-  <p>Connect with developers, contribute ideas, and stay ahead with the latest AI-powered coding tools.</p>
-  
-</div>
-<br>
-<br>
+### เกี่ยวกับเรา
 
-<div align="center">
+ModelHarbor ก่อตั้งโดยบริษัท นิวเทคโนโลยี่ อินฟอร์เมชั่น จำกัด (NTI) ซึ่งเป็นบริษัทที่ให้บริการ IT Solution ครบวงจรมามากกว่า 30 ปี. ภารกิจของเราคือการเปลี่ยนแปลงขั้นตอนการพัฒนาของคุณด้วยบริการและเครื่องมือใช้งานปัญญาประดิษฐ์ชั้นนำ. วิสัยทัศน์ของเราคือการมอบบริการด้าน IT ที่มีคุณภาพสูงสุดผ่านทีมงานที่มีประสบการณ์และการจัดการที่เป็นมาตรฐาน.
 
-<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.modelharbor-agent" target="_blank"><img src="https://img.shields.io/badge/Download%20on%20VS%20Marketplace-blue?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="Download on VS Marketplace"></a>
-<a href="https://marketplace.visualstudio.com/items?itemName=modelharbor.modelharbor-agent&ssr=false#review-details" target="_blank"><img src="https://img.shields.io/badge/Rate%20%26%20Review-green?style=for-the-badge" alt="Rate & Review"></a>
-<a href="https://www.modelharbor.com" target="_blank"><img src="https://img.shields.io/badge/Documentation-6B46C1?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Documentation"></a>
+### ModelHarbor Agent: AI Coding Agent ใน Visual Studio Code
 
-</div>
+ModelHarbor Agent เป็นเครื่องมือ AI Coding Agent สัญชาติไทยที่ให้คุณใช้งานบน Visual Studio Code เพื่อเชื่อมต่อกับ API ของ ModelHarbor ได้โดยตรง. Agent นี้ช่วยให้นักพัฒนาสามารถพัฒนาโค้ดได้เร็วขึ้น, ลดภาระการจำ syntax และช่วยงานได้หลายอย่าง ไม่ว่าจะเป็นการหา Error, สร้างโค้ด, วางโครงสร้างโปรเจค, และ Debug ผ่านคำสั่งที่เป็นภาษามนุษย์.
 
-**ModelHarbor Agent** is an AI-powered **autonomous coding agent** that lives in your editor. It can:
+คุณสามารถทดลองใช้งานได้ง่ายๆ เพียงล็อกอินด้วยบัญชี Gmail บนเว็บไซต์ modelharbor.com เพื่อรับเครดิตใช้งานฟรี และหากรีวิวแอปนี้ก็จะได้รับเครดิตเพิ่มเติมเช่นกัน.
 
-- Communicate in natural language
-- Read and write files directly in your workspace
-- Run terminal commands
-- Automate browser actions
-- Integrate with any OpenAI-compatible or custom API/model
-- Adapt its “personality” and capabilities through **Custom Modes**
+### การชำระเงิน
 
-Whether you’re seeking a flexible coding partner, a system architect, or specialized roles like a QA engineer or product manager, ModelHarbor Agent can help you build software more efficiently.
+สำหรับผู้ใช้งานในประเทศไทย ทางบริษัทรับช่องทางการชำระทั้งบัตรเครดิต (USD และ THB) และช่องทางพร้อมเพย์ (PromptPay). นอกจากนี้ เรายังเข้าร่วมบริการ e-Tax invoice สำหรับใช้ลดหย่อนภาษีด้วย.
 
----
+### โปรโมชั่น
 
-## 🎉 ModelHarbor Agent 3.23 Released
+**การอบรมเครื่องมือโปรแกรมมิ่งสำหรับสถาบันอุดมศึกษา**
+เรามีการจัดอบรมฟรีสำหรับสถาบันอุดมศึกษาที่ใช้ ModelHarbor Agent ซึ่งเป็นเครื่องมือช่วยเขียนโปรแกรมโอเพนซอร์สบน Visual Studio Code.
 
-ModelHarbor Agent 3.23 brings powerful new features and significant improvements to enhance your development workflow!
+- **สำหรับผู้เข้าอบรม:** นักศึกษาที่เข้าร่วมการอบรมจะได้รับเครดิตมูลค่า 100 บาทต่อคน.
+- **สำหรับนักศึกษาในสาขา:** นักศึกษาในสาขาเดียวกันที่ไม่ได้เข้าอบรมจะได้รับเครดิตมูลค่า 50 บาทต่อคน ตามจำนวนผู้เข้าอบรม.
 
-- **Codebase Indexing Graduated from Experimental** - Full codebase indexing is now stable and ready for production use with improved search and context understanding.
-- **New Todo List Feature** - Keep your tasks on track with integrated todo management that helps you stay organized and focused on your development goals.
+**หลักสูตรการอบรมที่มีให้เลือก:**
+
+- การพัฒนาด้วย Python
+- การพัฒนาด้วย .NET
+- Frontend ด้วย Vue.js
+- การเชื่อมต่อฐานข้อมูล (MySQL, PostgreSQL, Supabase)
+
+### 🚀 โครงการสำหรับนักศึกษา: University AI Club Sponsorship
+
+ModelHarbor ขอเชิญชวนนิสิตนักศึกษาผู้มี Passion ในสาย AI ทั่วประเทศ เข้าร่วมโครงการ "ModelHarbor University AI Club Sponsorship" เพื่อก่อตั้งหรือเป็นประธานชมรมปัญญาประดิษฐ์ (AI Club) ในมหาวิทยาลัย.
+
+**สิ่งที่ผู้เข้าร่วมโครงการจะได้รับ:**
+
+- ✅ เครดิตใช้ AI Models ระดับโปรฯ ภายในชมรม ฟรี! (มูลค่า 120,000 บาท)
+- ✅ รับคำปรึกษา (Mentor) โดยตรงจากทีมงาน ModelHarbor
+- ✅ โอกาสสร้าง Portfolio ที่โดดเด่นกว่าใคร
+- ✅ พัฒนาทักษะผู้นำและการบริหารจัดการ
+
+**สมัครได้แล้ววันนี้ - 31 สิงหาคม 2568**
 
 ---
 
-## What Can ModelHarbor Agent Do?
+## [EN]
 
-- 🚀 **Generate Code** from natural language descriptions
-- 🔧 **Refactor & Debug** existing code
-- 📝 **Write & Update** documentation
-- 🤔 **Answer Questions** about your codebase
-- 🔄 **Automate** repetitive tasks
-- 🏗️ **Create** new files and projects
+### What is ModelHarbor?
 
-## Quick Start
+ModelHarbor is a Thai-based AI Inference Service provider that offers a collection of front-tier AI models like DeepSeek, Kimi K2, Qwen3 235B, and Qwen3 Coder through an easy-to-use API. We also developed the ModelHarbor Agent, a Visual Studio Code extension that allows direct use of Large Language Models within your code editor by connecting to our API.
 
-1. [Install Roo Code](https://docs.roocode.com/getting-started/installing)
-2. [Connect Your AI Provider](https://docs.roocode.com/getting-started/connecting-api-provider)
-3. [Try Your First Task](https://docs.roocode.com/getting-started/your-first-task)
+### About Us
 
-## Key Features
+ModelHarbor is founded by New Technology Information Co., Ltd. (NTI), a company with over 30 years of experience providing comprehensive IT solutions. Our mission is to transform your development workflow with our flagship AI inference services and tools. Our vision is to deliver the highest quality IT services through experienced teams and standardized management.
 
-### Multiple Modes
+### ModelHarbor Agent: AI Coding Agent for VS Code
 
-Roo Code adapts to your needs with specialized [modes](https://docs.roocode.com/basic-usage/using-modes):
+The ModelHarbor Agent is our AI tool for Visual Studio Code, enabling a direct connection to the ModelHarbor API. This agent helps developers code faster by reducing the need to memorize syntax and assisting with various tasks such as error detection, code generation, project structuring, and debugging using natural language commands.
 
-- **Code Mode:** For general-purpose coding tasks
-- **Architect Mode:** For planning and technical leadership
-- **Ask Mode:** For answering questions and providing information
-- **Debug Mode:** For systematic problem diagnosis
-- **[Custom Modes](https://docs.roocode.com/advanced-usage/custom-modes):** Create unlimited specialized personas for security auditing, performance optimization, documentation, or any other task
+You can try it out easily by logging in with your Gmail account to get free trial credits. You will also receive additional credits if you review the app.
 
-### Smart Tools
+### Payment
 
-Roo Code comes with powerful [tools](https://docs.roocode.com/basic-usage/how-tools-work) that can:
+For users in Thailand, we accept payments via credit card (in both USD and THB) and PromptPay. We also provide e-Tax invoice services for tax deduction purposes.
 
-- Read and write files in your project
-- Execute commands in your VS Code terminal
-- Control a web browser
-- Use external tools via [MCP (Model Context Protocol)](https://docs.roocode.com/advanced-usage/mcp)
+### Promotions
 
-MCP extends Roo Code's capabilities by allowing you to add unlimited custom tools. Integrate with external APIs, connect to databases, or create specialized development tools - MCP provides the framework to expand Roo Code's functionality to meet your specific needs.
+**Programming Tools Training for Educational Institutions**
+We offer free training for higher education institutions using the ModelHarbor Agent, an open-source programming assistant tool on Visual Studio Code.
 
-### Customization
+- **For Training Participants:** Students who attend the training will receive 100 THB in credits.
+- **For Department Students:** Students in the same department who do not attend will receive 50 THB in credits per person, based on the number of training participants.
 
-Make Roo Code work your way with:
+**Available Training Programs:**
 
-- [Custom Instructions](https://docs.roocode.com/advanced-usage/custom-instructions) for personalized behavior
-- [Custom Modes](https://docs.roocode.com/advanced-usage/custom-modes) for specialized tasks
-- [Local Models](https://docs.roocode.com/advanced-usage/local-models) for offline use
-- [Auto-Approval Settings](https://docs.roocode.com/advanced-usage/auto-approving-actions) for faster workflows
+- Python Development
+- .NET Development
+- Vue.js Frontend
+- Database Integration (MySQL, PostgreSQL, Supabase)
 
-## Resources
+### 🚀 Student Program: University AI Club Sponsorship
 
-### Documentation
+ModelHarbor invites university students with a passion for AI across the nation to join the "ModelHarbor University AI Club Sponsorship" program. We are looking for founders or presidents of university AI Clubs.
 
-- [Basic Usage Guide](https://docs.roocode.com/basic-usage/the-chat-interface)
-- [Advanced Features](https://docs.roocode.com/advanced-usage/auto-approving-actions)
-- [Frequently Asked Questions](https://docs.roocode.com/faq)
+**What participants will receive:**
 
-### Community
+- ✅ Free credits (valued at 120,000 THB) to use professional-grade AI Models within the club.
+- ✅ Direct mentorship from the ModelHarbor team.
+- ✅ The opportunity to build a standout portfolio.
+- ✅ Development of leadership and management skills.
 
-- **Discord:** [Join our Discord server](https://discord.gg/roocode) for real-time help and discussions
-- **Reddit:** [Visit our subreddit](https://www.reddit.com/r/RooCode) to share experiences and tips
-- **GitHub:** Report [issues](https://github.com/RooCodeInc/Roo-Code/issues) or request [features](https://github.com/RooCodeInc/Roo-Code/discussions/categories/feature-requests?discussions_q=is%3Aopen+category%3A%22Feature+Requests%22+sort%3Atop)
-
----
-
-## Local Setup & Development
-
-1. **Clone** the repo:
-
-```sh
-git clone https://github.com/RooCodeInc/Roo-Code.git
-```
-
-2. **Install dependencies**:
-
-```sh
-pnpm install
-```
-
-3. **Run the extension**:
-
-There are several ways to run the Roo Code extension:
-
-### Development Mode (F5)
-
-For active development, use VSCode's built-in debugging:
-
-Press `F5` (or go to **Run** → **Start Debugging**) in VSCode. This will open a new VSCode window with the Roo Code extension running.
-
-- Changes to the webview will appear immediately.
-- Changes to the core extension will also hot reload automatically.
-
-### Automated VSIX Installation
-
-To build and install the extension as a VSIX package directly into VSCode:
-
-```sh
-pnpm install:vsix [-y] [--editor=<command>]
-```
-
-This command will:
-
-- Ask which editor command to use (code/cursor/code-insiders) - defaults to 'code'
-- Uninstall any existing version of the extension.
-- Build the latest VSIX package.
-- Install the newly built VSIX.
-- Prompt you to restart VS Code for changes to take effect.
-
-Options:
-
-- `-y`: Skip all confirmation prompts and use defaults
-- `--editor=<command>`: Specify the editor command (e.g., `--editor=cursor` or `--editor=code-insiders`)
-
-### Manual VSIX Installation
-
-If you prefer to install the VSIX package manually:
-
-1.  First, build the VSIX package:
-    ```sh
-    pnpm vsix
-    ```
-2.  A `.vsix` file will be generated in the `bin/` directory (e.g., `bin/modelharbor-agent-<version>.vsix`).
-3.  Install it manually using the VSCode CLI:
-    ```sh
-    code --install-extension bin/modelharbor-agent-<version>.vsix
-    ```
-
----
-
-We use [changesets](https://github.com/changesets/changesets) for versioning and publishing. Check our `CHANGELOG.md` for release notes.
-
----
-
-## Disclaimer
-
-**Please note** that Roo Code, Inc does **not** make any representations or warranties regarding any code, models, or other tools provided or made available in connection with Roo Code, any associated third-party tools, or any resulting outputs. You assume **all risks** associated with the use of any such tools or outputs; such tools are provided on an **"AS IS"** and **"AS AVAILABLE"** basis. Such risks may include, without limitation, intellectual property infringement, cyber vulnerabilities or attacks, bias, inaccuracies, errors, defects, viruses, downtime, property loss or damage, and/or personal injury. You are solely responsible for your use of any such tools or outputs (including, without limitation, the legality, appropriateness, and results thereof).
-
----
-
-## Contributing
-
-We love community contributions! Get started by reading our [CONTRIBUTING.md](CONTRIBUTING.md).
-
----
-
-## Contributors
-
-Thanks to all our contributors who have helped make Roo Code better!
-
-<!-- START CONTRIBUTORS SECTION - AUTO-GENERATED, DO NOT EDIT MANUALLY -->
-
-## License
-
-[Apache 2.0 © 2025 ModelHarbor Agent, Inc.](./LICENSE)
-
----
-
-**Enjoy ModelHarbor Agent!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Facebook](https://www.facebook.com/modelharbor/) or [X](https://x.com/modelharbor). Happy coding!
+**Applications are open from now until August 31, 2025.**
