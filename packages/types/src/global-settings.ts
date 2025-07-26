@@ -186,6 +186,7 @@ export type SecretState = Pick<
 	| "codebaseIndexGeminiApiKey"
 	| "codeIndexModelHarborApiKey"
 	| "codebaseIndexMistralApiKey"
+	| "huggingFaceApiKey"
 >
 
 export const SECRET_STATE_KEYS = keysOf<SecretState>()([
@@ -193,7 +194,6 @@ export const SECRET_STATE_KEYS = keysOf<SecretState>()([
 	"glamaApiKey",
 	"openRouterApiKey",
 	"awsAccessKey",
-	"awsApiKey",
 	"awsSecretKey",
 	"awsSessionToken",
 	"openAiApiKey",

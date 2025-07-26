@@ -1350,7 +1350,7 @@ describe("ChatView - Version Indicator Tests", () => {
 describe("ChatView - RooCloudCTA Display Tests", () => {
 	beforeEach(() => vi.clearAllMocks())
 
-	it("does not show RooCloudCTA when user is authenticated to Cloud", () => {
+	it("shows RooTips when user is authenticated to Cloud", () => {
 		const { queryByTestId, getByTestId } = renderChatView()
 
 		// Hydrate state with user authenticated to cloud and some task history
@@ -1366,12 +1366,12 @@ describe("ChatView - RooCloudCTA Display Tests", () => {
 			clineMessages: [], // No active task
 		})
 
-		// Should not show RooCloudCTA but should show RooTips
+		// Should show RooTips and not RooCloudCTA
 		expect(queryByTestId("roo-cloud-cta")).not.toBeInTheDocument()
 		expect(getByTestId("roo-tips")).toBeInTheDocument()
 	})
 
-	it("does not show RooCloudCTA when user has only run 3 tasks in their history", () => {
+	it("shows RooTips when user has only run 3 tasks in their history", () => {
 		const { queryByTestId, getByTestId } = renderChatView()
 
 		// Hydrate state with user not authenticated and only 3 tasks in history
@@ -1385,12 +1385,12 @@ describe("ChatView - RooCloudCTA Display Tests", () => {
 			clineMessages: [], // No active task
 		})
 
-		// Should not show RooCloudCTA but should show RooTips
+		// Should show RooTips and not RooCloudCTA
 		expect(queryByTestId("roo-cloud-cta")).not.toBeInTheDocument()
 		expect(getByTestId("roo-tips")).toBeInTheDocument()
 	})
 
-	it("shows RooCloudCTA when user is not authenticated and has run 4 or more tasks", async () => {
+	it("shows RooTips when user is not authenticated and has run 4 or more tasks", async () => {
 		const { getByTestId, queryByTestId } = renderChatView()
 
 		// Hydrate state with user not authenticated and 4+ tasks in history
@@ -1405,14 +1405,14 @@ describe("ChatView - RooCloudCTA Display Tests", () => {
 			clineMessages: [], // No active task
 		})
 
-		// Should show RooCloudCTA and not RooTips
+		// Should show RooTips and not RooCloudCTA
 		await waitFor(() => {
-			expect(getByTestId("roo-cloud-cta")).toBeInTheDocument()
+			expect(getByTestId("roo-tips")).toBeInTheDocument()
 		})
-		expect(queryByTestId("roo-tips")).not.toBeInTheDocument()
+		expect(queryByTestId("roo-cloud-cta")).not.toBeInTheDocument()
 	})
 
-	it("shows RooCloudCTA when user is not authenticated and has run 5 tasks", async () => {
+	it("shows RooTips when user is not authenticated and has run 5 tasks", async () => {
 		const { getByTestId, queryByTestId } = renderChatView()
 
 		// Hydrate state with user not authenticated and 5 tasks in history
@@ -1428,11 +1428,11 @@ describe("ChatView - RooCloudCTA Display Tests", () => {
 			clineMessages: [], // No active task
 		})
 
-		// Should show RooCloudCTA and not RooTips
+		// Should show RooTips and not RooCloudCTA
 		await waitFor(() => {
-			expect(getByTestId("roo-cloud-cta")).toBeInTheDocument()
+			expect(getByTestId("roo-tips")).toBeInTheDocument()
 		})
-		expect(queryByTestId("roo-tips")).not.toBeInTheDocument()
+		expect(queryByTestId("roo-cloud-cta")).not.toBeInTheDocument()
 	})
 
 	it("does not show RooCloudCTA when there is an active task (regardless of auth status)", async () => {
@@ -1468,7 +1468,7 @@ describe("ChatView - RooCloudCTA Display Tests", () => {
 		})
 	})
 
-	it("shows RooTips when user is authenticated (instead of RooCloudCTA)", () => {
+	it("shows RooTips when user is authenticated", () => {
 		const { queryByTestId, getByTestId } = renderChatView()
 
 		// Hydrate state with user authenticated to cloud
@@ -1483,12 +1483,12 @@ describe("ChatView - RooCloudCTA Display Tests", () => {
 			clineMessages: [], // No active task
 		})
 
-		// Should not show RooCloudCTA but should show RooTips
+		// Should show RooTips and not RooCloudCTA
 		expect(queryByTestId("roo-cloud-cta")).not.toBeInTheDocument()
 		expect(getByTestId("roo-tips")).toBeInTheDocument()
 	})
 
-	it("shows RooTips when user has fewer than 4 tasks (instead of RooCloudCTA)", () => {
+	it("shows RooTips when user has fewer than 4 tasks", () => {
 		const { queryByTestId, getByTestId } = renderChatView()
 
 		// Hydrate state with user not authenticated but fewer than 4 tasks
@@ -1502,7 +1502,7 @@ describe("ChatView - RooCloudCTA Display Tests", () => {
 			clineMessages: [], // No active task
 		})
 
-		// Should not show RooCloudCTA but should show RooTips
+		// Should show RooTips and not RooCloudCTA
 		expect(queryByTestId("roo-cloud-cta")).not.toBeInTheDocument()
 		expect(getByTestId("roo-tips")).toBeInTheDocument()
 	})
