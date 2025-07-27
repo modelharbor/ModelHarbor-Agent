@@ -349,5 +349,8 @@
 	},
 	"editMessage": {
 		"placeholder": "メッセージを編集..."
+	},
+	"command": {
+		"triggerDescription": "{{name}}コマンドをトリガー"
 	}
 }

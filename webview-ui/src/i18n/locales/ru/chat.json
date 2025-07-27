@@ -348,5 +348,8 @@
 	},
 	"editMessage": {
 		"placeholder": "Редактировать сообщение..."
+	},
+	"command": {
+		"triggerDescription": "Запустить команду {{name}}"
 	}
 }
