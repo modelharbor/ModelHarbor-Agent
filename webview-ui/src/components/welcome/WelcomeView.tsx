@@ -8,6 +8,8 @@ import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { validateApiConfiguration } from "@src/utils/validate"
 import { vscode } from "@src/utils/vscode"
 import { useAppTranslation } from "@src/i18n/TranslationContext"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@src/components/ui"
+import { getSortedLanguages } from "@roo/language"
 
 import ApiOptions from "../settings/ApiOptions"
 import { Tab, TabContent } from "../common/Tab"
@@ -15,7 +17,7 @@ import { Tab, TabContent } from "../common/Tab"
 import RooHero from "./RooHero"
 
 const WelcomeView = () => {
-	const { apiConfiguration, currentApiConfigName, setApiConfiguration, uriScheme } = useExtensionState()
+	const { apiConfiguration, currentApiConfigName, setApiConfiguration, uriScheme, language } = useExtensionState()
 	const { t } = useAppTranslation()
 	const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
 
@@ -61,7 +63,24 @@ const WelcomeView = () => {
 						{t("welcome:modelHarborFacebook")}
 					</VSCodeLink>
 				</p>
-
+				<div className="flex justify-center">
+					<Select
+						value={language}
+						onValueChange={(value) => vscode.postMessage({ type: "language", text: value })}>
+						<SelectTrigger className="w-40">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{getSortedLanguages().map(([code, name]) => (
+									<SelectItem key={code} value={code}>
+										{name}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</div>
 				<div className="mb-4">
 					<h4 className="mt-3 mb-2 text-center">{t("welcome:startCustom")}</h4>
 					<ApiOptions

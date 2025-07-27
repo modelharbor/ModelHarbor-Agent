@@ -1,0 +1,76 @@
+{
+	"errorBoundary": {
+		"title": "เกิดข้อผิดพลาดบางอย่าง",
+		"reportText": "โปรดช่วยเราปรับปรุงโดยรายงานข้อผิดพลาดนี้ที่",
+		"githubText": "หน้า GitHub Issues ของเรา",
+		"copyInstructions": "คัดลอกและวางข้อความข้อผิดพลาดต่อไปนี้เพื่อรวมไว้ในการส่งของคุณ:",
+		"errorStack": "Error Stack:",
+		"componentStack": "Component Stack:"
+	},
+	"answers": {
+		"yes": "ใช่",
+		"no": "ไม่",
+		"cancel": "ยกเลิก",
+		"remove": "ลบ",
+		"keep": "เก็บไว้"
+	},
+	"number_format": {
+		"thousand_suffix": "พัน",
+		"million_suffix": "ล้าน",
+		"billion_suffix": "พันล้าน"
+	},
+	"ui": {
+		"search_placeholder": "ค้นหา..."
+	},
+	"mermaid": {
+		"loading": "กำลังสร้างแผนภาพ mermaid...",
+		"render_error": "ไม่สามารถแสดงแผนภาพได้",
+		"buttons": {
+			"zoom": "ซูม",
+			"zoomIn": "ซูมเข้า",
+			"zoomOut": "ซูมออก",
+			"copy": "คัดลอก",
+			"save": "บันทึกรูปภาพ",
+			"viewCode": "ดูโค้ด",
+			"viewDiagram": "ดูแผนภาพ",
+			"close": "ปิด"
+		},
+		"modal": {
+			"codeTitle": "โค้ด Mermaid"
+		},
+		"tabs": {
+			"diagram": "แผนภาพ",
+			"code": "โค้ด"
+		},
+		"feedback": {
+			"imageCopied": "คัดลอกรูปภาพไปยังคลิปบอร์ดแล้ว",
+			"copyError": "เกิดข้อผิดพลาดในการคัดลอกรูปภาพ"
+		}
+	},
+	"errors": {
+		"share_no_active_task": "ไม่มีงานที่ใช้งานอยู่ให้แชร์",
+		"no_active_task": "ไม่มีงานที่ใช้งานอยู่",
+		"task_folder_not_found": "ไม่พบโฟลเดอร์งาน",
+		"open_chat_folder_failed": "ไม่สามารถเปิดโฟลเดอร์แชทได้"
+	},
+	"file": {
+		"errors": {
+			"invalidDataUri": "รูปแบบ data URI ไม่ถูกต้อง",
+			"copyingImage": "เกิดข้อผิดพลาดในการคัดลอกรูปภาพ: {{error}}",
+			"openingImage": "เกิดข้อผิดพลาดในการเปิดรูปภาพ: {{error}}",
+			"pathNotExists": "เส้นทางไม่มีอยู่: {{path}}",
+			"couldNotOpen": "ไม่สามารถเปิดไฟล์ได้: {{error}}",
+			"couldNotOpenGeneric": "ไม่สามารถเปิดไฟล์ได้!"
+		},
+		"success": {
+			"imageDataUriCopied": "คัดลอก image data URI ไปยังคลิปบอร์ดแล้ว"
+		}
+	},
+	"confirmation": {
+		"deleteMessage": "ลบข้อความ",
+		"deleteWarning": "การลบข้อความนี้จะลบข้อความที่ตามมาทั้งหมดในการสนทนา คุณต้องการดำเนินการต่อหรือไม่?",
+		"editMessage": "แก้ไขข้อความ",
+		"editWarning": "การแก้ไขข้อความนี้จะลบข้อความที่ตามมาทั้งหมดในการสนทนา คุณต้องการดำเนินการต่อหรือไม่?",
+		"proceed": "ดำเนินการต่อ"
+	}
+}
