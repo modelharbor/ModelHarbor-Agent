@@ -77,7 +77,12 @@
 			"stoppedWithReason": "Claude Code wurde mit Grund gestoppt: {{reason}}",
 			"apiKeyModelPlanMismatch": "API-Schlüssel und Abonnement-Pläne erlauben verschiedene Modelle. Stelle sicher, dass das ausgewählte Modell in deinem Plan enthalten ist."
 		},
-		"mode_import_failed": "Fehler beim Importieren des Modus: {{error}}"
+		"mode_import_failed": "Fehler beim Importieren des Modus: {{error}}",
+		"gemini": {
+			"generate_stream": "Fehler beim Generieren des Kontext-Streams von Gemini: {{error}}",
+			"generate_complete_prompt": "Fehler bei der Vervollständigung durch Gemini: {{error}}",
+			"sources": "Quellen:"
+		}
 	},
 	"warnings": {
 		"no_terminal_content": "Kein Terminal-Inhalt ausgewählt",
