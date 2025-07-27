@@ -119,7 +119,9 @@
 		"title": "Modes",
 		"marketplace": "Mode Marketplace",
 		"settings": "Mode Settings",
-		"description": "Specialized personas that tailor ModelHarbor's behavior."
+		"description": "Specialized personas that tailor ModelHarbor's behavior.",
+		"searchPlaceholder": "Search modes...",
+		"noResults": "No results found"
 	},
 	"enhancePromptDescription": "The 'Enhance Prompt' button helps improve your prompt by providing additional context, clarification, or rephrasing. Try typing a prompt in here and clicking the button again to see how it works.",
 	"addImages": "Add images to message",
@@ -276,9 +278,7 @@
 		"feature1": "<bold>Hugging Face Provider</bold>: Access tons of great open source models directly through the new Hugging Face provider with seamless integration and model selection.",
 		"feature2": "<bold>Inline Command Controls</bold>: New auto-approve and deny controls for command execution give you precise control over terminal operations with customizable permissions.",
 		"feature3": "<bold>AGENTS.md Rules Support</bold>: Adds support for a community standard AGENTS.md file in the root of the project.",
-		"hideButton": "Hide announcement",
-		"detailsDiscussLinks": "Get more details and discuss in <discordLink>Discord</discordLink> and <redditLink>Reddit</redditLink> 🚀",
-		"feature3": "<bold>Excel File Support & More</bold>: Added Excel (.xlsx) file support and numerous bug fixes and improvements!"
+		"hideButton": "Hide announcement"
 	},
 	"reasoning": {
 		"thinking": "Thinking",
