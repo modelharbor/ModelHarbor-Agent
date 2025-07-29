@@ -264,9 +264,9 @@
 		"title": "🎉 ModelHarbor Agent {{version}} Yayınlandı",
 		"description": "ModelHarbor Agent {{version}}, geliştirme iş akışınızı geliştirmek için güçlü yeni özellikler ve önemli iyileştirmeler getiriyor.",
 		"whatsNew": "Yenilikler",
-		"feature1": "<bold>Hugging Face Sağlayıcısı</bold>: Yeni Hugging Face sağlayıcısı aracılığıyla sorunsuz entegrasyon ve model seçimi ile tonlarca harika açık kaynak modeline doğrudan erişin.",
-		"feature2": "<bold>Satır İçi Komut Kontrolleri</bold>: Komut yürütme için yeni otomatik onay ve reddetme kontrolleri, özelleştirilebilir izinlerle terminal işlemleri üzerinde hassas kontrol sağlar.",
-		"feature3": "<bold>AGENTS.md Kuralları Desteği</bold>: Projenin kökünde topluluk standardı AGENTS.md dosyası için destek ekler.",
+		"feature1": "<bold>Mesaj Kuyruğu</bold>: Roo çalışırken birden fazla mesajı kuyruğa alın, iş akışınızı kesintisiz olarak planlamaya devam etmenizi sağlar.",
+		"feature2": "<bold>Özel Slash Komutları</bold>: Sık kullanılan promptlara ve iş akışlarına hızlı erişim için kişiselleştirilmiş slash komutları oluşturun, tam UI yönetimi ile.",
+		"feature3": "<bold>Gelişmiş Gemini Araçları</bold>: Yeni URL bağlamı ve Google Arama temellendirilmesi yetenekleri, Gemini modellerine gerçek zamanlı web bilgileri ve gelişmiş araştırma yetenekleri sağlar.",
 		"hideButton": "Duyuruyu gizle",
 		"detailsDiscussLinks": "<discordLink>Discord</discordLink> ve <redditLink>Reddit</redditLink>'te daha fazla ayrıntı alın ve tartışmalara katılın 🚀"
 	},

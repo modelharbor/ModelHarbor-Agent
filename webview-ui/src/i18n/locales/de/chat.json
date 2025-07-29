@@ -263,9 +263,9 @@
 		"title": "🎉 ModelHarbor Agent {{version}} veröffentlicht",
 		"description": "ModelHarbor Agent {{version}} bringt wichtige neue Funktionen und Verbesserungen basierend auf deinem Feedback.",
 		"whatsNew": "Was ist neu",
-		"feature1": "<bold>Hugging Face Provider</bold>: Greife direkt über den neuen Hugging Face Provider auf viele großartige Open-Source-Modelle zu mit nahtloser Integration und Modellauswahl.",
-		"feature2": "<bold>Inline-Befehlssteuerung</bold>: Neue Auto-Genehmigung und Verweigerungssteuerung für die Befehlsausführung geben dir präzise Kontrolle über Terminal-Operationen mit anpassbaren Berechtigungen.",
-		"feature3": "<bold>AGENTS.md Regeln-Unterstützung</bold>: Fügt Unterstützung für eine Community-Standard AGENTS.md-Datei im Projektstamm hinzu.",
+		"feature1": "<bold>Nachrichten-Warteschlange</bold>: Stelle mehrere Nachrichten in die Warteschlange, während Roo arbeitet, damit du deinen Workflow ohne Unterbrechung weiter planen kannst.",
+		"feature2": "<bold>Benutzerdefinierte Slash-Befehle</bold>: Erstelle personalisierte Slash-Befehle für schnellen Zugriff auf häufig verwendete Prompts und Workflows mit vollständiger UI-Verwaltung.",
+		"feature3": "<bold>Erweiterte Gemini-Tools</bold>: Neue URL-Kontext- und Google-Such-Grundlagen-Funktionen bieten Gemini-Modellen Echtzeit-Web-Informationen und erweiterte Recherche-Fähigkeiten.",
 		"hideButton": "Ankündigung ausblenden",
 		"detailsDiscussLinks": "Weitere Details und Diskussionen unter <discordLink>Modelharbor.com</discordLink>"
 	},
