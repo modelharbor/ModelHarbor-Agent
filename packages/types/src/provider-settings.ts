@@ -25,6 +25,7 @@ export const providerNames = [
 	"mistral",
 	"moonshot",
 	"deepseek",
+	"doubao",
 	"unbound",
 	"requesty",
 	"human-relay",
@@ -196,6 +197,11 @@ const deepSeekSchema = apiModelIdProviderModelSchema.extend({
 	deepSeekApiKey: z.string().optional(),
 })
 
+const doubaoSchema = apiModelIdProviderModelSchema.extend({
+	doubaoBaseUrl: z.string().optional(),
+	doubaoApiKey: z.string().optional(),
+})
+
 const moonshotSchema = apiModelIdProviderModelSchema.extend({
 	moonshotBaseUrl: z
 		.union([z.literal("https://api.moonshot.ai/v1"), z.literal("https://api.moonshot.cn/v1")])
@@ -274,6 +280,7 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	openAiNativeSchema.merge(z.object({ apiProvider: z.literal("openai-native") })),
 	mistralSchema.merge(z.object({ apiProvider: z.literal("mistral") })),
 	deepSeekSchema.merge(z.object({ apiProvider: z.literal("deepseek") })),
+	doubaoSchema.merge(z.object({ apiProvider: z.literal("doubao") })),
 	moonshotSchema.merge(z.object({ apiProvider: z.literal("moonshot") })),
 	unboundSchema.merge(z.object({ apiProvider: z.literal("unbound") })),
 	requestySchema.merge(z.object({ apiProvider: z.literal("requesty") })),
@@ -306,6 +313,7 @@ export const providerSettingsSchema = z.object({
 	...openAiNativeSchema.shape,
 	...mistralSchema.shape,
 	...deepSeekSchema.shape,
+	...doubaoSchema.shape,
 	...moonshotSchema.shape,
 	...unboundSchema.shape,
 	...requestySchema.shape,
