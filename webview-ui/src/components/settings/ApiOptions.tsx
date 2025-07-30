@@ -18,14 +18,14 @@ import {
 	claudeCodeDefaultModelId,
 	geminiDefaultModelId,
 	deepSeekDefaultModelId,
-	mistralDefaultModelId,
 	moonshotDefaultModelId,
+	mistralDefaultModelId,
 	xaiDefaultModelId,
 	groqDefaultModelId,
 	chutesDefaultModelId,
 	bedrockDefaultModelId,
 	vertexDefaultModelId,
-	modelHarborDefaultModelId,
+	sambaNovaDefaultModelId,
 } from "@roo-code/types"
 
 import { vscode } from "@src/utils/vscode"
@@ -64,17 +64,17 @@ import {
 	LMStudio,
 	LiteLLM,
 	Mistral,
+	Moonshot,
 	Ollama,
 	OpenAI,
 	OpenAICompatible,
 	OpenRouter,
 	Requesty,
+	SambaNova,
 	Unbound,
 	Vertex,
 	VSCodeLM,
 	XAI,
-	ModelHarbor,
-	Moonshot,
 } from "./providers"
 
 import { MODELS_BY_PROVIDER, PROVIDERS } from "./constants"
@@ -287,7 +287,6 @@ const ApiOptions = ({
 				unbound: { field: "unboundModelId", default: unboundDefaultModelId },
 				requesty: { field: "requestyModelId", default: requestyDefaultModelId },
 				litellm: { field: "litellmModelId", default: litellmDefaultModelId },
-				modelharbor: { field: "modelharborModelId", default: modelHarborDefaultModelId },
 				anthropic: { field: "apiModelId", default: anthropicDefaultModelId },
 				"claude-code": { field: "apiModelId", default: claudeCodeDefaultModelId },
 				"openai-native": { field: "apiModelId", default: openAiNativeDefaultModelId },
@@ -300,6 +299,7 @@ const ApiOptions = ({
 				chutes: { field: "apiModelId", default: chutesDefaultModelId },
 				bedrock: { field: "apiModelId", default: bedrockDefaultModelId },
 				vertex: { field: "apiModelId", default: vertexDefaultModelId },
+				sambanova: { field: "apiModelId", default: sambaNovaDefaultModelId },
 				openai: { field: "openAiModelId" },
 				ollama: { field: "ollamaModelId" },
 				lmstudio: { field: "lmStudioModelId" },
@@ -329,8 +329,15 @@ const ApiOptions = ({
 			return undefined
 		}
 
+		// Get the URL slug - use custom mapping if available, otherwise use the provider key.
+		const slugs: Record<string, string> = {
+			"openai-native": "openai",
+			openai: "openai-compatible",
+		}
+
+		const slug = slugs[selectedProvider] || selectedProvider
 		return {
-			url: buildDocLink("", "provider_docs"),
+			url: buildDocLink(`providers/${slug}`, "provider_docs"),
 			name,
 		}
 	}, [selectedProvider])
@@ -505,12 +512,8 @@ const ApiOptions = ({
 				/>
 			)}
 
-			{selectedProvider === "modelharbor" && (
-				<ModelHarbor
-					apiConfiguration={apiConfiguration}
-					setApiConfigurationField={setApiConfigurationField}
-					organizationAllowList={organizationAllowList}
-				/>
+			{selectedProvider === "sambanova" && (
+				<SambaNova apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
 			)}
 
 			{selectedProvider === "human-relay" && (
@@ -524,7 +527,7 @@ const ApiOptions = ({
 				</>
 			)}
 
-			{selectedProviderModels.length > 0 && selectedProvider !== "modelharbor" && (
+			{selectedProviderModels.length > 0 && (
 				<>
 					<div>
 						<label className="block font-medium mb-1">{t("settings:providers.model")}</label>
