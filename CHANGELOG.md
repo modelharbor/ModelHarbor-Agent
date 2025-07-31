@@ -1,5 +1,11 @@
 # Roo Code Changelog
 
+## 3.25.4
+
+### Patch Changes
+
+-   - feat: add SambaNova provider integration (#6077 by @snova-jorgep, PR by @snova-jorgep)
+
 ## [3.25.3] - 2025-07-30
 
 - Allow queueing messages with images
