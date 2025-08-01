@@ -20,7 +20,8 @@
 		"billion_suffix": "พันล้าน"
 	},
 	"ui": {
-		"search_placeholder": "ค้นหา..."
+		"search_placeholder": "ค้นหา...",
+		"no_results": "ไม่พบผลลัพธ์"
 	},
 	"mermaid": {
 		"loading": "กำลังสร้างแผนภาพ mermaid...",

@@ -35,6 +35,10 @@
 		},
 		"none": "ไม่มี"
 	},
+	"sections": {
+		"organizationMcps": "{{organization}} MCPs",
+		"marketplace": "ตลาด"
+	},
 	"type-group": {
 		"modes": "โหมด",
 		"mcps": "MCP Servers"
@@ -130,12 +134,12 @@
 	"removeConfirm": {
 		"mode": {
 			"title": "ลบโหมด",
-			"message": "คุณแน่ใจหรือไม่ว่าต้องการลบโหมด \"{{modeName}}\"?",
+			"message": "คุณแน่ใจหรือไม่ว่าต้องการลบโหมด \"{{modeName}}\"",
 			"rulesWarning": "นี่จะลบไฟล์กฎที่เกี่ยวข้องสำหรับโหมดนี้ด้วย"
 		},
 		"mcp": {
 			"title": "ลบ MCP Server",
-			"message": "คุณแน่ใจหรือไม่ว่าต้องการลบ MCP server \"{{mcpName}}\"?"
+			"message": "คุณแน่ใจหรือไม่ว่าต้องการลบ MCP server \"{{mcpName}}\""
 		},
 		"cancel": "ยกเลิก",
 		"confirm": "ลบ"

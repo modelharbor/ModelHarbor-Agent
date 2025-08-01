@@ -9,34 +9,34 @@ import { keysOf } from "./type-fu.js"
  */
 
 export const providerNames = [
+	"modelharbor",
 	"anthropic",
-	"claude-code",
-	"glama",
-	"openrouter",
 	"bedrock",
-	"vertex",
-	"openai",
-	"ollama",
-	"vscode-lm",
-	"lmstudio",
-	"gemini",
-	"gemini-cli",
-	"openai-native",
-	"mistral",
-	"moonshot",
+	"chutes",
+	"claude-code",
 	"deepseek",
 	"doubao",
-	"unbound",
-	"requesty",
-	"human-relay",
 	"fake-ai",
-	"xai",
+	"gemini",
+	"gemini-cli",
+	"glama",
 	"groq",
-	"chutes",
-	"litellm",
 	"huggingface",
-	"modelharbor",
+	"human-relay",
+	"litellm",
+	"lmstudio",
+	"mistral",
+	"moonshot",
+	"ollama",
+	"openai",
+	"openai-native",
+	"openrouter",
+	"requesty",
 	"sambanova",
+	"unbound",
+	"vertex",
+	"vscode-lm",
+	"xai",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -257,7 +257,6 @@ const modelharborSchema = baseProviderSettingsSchema.extend({
 
 const sambaNovaSchema = apiModelIdProviderModelSchema.extend({
 	sambaNovaApiKey: z.string().optional(),
-})
 })
 
 const defaultSchema = z.object({

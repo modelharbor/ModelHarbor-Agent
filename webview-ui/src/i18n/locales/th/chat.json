@@ -119,7 +119,9 @@
 		"title": "โหมด",
 		"marketplace": "ตลาดกลางโหมด",
 		"settings": "การตั้งค่าโหมด",
-		"description": "บุคลิกเฉพาะทางที่ปรับแต่งพฤติกรรมของ ModelHarbor"
+		"description": "บุคลิกเฉพาะทางที่ปรับแต่งพฤติกรรมของ ModelHarbor",
+		"searchPlaceholder": "ค้นหาโหมด...",
+		"noResults": "ไม่พบผลลัพธ์"
 	},
 	"enhancePromptDescription": "ปุ่ม 'ปรับปรุงพรอมต์' ช่วยปรับปรุงพรอมต์ของคุณโดยให้บริบทเพิ่มเติม การชี้แจง หรือการเปลี่ยนแปลงถ้อยคำ ลองพิมพ์พรอมต์ที่นี่และคลิกปุ่มอีกครั้งเพื่อดูว่ามันทำงานอย่างไร",
 	"addImages": "เพิ่มรูปภาพไปยังข้อความ",
@@ -127,7 +129,7 @@
 	"stopTts": "หยุดการอ่านออกเสียง",
 	"typeMessage": "พิมพ์ข้อความ...",
 	"typeTask": "พิมพ์งานของคุณที่นี่...",
-	"addContext": "@ เพื่อเพิ่มบริบท, / เพื่อสลับโหมด",
+	"addContext": "@ เพื่อเพิ่มบริบท, / สำหรับคำสั่ง",
 	"dragFiles": "กด shift เพื่อลากไฟล์",
 	"dragFilesImages": "กด shift เพื่อลากไฟล์/รูปภาพ",
 	"errorReadingFile": "ข้อผิดพลาดในการอ่านไฟล์:",
@@ -273,12 +275,11 @@
 		"title": "🎉 ModelHarbor Agent {{version}} เปิดตัวแล้ว",
 		"description": "ModelHarbor Agent {{version}} นำมาซึ่งคุณสมบัติใหม่ที่ทรงพลังและการปรับปรุงที่สำคัญเพื่อเพิ่มประสิทธิภาพเวิร์กโฟลว์การพัฒนาของคุณ",
 		"whatsNew": "มีอะไรใหม่",
-		"feature1": "<bold>Hugging Face Provider</bold>: เข้าถึงโมเดลโอเพ่นซอร์สที่ยอดเยี่ยมมากมายโดยตรงผ่าน Hugging Face provider ใหม่ที่มีการรวมและการเลือกโมเดลที่ราบรื่น",
-		"feature2": "<bold>Inline Command Controls</bold>: ตัวควบคุมอนุมัติอัตโนมัติและปฏิเสธใหม่สำหรับการรันคำสั่งให้คุณควบคุมการดำเนินการเทอร์มินัลอย่างแม่นยำด้วยสิทธิ์ที่ปรับแต่งได้",
-		"feature3": "<bold>AGENTS.md Rules Support</bold>: เพิ่มการสนับสนุนสำหรับไฟล์ AGENTS.md มาตรฐานชุมชนในรากของโปรเจ็กต์",
+		"feature1": "<bold>การจัดคิวข้อความ</bold>: จัดคิวข้อความหลายข้อความในขณะที่ ModelHarbor กำลังทำงาน ช่วยให้คุณวางแผนเวิร์กโฟลว์ของคุณต่อไปได้โดยไม่หยุดชะงัก",
+		"feature2": "<bold>คำสั่งทับที่กำหนดเอง</bold>: สร้างคำสั่งทับส่วนบุคคลเพื่อการเข้าถึงพรอมต์และเวิร์กโฟลว์ที่ใช้บ่อยได้อย่างรวดเร็ว พร้อมการจัดการ UI เต็มรูปแบบ",
+		"feature3": "<bold>เครื่องมือ Gemini ที่ปรับปรุงแล้ว</bold>: บริบท URL ใหม่และความสามารถในการค้นหาของ Google Search ช่วยให้โมเดล Gemini มีข้อมูลเว็บแบบเรียลไทม์และความสามารถในการวิจัยที่เพิ่มขึ้น",
 		"hideButton": "ซ่อนประกาศ",
-		"detailsDiscussLinks": "รับรายละเอียดเพิ่มเติมและพูดคุยใน <discordLink>Discord</discordLink> และ <redditLink>Reddit</redditLink> 🚀",
-		"feature3": "<bold>Excel File Support & More</bold>: เพิ่มการสนับสนุนไฟล์ Excel (.xlsx) และการแก้ไขข้อบกพร่องและการปรับปรุงมากมาย!"
+		"detailsDiscussLinks": "รับรายละเอียดเพิ่มเติมและพูดคุยใน <discordLink>Discord</discordLink> และ <redditLink>Reddit</redditLink> 🚀"
 	},
 	"reasoning": {
 		"thinking": "กำลังคิด",
@@ -349,5 +350,30 @@
 		"title": "Roo Code Cloud กำลังจะมา!",
 		"description": "รันเอเจนต์ระยะไกลในคลาวด์ เข้าถึงงานของคุณจากทุกที่ ทำงานร่วมกับผู้อื่น และอื่นๆ",
 		"joinWaitlist": "เข้าร่วมรายการรอเพื่อรับการเข้าถึงล่วงหน้า"
+	},
+	"command": {
+		"triggerDescription": "เรียกใช้คำสั่ง {{name}}"
+	},
+	"slashCommands": {
+		"tooltip": "จัดการคำสั่งทับ",
+		"title": "คำสั่งทับ",
+		"description": "สร้างคำสั่งทับที่กำหนดเองเพื่อการเข้าถึงพรอมต์และเวิร์กโฟลว์ที่ใช้บ่อยได้อย่างรวดเร็ว <DocsLink>เอกสาร</DocsLink>",
+		"globalCommands": "คำสั่งส่วนกลาง",
+		"workspaceCommands": "คำสั่งพื้นที่ทำงาน",
+		"globalCommand": "คำสั่งส่วนกลาง",
+		"editCommand": "แก้ไขคำสั่ง",
+		"deleteCommand": "ลบคำสั่ง",
+		"newGlobalCommandPlaceholder": "คำสั่งส่วนกลางใหม่...",
+		"newWorkspaceCommandPlaceholder": "คำสั่งพื้นที่ทำงานใหม่...",
+		"deleteDialog": {
+			"title": "ลบคำสั่ง",
+			"description": "คุณแน่ใจหรือไม่ว่าต้องการลบคำสั่ง \"{{name}}\"? การกระทำนี้ไม่สามารถยกเลิกได้",
+			"cancel": "ยกเลิก",
+			"confirm": "ลบ"
+		}
+	},
+	"queuedMessages": {
+		"title": "ข้อความในคิว:",
+		"clickToEdit": "คลิกเพื่อแก้ไขข้อความ"
 	}
 }

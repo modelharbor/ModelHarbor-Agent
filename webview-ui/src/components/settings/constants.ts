@@ -35,8 +35,9 @@ export const MODELS_BY_PROVIDER: Partial<Record<ProviderName, Record<string, Mod
 }
 
 export const PROVIDERS = [
-	{ value: "openrouter", label: "OpenRouter" },
+	{ value: "modelharbor", label: "ModelHarbor" },
 	{ value: "anthropic", label: "Anthropic" },
+	{ value: "openrouter", label: "OpenRouter" },
 	{ value: "claude-code", label: "Claude Code" },
 	{ value: "gemini", label: "Google Gemini" },
 	{ value: "doubao", label: "Doubao" },
@@ -60,4 +61,5 @@ export const PROVIDERS = [
 	{ value: "chutes", label: "Chutes AI" },
 	{ value: "litellm", label: "LiteLLM" },
 	{ value: "sambanova", label: "SambaNova" },
-].sort((a, b) => a.label.localeCompare(b.label))
+]
+// ModelHarbor is now the first provider in the list. Removed .sort() to preserve order.

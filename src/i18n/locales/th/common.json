@@ -70,13 +70,25 @@
 		"share_not_enabled": "การแชร์งานไม่ได้เปิดใช้งานสำหรับองค์กรนี้",
 		"share_task_not_found": "ไม่พบงานหรือการเข้าถึงถูกปฏิเสธ",
 		"mode_import_failed": "ไม่สามารถนำเข้าโหมดได้: {{error}}",
-		"delete_rules_folder_failed": "ไม่สามารถลบโฟลเดอร์กฎได้: {{rulesFolderPath}} ข้อผิดพลาด: {{error}}",
+		"delete_rules_folder_failed": "ลบโฟลเดอร์กฎล้มเหลว: {{rulesFolderPath}} ข้อผิดพลาด: {{error}}",
+		"command_not_found": "ไม่พบคำสั่ง '{{name}}'",
+		"open_command_file": "ไม่สามารถเปิดไฟล์คำสั่งได้",
+		"delete_command": "ไม่สามารถลบคำสั่งได้",
+		"no_workspace_for_project_command": "ไม่พบโฟลเดอร์พื้นที่ทำงานสำหรับคำสั่งโปรเจกต์",
+		"command_already_exists": "คำสั่ง \"{{commandName}}\" มีอยู่แล้ว",
+		"create_command_failed": "ไม่สามารถสร้างคำสั่งได้",
+		"command_template_content": "---\ndescription: \"คำอธิบายโดยย่อว่าคำสั่งนี้ทำอะไร\"\n---\n\nนี่คือคำสั่งทับใหม่ แก้ไขไฟล์นี้เพื่อปรับแต่งการทำงานของคำสั่ง",
 		"claudeCode": {
 			"processExited": "กระบวนการ Claude Code ออกด้วยรหัส {{exitCode}}",
 			"errorOutput": "ผลลัพธ์ข้อผิดพลาด: {{output}}",
 			"processExitedWithError": "กระบวนการ Claude Code ออกด้วยรหัส {{exitCode}} ผลลัพธ์ข้อผิดพลาด: {{output}}",
 			"stoppedWithReason": "Claude Code หยุดทำงานด้วยเหตุผล: {{reason}}",
 			"apiKeyModelPlanMismatch": "คีย์ API และแผนการสมัครสมาชิกอนุญาตให้ใช้โมเดลที่แตกต่างกัน ตรวจสอบให้แน่ใจว่าโมเดลที่เลือกอยู่ในแผนของคุณ"
+		},
+		"gemini": {
+			"generate_stream": "ข้อผิดพลาดสตรีมบริบทการสร้าง Gemini: {{error}}",
+			"generate_complete_prompt": "ข้อผิดพลาดการเติมเต็ม Gemini: {{error}}",
+			"sources": "แหล่งที่มา:"
 		}
 	},
 	"warnings": {

@@ -1,7 +1,7 @@
 {
-	"extension.displayName": "ModelHarbor Agent Nightly (th)",
-	"views.contextMenu.label": "ModelHarbor Agent Nightly (th)",
-	"views.terminalMenu.label": "ModelHarbor Agent Nightly (th)",
-	"views.activitybar.title": "ModelHarbor Agent Nightly (th)",
-	"configuration.title": "ModelHarbor Agent Nightly (th)"
+	"extension.displayName": "ModelHarbor Agent รุ่นทดลองรายคืน",
+	"views.contextMenu.label": "ModelHarbor Agent รุ่นทดลองรายคืน",
+	"views.terminalMenu.label": "ModelHarbor Agent รุ่นทดลองรายคืน",
+	"views.activitybar.title": "ModelHarbor Agent รุ่นทดลองรายคืน",
+	"configuration.title": "ModelHarbor Agent รุ่นทดลองรายคืน"
 }

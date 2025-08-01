@@ -2,7 +2,9 @@
 	"readFile": {
 		"linesRange": " (บรรทัดที่ {{start}}-{{end}})",
 		"definitionsOnly": " (เฉพาะคำจำกัดความ)",
-		"maxLines": " (สูงสุด {{max}} บรรทัด)"
+		"maxLines": " (สูงสุด {{max}} บรรทัด)",
+		"imageTooLarge": "ไฟล์รูปภาพมีขนาดใหญ่เกินไป ({{size}} MB) ขนาดสูงสุดที่อนุญาตคือ {{max}} MB",
+		"imageWithSize": "ไฟล์รูปภาพ ({{size}} KB)"
 	},
 	"toolRepetitionLimitReached": "ดูเหมือนว่า ModelHarbor Agent จะติดอยู่ในลูป โดยพยายามดำเนินการเดิมซ้ำๆ ({{toolName}}) ซึ่งอาจบ่งชี้ถึงปัญหากับกลยุทธ์ปัจจุบัน ลองเปลี่ยนถ้อยคำของงาน ให้คำแนะนำที่เฉพาะเจาะจงมากขึ้น หรือแนะนำแนวทางอื่น",
 	"codebaseSearch": {
