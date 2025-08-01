@@ -85,19 +85,6 @@ vi.mock("../Announcement", () => ({
 	},
 }))
 
-// Mock ModelHarborCloudCTA component
-vi.mock("@src/components/welcome/ModelHarborCloudCTA", () => ({
-	default: function MockModelHarborCloudCTA() {
-		return (
-			<div data-testid="modelharbor-cloud-cta">
-				<div>modelharborCloudCTA.title</div>
-				<div>modelharborCloudCTA.description</div>
-				<div>modelharborCloudCTA.joinWaitlist</div>
-			</div>
-		)
-	},
-}))
-
 // Mock QueuedMessages component
 vi.mock("../QueuedMessages", () => ({
 	default: function MockQueuedMessages({
@@ -158,7 +145,7 @@ vi.mock("react-i18next", () => ({
 	}),
 	initReactI18next: {
 		type: "3rdParty",
-		init: () => { },
+		init: () => {},
 	},
 	Trans: ({ i18nKey, children }: { i18nKey: string; children?: React.ReactNode }) => {
 		return <>{children || i18nKey}</>
@@ -272,7 +259,7 @@ const mockPostMessage = (state: Partial<ExtensionState>) => {
 const defaultProps: ChatViewProps = {
 	isHidden: false,
 	showAnnouncement: false,
-	hideAnnouncement: () => { },
+	hideAnnouncement: () => {},
 }
 
 const queryClient = new QueryClient()
@@ -1270,162 +1257,6 @@ describe("ChatView - Version Indicator Tests", () => {
 
 		// Should display version indicator on welcome screen
 		expect(queryByTestId("version-indicator")).toBeInTheDocument()
-	})
-})
-
-describe("ChatView - ModelHarborCloudCTA Display Tests", () => {
-	beforeEach(() => vi.clearAllMocks())
-
-	it("does not show ModelHarborCloudCTA when user is authenticated to Cloud", () => {
-		const { queryByTestId } = renderChatView()
-
-		// Hydrate state with user authenticated to cloud
-		mockPostMessage({
-			cloudIsAuthenticated: true,
-			taskHistory: [
-				{ id: "1", ts: Date.now() - 3000 },
-				{ id: "2", ts: Date.now() - 2000 },
-				{ id: "3", ts: Date.now() - 1000 },
-				{ id: "4", ts: Date.now() },
-			],
-			clineMessages: [], // No active task
-		})
-
-		// Should not show ModelHarborCloudCTA when authenticated
-		expect(queryByTestId("modelharbor-cloud-cta")).not.toBeInTheDocument()
-	})
-
-	it("does not show ModelHarborCloudCTA when user has only run 3 tasks in their history", () => {
-		const { queryByTestId } = renderChatView()
-
-		// Hydrate state with user not authenticated but only 3 tasks
-		mockPostMessage({
-			cloudIsAuthenticated: false,
-			taskHistory: [
-				{ id: "1", ts: Date.now() - 2000 },
-				{ id: "2", ts: Date.now() - 1000 },
-				{ id: "3", ts: Date.now() },
-			],
-			clineMessages: [], // No active task
-		})
-
-		// Should not show ModelHarborCloudCTA with less than 4 tasks
-		expect(queryByTestId("modelharbor-cloud-cta")).not.toBeInTheDocument()
-	})
-
-	it("shows ModelHarborCloudCTA when user is not authenticated and has run 4 or more tasks", async () => {
-		const { getByTestId } = renderChatView()
-
-		// Hydrate state with user not authenticated and 4 tasks
-		mockPostMessage({
-			cloudIsAuthenticated: false,
-			taskHistory: [
-				{ id: "1", ts: Date.now() - 3000 },
-				{ id: "2", ts: Date.now() - 2000 },
-				{ id: "3", ts: Date.now() - 1000 },
-				{ id: "4", ts: Date.now() },
-			],
-			clineMessages: [], // No active task
-		})
-
-		// Wait for component to render and show ModelHarborCloudCTA
-		await waitFor(() => {
-			expect(getByTestId("modelharbor-cloud-cta")).toBeInTheDocument()
-		})
-	})
-
-	it("shows ModelHarborCloudCTA when user is not authenticated and has run 5 tasks", async () => {
-		const { getByTestId } = renderChatView()
-
-		// Hydrate state with user not authenticated and 5 tasks
-		mockPostMessage({
-			cloudIsAuthenticated: false,
-			taskHistory: [
-				{ id: "1", ts: Date.now() - 4000 },
-				{ id: "2", ts: Date.now() - 3000 },
-				{ id: "3", ts: Date.now() - 2000 },
-				{ id: "4", ts: Date.now() - 1000 },
-				{ id: "5", ts: Date.now() },
-			],
-			clineMessages: [], // No active task
-		})
-
-		// Wait for component to render and show ModelHarborCloudCTA
-		await waitFor(() => {
-			expect(getByTestId("modelharbor-cloud-cta")).toBeInTheDocument()
-		})
-	})
-
-	it("does not show ModelHarborCloudCTA when there is an active task (regardless of auth status)", async () => {
-		const { queryByTestId } = renderChatView()
-
-		// Hydrate state with active task
-		mockPostMessage({
-			cloudIsAuthenticated: false,
-			taskHistory: [
-				{ id: "1", ts: Date.now() - 3000 },
-				{ id: "2", ts: Date.now() - 2000 },
-				{ id: "3", ts: Date.now() - 1000 },
-				{ id: "4", ts: Date.now() },
-			],
-			clineMessages: [
-				{
-					type: "say",
-					say: "task",
-					ts: Date.now(),
-					text: "Active task",
-				},
-			],
-		})
-
-		// Wait for component to render with active task
-		await waitFor(() => {
-			// Should not show ModelHarborCloudCTA during active task
-			expect(queryByTestId("modelharbor-cloud-cta")).not.toBeInTheDocument()
-			// Should not show ModelHarborTips either since the entire welcome screen is hidden during active tasks
-			expect(queryByTestId("modelharbor-tips")).not.toBeInTheDocument()
-			// Should not show ModelHarborHero either since the entire welcome screen is hidden during active tasks
-			expect(queryByTestId("modelharbor-hero")).not.toBeInTheDocument()
-		})
-	})
-
-	it("shows ModelHarborTips when user is authenticated (instead of ModelHarborCloudCTA)", () => {
-		const { queryByTestId, getByTestId } = renderChatView()
-
-		// Hydrate state with user authenticated to cloud
-		mockPostMessage({
-			cloudIsAuthenticated: true,
-			taskHistory: [
-				{ id: "1", ts: Date.now() - 3000 },
-				{ id: "2", ts: Date.now() - 2000 },
-				{ id: "3", ts: Date.now() - 1000 },
-				{ id: "4", ts: Date.now() },
-			],
-			clineMessages: [], // No active task
-		})
-
-		// Should not show ModelHarborCloudCTA but should show ModelHarborTips
-		expect(queryByTestId("modelharbor-cloud-cta")).not.toBeInTheDocument()
-		expect(getByTestId("modelharbor-tips")).toBeInTheDocument()
-	})
-
-	it("shows ModelHarborTips when user has fewer than 4 tasks (instead of ModelHarborCloudCTA)", () => {
-		const { queryByTestId, getByTestId } = renderChatView()
-
-		// Hydrate state with user not authenticated but fewer than 4 tasks
-		mockPostMessage({
-			cloudIsAuthenticated: false,
-			taskHistory: [
-				{ id: "1", ts: Date.now() - 2000 },
-				{ id: "2", ts: Date.now() - 1000 },
-				{ id: "3", ts: Date.now() },
-			],
-			clineMessages: [], // No active task
-		})
-
-		// Should not show ModelHarborCloudCTA but should show ModelHarborTips
-		expect(queryByTestId("modelharbor-cloud-cta")).not.toBeInTheDocument()
-		expect(getByTestId("modelharbor-tips")).toBeInTheDocument()
 	})
 })
 

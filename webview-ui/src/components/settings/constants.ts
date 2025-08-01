@@ -5,7 +5,6 @@ import {
 	bedrockModels,
 	claudeCodeModels,
 	deepSeekModels,
-	moonshotModels,
 	geminiModels,
 	mistralModels,
 	openAiNativeModels,
@@ -15,15 +14,16 @@ import {
 	chutesModels,
 	sambaNovaModels,
 	doubaoModels,
+	modelHarborModels,
 } from "@roo-code/types"
 
 export const MODELS_BY_PROVIDER: Partial<Record<ProviderName, Record<string, ModelInfo>>> = {
+	modelharbor: modelHarborModels,
 	anthropic: anthropicModels,
 	"claude-code": claudeCodeModels,
 	bedrock: bedrockModels,
 	deepseek: deepSeekModels,
 	doubao: doubaoModels,
-	moonshot: moonshotModels,
 	gemini: geminiModels,
 	mistral: mistralModels,
 	"openai-native": openAiNativeModels,
@@ -33,6 +33,7 @@ export const MODELS_BY_PROVIDER: Partial<Record<ProviderName, Record<string, Mod
 	chutes: chutesModels,
 	sambanova: sambaNovaModels,
 }
+// PROVIDER LIST
 
 export const PROVIDERS = [
 	{ value: "modelharbor", label: "ModelHarbor" },

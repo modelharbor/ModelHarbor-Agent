@@ -8,8 +8,6 @@ import {
 	bedrockModels,
 	deepSeekDefaultModelId,
 	deepSeekModels,
-	moonshotDefaultModelId,
-	moonshotModels,
 	geminiDefaultModelId,
 	geminiModels,
 	mistralDefaultModelId,
@@ -34,6 +32,7 @@ import {
 	litellmDefaultModelId,
 	claudeCodeDefaultModelId,
 	claudeCodeModels,
+	modelHarborDefaultModelId,
 	sambaNovaModels,
 	sambaNovaDefaultModelId,
 	doubaoModels,
@@ -46,7 +45,7 @@ import { useRouterModels } from "./useRouterModels"
 import { useOpenRouterModelProviders } from "./useOpenRouterModelProviders"
 
 export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
-	const provider = apiConfiguration?.apiProvider || "anthropic"
+	const provider = apiConfiguration?.apiProvider || "modelharbor"
 	const openRouterModelId = provider === "openrouter" ? apiConfiguration?.openRouterModelId : undefined
 
 	const routerModels = useRouterModels()
@@ -62,7 +61,7 @@ export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
 					routerModels: routerModels.data,
 					openRouterModelProviders: openRouterModelProviders.data,
 				})
-			: { id: anthropicDefaultModelId, info: undefined }
+			: { id: modelHarborDefaultModelId, info: undefined }
 
 	return {
 		provider,
@@ -124,6 +123,13 @@ function getSelectedModel({
 			const info = routerModels.litellm[id]
 			return { id, info }
 		}
+		case "modelharbor": {
+			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
+			const info = routerModels.modelharbor?.[id]
+			return info
+				? { id, info }
+				: { id: modelHarborDefaultModelId, info: routerModels.modelharbor?.[modelHarborDefaultModelId] }
+		}
 		case "xai": {
 			const id = apiConfiguration.apiModelId ?? xaiDefaultModelId
 			const info = xaiModels[id as keyof typeof xaiModels]
@@ -183,11 +189,6 @@ function getSelectedModel({
 			const info = doubaoModels[id as keyof typeof doubaoModels]
 			return { id, info }
 		}
-		case "moonshot": {
-			const id = apiConfiguration.apiModelId ?? moonshotDefaultModelId
-			const info = moonshotModels[id as keyof typeof moonshotModels]
-			return { id, info }
-		}
 		case "openai-native": {
 			const id = apiConfiguration.apiModelId ?? openAiNativeDefaultModelId
 			const info = openAiNativeModels[id as keyof typeof openAiNativeModels]
@@ -242,10 +243,26 @@ function getSelectedModel({
 		// case "human-relay":
 		// case "fake-ai":
 		default: {
-			provider satisfies "modelharbor" | "anthropic" | "gemini-cli" | "human-relay" | "fake-ai"
-			const id = apiConfiguration.apiModelId ?? anthropicDefaultModelId
-			const info = anthropicModels[id as keyof typeof anthropicModels]
-			return { id, info }
+			// For anthropic, use anthropic models; for others, fall back to modelharbor
+			if (provider === "anthropic") {
+				const id = apiConfiguration.apiModelId ?? anthropicDefaultModelId
+				const info = anthropicModels[id as keyof typeof anthropicModels]
+				return { id, info }
+			}
+			// For other providers that use apiModelId, use modelharbor default logic
+			if (provider === "human-relay" || provider === "fake-ai") {
+				const id = apiConfiguration.apiModelId ?? modelHarborDefaultModelId
+				const info = routerModels.modelharbor?.[id]
+				return info
+					? { id, info }
+					: { id: modelHarborDefaultModelId, info: routerModels.modelharbor?.[modelHarborDefaultModelId] }
+			}
+			// For any other provider, fall back to modelharbor default
+			const id = modelHarborDefaultModelId
+			const info = routerModels.modelharbor?.[id]
+			return info
+				? { id, info }
+				: { id: modelHarborDefaultModelId, info: routerModels.modelharbor?.[modelHarborDefaultModelId] }
 		}
 	}
 }

@@ -9,7 +9,6 @@ import { keysOf } from "./type-fu.js"
  */
 
 export const providerNames = [
-	"modelharbor",
 	"anthropic",
 	"bedrock",
 	"chutes",
@@ -37,6 +36,11 @@ export const providerNames = [
 	"vertex",
 	"vscode-lm",
 	"xai",
+	"groq",
+	"chutes",
+	"litellm",
+	"huggingface",
+	"modelharbor",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -290,8 +294,8 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	huggingFaceSchema.merge(z.object({ apiProvider: z.literal("huggingface") })),
 	chutesSchema.merge(z.object({ apiProvider: z.literal("chutes") })),
 	litellmSchema.merge(z.object({ apiProvider: z.literal("litellm") })),
-	modelharborSchema.merge(z.object({ apiProvider: z.literal("modelharbor") })),
 	sambaNovaSchema.merge(z.object({ apiProvider: z.literal("sambanova") })),
+	modelharborSchema.merge(z.object({ apiProvider: z.literal("modelharbor") })),
 	defaultSchema,
 ])
 
@@ -323,8 +327,8 @@ export const providerSettingsSchema = z.object({
 	...huggingFaceSchema.shape,
 	...chutesSchema.shape,
 	...litellmSchema.shape,
-	...modelharborSchema.shape,
 	...sambaNovaSchema.shape,
+	...modelharborSchema.shape,
 	...codebaseIndexProviderSchema.shape,
 })
 
@@ -357,6 +361,7 @@ export const PROVIDER_SETTINGS_KEYS = keysOf<ProviderSettings>()([
 	"awsUseProfile",
 	"awsCustomArn",
 	"awsModelContextWindow",
+	"awsApiKey",
 	"awsBedrockEndpointEnabled",
 	"awsBedrockEndpoint",
 	// Google Vertex
@@ -397,7 +402,7 @@ export const PROVIDER_SETTINGS_KEYS = keysOf<ProviderSettings>()([
 	// DeepSeek
 	"deepSeekBaseUrl",
 	"deepSeekApiKey",
-	// Unbound
+	// Unbound©
 	"unboundApiKey",
 	"unboundModelId",
 	// Requesty
@@ -427,6 +432,10 @@ export const PROVIDER_SETTINGS_KEYS = keysOf<ProviderSettings>()([
 	"xaiApiKey",
 	// Groq
 	"groqApiKey",
+	// Hugging Face
+	"huggingFaceApiKey",
+	"huggingFaceModelId",
+	"huggingFaceInferenceProvider",
 	// Chutes AI
 	"chutesApiKey",
 	// LiteLLM
@@ -436,6 +445,8 @@ export const PROVIDER_SETTINGS_KEYS = keysOf<ProviderSettings>()([
 	// ModelHarbor
 	"modelharborApiKey",
 	"modelharborModelId",
+	// SambaNova
+	"sambaNovaApiKey",
 ])
 
 export const MODEL_ID_KEYS: Partial<keyof ProviderSettings>[] = [
