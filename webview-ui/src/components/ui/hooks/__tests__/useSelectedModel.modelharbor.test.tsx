@@ -1,4 +1,6 @@
+import React from "react"
 import { renderHook } from "@testing-library/react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useSelectedModel } from "../useSelectedModel"
 import type { ProviderSettings } from "@roo-code/types"
 
@@ -68,12 +70,19 @@ vi.mock("../useOpenRouterModelProviders", () => ({
 }))
 
 describe("useSelectedModel - ModelHarbor", () => {
+	const createWrapper = () => {
+		const queryClient = new QueryClient()
+		return function Wrapper({ children }: { children: React.ReactNode }) {
+			return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+		}
+	}
+
 	it("should return default model when no modelharborModelId is specified", () => {
 		const apiConfiguration: ProviderSettings = {
 			apiProvider: "modelharbor",
 		}
 
-		const { result } = renderHook(() => useSelectedModel(apiConfiguration))
+		const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper: createWrapper() })
 
 		expect(result.current.id).toBe("qwen/qwen3-235b-a22b-instruct-2507")
 		expect(result.current.info).toBeDefined()
@@ -87,7 +96,7 @@ describe("useSelectedModel - ModelHarbor", () => {
 			modelharborModelId: "qwen/qwen2.5-coder-32b",
 		}
 
-		const { result } = renderHook(() => useSelectedModel(apiConfiguration))
+		const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper: createWrapper() })
 
 		expect(result.current.id).toBe("qwen/qwen2.5-coder-32b")
 		expect(result.current.info).toBeDefined()
@@ -101,7 +110,7 @@ describe("useSelectedModel - ModelHarbor", () => {
 			modelharborModelId: "qwen/qwen3-32b-fast",
 		}
 
-		const { result } = renderHook(() => useSelectedModel(apiConfiguration))
+		const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper: createWrapper() })
 
 		expect(result.current.id).toBe("qwen/qwen3-32b-fast")
 		expect(result.current.info).toBeDefined()
@@ -115,7 +124,7 @@ describe("useSelectedModel - ModelHarbor", () => {
 			modelharborModelId: "invalid/model",
 		}
 
-		const { result } = renderHook(() => useSelectedModel(apiConfiguration))
+		const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper: createWrapper() })
 
 		expect(result.current.id).toBe("qwen/qwen3-235b-a22b-instruct-2507")
 		expect(result.current.info).toBeDefined()
@@ -127,7 +136,7 @@ describe("useSelectedModel - ModelHarbor", () => {
 			apiProvider: "modelharbor",
 		}
 
-		const { result } = renderHook(() => useSelectedModel(apiConfiguration))
+		const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper: createWrapper() })
 
 		expect(result.current.provider).toBe("modelharbor")
 	})

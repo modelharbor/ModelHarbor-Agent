@@ -18,7 +18,6 @@ export const EXTERNAL_LINKS = {
 	INTEGRATIONS: "https://docs.roocode.com/community",
 	TUTORIALS: "https://docs.roocode.com/tutorial-videos",
 	MARKETPLACE: "https://marketplace.visualstudio.com/items?itemName=modelharbor.modelharbor-agent",
-	SECURITY: "https://trust.roocode.com",
 	EVALS: "https://roocode.com/evals",
 	BLOG: "https://blog.roocode.com",
 	OFFICE_HOURS_PODCAST: "https://www.youtube.com/@RooCodeYT/podcasts",

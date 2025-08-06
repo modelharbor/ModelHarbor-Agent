@@ -8,7 +8,7 @@ import { useCopyToClipboard } from "@/utils/clipboard"
 
 import { DeleteTaskDialog } from "../history/DeleteTaskDialog"
 import { IconButton } from "./IconButton"
-import { ShareButton } from "./ShareButton"
+// import { ShareButton } from "./ShareButton"
 
 interface TaskActionsProps {
 	item?: HistoryItem
@@ -26,22 +26,14 @@ export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 				iconClass="codicon-desktop-download"
 				title={t("chat:task.export")}
 				onClick={() => vscode.postMessage({ type: "exportCurrentTask" })}
-				disabled={buttonsDisabled}
+				disabled={false}
 			/>
 			{item?.task && (
 				<IconButton
 					iconClass={showCopyFeedback ? "codicon-check" : "codicon-copy"}
 					title={t("history:copyPrompt")}
 					onClick={(e) => copyWithFeedback(item.task, e)}
-					disabled={buttonsDisabled}
-				/>
-			)}
-			{item?.id && (
-				<IconButton
-					iconClass="codicon-folder-opened"
-					title={t("chat:task.openFolder")}
-					disabled={buttonsDisabled}
-					onClick={() => vscode.postMessage({ type: "openChatFolder" })}
+					disabled={false}
 				/>
 			)}
 			{!!item?.size && item.size > 0 && (
@@ -71,7 +63,7 @@ export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 					)}
 				</>
 			)}
-			<ShareButton item={item} disabled={false} showLabel={false} />
+			{/* <ShareButton item={item} disabled={false} showLabel={false} /> */}
 		</div>
 	)
 }
