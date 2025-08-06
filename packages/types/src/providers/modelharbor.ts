@@ -252,15 +252,6 @@ async function fetchModelHarborModels(): Promise<Record<string, ModelInfo>> {
 
 // Fallback hardcoded models in case API fails (sorted alphabetically)
 const fallbackModelHarborModels = {
-	"anthropic/claude-sonnet-3.7": {
-		maxTokens: 16384,
-		contextWindow: 200000,
-		supportsImages: true,
-		supportsPromptCache: false,
-		inputPrice: 3.0,
-		outputPrice: 15.0,
-		description: "Anthropic Claude 3.7 Sonnet with advanced reasoning capabilities and vision support.",
-	},
 	"anthropic/claude-sonnet-4": {
 		maxTokens: 8192,
 		contextWindow: 128000,
@@ -288,14 +279,14 @@ const fallbackModelHarborModels = {
 		outputPrice: 1.5,
 		description: "DeepSeek V3 model with advanced coding and reasoning capabilities.",
 	},
-	"microsoft/deepseek-r1t-chimera": {
-		maxTokens: 8192,
-		contextWindow: 163840,
+	"qwen/qwen3-coder-480b-a35b-instruct": {
+		maxTokens: 65536,
+		contextWindow: 262000,
 		supportsImages: false,
 		supportsPromptCache: false,
-		inputPrice: 1.0,
-		outputPrice: 4.0,
-		description: "Microsoft DeepSeek R1T Chimera with enhanced reasoning and multimodal capabilities.",
+		inputPrice: 0.6,
+		outputPrice: 1.8,
+		description: "Qwen3 Coder model optimized for coding tasks with advanced reasoning capabilities.",
 	},
 	"openai/gpt-4.1": {
 		maxTokens: 16384,

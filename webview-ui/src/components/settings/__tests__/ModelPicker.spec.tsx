@@ -1,3 +1,4 @@
+import { modelHarborModels } from "@roo-code/types"
 // npx vitest src/components/settings/__tests__/ModelPicker.spec.tsx
 
 import { screen, fireEvent, render } from "@/utils/test-utils"
@@ -252,5 +253,85 @@ describe("ModelPicker", () => {
 			expect(screen.queryByTestId("api-error-message")).not.toBeInTheDocument()
 			expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
 		})
+	})
+	it("updates model list when a routerModels message is received", async () => {
+		const fallbackModels = {
+			fallback: { name: "Fallback Model", description: "Fallback", ...modelInfo },
+		}
+		const newModels = {
+			modelA: { name: "Model A", description: "New Model A", ...modelInfo },
+			modelB: { name: "Model B", description: "New Model B", ...modelInfo },
+		}
+		const defaultPropsWithFallback = {
+			...defaultProps,
+			models: fallbackModels,
+		}
+
+		await act(async () => {
+			render(
+				<QueryClientProvider client={queryClient}>
+					<ModelPicker {...defaultPropsWithFallback} />
+				</QueryClientProvider>,
+			)
+		})
+
+		// Open the popover by clicking the button.
+		const button = screen.getByTestId("model-picker-button")
+		fireEvent.click(button)
+
+		// Wait for popover to open and animations to complete.
+		await act(async () => {
+			vi.advanceTimersByTime(100)
+		})
+
+		// Fallback model key should be visible in the dropdown
+		expect(screen.getByText("fallback")).toBeInTheDocument()
+
+		// Simulate routerModels message from extension host
+		await act(async () => {
+			window.dispatchEvent(
+				new MessageEvent("message", {
+					data: {
+						type: "routerModels",
+						routerModels: { modelharbor: newModels },
+					},
+				}),
+			)
+		})
+
+		// Wait for UI update
+		await act(async () => {
+			vi.advanceTimersByTime(100)
+		})
+
+		// Should update to show new models in the dropdown
+		expect(screen.getByText("modelA")).toBeInTheDocument()
+		expect(screen.getByText("modelB")).toBeInTheDocument()
+	})
+})
+
+import React from "react"
+
+describe("Minimal ModelPicker render", () => {
+	const queryClient = new QueryClient()
+	const defaultProps = {
+		apiConfiguration: {},
+		defaultModelId: "baai/bge-m3",
+		modelIdKey: "modelharborModelId" as const,
+		serviceName: "ModelHarbor",
+		serviceUrl: "https://www.modelharbor.com",
+		recommendedModel: "baai/bge-m3",
+		models: modelHarborModels,
+		setApiConfigurationField: () => {},
+		organizationAllowList: { allowAll: true, providers: {} },
+	}
+
+	it("renders ModelPicker and shows the model picker button", async () => {
+		render(
+			<QueryClientProvider client={queryClient}>
+				<ModelPicker {...defaultProps} />
+			</QueryClientProvider>,
+		)
+		expect(await screen.findByTestId("model-picker-button")).toBeInTheDocument()
 	})
 })
