@@ -7,6 +7,108 @@ globalThis.process = globalThis.process || {}
 globalThis.process.env = globalThis.process.env || {}
 globalThis.process.env.NODE_ENV = "development"
 
+// Mock react-i18next globally
+vi.mock("react-i18next", () => ({
+	useTranslation: () => ({
+		t: (key: string, options?: any) => {
+			// Return the key for consistency in tests
+			if (options && typeof options === "object") {
+				// Handle interpolation for keys with variables
+				let result = key
+				Object.keys(options).forEach((param) => {
+					result = result.replace(`{{${param}}}`, options[param])
+				})
+				return result
+			}
+			return key
+		},
+	}),
+	Trans: ({ children }: { children: React.ReactNode }) => children,
+	initReactI18next: {
+		type: "3rdParty",
+		init: vi.fn(),
+	},
+}))
+
+// Mock i18next
+vi.mock("i18next", () => ({
+	default: {
+		t: vi.fn((key: string, options?: any) => {
+			// Return the key for consistency in tests
+			if (options && typeof options === "object") {
+				// Handle interpolation for keys with variables
+				let result = key
+				Object.keys(options).forEach((param) => {
+					result = result.replace(`{{${param}}}`, options[param])
+				})
+				return result
+			}
+			return key
+		}),
+		use: vi.fn(() => ({
+			init: vi.fn(),
+		})),
+		init: vi.fn(),
+		changeLanguage: vi.fn(),
+	},
+}))
+
+// Mock the i18n setup
+vi.mock("@/i18n/setup", () => ({
+	default: {
+		t: vi.fn((key: string, options?: any) => {
+			if (options && typeof options === "object") {
+				let result = key
+				Object.keys(options).forEach((param) => {
+					result = result.replace(`{{${param}}}`, options[param])
+				})
+				return result
+			}
+			return key
+		}),
+		changeLanguage: vi.fn(),
+	},
+	loadTranslations: vi.fn(),
+}))
+
+// Mock TranslationContext
+vi.mock("@/i18n/TranslationContext", () => {
+	const MockTranslationProvider = ({ children }: { children: React.ReactNode }) => children
+
+	const mockTranslate = (key: string, options?: any) => {
+		// Handle specific test translations
+		if (key === "settings.autoApprove.title") return "Auto-Approve"
+		if (key === "notifications.error") {
+			return options?.message ? `Operation failed: ${options.message}` : "Operation failed"
+		}
+
+		// Handle generic interpolation
+		if (options && typeof options === "object") {
+			let result = key
+			Object.keys(options).forEach((param) => {
+				result = result.replace(`{{${param}}}`, options[param])
+			})
+			return result
+		}
+		return key
+	}
+
+	return {
+		TranslationContext: {
+			Provider: ({ children }: { children: React.ReactNode }) => children,
+		},
+		TranslationProvider: MockTranslationProvider,
+		default: MockTranslationProvider,
+		useAppTranslation: () => ({
+			t: mockTranslate,
+			i18n: {
+				t: mockTranslate,
+				changeLanguage: vi.fn(),
+			},
+		}),
+	}
+})
+
 class MockResizeObserver {
 	observe() {}
 	unobserve() {}

@@ -18,7 +18,6 @@ import {
 	GeminiHandler,
 	OpenAiNativeHandler,
 	DeepSeekHandler,
-	MoonshotHandler,
 	MistralHandler,
 	VsCodeLmHandler,
 	UnboundHandler,
@@ -31,6 +30,7 @@ import {
 	ChutesHandler,
 	LiteLLMHandler,
 	ClaudeCodeHandler,
+	ModelHarborHandler,
 	SambaNovaHandler,
 	DoubaoHandler,
 	ZAiHandler,
@@ -98,8 +98,8 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new DeepSeekHandler(options)
 		case "doubao":
 			return new DoubaoHandler(options)
-		case "moonshot":
-			return new MoonshotHandler(options)
+		// case "moonshot":
+		// 	return new MoonshotHandler(options)
 		case "vscode-lm":
 			return new VsCodeLmHandler(options)
 		case "mistral":
@@ -122,6 +122,8 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new ChutesHandler(options)
 		case "litellm":
 			return new LiteLLMHandler(options)
+		case "modelharbor":
+			return new ModelHarborHandler(options)
 		case "cerebras":
 			return new CerebrasHandler(options)
 		case "sambanova":

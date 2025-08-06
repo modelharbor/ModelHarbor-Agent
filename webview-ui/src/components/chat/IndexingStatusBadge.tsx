@@ -111,6 +111,7 @@ export const IndexingStatusBadge: React.FC<IndexingStatusBadgeProps> = ({ classN
 		<div className={cn("relative inline-block", className)}>
 			<CodeIndexPopover indexingStatus={indexingStatus}>
 				<button
+					data-testid="indexing-status-dot"
 					onMouseEnter={handleMouseEnterButton}
 					onMouseLeave={handleMouseLeaveButton}
 					className={cn(

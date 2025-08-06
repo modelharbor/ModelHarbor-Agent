@@ -26,12 +26,22 @@ export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 				iconClass="codicon-desktop-download"
 				title={t("chat:task.export")}
 				onClick={() => vscode.postMessage({ type: "exportCurrentTask" })}
+				disabled={buttonsDisabled}
 			/>
 			{item?.task && (
 				<IconButton
 					iconClass={showCopyFeedback ? "codicon-check" : "codicon-copy"}
 					title={t("history:copyPrompt")}
 					onClick={(e) => copyWithFeedback(item.task, e)}
+					disabled={buttonsDisabled}
+				/>
+			)}
+			{item?.id && (
+				<IconButton
+					iconClass="codicon-folder-opened"
+					title={t("chat:task.openFolder")}
+					disabled={buttonsDisabled}
+					onClick={() => vscode.postMessage({ type: "openChatFolder" })}
 				/>
 			)}
 			{!!item?.size && item.size > 0 && (
