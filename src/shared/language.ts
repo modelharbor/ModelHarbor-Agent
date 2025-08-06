@@ -19,10 +19,36 @@ export const LANGUAGES: Record<Language, string> = {
 	pl: "Polski",
 	"pt-BR": "Português",
 	ru: "Русский",
+	th: "ไทย",
 	tr: "Türkçe",
 	vi: "Tiếng Việt",
 	"zh-CN": "简体中文",
 	"zh-TW": "繁體中文",
+}
+
+/**
+ * Returns a sorted array of language entries with English and Thai in the first two positions,
+ * followed by other languages sorted alphabetically by their display names.
+ */
+export function getSortedLanguages(): [Language, string][] {
+	const entries = Object.entries(LANGUAGES) as [Language, string][]
+
+	// Find English and Thai entries
+	const englishIndex = entries.findIndex(([code]) => code === "en")
+	const thaiIndex = entries.findIndex(([code]) => code === "th")
+
+	// Extract English and Thai entries
+	const englishEntry = entries[englishIndex]
+	const thaiEntry = entries[thaiIndex]
+
+	// Remove English and Thai from the array
+	const remainingEntries = entries.filter(([code]) => code !== "en" && code !== "th")
+
+	// Sort remaining entries alphabetically by display name
+	remainingEntries.sort((a, b) => a[1].localeCompare(b[1]))
+
+	// Return with English and Thai first, followed by sorted remaining languages
+	return [englishEntry, thaiEntry, ...remainingEntries]
 }
 
 /**

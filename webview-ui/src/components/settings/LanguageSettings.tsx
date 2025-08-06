@@ -4,7 +4,7 @@ import { Globe } from "lucide-react"
 
 import type { Language } from "@roo-code/types"
 
-import { LANGUAGES } from "@roo/language"
+import { getSortedLanguages } from "@roo/language"
 
 import { cn } from "@src/lib/utils"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@src/components/ui"
@@ -37,7 +37,7 @@ export const LanguageSettings = ({ language, setCachedStateField, className, ...
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							{Object.entries(LANGUAGES).map(([code, name]) => (
+							{getSortedLanguages().map(([code, name]) => (
 								<SelectItem key={code} value={code}>
 									{name}
 									<span className="text-muted-foreground">({code})</span>

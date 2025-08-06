@@ -36,7 +36,7 @@ import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { useSelectedModel } from "@src/components/ui/hooks/useSelectedModel"
 import RooHero from "@src/components/welcome/RooHero"
 import RooTips from "@src/components/welcome/RooTips"
-import RooCloudCTA from "@src/components/welcome/RooCloudCTA"
+// import RooCloudCTA from "@src/components/welcome/RooCloudCTA"
 import { StandardTooltip } from "@src/components/ui"
 import { useAutoApprovalState } from "@src/hooks/useAutoApprovalState"
 import { useAutoApprovalToggles } from "@src/hooks/useAutoApprovalToggles"
@@ -116,7 +116,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 		historyPreviewCollapsed, // Added historyPreviewCollapsed
 		soundEnabled,
 		soundVolume,
-		cloudIsAuthenticated,
+		// cloudIsAuthenticated,
 	} = useExtensionState()
 
 	const messagesRef = useRef(messages)
@@ -1805,7 +1805,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 						{telemetrySetting === "unset" && <TelemetryBanner />}
 
 						<div className="mb-2.5">
-							{cloudIsAuthenticated || taskHistory.length < 4 ? <RooTips /> : <RooCloudCTA />}
+							<RooTips />
 						</div>
 						{/* Show the task history preview if expanded and tasks exist */}
 						{taskHistory.length > 0 && isExpanded && <HistoryPreview />}
@@ -1909,7 +1909,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 												appearance="primary"
 												disabled={!enableButtons}
 												className={secondaryButtonText ? "flex-1 mr-[6px]" : "flex-[2] mr-0"}
-												onClick={() => handlePrimaryButtonClick(inputValue, selectedImages)}>
+												onClick={() => handlePrimaryButtonClick()}>
 												{primaryButtonText}
 											</VSCodeButton>
 										</StandardTooltip>
@@ -1931,7 +1931,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 												appearance="secondary"
 												disabled={!enableButtons && !(isStreaming && !didClickCancel)}
 												className={isStreaming ? "flex-[2] ml-0" : "flex-1 ml-[6px]"}
-												onClick={() => handleSecondaryButtonClick(inputValue, selectedImages)}>
+												onClick={() => handleSecondaryButtonClick()}>
 												{isStreaming ? t("chat:cancel.title") : secondaryButtonText}
 											</VSCodeButton>
 										</StandardTooltip>

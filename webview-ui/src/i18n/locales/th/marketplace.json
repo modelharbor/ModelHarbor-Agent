@@ -1,0 +1,150 @@
+{
+	"title": "ModelHarbor Marketplace",
+	"tabs": {
+		"installed": "ติดตั้งแล้ว",
+		"settings": "การตั้งค่า",
+		"browse": "เรียกดู"
+	},
+	"done": "เสร็จสิ้น",
+	"refresh": "รีเฟรช",
+	"filters": {
+		"search": {
+			"placeholder": "ค้นหารายการใน marketplace...",
+			"placeholderMcp": "ค้นหา MCPs...",
+			"placeholderMode": "ค้นหาโหมด..."
+		},
+		"type": {
+			"label": "กรองตามประเภท:",
+			"all": "ทุกประเภท",
+			"mode": "โหมด",
+			"mcpServer": "MCP Server"
+		},
+		"sort": {
+			"label": "เรียงตาม:",
+			"name": "ชื่อ",
+			"author": "ผู้เขียน",
+			"lastUpdated": "อัปเดตล่าสุด"
+		},
+		"tags": {
+			"label": "กรองตามแท็ก:",
+			"clear": "ล้างแท็ก",
+			"placeholder": "พิมพ์เพื่อค้นหาและเลือกแท็ก...",
+			"noResults": "ไม่พบแท็กที่ตรงกัน",
+			"selected": "แสดงรายการที่มีแท็กที่เลือกใดๆ",
+			"clickToFilter": "คลิกแท็กเพื่อกรองรายการ"
+		},
+		"none": "ไม่มี"
+	},
+	"sections": {
+		"organizationMcps": "{{organization}} MCPs",
+		"marketplace": "ตลาด"
+	},
+	"type-group": {
+		"modes": "โหมด",
+		"mcps": "MCP Servers"
+	},
+	"items": {
+		"empty": {
+			"noItems": "ไม่พบรายการใน marketplace",
+			"withFilters": "ลองปรับตัวกรองของคุณ",
+			"noSources": "ลองเพิ่มแหล่งข้อมูลในแท็บ Sources",
+			"adjustFilters": "ลองปรับตัวกรองหรือคำค้นหาของคุณ",
+			"clearAllFilters": "ล้างตัวกรองทั้งหมด"
+		},
+		"count": "พบ {{count}} รายการ",
+		"components": "{{count}} คอมโพเนนต์",
+		"matched": "ตรงกัน {{count}} รายการ",
+		"refresh": {
+			"button": "รีเฟรช",
+			"refreshing": "กำลังรีเฟรช...",
+			"mayTakeMoment": "อาจใช้เวลาสักครู่"
+		},
+		"card": {
+			"by": "โดย {{author}}",
+			"from": "จาก {{source}}",
+			"install": "ติดตั้ง",
+			"installProject": "ติดตั้ง",
+			"installGlobal": "ติดตั้ง (ส่วนกลาง)",
+			"remove": "ลบ",
+			"removeProject": "ลบ",
+			"removeGlobal": "ลบ (ส่วนกลาง)",
+			"viewSource": "ดู",
+			"viewOnSource": "ดูใน {{source}}",
+			"noWorkspaceTooltip": "เปิดพื้นที่ทำงานเพื่อติดตั้งรายการ marketplace",
+			"installed": "ติดตั้งแล้ว",
+			"removeProjectTooltip": "ลบจากโปรเจ็กต์ปัจจุบัน",
+			"removeGlobalTooltip": "ลบจากการกำหนดค่าส่วนกลาง",
+			"actionsMenuLabel": "การกระทำเพิ่มเติม"
+		},
+		"removeFailed": "ลบรายการไม่สำเร็จ: {{error}}",
+		"unknownError": "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ"
+	},
+	"install": {
+		"title": "ติดตั้ง {{name}}",
+		"titleMode": "ติดตั้งโหมด {{name}}",
+		"titleMcp": "ติดตั้ง MCP {{name}}",
+		"scope": "ขอบเขตการติดตั้ง",
+		"project": "โปรเจ็กต์ (พื้นที่ทำงานปัจจุบัน)",
+		"global": "ส่วนกลาง (ทุกพื้นที่ทำงาน)",
+		"method": "วิธีการติดตั้ง",
+		"prerequisites": "ข้อกำหนดเบื้องต้น",
+		"configuration": "การกำหนดค่า",
+		"configurationDescription": "กำหนดค่าพารามิเตอร์ที่จำเป็นสำหรับ MCP server นี้",
+		"button": "ติดตั้ง",
+		"successTitle": "ติดตั้ง {{name}} แล้ว",
+		"successDescription": "การติดตั้งสำเร็จแล้ว",
+		"installed": "ติดตั้งสำเร็จ!",
+		"whatNextMcp": "ตอนนี้คุณสามารถกำหนดค่าและใช้ MCP server นี้ได้ คลิกไอคอน MCP ในแถบด้านข้างเพื่อสลับแท็บ",
+		"whatNextMode": "ตอนนี้คุณสามารถใช้โหมดนี้ได้ คลิกไอคอนโหมดในแถบด้านข้างเพื่อสลับแท็บ",
+		"done": "เสร็จสิ้น",
+		"goToMcp": "ไปยังแท็บ MCP",
+		"goToModes": "ไปยังการตั้งค่าโหมด",
+		"moreInfoMcp": "ดูเอกสาร MCP {{name}}",
+		"validationRequired": "โปรดให้ค่าสำหรับ {{paramName}}"
+	},
+	"sources": {
+		"title": "กำหนดค่าแหล่งข้อมูล Marketplace",
+		"description": "เพิ่ม Git repositories ที่มีรายการ marketplace ซึ่งจะถูกดึงข้อมูลเมื่อเรียกดู marketplace",
+		"add": {
+			"title": "เพิ่มแหล่งข้อมูลใหม่",
+			"urlPlaceholder": "URL ของ Git repository (เช่น https://github.com/username/repo)",
+			"urlFormats": "รูปแบบที่รองรับ: HTTPS (https://github.com/username/repo), SSH (git@github.com:username/repo.git), หรือ Git protocol (git://github.com/username/repo.git)",
+			"namePlaceholder": "ชื่อที่แสดง (สูงสุด 20 ตัวอักษร)",
+			"button": "เพิ่มแหล่งข้อมูล"
+		},
+		"current": {
+			"title": "แหล่งข้อมูลปัจจุบัน",
+			"empty": "ยังไม่ได้กำหนดค่าแหล่งข้อมูล เพิ่มแหล่งข้อมูลเพื่อเริ่มต้น",
+			"refresh": "รีเฟรชแหล่งข้อมูลนี้",
+			"remove": "ลบแหล่งข้อมูล"
+		},
+		"errors": {
+			"emptyUrl": "URL ไม่สามารถว่างเปล่าได้",
+			"invalidUrl": "รูปแบบ URL ไม่ถูกต้อง",
+			"nonVisibleChars": "URL มีตัวอักษรที่มองไม่เห็นนอกจากช่องว่าง",
+			"invalidGitUrl": "URL ต้องเป็น URL ของ Git repository ที่ถูกต้อง (เช่น https://github.com/username/repo)",
+			"duplicateUrl": "URL นี้มีอยู่ในรายการแล้ว (การจับคู่โดยไม่สนใจตัวพิมพ์ใหญ่เล็กและช่องว่าง)",
+			"nameTooLong": "ชื่อต้องมีความยาวไม่เกิน 20 ตัวอักษร",
+			"nonVisibleCharsName": "ชื่อมีตัวอักษรที่มองไม่เห็นนอกจากช่องว่าง",
+			"duplicateName": "ชื่อนี้ถูกใช้แล้ว (การจับคู่โดยไม่สนใจตัวพิมพ์ใหญ่เล็กและช่องว่าง)",
+			"emojiName": "ตัวอักษรอีโมจิอาจทำให้เกิดปัญหาการแสดงผล",
+			"maxSources": "อนุญาตให้มีแหล่งข้อมูลสูงสุด {{max}} แหล่ง"
+		}
+	},
+	"removeConfirm": {
+		"mode": {
+			"title": "ลบโหมด",
+			"message": "คุณแน่ใจหรือไม่ว่าต้องการลบโหมด \"{{modeName}}\"",
+			"rulesWarning": "นี่จะลบไฟล์กฎที่เกี่ยวข้องสำหรับโหมดนี้ด้วย"
+		},
+		"mcp": {
+			"title": "ลบ MCP Server",
+			"message": "คุณแน่ใจหรือไม่ว่าต้องการลบ MCP server \"{{mcpName}}\""
+		},
+		"cancel": "ยกเลิก",
+		"confirm": "ลบ"
+	},
+	"footer": {
+		"issueText": "พบปัญหากับรายการ marketplace หรือมีข้อเสนอแนะสำหรับรายการใหม่? <0>เปิด GitHub issue</0> เพื่อแจ้งให้เราทราบ!"
+	}
+}
