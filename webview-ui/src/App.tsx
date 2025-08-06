@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react"
 import { useEvent } from "react-use"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { useRouterModelsListener } from "./components/ui/hooks/useRouterModelsListener"
 
 import { ExtensionMessage } from "@roo/ExtensionMessage"
 import TranslationProvider from "./i18n/TranslationContext"
@@ -62,6 +63,7 @@ const tabsByMessageAction: Partial<Record<NonNullable<ExtensionMessage["action"]
 }
 
 const App = () => {
+	useRouterModelsListener()
 	const {
 		didHydrateState,
 		showWelcome,
