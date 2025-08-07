@@ -31,6 +31,7 @@ import {
 	LiteLLMHandler,
 	ClaudeCodeHandler,
 	ModelHarborHandler,
+	MoonshotHandler,
 	SambaNovaHandler,
 	DoubaoHandler,
 	ZAiHandler,
@@ -98,8 +99,8 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new DeepSeekHandler(options)
 		case "doubao":
 			return new DoubaoHandler(options)
-		// case "moonshot":
-		// 	return new MoonshotHandler(options)
+		case "moonshot":
+			return new MoonshotHandler(options)
 		case "vscode-lm":
 			return new VsCodeLmHandler(options)
 		case "mistral":
@@ -134,6 +135,6 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new FireworksHandler(options)
 		default:
 			apiProvider satisfies "gemini-cli" | undefined
-			return new AnthropicHandler(options)
+			return new ModelHarborHandler(options)
 	}
 }

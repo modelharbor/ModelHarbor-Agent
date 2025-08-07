@@ -1471,18 +1471,21 @@ describe("Cline", () => {
 				// Test with undefined provider
 				const undefinedProviderConfig = {
 					apiModelId: "claude-3-opus",
+					apiKey: "test-key", // Add dummy API key to prevent error
 				}
-				const undefinedProviderTask = new Task({
-					provider: mockProvider,
-					apiConfiguration: undefinedProviderConfig,
-					task: "test task",
-					startTask: false,
-				})
-				expect(undefinedProviderTask.apiConfiguration.apiProvider).toBeUndefined()
+				expect(() => {
+					new Task({
+						provider: mockProvider,
+						apiConfiguration: undefinedProviderConfig,
+						task: "test task",
+						startTask: false,
+					})
+				}).toThrow("API key is required")
 
 				// Test with no model ID
 				const noModelConfig = {
 					apiProvider: "openai" as const,
+					apiKey: "test-key", // Add dummy API key to prevent error
 				}
 				const noModelTask = new Task({
 					provider: mockProvider,

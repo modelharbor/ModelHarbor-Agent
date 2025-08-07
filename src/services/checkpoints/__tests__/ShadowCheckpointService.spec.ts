@@ -70,6 +70,9 @@ describe.each([[RepoPerTaskCheckpointService, "RepoPerTaskCheckpointService"]])(
 
 		afterEach(async () => {
 			vitest.restoreAllMocks()
+			// Clean up shadow and workspace directories after each test to prevent ENOTEMPTY errors
+			await fs.rm(service.checkpointsDir, { recursive: true, force: true }).catch(() => {})
+			await fs.rm(service.workspaceDir, { recursive: true, force: true }).catch(() => {})
 		})
 
 		afterAll(async () => {
