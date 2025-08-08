@@ -6,7 +6,6 @@ import {
 	cerebrasModels,
 	claudeCodeModels,
 	deepSeekModels,
-	moonshotModels,
 	geminiModels,
 	mistralModels,
 	openAiNativeModels,
@@ -14,6 +13,7 @@ import {
 	xaiModels,
 	groqModels,
 	chutesModels,
+	modelHarborModels,
 	sambaNovaModels,
 	doubaoModels,
 	internationalZAiModels,
@@ -21,13 +21,13 @@ import {
 } from "@roo-code/types"
 
 export const MODELS_BY_PROVIDER: Partial<Record<ProviderName, Record<string, ModelInfo>>> = {
+	modelharbor: modelHarborModels,
 	anthropic: anthropicModels,
 	"claude-code": claudeCodeModels,
 	bedrock: bedrockModels,
 	cerebras: cerebrasModels,
 	deepseek: deepSeekModels,
 	doubao: doubaoModels,
-	moonshot: moonshotModels,
 	gemini: geminiModels,
 	mistral: mistralModels,
 	"openai-native": openAiNativeModels,
@@ -39,10 +39,12 @@ export const MODELS_BY_PROVIDER: Partial<Record<ProviderName, Record<string, Mod
 	zai: internationalZAiModels,
 	fireworks: fireworksModels,
 }
+// PROVIDER LIST
 
 export const PROVIDERS = [
-	{ value: "openrouter", label: "OpenRouter" },
+	{ value: "modelharbor", label: "ModelHarbor" },
 	{ value: "anthropic", label: "Anthropic" },
+	{ value: "openrouter", label: "OpenRouter" },
 	{ value: "claude-code", label: "Claude Code" },
 	{ value: "cerebras", label: "Cerebras" },
 	{ value: "gemini", label: "Google Gemini" },
@@ -69,4 +71,5 @@ export const PROVIDERS = [
 	{ value: "sambanova", label: "SambaNova" },
 	{ value: "zai", label: "Z AI" },
 	{ value: "fireworks", label: "Fireworks AI" },
-].sort((a, b) => a.label.localeCompare(b.label))
+]
+// ModelHarbor is now the first provider in the list. Removed .sort() to preserve order.

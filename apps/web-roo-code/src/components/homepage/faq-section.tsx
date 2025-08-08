@@ -255,8 +255,8 @@ export function FAQSection() {
 						}}>
 						<h2 className="text-4xl font-bold tracking-tight sm:text-5xl">Frequently Asked Questions</h2>
 						<p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-							Everything you need to know about Roo Code and how it can transform your development
-							workflow.
+							Everything you need to know About ModelHarbor Agent and how it can transform your
+							development workflow.
 						</p>
 					</motion.div>
 				</div>

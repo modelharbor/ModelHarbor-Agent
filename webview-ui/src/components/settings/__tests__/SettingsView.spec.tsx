@@ -159,16 +159,19 @@ vi.mock("@/components/ui", () => ({
 	),
 	SelectTrigger: ({ children }: any) => <div data-testid="select-trigger">{children}</div>,
 	SelectValue: ({ placeholder }: any) => <div data-testid="select-value">{placeholder}</div>,
-	SearchableSelect: ({ value, onValueChange, options, placeholder }: any) => (
-		<select value={value} onChange={(e) => onValueChange(e.target.value)} data-testid="searchable-select">
-			{placeholder && <option value="">{placeholder}</option>}
-			{options?.map((opt: any) => (
-				<option key={opt.value} value={opt.value}>
-					{opt.label}
-				</option>
-			))}
-		</select>
+	SearchableSelect: ({ value, onValueChange, options, placeholder, "data-testid": dataTestId }: any) => (
+		<div className="searchable-select-mock" data-testid={dataTestId || "provider-select"}>
+			<select value={value} onChange={(e) => onValueChange && onValueChange(e.target.value)}>
+				<option value="">{placeholder || "Select..."}</option>
+				{options?.map((option: any) => (
+					<option key={option.value} value={option.value}>
+						{option.label}
+					</option>
+				))}
+			</select>
+		</div>
 	),
+
 	AlertDialog: ({ children, open }: any) => (
 		<div data-testid="alert-dialog" data-open={open}>
 			{children}

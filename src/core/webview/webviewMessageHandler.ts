@@ -527,6 +527,7 @@ export const webviewMessageHandler = async (
 				litellm: {},
 				ollama: {},
 				lmstudio: {},
+				modelharbor: {}, // <-- Add modelharbor key
 			}
 
 			const safeGetModels = async (options: GetModelsOptions): Promise<ModelRecord> => {
@@ -546,6 +547,7 @@ export const webviewMessageHandler = async (
 				{ key: "requesty", options: { provider: "requesty", apiKey: apiConfiguration.requestyApiKey } },
 				{ key: "glama", options: { provider: "glama" } },
 				{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
+				{ key: "modelharbor", options: { provider: "modelharbor" } }, // <-- Add modelharbor fetch
 			]
 
 			// Don't fetch Ollama and LM Studio models by default anymore
