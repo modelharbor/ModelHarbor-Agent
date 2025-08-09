@@ -18,7 +18,6 @@ import {
 	GeminiHandler,
 	OpenAiNativeHandler,
 	DeepSeekHandler,
-	MoonshotHandler,
 	MistralHandler,
 	VsCodeLmHandler,
 	UnboundHandler,
@@ -31,6 +30,8 @@ import {
 	ChutesHandler,
 	LiteLLMHandler,
 	ClaudeCodeHandler,
+	ModelHarborHandler,
+	MoonshotHandler,
 	SambaNovaHandler,
 	DoubaoHandler,
 	ZAiHandler,
@@ -122,6 +123,8 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new ChutesHandler(options)
 		case "litellm":
 			return new LiteLLMHandler(options)
+		case "modelharbor":
+			return new ModelHarborHandler(options)
 		case "cerebras":
 			return new CerebrasHandler(options)
 		case "sambanova":
@@ -132,6 +135,6 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new FireworksHandler(options)
 		default:
 			apiProvider satisfies "gemini-cli" | undefined
-			return new AnthropicHandler(options)
+			return new ModelHarborHandler(options)
 	}
 }

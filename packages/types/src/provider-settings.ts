@@ -1,7 +1,8 @@
 import { z } from "zod"
 
-import { reasoningEffortsSchema, modelInfoSchema } from "./model.js"
+import { reasoningEffortsSchema, verbosityLevelsSchema, modelInfoSchema } from "./model.js"
 import { codebaseIndexProviderSchema } from "./codebase-index.js"
+// import { keysOf } from "./type-fu.js"
 
 /**
  * ProviderName
@@ -9,31 +10,40 @@ import { codebaseIndexProviderSchema } from "./codebase-index.js"
 
 export const providerNames = [
 	"anthropic",
-	"claude-code",
-	"glama",
-	"openrouter",
 	"bedrock",
-	"vertex",
-	"openai",
-	"ollama",
-	"vscode-lm",
-	"lmstudio",
+	"chutes",
+	"claude-code",
+	"deepseek",
+	"doubao",
+	"fake-ai",
 	"gemini",
 	"gemini-cli",
-	"openai-native",
+	"glama",
+	"groq",
+	"huggingface",
+	"human-relay",
+	"litellm",
+	"lmstudio",
 	"mistral",
 	"moonshot",
 	"deepseek",
 	"doubao",
 	"unbound",
+	"ollama",
+	"openai",
+	"openai-native",
+	"openrouter",
 	"requesty",
-	"human-relay",
-	"fake-ai",
+	"sambanova",
+	"unbound",
+	"vertex",
+	"vscode-lm",
 	"xai",
 	"groq",
 	"chutes",
 	"litellm",
 	"huggingface",
+	"modelharbor",
 	"cerebras",
 	"sambanova",
 	"zai",
@@ -79,6 +89,9 @@ const baseProviderSettingsSchema = z.object({
 	reasoningEffort: reasoningEffortsSchema.optional(),
 	modelMaxTokens: z.number().optional(),
 	modelMaxThinkingTokens: z.number().optional(),
+
+	// Model verbosity.
+	verbosity: verbosityLevelsSchema.optional(),
 })
 
 // Several of the providers share common model config properties.
@@ -209,7 +222,6 @@ const moonshotSchema = apiModelIdProviderModelSchema.extend({
 		.optional(),
 	moonshotApiKey: z.string().optional(),
 })
-
 const unboundSchema = baseProviderSettingsSchema.extend({
 	unboundApiKey: z.string().optional(),
 	unboundModelId: z.string().optional(),
@@ -251,12 +263,17 @@ const litellmSchema = baseProviderSettingsSchema.extend({
 	litellmUsePromptCache: z.boolean().optional(),
 })
 
-const cerebrasSchema = apiModelIdProviderModelSchema.extend({
-	cerebrasApiKey: z.string().optional(),
+const modelharborSchema = baseProviderSettingsSchema.extend({
+	modelharborApiKey: z.string().optional(),
+	modelharborModelId: z.string().optional(),
 })
 
 const sambaNovaSchema = apiModelIdProviderModelSchema.extend({
 	sambaNovaApiKey: z.string().optional(),
+})
+
+const cerebrasSchema = apiModelIdProviderModelSchema.extend({
+	cerebrasApiKey: z.string().optional(),
 })
 
 const zaiSchema = apiModelIdProviderModelSchema.extend({
@@ -299,6 +316,7 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	huggingFaceSchema.merge(z.object({ apiProvider: z.literal("huggingface") })),
 	chutesSchema.merge(z.object({ apiProvider: z.literal("chutes") })),
 	litellmSchema.merge(z.object({ apiProvider: z.literal("litellm") })),
+	modelharborSchema.merge(z.object({ apiProvider: z.literal("modelharbor") })),
 	cerebrasSchema.merge(z.object({ apiProvider: z.literal("cerebras") })),
 	sambaNovaSchema.merge(z.object({ apiProvider: z.literal("sambanova") })),
 	zaiSchema.merge(z.object({ apiProvider: z.literal("zai") })),
@@ -334,6 +352,7 @@ export const providerSettingsSchema = z.object({
 	...huggingFaceSchema.shape,
 	...chutesSchema.shape,
 	...litellmSchema.shape,
+	...modelharborSchema.shape,
 	...cerebrasSchema.shape,
 	...sambaNovaSchema.shape,
 	...zaiSchema.shape,
@@ -363,6 +382,7 @@ export const MODEL_ID_KEYS: Partial<keyof ProviderSettings>[] = [
 	"requestyModelId",
 	"litellmModelId",
 	"huggingFaceModelId",
+	"modelharborModelId",
 ]
 
 export const getModelId = (settings: ProviderSettings): string | undefined => {
