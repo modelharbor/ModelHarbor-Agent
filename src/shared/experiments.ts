@@ -16,9 +16,9 @@ interface ExperimentConfig {
 }
 
 export const experimentConfigsMap: Record<ExperimentKey, ExperimentConfig> = {
-	MULTI_FILE_APPLY_DIFF: { enabled: false },
+	MULTI_FILE_APPLY_DIFF: { enabled: true },
 	POWER_STEERING: { enabled: false },
-	PREVENT_FOCUS_DISRUPTION: { enabled: false },
+	PREVENT_FOCUS_DISRUPTION: { enabled: true },
 	IMAGE_GENERATION: { enabled: false },
 }
 
