@@ -3,6 +3,7 @@ import { Trans } from "react-i18next"
 import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 
 import { Package } from "@roo/package"
+
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { vscode } from "@src/utils/vscode"
@@ -25,7 +26,6 @@ interface AnnouncementProps {
 const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 	const { t } = useAppTranslation()
 	const [open, setOpen] = useState(true)
-	const { cloudIsAuthenticated } = useExtensionState()
 
 	return (
 		<Dialog
@@ -56,18 +56,7 @@ const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 					</p>
 
 					<div className="mt-4">
-						{!cloudIsAuthenticated ? (
-							<Button
-								onClick={() => {
-									vscode.postMessage({
-										type: "cloudLandingPageSignIn",
-										text: "supernova",
-									})
-								}}
-								className="w-full">
-								{t("chat:announcement.stealthModel.connectButton")}
-							</Button>
-						) : (
+						{(
 							<>
 								<p className="mb-3">
 									<Trans
@@ -108,38 +97,5 @@ const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 		</Dialog>
 	)
 }
-
-const XLink = () => (
-	<VSCodeLink
-		href="https://x.com/roo_code"
-		onClick={(e) => {
-			e.preventDefault()
-			vscode.postMessage({ type: "openExternal", url: "https://x.com/roo_code" })
-		}}>
-		X
-	</VSCodeLink>
-)
-
-const DiscordLink = () => (
-	<VSCodeLink
-		href="https://discord.gg/rCQcvT7Fnt"
-		onClick={(e) => {
-			e.preventDefault()
-			vscode.postMessage({ type: "openExternal", url: "https://discord.gg/rCQcvT7Fnt" })
-		}}>
-		Discord
-	</VSCodeLink>
-)
-
-const RedditLink = () => (
-	<VSCodeLink
-		href="https://www.reddit.com/r/RooCode/"
-		onClick={(e) => {
-			e.preventDefault()
-			vscode.postMessage({ type: "openExternal", url: "https://www.reddit.com/r/RooCode/" })
-		}}>
-		r/RooCode
-	</VSCodeLink>
-)
 
 export default memo(Announcement)
