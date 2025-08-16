@@ -1,0 +1,70 @@
+{
+	"unknownError": "เกิดข้อผิดพลาดที่ไม่รู้จัก",
+	"authenticationFailed": "สร้างการฝังตัวล้มเหลว: การรับรองความถูกต้องล้มเหลว โปรดตรวจสอบคีย์ API ของคุณ",
+	"failedWithStatus": "สร้างการฝังตัวล้มเหลวหลังจากพยายาม {{attempts}} ครั้ง: HTTP {{statusCode}} - {{errorMessage}}",
+	"failedWithError": "สร้างการฝังตัวล้มเหลวหลังจากพยายาม {{attempts}} ครั้ง: {{errorMessage}}",
+	"failedMaxAttempts": "สร้างการฝังตัวล้มเหลวหลังจากพยายาม {{attempts}} ครั้ง",
+	"textExceedsTokenLimit": "ข้อความที่ดัชนี {{index}} เกินขีดจำกัดโทเค็นสูงสุด ({{itemTokens}} > {{maxTokens}}) กำลังข้าม",
+	"rateLimitRetry": "ถึงขีดจำกัดอัตราแล้ว กำลังลองใหม่ใน {{delayMs}}ms (ครั้งที่ {{attempt}}/{{maxRetries}})",
+	"ollama": {
+		"couldNotReadErrorBody": "ไม่สามารถอ่านเนื้อหาข้อผิดพลาดได้",
+		"requestFailed": "คำขอ Ollama API ล้มเหลวด้วยสถานะ {{status}} {{statusText}}: {{errorBody}}",
+		"invalidResponseStructure": "โครงสร้างการตอบกลับจาก Ollama API ไม่ถูกต้อง: ไม่พบอาร์เรย์ \"embeddings\" หรือไม่ใช่อาร์เรย์",
+		"embeddingFailed": "การฝัง Ollama ล้มเหลว: {{message}}",
+		"serviceNotRunning": "บริการ Ollama ไม่ได้ทำงานที่ {{baseUrl}}",
+		"serviceUnavailable": "บริการ Ollama ไม่พร้อมใช้งาน (สถานะ: {{status}})",
+		"modelNotFound": "ไม่พบโมเดล Ollama: {{modelId}}",
+		"modelNotEmbeddingCapable": "โมเดล Ollama ไม่สามารถฝังได้: {{modelId}}",
+		"hostNotFound": "ไม่พบโฮสต์ Ollama: {{baseUrl}}"
+	},
+	"scanner": {
+		"unknownErrorProcessingFile": "เกิดข้อผิดพลาดที่ไม่รู้จักในการประมวลผลไฟล์ {{filePath}}",
+		"unknownErrorDeletingPoints": "เกิดข้อผิดพลาดที่ไม่รู้จักในการลบจุดสำหรับ {{filePath}}",
+		"failedToProcessBatchWithError": "ประมวลผลแบตช์ล้มเหลวหลังจากพยายาม {{maxRetries}} ครั้ง: {{errorMessage}}"
+	},
+	"vectorStore": {
+		"qdrantConnectionFailed": "เชื่อมต่อกับฐานข้อมูลเวกเตอร์ Qdrant ล้มเหลว โปรดตรวจสอบให้แน่ใจว่า Qdrant กำลังทำงานและสามารถเข้าถึงได้ที่ {{qdrantUrl}} ข้อผิดพลาด: {{errorMessage}}",
+		"vectorDimensionMismatch": "อัปเดตดัชนีเวกเตอร์สำหรับโมเดลใหม่ล้มเหลว โปรดลองล้างดัชนีแล้วเริ่มใหม่อีกครั้ง รายละเอียด: {{errorMessage}}"
+	},
+	"validation": {
+		"authenticationFailed": "การรับรองความถูกต้องล้มเหลว โปรดตรวจสอบคีย์ API ของคุณในการตั้งค่า",
+		"connectionFailed": "เชื่อมต่อกับบริการ embedder ล้มเหลว โปรดตรวจสอบการตั้งค่าการเชื่อมต่อของคุณและตรวจสอบให้แน่ใจว่าบริการกำลังทำงาน",
+		"modelNotAvailable": "โมเดลที่ระบุไม่พร้อมใช้งาน โปรดตรวจสอบการกำหนดค่าโมเดลของคุณ",
+		"configurationError": "การกำหนดค่า embedder ไม่ถูกต้อง โปรดตรวจสอบการตั้งค่าของคุณ",
+		"serviceUnavailable": "บริการ embedder ไม่พร้อมใช้งาน โปรดตรวจสอบให้แน่ใจว่ากำลังทำงานและสามารถเข้าถึงได้",
+		"invalidEndpoint": "ปลายทาง API ไม่ถูกต้อง โปรดตรวจสอบการกำหนดค่า URL ของคุณ",
+		"invalidEmbedderConfig": "การกำหนดค่า embedder ไม่ถูกต้อง โปรดตรวจสอบการตั้งค่าของคุณ",
+		"invalidApiKey": "คีย์ API ไม่ถูกต้อง โปรดตรวจสอบการกำหนดค่าคีย์ API ของคุณ",
+		"invalidBaseUrl": "URL พื้นฐานไม่ถูกต้อง โปรดตรวจสอบการกำหนดค่า URL ของคุณ",
+		"invalidModel": "โมเดลไม่ถูกต้อง โปรดตรวจสอบการกำหนดค่าโมเดลของคุณ",
+		"invalidResponse": "การตอบกลับจากบริการ embedder ไม่ถูกต้อง โปรดตรวจสอบการกำหนดค่าของคุณ",
+		"apiKeyRequired": "จำเป็นต้องใช้คีย์ API สำหรับ embedder นี้",
+		"baseUrlRequired": "จำเป็นต้องใช้ URL พื้นฐานสำหรับ embedder นี้"
+	},
+	"serviceFactory": {
+		"openAiConfigMissing": "ไม่มีการกำหนดค่า OpenAI สำหรับการสร้าง embedder",
+		"ollamaConfigMissing": "ไม่มีการกำหนดค่า Ollama สำหรับการสร้าง embedder",
+		"openAiCompatibleConfigMissing": "ไม่มีการกำหนดค่าที่เข้ากันได้กับ OpenAI สำหรับการสร้าง embedder",
+		"geminiConfigMissing": "ไม่มีการกำหนดค่า Gemini สำหรับการสร้าง embedder",
+		"mistralConfigMissing": "ไม่มีการกำหนดค่า Mistral สำหรับการสร้าง embedder",
+		"invalidEmbedderType": "ประเภท embedder ที่กำหนดค่าไม่ถูกต้อง: {{embedderProvider}}",
+		"vectorDimensionNotDeterminedOpenAiCompatible": "ไม่สามารถกำหนดมิติเวกเตอร์สำหรับโมเดล '{{modelId}}' กับผู้ให้บริการ '{{provider}}' ได้ โปรดตรวจสอบให้แน่ใจว่า 'มิติการฝัง' ถูกตั้งค่าอย่างถูกต้องในการตั้งค่าผู้ให้บริการที่เข้ากันได้กับ OpenAI",
+		"vectorDimensionNotDetermined": "ไม่สามารถกำหนดมิติเวกเตอร์สำหรับโมเดล '{{modelId}}' กับผู้ให้บริการ '{{provider}}' ได้ ตรวจสอบโปรไฟล์โมเดลหรือการกำหนดค่า",
+		"qdrantUrlMissing": "ไม่มี URL ของ Qdrant สำหรับการสร้างที่เก็บเวกเตอร์",
+		"codeIndexingNotConfigured": "ไม่สามารถสร้างบริการได้: การจัดทำดัชนีโค้ดไม่ได้กำหนดค่าอย่างถูกต้อง",
+		"codeIndexingNotConfigured": "ไม่สามารถสร้างบริการได้: การจัดทำดัชนีโค้ดไม่ได้กำหนดค่าอย่างถูกต้อง",
+		"modelHarborConfigMissing": "การกำหนดค่า ModelHarbor หายไปสำหรับการสร้าง embedder"
+	},
+	"orchestrator": {
+		"indexingFailedNoBlocks": "การจัดทำดัชนีล้มเหลว: ไม่มีบล็อกโค้ดใดที่จัดทำดัชนีได้สำเร็จ ซึ่งโดยปกติจะบ่งชี้ถึงปัญหาการกำหนดค่า embedder",
+		"indexingFailedCritical": "การจัดทำดัชนีล้มเหลว: ไม่มีบล็อกโค้ดใดที่จัดทำดัชนีได้สำเร็จแม้ว่าจะพบไฟล์ที่จะประมวลผลก็ตาม ซึ่งบ่งชี้ถึงความล้มเหลวร้ายแรงของ embedder",
+		"fileWatcherStarted": "เริ่มตัวเฝ้าดูไฟล์แล้ว",
+		"fileWatcherStopped": "หยุดตัวเฝ้าดูไฟล์แล้ว",
+		"failedDuringInitialScan": "ล้มเหลวระหว่างการสแกนเริ่มต้น: {{errorMessage}}",
+		"unknownError": "เกิดข้อผิดพลาดที่ไม่รู้จัก",
+		"indexingRequiresWorkspace": "การจัดทำดัชนีต้องมีโฟลเดอร์พื้นที่ทำงานที่เปิดอยู่"
+	},
+	"modelharbor": {
+		"invalidResponseFormat": "รูปแบบการตอบกลับจาก ModelHarbor API ไม่ถูกต้อง"
+	}
+}

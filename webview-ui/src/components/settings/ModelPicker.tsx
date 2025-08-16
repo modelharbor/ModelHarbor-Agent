@@ -35,6 +35,7 @@ type ModelIdKey = keyof Pick<
 	| "openAiModelId"
 	| "litellmModelId"
 	| "ioIntelligenceModelId"
+	| "modelharborModelId"
 	| "vercelAiGatewayModelId"
 >
 

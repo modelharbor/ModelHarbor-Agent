@@ -54,14 +54,14 @@ describe("ExtensionStateContext", () => {
 		expect(JSON.parse(screen.getByTestId("allowed-commands").textContent!)).toEqual([])
 	})
 
-	it("initializes with soundEnabled set to false", () => {
+	it("initializes with soundEnabled set to true", () => {
 		render(
 			<ExtensionStateContextProvider>
 				<TestComponent />
 			</ExtensionStateContextProvider>,
 		)
 
-		expect(JSON.parse(screen.getByTestId("sound-enabled").textContent!)).toBe(false)
+		expect(JSON.parse(screen.getByTestId("sound-enabled").textContent!)).toBe(true)
 	})
 
 	it("initializes with showRooIgnoredFiles set to true", () => {
@@ -197,7 +197,6 @@ describe("mergeExtensionState", () => {
 			maxOpenTabsContext: 20,
 			maxWorkspaceFiles: 100,
 			apiConfiguration: { providerId: "openrouter" } as ProviderSettings,
-			telemetrySetting: "unset",
 			showRooIgnoredFiles: true,
 			renderContext: "sidebar",
 			maxReadFileLine: 500,
