@@ -41,6 +41,7 @@ describe("Model Validation Functions", () => {
 		ollama: {},
 		lmstudio: {},
 		"io-intelligence": {},
+		modelharbor: {},
 	}
 
 	const allowAllOrganization: OrganizationAllowList = {

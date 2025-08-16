@@ -49,6 +49,7 @@ export const PROVIDERS = [
 	{ value: "doubao", label: "Doubao" },
 	{ value: "deepseek", label: "DeepSeek" },
 	{ value: "moonshot", label: "Moonshot" },
+	{ value: "modelharbor", label: "ModelHarbor" },
 	{ value: "openai-native", label: "OpenAI" },
 	{ value: "openai", label: "OpenAI Compatible" },
 	{ value: "vertex", label: "GCP Vertex AI" },

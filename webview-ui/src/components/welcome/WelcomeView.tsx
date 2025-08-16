@@ -13,6 +13,7 @@ import { getRequestyAuthUrl, getOpenRouterAuthUrl } from "@src/oauth/urls"
 
 import ApiOptions from "../settings/ApiOptions"
 import { Tab, TabContent } from "../common/Tab"
+import LanguageSelector from "../common/LanguageSelector"
 
 import RooHero from "./RooHero"
 
@@ -50,6 +51,9 @@ const WelcomeView = () => {
 	return (
 		<Tab>
 			<TabContent className="flex flex-col gap-5 p-16">
+				<div className="flex justify-end">
+					<LanguageSelector compact />
+				</div>
 				<RooHero />
 				<h2 className="mt-0 mb-0">{t("welcome:greeting")}</h2>
 

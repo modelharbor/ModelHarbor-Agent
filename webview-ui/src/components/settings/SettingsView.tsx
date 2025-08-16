@@ -27,8 +27,6 @@ import {
 
 import type { ProviderSettings, ExperimentId } from "@roo-code/types"
 
-import { TelemetrySetting } from "@roo/TelemetrySetting"
-
 import { vscode } from "@src/utils/vscode"
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { ExtensionStateContextType, useExtensionState } from "@src/context/ExtensionStateContext"
@@ -154,7 +152,6 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 		ttsEnabled,
 		ttsSpeed,
 		soundVolume,
-		telemetrySetting,
 		terminalOutputLineLimit,
 		terminalOutputCharacterLimit,
 		terminalShellIntegrationTimeout,
@@ -251,17 +248,6 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 		})
 	}, [])
 
-	const setTelemetrySetting = useCallback((setting: TelemetrySetting) => {
-		setCachedState((prevState) => {
-			if (prevState.telemetrySetting === setting) {
-				return prevState
-			}
-
-			setChangeDetected(true)
-			return { ...prevState, telemetrySetting: setting }
-		})
-	}, [])
-
 	const setCustomSupportPromptsField = useCallback((prompts: Record<string, string | undefined>) => {
 		setCachedState((prevState) => {
 			if (JSON.stringify(prevState.customSupportPrompts) === JSON.stringify(prompts)) {
@@ -343,7 +329,6 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 			vscode.postMessage({ type: "updateSupportPrompt", values: customSupportPrompts || {} })
 			vscode.postMessage({ type: "includeTaskHistoryInEnhance", bool: includeTaskHistoryInEnhance ?? false })
 			vscode.postMessage({ type: "upsertApiConfiguration", text: currentApiConfigName, apiConfiguration })
-			vscode.postMessage({ type: "telemetrySetting", text: telemetrySetting })
 			vscode.postMessage({ type: "profileThresholds", values: profileThresholds })
 			setChangeDetected(false)
 		}
@@ -729,9 +714,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 					)}
 
 					{/* About Section */}
-					{activeTab === "about" && (
-						<About telemetrySetting={telemetrySetting} setTelemetrySetting={setTelemetrySetting} />
-					)}
+					{activeTab === "about" && <About />}
 				</TabContent>
 			</div>
 

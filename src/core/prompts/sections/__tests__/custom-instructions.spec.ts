@@ -92,7 +92,8 @@ describe("loadRuleFiles", () => {
 		statMock.mockRejectedValueOnce({ code: "ENOENT" })
 		readFileMock.mockRejectedValue({ code: "ENOENT" })
 		const result = await loadRuleFiles("/fake/path")
-		expect(result).toBe("")
+		expect(result).toContain("# Collaboration Rules")
+		expect(result).toContain("## Core Behavior")
 	})
 
 	it("should handle EISDIR error", async () => {
@@ -100,7 +101,8 @@ describe("loadRuleFiles", () => {
 		statMock.mockRejectedValueOnce({ code: "ENOENT" })
 		readFileMock.mockRejectedValue({ code: "EISDIR" })
 		const result = await loadRuleFiles("/fake/path")
-		expect(result).toBe("")
+		expect(result).toContain("# Collaboration Rules")
+		expect(result).toContain("## Core Behavior")
 	})
 
 	it("should throw on unexpected errors", async () => {
@@ -138,7 +140,8 @@ describe("loadRuleFiles", () => {
 		readFileMock.mockRejectedValue({ code: "ENOENT" })
 
 		const result = await loadRuleFiles("/fake/path")
-		expect(result).toBe("")
+		expect(result).toContain("# Collaboration Rules")
+		expect(result).toContain("## Core Behavior")
 	})
 
 	it("should skip directories with same name as rule files", async () => {
@@ -155,7 +158,8 @@ describe("loadRuleFiles", () => {
 		})
 
 		const result = await loadRuleFiles("/fake/path")
-		expect(result).toBe("")
+		expect(result).toContain("# Collaboration Rules")
+		expect(result).toContain("## Core Behavior")
 	})
 
 	it("should use .roo/rules/ directory when it exists and has files", async () => {
@@ -496,12 +500,12 @@ describe("addCustomInstructions", () => {
 			"global instructions",
 			"/fake/path",
 			"test-mode",
-			{ language: "es" },
+			{ language: "th" },
 		)
 
 		expect(result).toContain("Language Preference:")
-		expect(result).toContain("Español") // Check for language name
-		expect(result).toContain("(es)") // Check for language code in parentheses
+		expect(result).toContain("ภาษาไทย") // Check for language name in Thai
+		expect(result).toContain("(th)") // Check for language code in parentheses
 		expect(result).toContain("Global Instructions:\nglobal instructions")
 		expect(result).toContain("Mode-specific Instructions:\nmode instructions")
 		expect(result).toContain("Rules from .roorules-test-mode:\nmode specific rules")
@@ -862,7 +866,8 @@ describe("addCustomInstructions", () => {
 		readFileMock.mockRejectedValue({ code: "ENOENT" })
 
 		const result = await addCustomInstructions("", "", "/fake/path", "", {})
-		expect(result).toBe("")
+		expect(result).toContain("# Collaboration Rules")
+		expect(result).toContain("## Core Behavior")
 	})
 
 	it("should handle missing mode-specific rules file", async () => {
@@ -994,7 +999,7 @@ describe("addCustomInstructions", () => {
 			"global instructions",
 			"/fake/path",
 			"test-mode",
-			{ language: "es" },
+			{ language: "th" },
 		)
 
 		const expectedTestModeDir =

@@ -49,6 +49,7 @@ import {
 	ioIntelligenceDefaultModelId,
 	ioIntelligenceModels,
 	BEDROCK_CLAUDE_SONNET_4_MODEL_ID,
+	modelHarborDefaultModelId,
 } from "@roo-code/types"
 
 import type { ModelRecord, RouterModels } from "@roo/api"
@@ -294,6 +295,11 @@ function getSelectedModel({
 			const id = apiConfiguration.ioIntelligenceModelId ?? ioIntelligenceDefaultModelId
 			const info =
 				routerModels["io-intelligence"]?.[id] ?? ioIntelligenceModels[id as keyof typeof ioIntelligenceModels]
+			return { id, info }
+		}
+		case "modelharbor": {
+			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
+			const info = routerModels.modelharbor?.[id]
 			return { id, info }
 		}
 		// case "anthropic":
