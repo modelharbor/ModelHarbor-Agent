@@ -17,20 +17,11 @@ import {
 	type ProviderSettings,
 	type RooCodeSettings,
 	type ProviderSettingsEntry,
-	type StaticAppProperties,
-	type DynamicAppProperties,
-	type CloudAppProperties,
-	type TaskProperties,
-	type GitProperties,
-	type TelemetryProperties,
-	type TelemetryPropertiesProvider,
 	type CodeActionId,
 	type CodeActionName,
 	type TerminalActionId,
 	type TerminalActionPromptType,
 	type HistoryItem,
-	type CloudUserInfo,
-	type CloudOrganizationMembership,
 	type CreateTaskOptions,
 	type TokenUsage,
 	type ToolUsage,
@@ -39,13 +30,10 @@ import {
 	openRouterDefaultModelId,
 	DEFAULT_TERMINAL_OUTPUT_CHARACTER_LIMIT,
 	DEFAULT_WRITE_DELAY_MS,
-	ORGANIZATION_ALLOW_ALL,
 	DEFAULT_MODES,
 	DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
 	getModelId,
 } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
-import { CloudService, BridgeOrchestrator, getRooCodeApiUrl } from "@roo-code/cloud"
 
 import { Package } from "../../shared/package"
 import { findLast } from "../../shared/array"
@@ -71,13 +59,10 @@ import { ShadowCheckpointService } from "../../services/checkpoints/ShadowCheckp
 import { CodeIndexManager } from "../../services/code-index/manager"
 import type { IndexProgressUpdate } from "../../services/code-index/interfaces/manager"
 import { MdmService } from "../../services/mdm/MdmService"
-import { SkillsManager } from "../../services/skills/SkillsManager"
 
 import { fileExistsAtPath } from "../../utils/fs"
 import { setTtsEnabled, setTtsSpeed } from "../../utils/tts"
-import { getWorkspaceGitInfo } from "../../utils/git"
 import { getWorkspacePath } from "../../utils/path"
-import { OrganizationAllowListViolationError } from "../../utils/errors"
 
 import { setPanel } from "../../activate/registerCommands"
 
@@ -99,7 +84,6 @@ import { readTaskMessages } from "../task-persistence/taskMessages"
 import { getNonce } from "./getNonce"
 import { getUri } from "./getUri"
 import { REQUESTY_BASE_URL } from "../../shared/utils/requesty"
-import { validateAndFixToolResultIds } from "../task/validateToolResultIds"
 
 /**
  * https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/main/default/weather-webview/src/providers/WeatherViewProvider.ts
@@ -122,7 +106,7 @@ interface PendingEditOperation {
 
 export class ClineProvider
 	extends EventEmitter<TaskProviderEvents>
-	implements vscode.WebviewViewProvider, TelemetryPropertiesProvider, TaskProviderLike
+	implements vscode.WebviewViewProvider, TaskProviderLike
 {
 	// Used in package.json as the view's id. This value cannot be changed due
 	// to how VSCode caches views based on their id, and updating the id would
@@ -138,7 +122,6 @@ export class ClineProvider
 	private codeIndexManager?: CodeIndexManager
 	private _workspaceTracker?: WorkspaceTracker // workSpaceTracker read-only for access outside this class
 	protected mcpHub?: McpHub // Change from private to protected
-	protected skillsManager?: SkillsManager
 	private marketplaceManager: MarketplaceManager
 	private mdmService?: MdmService
 	private taskCreationCallback: (task: Task) => void
@@ -149,13 +132,9 @@ export class ClineProvider
 	private pendingOperations: Map<string, PendingEditOperation> = new Map()
 	private static readonly PENDING_OPERATION_TIMEOUT_MS = 30000 // 30 seconds
 
-	private cloudOrganizationsCache: CloudOrganizationMembership[] | null = null
-	private cloudOrganizationsCacheTimestamp: number | null = null
-	private static readonly CLOUD_ORGANIZATIONS_CACHE_DURATION_MS = 5 * 1000 // 5 seconds
-
 	public isViewLaunched = false
 	public settingsImportedAt?: number
-	public readonly latestAnnouncementId = "dec-2025-v3.38.0-skills-native-tool-calling" // v3.38.0 Skills & Native Tool Calling Required
+	public readonly latestAnnouncementId = "dec-2025-v3.36.0-context-rewind-roo-provider" // v3.36.0 Context Rewind & Roo Provider Improvements
 	public readonly providerSettingsManager: ProviderSettingsManager
 	public readonly customModesManager: CustomModesManager
 
@@ -177,10 +156,6 @@ export class ClineProvider
 		// Start configuration loading (which might trigger indexing) in the background.
 		// Don't await, allowing activation to continue immediately.
 
-		// Register this provider with the telemetry service to enable it to add
-		// properties like mode and provider.
-		TelemetryService.instance.setProvider(this)
-
 		this._workspaceTracker = new WorkspaceTracker(this)
 
 		this.providerSettingsManager = new ProviderSettingsManager(this.context)
@@ -198,12 +173,6 @@ export class ClineProvider
 			.catch((error) => {
 				this.log(`Failed to initialize MCP Hub: ${error}`)
 			})
-
-		// Initialize Skills Manager for skill discovery
-		this.skillsManager = new SkillsManager(this)
-		this.skillsManager.initialize().catch((error) => {
-			this.log(`Failed to initialize Skills Manager: ${error}`)
-		})
 
 		this.marketplaceManager = new MarketplaceManager(this.context, this.customModesManager)
 
@@ -292,15 +261,6 @@ export class ClineProvider
 				() => instance.off(RooCodeEventName.TaskTokenUsageUpdated, onTaskTokenUsageUpdated),
 			])
 		}
-
-		// Initialize Roo Code Cloud profile sync.
-		if (CloudService.hasInstance()) {
-			this.initializeCloudProfileSync().catch((error) => {
-				this.log(`Failed to initialize cloud profile sync: ${error}`)
-			})
-		} else {
-			this.log("CloudService not ready, deferring cloud profile sync")
-		}
 	}
 
 	/**
@@ -321,92 +281,6 @@ export class ClineProvider
 		listener: (...args: TaskProviderEvents[K]) => void | Promise<void>,
 	): this {
 		return super.off(event, listener as any)
-	}
-
-	/**
-	 * Initialize cloud profile synchronization
-	 */
-	private async initializeCloudProfileSync() {
-		try {
-			// Check if authenticated and sync profiles
-			if (CloudService.hasInstance() && CloudService.instance.isAuthenticated()) {
-				await this.syncCloudProfiles()
-			}
-
-			// Set up listener for future updates
-			if (CloudService.hasInstance()) {
-				CloudService.instance.on("settings-updated", this.handleCloudSettingsUpdate)
-			}
-		} catch (error) {
-			this.log(`Error in initializeCloudProfileSync: ${error}`)
-		}
-	}
-
-	/**
-	 * Handle cloud settings updates
-	 */
-	private handleCloudSettingsUpdate = async () => {
-		try {
-			await this.syncCloudProfiles()
-		} catch (error) {
-			this.log(`Error handling cloud settings update: ${error}`)
-		}
-	}
-
-	/**
-	 * Synchronize cloud profiles with local profiles.
-	 */
-	private async syncCloudProfiles() {
-		try {
-			const settings = CloudService.instance.getOrganizationSettings()
-
-			if (!settings?.providerProfiles) {
-				return
-			}
-
-			const currentApiConfigName = this.getGlobalState("currentApiConfigName")
-
-			const result = await this.providerSettingsManager.syncCloudProfiles(
-				settings.providerProfiles,
-				currentApiConfigName,
-			)
-
-			if (result.hasChanges) {
-				// Update list.
-				await this.updateGlobalState("listApiConfigMeta", await this.providerSettingsManager.listConfig())
-
-				if (result.activeProfileChanged && result.activeProfileId) {
-					// Reload full settings for new active profile.
-					const profile = await this.providerSettingsManager.getProfile({
-						id: result.activeProfileId,
-					})
-					await this.activateProviderProfile({ name: profile.name })
-				}
-
-				await this.postStateToWebview()
-			}
-		} catch (error) {
-			this.log(`Error syncing cloud profiles: ${error}`)
-		}
-	}
-
-	/**
-	 * Initialize cloud profile synchronization when CloudService is ready
-	 * This method is called externally after CloudService has been initialized
-	 */
-	public async initializeCloudProfileSyncWhenReady(): Promise<void> {
-		try {
-			if (CloudService.hasInstance() && CloudService.instance.isAuthenticated()) {
-				await this.syncCloudProfiles()
-			}
-
-			if (CloudService.hasInstance()) {
-				CloudService.instance.off("settings-updated", this.handleCloudSettingsUpdate)
-				CloudService.instance.on("settings-updated", this.handleCloudSettingsUpdate)
-			}
-		} catch (error) {
-			this.log(`Failed to initialize cloud profile sync when ready: ${error}`)
-		}
 	}
 
 	// Adds a new Task instance to clineStack, marking the start of a new task.
@@ -594,11 +468,6 @@ export class ClineProvider
 
 		this.clearWebviewResources()
 
-		// Clean up cloud service event listener
-		if (CloudService.hasInstance()) {
-			CloudService.instance.off("settings-updated", this.handleCloudSettingsUpdate)
-		}
-
 		while (this.disposables.length) {
 			const x = this.disposables.pop()
 
@@ -611,8 +480,6 @@ export class ClineProvider
 		this._workspaceTracker = undefined
 		await this.mcpHub?.unregisterClient()
 		this.mcpHub = undefined
-		await this.skillsManager?.dispose()
-		this.skillsManager = undefined
 		this.marketplaceManager?.cleanup()
 		this.customModesManager?.dispose()
 		this.log("Disposed all disposables")
@@ -667,9 +534,6 @@ export class ClineProvider
 		promptType: CodeActionName,
 		params: Record<string, string | any[]>,
 	): Promise<void> {
-		// Capture telemetry for code action usage
-		TelemetryService.instance.captureCodeActionUsed(promptType)
-
 		const visibleProvider = await ClineProvider.getInstance()
 
 		if (!visibleProvider) {
@@ -699,8 +563,6 @@ export class ClineProvider
 		promptType: TerminalActionPromptType,
 		params: Record<string, string | any[]>,
 	): Promise<void> {
-		TelemetryService.instance.captureCodeActionUsed(promptType)
-
 		const visibleProvider = await ClineProvider.getInstance()
 
 		if (!visibleProvider) {
@@ -720,16 +582,7 @@ export class ClineProvider
 			return
 		}
 
-		try {
-			await visibleProvider.createTask(prompt)
-		} catch (error) {
-			if (error instanceof OrganizationAllowListViolationError) {
-				// Errors from terminal commands seem to get swallowed / ignored.
-				vscode.window.showErrorMessage(error.message)
-			}
-
-			throw error
-		}
+		await visibleProvider.createTask(prompt)
 	}
 
 	async resolveWebviewView(webviewView: vscode.WebviewView | vscode.WebviewPanel) {
@@ -923,8 +776,6 @@ export class ClineProvider
 			checkpointTimeout,
 			fuzzyMatchThreshold,
 			experiments,
-			cloudUserInfo,
-			taskSyncEnabled,
 		} = await this.getState()
 
 		const task = new Task({
@@ -943,7 +794,6 @@ export class ClineProvider
 			workspacePath: historyItem.workspace,
 			onCreated: this.taskCreationCallback,
 			startTask: options?.startTask ?? true,
-			enableBridge: BridgeOrchestrator.isEnabled(cloudUserInfo, taskSyncEnabled),
 			// Preserve the status from the history item to avoid overwriting it when the task saves messages
 			initialStatus: historyItem.status,
 		})
@@ -1130,7 +980,7 @@ export class ClineProvider
 						window.AUDIO_BASE_URI = "${audioUri}"
 						window.MATERIAL_ICONS_BASE_URI = "${materialIconsUri}"
 					</script>
-					<title>Roo Code</title>
+					<title>ModelHarbor Agent</title>
 				</head>
 				<body>
 					<div id="root"></div>
@@ -1201,7 +1051,7 @@ export class ClineProvider
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
             <meta name="theme-color" content="#000000">
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${webview.cspSource} data:; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https://storage.googleapis.com https://img.clerk.com data:; media-src ${webview.cspSource}; script-src ${webview.cspSource} 'wasm-unsafe-eval' 'nonce-${nonce}' https://ph.roocode.com 'strict-dynamic'; connect-src ${webview.cspSource} ${openRouterDomain} https://api.requesty.ai https://ph.roocode.com;">
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; font-src ${webview.cspSource} data:; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https://storage.googleapis.com https://img.clerk.com data:; media-src ${webview.cspSource}; script-src ${webview.cspSource} 'wasm-unsafe-eval' 'nonce-${nonce}' https://us-assets.i.posthog.com 'strict-dynamic'; connect-src ${webview.cspSource} https://openrouter.ai https://api.requesty.ai https://api.modelharbor.com https://us.i.posthog.com https://us-assets.i.posthog.com;">
             <link rel="stylesheet" type="text/css" href="${stylesUri}">
 			<link href="${codiconsUri}" rel="stylesheet" />
 			<script nonce="${nonce}">
@@ -1209,7 +1059,7 @@ export class ClineProvider
 				window.AUDIO_BASE_URI = "${audioUri}"
 				window.MATERIAL_ICONS_BASE_URI = "${materialIconsUri}"
 			</script>
-            <title>Roo Code</title>
+            <title>ModelHarbor Agent</title>
           </head>
           <body>
             <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -1242,7 +1092,6 @@ export class ClineProvider
 		const task = this.getCurrentTask()
 
 		if (task) {
-			TelemetryService.instance.captureModeSwitch(task.taskId, newMode)
 			task.emit(RooCodeEventName.TaskModeSwitched, task.taskId, newMode)
 
 			try {
@@ -1693,12 +1542,6 @@ export class ClineProvider
 	async postStateToWebview() {
 		const state = await this.getStateToPostToWebview()
 		this.postMessageToWebview({ type: "state", state })
-
-		// Check MDM compliance and send user to account tab if not compliant
-		// Only redirect if there's an actual MDM policy requiring authentication
-		if (this.mdmService?.requiresCloudAuth() && !this.checkMdmCompliance()) {
-			await this.postMessageToWebview({ type: "action", action: "cloudButtonClicked" })
-		}
 	}
 
 	/**
@@ -1827,6 +1670,7 @@ export class ClineProvider
 			alwaysAllowMcp,
 			alwaysAllowModeSwitch,
 			alwaysAllowSubtasks,
+			alwaysAllowUpdateTodoList,
 			allowedMaxRequests,
 			allowedMaxCost,
 			autoCondenseContext,
@@ -1858,6 +1702,8 @@ export class ClineProvider
 			fuzzyMatchThreshold,
 			mcpEnabled,
 			enableMcpServerCreation,
+			alwaysApproveResubmit,
+			requestDelaySeconds,
 			currentApiConfigName,
 			listApiConfigMeta,
 			pinnedApiConfigs,
@@ -1866,12 +1712,13 @@ export class ClineProvider
 			customSupportPrompts,
 			enhancementApiConfigId,
 			autoApprovalEnabled,
+			superYoloMode,
+			superYoloStuckTimeoutMs,
 			customModes,
 			experiments,
 			maxOpenTabsContext,
 			maxWorkspaceFiles,
 			browserToolEnabled,
-			telemetrySetting,
 			showRooIgnoredFiles,
 			language,
 			maxReadFileLine,
@@ -1881,12 +1728,6 @@ export class ClineProvider
 			historyPreviewCollapsed,
 			reasoningBlockCollapsed,
 			enterBehavior,
-			cloudUserInfo,
-			cloudIsAuthenticated,
-			sharingEnabled,
-			publicSharingEnabled,
-			organizationAllowList,
-			organizationSettingsVersion,
 			maxConcurrentFileReads,
 			condensingApiConfigId,
 			customCondensingPrompt,
@@ -1901,39 +1742,13 @@ export class ClineProvider
 			includeCurrentTime,
 			includeCurrentCost,
 			maxGitStatusFiles,
-			taskSyncEnabled,
-			remoteControlEnabled,
 			imageGenerationProvider,
 			openRouterImageApiKey,
 			openRouterImageGenerationSelectedModel,
-			featureRoomoteControlEnabled,
+			openRouterUseMiddleOutTransform,
 			isBrowserSessionActive,
 		} = await this.getState()
 
-		let cloudOrganizations: CloudOrganizationMembership[] = []
-
-		try {
-			if (!CloudService.instance.isCloudAgent) {
-				const now = Date.now()
-
-				if (
-					this.cloudOrganizationsCache !== null &&
-					this.cloudOrganizationsCacheTimestamp !== null &&
-					now - this.cloudOrganizationsCacheTimestamp < ClineProvider.CLOUD_ORGANIZATIONS_CACHE_DURATION_MS
-				) {
-					cloudOrganizations = this.cloudOrganizationsCache!
-				} else {
-					cloudOrganizations = await CloudService.instance.getOrganizationMemberships()
-					this.cloudOrganizationsCache = cloudOrganizations
-					this.cloudOrganizationsCacheTimestamp = now
-				}
-			}
-		} catch (error) {
-			// Ignore this error.
-		}
-
-		const telemetryKey = process.env.POSTHOG_API_KEY
-		const machineId = vscode.env.machineId
 		const mergedAllowedCommands = this.mergeAllowedCommands(allowedCommands)
 		const mergedDeniedCommands = this.mergeDeniedCommands(deniedCommands)
 		const cwd = this.cwd
@@ -1956,6 +1771,7 @@ export class ClineProvider
 			alwaysAllowMcp: alwaysAllowMcp ?? false,
 			alwaysAllowModeSwitch: alwaysAllowModeSwitch ?? false,
 			alwaysAllowSubtasks: alwaysAllowSubtasks ?? false,
+			alwaysAllowUpdateTodoList: alwaysAllowUpdateTodoList ?? false,
 			isBrowserSessionActive,
 			allowedMaxRequests,
 			allowedMaxCost,
@@ -1977,8 +1793,7 @@ export class ClineProvider
 			diffEnabled: diffEnabled ?? true,
 			enableCheckpoints: enableCheckpoints ?? true,
 			checkpointTimeout: checkpointTimeout ?? DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
-			shouldShowAnnouncement:
-				telemetrySetting !== "unset" && lastShownAnnouncementId !== this.latestAnnouncementId,
+			shouldShowAnnouncement: lastShownAnnouncementId !== this.latestAnnouncementId,
 			allowedCommands: mergedAllowedCommands,
 			deniedCommands: mergedDeniedCommands,
 			soundVolume: soundVolume ?? 0.5,
@@ -2001,6 +1816,8 @@ export class ClineProvider
 			fuzzyMatchThreshold: fuzzyMatchThreshold ?? 1.0,
 			mcpEnabled: mcpEnabled ?? true,
 			enableMcpServerCreation: enableMcpServerCreation ?? true,
+			alwaysApproveResubmit: alwaysApproveResubmit ?? false,
+			requestDelaySeconds: requestDelaySeconds ?? 10,
 			currentApiConfigName: currentApiConfigName ?? "default",
 			listApiConfigMeta: listApiConfigMeta ?? [],
 			pinnedApiConfigs: pinnedApiConfigs ?? {},
@@ -2009,6 +1826,8 @@ export class ClineProvider
 			customSupportPrompts: customSupportPrompts ?? {},
 			enhancementApiConfigId,
 			autoApprovalEnabled: autoApprovalEnabled ?? false,
+			superYoloMode: superYoloMode ?? false,
+			superYoloStuckTimeoutMs: superYoloStuckTimeoutMs ?? 300000,
 			customModes,
 			experiments: experiments ?? experimentDefault,
 			mcpServers: this.mcpHub?.getAllServers() ?? [],
@@ -2016,9 +1835,6 @@ export class ClineProvider
 			maxWorkspaceFiles: maxWorkspaceFiles ?? 200,
 			cwd,
 			browserToolEnabled: browserToolEnabled ?? true,
-			telemetrySetting,
-			telemetryKey,
-			machineId,
 			showRooIgnoredFiles: showRooIgnoredFiles ?? false,
 			language: language ?? formatLanguage(vscode.env.language),
 			renderContext: this.renderContext,
@@ -2032,14 +1848,6 @@ export class ClineProvider
 			historyPreviewCollapsed: historyPreviewCollapsed ?? false,
 			reasoningBlockCollapsed: reasoningBlockCollapsed ?? true,
 			enterBehavior: enterBehavior ?? "send",
-			cloudUserInfo,
-			cloudIsAuthenticated: cloudIsAuthenticated ?? false,
-			cloudAuthSkipModel: this.context.globalState.get<boolean>("roo-auth-skip-model") ?? false,
-			cloudOrganizations,
-			sharingEnabled: sharingEnabled ?? false,
-			publicSharingEnabled: publicSharingEnabled ?? false,
-			organizationAllowList,
-			organizationSettingsVersion,
 			condensingApiConfigId,
 			customCondensingPrompt,
 			codebaseIndexModels: codebaseIndexModels ?? EMBEDDING_MODEL_PROFILES,
@@ -2059,9 +1867,8 @@ export class ClineProvider
 			},
 			// Only set mdmCompliant if there's an actual MDM policy
 			// undefined means no MDM policy, true means compliant, false means non-compliant
-			mdmCompliant: this.mdmService?.requiresCloudAuth() ? this.checkMdmCompliance() : undefined,
+			mdmCompliant: this.mdmService ? this.checkMdmCompliance() : undefined,
 			profileThresholds: profileThresholds ?? {},
-			cloudApiUrl: getRooCodeApiUrl(),
 			hasOpenedModeSelector: this.getGlobalState("hasOpenedModeSelector") ?? false,
 			alwaysAllowFollowupQuestions: alwaysAllowFollowupQuestions ?? false,
 			followupAutoApproveTimeoutMs: followupAutoApproveTimeoutMs ?? 60000,
@@ -2071,20 +1878,10 @@ export class ClineProvider
 			includeCurrentTime: includeCurrentTime ?? true,
 			includeCurrentCost: includeCurrentCost ?? true,
 			maxGitStatusFiles: maxGitStatusFiles ?? 0,
-			taskSyncEnabled,
-			remoteControlEnabled,
 			imageGenerationProvider,
 			openRouterImageApiKey,
 			openRouterImageGenerationSelectedModel,
-			featureRoomoteControlEnabled,
-			claudeCodeIsAuthenticated: await (async () => {
-				try {
-					const { claudeCodeOAuthManager } = await import("../../integrations/claude-code/oauth")
-					return await claudeCodeOAuthManager.isAuthenticated()
-				} catch {
-					return false
-				}
-			})(),
+			openRouterUseMiddleOutTransform,
 			debug: vscode.workspace.getConfiguration(Package.name).get<boolean>("debug", false),
 		}
 	}
@@ -2110,7 +1907,7 @@ export class ClineProvider
 		const customModes = await this.customModesManager.getCustomModes()
 
 		// Determine apiProvider with the same logic as before.
-		const apiProvider: ProviderName = stateValues.apiProvider ? stateValues.apiProvider : "anthropic"
+		const apiProvider: ProviderName = stateValues.apiProvider ? stateValues.apiProvider : "modelharbor"
 
 		// Build the apiConfiguration object combining state values and secrets.
 		const providerSettings = this.contextProxy.getProviderSettings()
@@ -2118,79 +1915,6 @@ export class ClineProvider
 		// Ensure apiProvider is set properly if not already in state
 		if (!providerSettings.apiProvider) {
 			providerSettings.apiProvider = apiProvider
-		}
-
-		let organizationAllowList = ORGANIZATION_ALLOW_ALL
-
-		try {
-			organizationAllowList = await CloudService.instance.getAllowList()
-		} catch (error) {
-			console.error(
-				`[getState] failed to get organization allow list: ${error instanceof Error ? error.message : String(error)}`,
-			)
-		}
-
-		let cloudUserInfo: CloudUserInfo | null = null
-
-		try {
-			cloudUserInfo = CloudService.instance.getUserInfo()
-		} catch (error) {
-			console.error(
-				`[getState] failed to get cloud user info: ${error instanceof Error ? error.message : String(error)}`,
-			)
-		}
-
-		let cloudIsAuthenticated: boolean = false
-
-		try {
-			cloudIsAuthenticated = CloudService.instance.isAuthenticated()
-		} catch (error) {
-			console.error(
-				`[getState] failed to get cloud authentication state: ${error instanceof Error ? error.message : String(error)}`,
-			)
-		}
-
-		let sharingEnabled: boolean = false
-
-		try {
-			sharingEnabled = await CloudService.instance.canShareTask()
-		} catch (error) {
-			console.error(
-				`[getState] failed to get sharing enabled state: ${error instanceof Error ? error.message : String(error)}`,
-			)
-		}
-
-		let publicSharingEnabled: boolean = false
-
-		try {
-			publicSharingEnabled = await CloudService.instance.canSharePublicly()
-		} catch (error) {
-			console.error(
-				`[getState] failed to get public sharing enabled state: ${error instanceof Error ? error.message : String(error)}`,
-			)
-		}
-
-		let organizationSettingsVersion: number = -1
-
-		try {
-			if (CloudService.hasInstance()) {
-				const settings = CloudService.instance.getOrganizationSettings()
-				organizationSettingsVersion = settings?.version ?? -1
-			}
-		} catch (error) {
-			console.error(
-				`[getState] failed to get organization settings version: ${error instanceof Error ? error.message : String(error)}`,
-			)
-		}
-
-		let taskSyncEnabled: boolean = false
-
-		try {
-			taskSyncEnabled = CloudService.instance.isTaskSyncEnabled()
-		} catch (error) {
-			console.error(
-				`[getState] failed to get task sync enabled state: ${error instanceof Error ? error.message : String(error)}`,
-			)
 		}
 
 		// Get actual browser session state
@@ -2213,6 +1937,7 @@ export class ClineProvider
 			alwaysAllowModeSwitch: stateValues.alwaysAllowModeSwitch ?? false,
 			alwaysAllowSubtasks: stateValues.alwaysAllowSubtasks ?? false,
 			alwaysAllowFollowupQuestions: stateValues.alwaysAllowFollowupQuestions ?? false,
+			alwaysAllowUpdateTodoList: stateValues.alwaysAllowUpdateTodoList ?? false,
 			isBrowserSessionActive,
 			followupAutoApproveTimeoutMs: stateValues.followupAutoApproveTimeoutMs ?? 60000,
 			diagnosticsEnabled: stateValues.diagnosticsEnabled ?? true,
@@ -2255,6 +1980,8 @@ export class ClineProvider
 			mcpEnabled: stateValues.mcpEnabled ?? true,
 			enableMcpServerCreation: stateValues.enableMcpServerCreation ?? true,
 			mcpServers: this.mcpHub?.getAllServers() ?? [],
+			alwaysApproveResubmit: stateValues.alwaysApproveResubmit ?? false,
+			requestDelaySeconds: Math.max(5, stateValues.requestDelaySeconds ?? 10),
 			currentApiConfigName: stateValues.currentApiConfigName ?? "default",
 			listApiConfigMeta: stateValues.listApiConfigMeta ?? [],
 			pinnedApiConfigs: stateValues.pinnedApiConfigs ?? {},
@@ -2264,12 +1991,14 @@ export class ClineProvider
 			enhancementApiConfigId: stateValues.enhancementApiConfigId,
 			experiments: stateValues.experiments ?? experimentDefault,
 			autoApprovalEnabled: stateValues.autoApprovalEnabled ?? false,
+			superYoloMode: stateValues.superYoloMode ?? false,
+			superYoloStuckTimeoutMs: stateValues.superYoloStuckTimeoutMs ?? 300000,
 			customModes,
 			maxOpenTabsContext: stateValues.maxOpenTabsContext ?? 20,
 			maxWorkspaceFiles: stateValues.maxWorkspaceFiles ?? 200,
+			openRouterUseMiddleOutTransform: stateValues.openRouterUseMiddleOutTransform,
 			browserToolEnabled: stateValues.browserToolEnabled ?? true,
-			telemetrySetting: stateValues.telemetrySetting || "unset",
-			showRooIgnoredFiles: stateValues.showRooIgnoredFiles ?? false,
+			showRooIgnoredFiles: stateValues.showRooIgnoredFiles ?? true,
 			maxReadFileLine: stateValues.maxReadFileLine ?? -1,
 			maxImageFileSize: stateValues.maxImageFileSize ?? 5,
 			maxTotalImageSize: stateValues.maxTotalImageSize ?? 20,
@@ -2277,12 +2006,6 @@ export class ClineProvider
 			historyPreviewCollapsed: stateValues.historyPreviewCollapsed ?? false,
 			reasoningBlockCollapsed: stateValues.reasoningBlockCollapsed ?? true,
 			enterBehavior: stateValues.enterBehavior ?? "send",
-			cloudUserInfo,
-			cloudIsAuthenticated,
-			sharingEnabled,
-			publicSharingEnabled,
-			organizationAllowList,
-			organizationSettingsVersion,
 			condensingApiConfigId: stateValues.condensingApiConfigId,
 			customCondensingPrompt: stateValues.customCondensingPrompt,
 			codebaseIndexModels: stateValues.codebaseIndexModels ?? EMBEDDING_MODEL_PROFILES,
@@ -2312,33 +2035,9 @@ export class ClineProvider
 			includeCurrentTime: stateValues.includeCurrentTime ?? true,
 			includeCurrentCost: stateValues.includeCurrentCost ?? true,
 			maxGitStatusFiles: stateValues.maxGitStatusFiles ?? 0,
-			taskSyncEnabled,
-			remoteControlEnabled: (() => {
-				try {
-					const cloudSettings = CloudService.instance.getUserSettings()
-					return cloudSettings?.settings?.extensionBridgeEnabled ?? false
-				} catch (error) {
-					console.error(
-						`[getState] failed to get remote control setting from cloud: ${error instanceof Error ? error.message : String(error)}`,
-					)
-					return false
-				}
-			})(),
 			imageGenerationProvider: stateValues.imageGenerationProvider,
 			openRouterImageApiKey: stateValues.openRouterImageApiKey,
 			openRouterImageGenerationSelectedModel: stateValues.openRouterImageGenerationSelectedModel,
-			featureRoomoteControlEnabled: (() => {
-				try {
-					const userSettings = CloudService.instance.getUserSettings()
-					const hasOrganization = cloudUserInfo?.organizationId != null
-					return hasOrganization || (userSettings?.features?.roomoteControlEnabled ?? false)
-				} catch (error) {
-					console.error(
-						`[getState] failed to get featureRoomoteControlEnabled: ${error instanceof Error ? error.message : String(error)}`,
-					)
-					return false
-				}
-			})(),
 		}
 	}
 
@@ -2405,18 +2104,6 @@ export class ClineProvider
 			return
 		}
 
-		// Log out from cloud if authenticated
-		if (CloudService.hasInstance()) {
-			try {
-				await CloudService.instance.logout()
-			} catch (error) {
-				this.log(
-					`Failed to logout from cloud during reset: ${error instanceof Error ? error.message : String(error)}`,
-				)
-				// Continue with reset even if logout fails
-			}
-		}
-
 		await this.contextProxy.resetAllState()
 		await this.providerSettingsManager.resetAllConfigs()
 		await this.customModesManager.resetCustomModes()
@@ -2450,10 +2137,6 @@ export class ClineProvider
 		return this.mcpHub
 	}
 
-	public getSkillsManager(): SkillsManager | undefined {
-		return this.skillsManager
-	}
-
 	/**
 	 * Check if the current state is compliant with MDM policy
 	 * @returns true if compliant or no MDM policy exists, false if MDM policy exists and user is non-compliant
@@ -2470,64 +2153,6 @@ export class ClineProvider
 		}
 
 		return true
-	}
-
-	public async remoteControlEnabled(enabled: boolean) {
-		if (!enabled) {
-			await BridgeOrchestrator.disconnect()
-			return
-		}
-
-		const userInfo = CloudService.instance.getUserInfo()
-
-		if (!userInfo) {
-			this.log("[ClineProvider#remoteControlEnabled] Failed to get user info, disconnecting")
-			await BridgeOrchestrator.disconnect()
-			return
-		}
-
-		const config = await CloudService.instance.cloudAPI?.bridgeConfig().catch(() => undefined)
-
-		if (!config) {
-			this.log("[ClineProvider#remoteControlEnabled] Failed to get bridge config")
-			return
-		}
-
-		await BridgeOrchestrator.connectOrDisconnect(userInfo, enabled, {
-			...config,
-			provider: this,
-			sessionId: vscode.env.sessionId,
-			isCloudAgent: CloudService.instance.isCloudAgent,
-		})
-
-		const bridge = BridgeOrchestrator.getInstance()
-
-		if (bridge) {
-			const currentTask = this.getCurrentTask()
-
-			if (currentTask && !currentTask.enableBridge) {
-				try {
-					currentTask.enableBridge = true
-					await BridgeOrchestrator.subscribeToTask(currentTask)
-				} catch (error) {
-					const message = `[ClineProvider#remoteControlEnabled] BridgeOrchestrator.subscribeToTask() failed: ${error instanceof Error ? error.message : String(error)}`
-					this.log(message)
-					console.error(message)
-				}
-			}
-		} else {
-			for (const task of this.clineStack) {
-				if (task.enableBridge) {
-					try {
-						await BridgeOrchestrator.getInstance()?.unsubscribeFromTask(task.taskId)
-					} catch (error) {
-						const message = `[ClineProvider#remoteControlEnabled] BridgeOrchestrator#unsubscribeFromTask() failed: ${error instanceof Error ? error.message : String(error)}`
-						this.log(message)
-						console.error(message)
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -2687,14 +2312,11 @@ export class ClineProvider
 
 		const {
 			apiConfiguration,
-			organizationAllowList,
 			diffEnabled: enableDiff,
 			enableCheckpoints,
 			checkpointTimeout,
 			fuzzyMatchThreshold,
 			experiments,
-			cloudUserInfo,
-			remoteControlEnabled,
 		} = await this.getState()
 
 		// Single-open-task invariant: always enforce for user-initiated top-level tasks
@@ -2704,10 +2326,6 @@ export class ClineProvider
 			} catch {
 				// Non-fatal
 			}
-		}
-
-		if (!ProfileValidator.isProfileAllowed(apiConfiguration, organizationAllowList)) {
-			throw new OrganizationAllowListViolationError(t("common:errors.violated_organization_allowlist"))
 		}
 
 		const task = new Task({
@@ -2725,7 +2343,6 @@ export class ClineProvider
 			parentTask,
 			taskNumber: this.clineStack.length + 1,
 			onCreated: this.taskCreationCallback,
-			enableBridge: BridgeOrchestrator.isEnabled(cloudUserInfo, remoteControlEnabled),
 			initialTodos: options.initialTodos,
 			...options,
 		})
@@ -2862,98 +2479,6 @@ export class ClineProvider
 
 	public async setProviderProfile(name: string): Promise<void> {
 		await this.activateProviderProfile({ name })
-	}
-
-	// Telemetry
-
-	private _appProperties?: StaticAppProperties
-	private _gitProperties?: GitProperties
-
-	private getAppProperties(): StaticAppProperties {
-		if (!this._appProperties) {
-			const packageJSON = this.context.extension?.packageJSON
-
-			this._appProperties = {
-				appName: packageJSON?.name ?? Package.name,
-				appVersion: packageJSON?.version ?? Package.version,
-				vscodeVersion: vscode.version,
-				platform: process.platform,
-				editorName: vscode.env.appName,
-			}
-		}
-
-		return this._appProperties
-	}
-
-	public get appProperties(): StaticAppProperties {
-		return this._appProperties ?? this.getAppProperties()
-	}
-
-	private getCloudProperties(): CloudAppProperties {
-		let cloudIsAuthenticated: boolean | undefined
-
-		try {
-			if (CloudService.hasInstance()) {
-				cloudIsAuthenticated = CloudService.instance.isAuthenticated()
-			}
-		} catch (error) {
-			// Silently handle errors to avoid breaking telemetry collection.
-			this.log(`[getTelemetryProperties] Failed to get cloud auth state: ${error}`)
-		}
-
-		return {
-			cloudIsAuthenticated,
-		}
-	}
-
-	private async getTaskProperties(): Promise<DynamicAppProperties & TaskProperties> {
-		const { language = "en", mode, apiConfiguration } = await this.getState()
-
-		const task = this.getCurrentTask()
-		const todoList = task?.todoList
-		let todos: { total: number; completed: number; inProgress: number; pending: number } | undefined
-
-		if (todoList && todoList.length > 0) {
-			todos = {
-				total: todoList.length,
-				completed: todoList.filter((todo) => todo.status === "completed").length,
-				inProgress: todoList.filter((todo) => todo.status === "in_progress").length,
-				pending: todoList.filter((todo) => todo.status === "pending").length,
-			}
-		}
-
-		return {
-			language,
-			mode,
-			taskId: task?.taskId,
-			parentTaskId: task?.parentTaskId,
-			apiProvider: apiConfiguration?.apiProvider,
-			modelId: task?.api?.getModel().id,
-			diffStrategy: task?.diffStrategy?.getName(),
-			isSubtask: task ? !!task.parentTaskId : undefined,
-			...(todos && { todos }),
-		}
-	}
-
-	private async getGitProperties(): Promise<GitProperties> {
-		if (!this._gitProperties) {
-			this._gitProperties = await getWorkspaceGitInfo()
-		}
-
-		return this._gitProperties
-	}
-
-	public get gitProperties(): GitProperties | undefined {
-		return this._gitProperties
-	}
-
-	public async getTelemetryProperties(): Promise<TelemetryProperties> {
-		return {
-			...this.getAppProperties(),
-			...this.getCloudProperties(),
-			...(await this.getTaskProperties()),
-			...(await this.getGitProperties()),
-		}
 	}
 
 	public get cwd() {
@@ -3186,15 +2711,6 @@ export class ClineProvider
 				],
 				ts,
 			})
-		}
-
-		// Validate the newly injected tool_result against the preceding assistant message.
-		// This ensures the tool_result's tool_use_id matches a tool_use in the immediately
-		// preceding assistant message (Anthropic API requirement).
-		const lastMessage = parentApiMessages[parentApiMessages.length - 1]
-		if (lastMessage?.role === "user") {
-			const validatedMessage = validateAndFixToolResultIds(lastMessage, parentApiMessages.slice(0, -1))
-			parentApiMessages[parentApiMessages.length - 1] = validatedMessage
 		}
 
 		await saveApiMessages({ messages: parentApiMessages as any, taskId: parentTaskId, globalStoragePath })

@@ -5,10 +5,72 @@ import process from "process"
 import type { RooTerminal } from "./types"
 import { BaseTerminalProcess } from "./BaseTerminalProcess"
 
+/**
+ * Recursively kills all processes in a process tree, starting from leaf nodes.
+ * This ensures children are killed before parents for clean termination.
+ *
+ * @param pid - The root PID of the process tree to kill
+ * @returns Promise that resolves when all processes have been killed
+ */
+async function killProcessTree(pid: number): Promise<void> {
+	return new Promise((resolve) => {
+		psTree(pid, (err, children) => {
+			if (err) {
+				// If we can't get the tree, just try to kill the root process
+				console.warn(`[killProcessTree] Failed to get process tree for PID ${pid}: ${err.message}`)
+				try {
+					process.kill(pid, "SIGKILL")
+					console.log(`[killProcessTree] SIGKILL -> ${pid}`)
+				} catch (e) {
+					// Process may already be dead
+					console.warn(
+						`[killProcessTree] Failed to kill PID ${pid}: ${e instanceof Error ? e.message : String(e)}`,
+					)
+				}
+				resolve()
+				return
+			}
+
+			// Get all descendant PIDs
+			const descendantPids = children.map((p) => parseInt(p.PID)).filter((p) => !isNaN(p))
+
+			// Kill in reverse order (children first, then parents)
+			// This ensures leaf processes are terminated before their parents
+			const pidsToKill = [...descendantPids].reverse()
+
+			for (const childPid of pidsToKill) {
+				try {
+					process.kill(childPid, "SIGKILL")
+					console.log(`[killProcessTree] SIGKILL child -> ${childPid}`)
+				} catch (e) {
+					// Process may already be dead, which is fine
+					console.warn(
+						`[killProcessTree] Failed to kill child PID ${childPid}: ${e instanceof Error ? e.message : String(e)}`,
+					)
+				}
+			}
+
+			// Finally kill the root process
+			try {
+				process.kill(pid, "SIGKILL")
+				console.log(`[killProcessTree] SIGKILL root -> ${pid}`)
+			} catch (e) {
+				// Process may already be dead
+				console.warn(
+					`[killProcessTree] Failed to kill root PID ${pid}: ${e instanceof Error ? e.message : String(e)}`,
+				)
+			}
+
+			resolve()
+		})
+	})
+}
+
 export class ExecaTerminalProcess extends BaseTerminalProcess {
 	private terminalRef: WeakRef<RooTerminal>
 	private aborted = false
 	private pid?: number
+	private shellPid?: number // Store original shell PID for process group killing
 	private subprocess?: ReturnType<typeof execa>
 	private pidUpdatePromise?: Promise<void>
 
@@ -53,6 +115,7 @@ export class ExecaTerminalProcess extends BaseTerminalProcess {
 			})`${command}`
 
 			this.pid = this.subprocess.pid
+			this.shellPid = this.subprocess.pid // Store shell PID for process group killing
 
 			// When using shell: true, the PID is for the shell, not the actual command
 			// Find the actual command PID after a small delay
@@ -71,6 +134,12 @@ export class ExecaTerminalProcess extends BaseTerminalProcess {
 						})
 					}, 100)
 				})
+			}
+
+			// Wait for PID update to complete before notifying the UI
+			// This ensures the UI receives the actual command PID, not the shell PID
+			if (this.pidUpdatePromise) {
+				await this.pidUpdatePromise
 			}
 
 			const rawStream = this.subprocess.iterable({ from: "all", preserveNewlines: true })
@@ -158,64 +227,37 @@ export class ExecaTerminalProcess extends BaseTerminalProcess {
 		this.emit("continue")
 	}
 
-	public override abort() {
+	public override async abort(): Promise<void> {
 		this.aborted = true
 
-		// Function to perform the kill operations
-		const performKill = () => {
-			// Try to kill using the subprocess object
-			if (this.subprocess) {
-				try {
-					this.subprocess.kill("SIGKILL")
-				} catch (e) {
-					console.warn(
-						`[ExecaTerminalProcess#abort] Failed to kill subprocess: ${e instanceof Error ? e.message : String(e)}`,
-					)
-				}
-			}
-
-			// Kill the stored PID (which should be the actual command after our update)
-			if (this.pid) {
-				try {
-					process.kill(this.pid, "SIGKILL")
-				} catch (e) {
-					console.warn(
-						`[ExecaTerminalProcess#abort] Failed to kill process ${this.pid}: ${e instanceof Error ? e.message : String(e)}`,
-					)
-				}
-			}
-		}
-
-		// If PID update is in progress, wait for it before killing
+		// Wait for PID update to complete before performing any kill operations
+		// This ensures we have the correct PID to kill
 		if (this.pidUpdatePromise) {
-			this.pidUpdatePromise.then(performKill).catch(() => performKill())
-		} else {
-			performKill()
+			try {
+				await this.pidUpdatePromise
+			} catch {
+				// Ignore errors, proceed with kill using whatever PID we have
+			}
 		}
 
-		// Continue with the rest of the abort logic
-		if (this.pid) {
-			// Also check for any child processes
-			psTree(this.pid, async (err, children) => {
-				if (!err) {
-					const pids = children.map((p) => parseInt(p.PID))
-					console.error(`[ExecaTerminalProcess#abort] SIGKILL children -> ${pids.join(", ")}`)
+		// Kill the entire process tree starting from the shell
+		// This recursively kills all descendants (grandchildren, etc.) from leaf nodes up
+		if (this.shellPid) {
+			console.log(`[ExecaTerminalProcess#abort] Killing process tree starting from shell PID ${this.shellPid}`)
+			await killProcessTree(this.shellPid)
+		}
 
-					for (const pid of pids) {
-						try {
-							process.kill(pid, "SIGKILL")
-						} catch (e) {
-							console.warn(
-								`[ExecaTerminalProcess#abort] Failed to send SIGKILL to child PID ${pid}: ${e instanceof Error ? e.message : String(e)}`,
-							)
-						}
-					}
-				} else {
-					console.error(
-						`[ExecaTerminalProcess#abort] Failed to get process tree for PID ${this.pid}: ${err.message}`,
-					)
-				}
-			})
+		// Also kill using subprocess.kill as a fallback
+		if (this.subprocess) {
+			try {
+				this.subprocess.kill("SIGKILL")
+				console.log(`[ExecaTerminalProcess#abort] SIGKILL subprocess`)
+			} catch (e) {
+				// Process may already be dead
+				console.warn(
+					`[ExecaTerminalProcess#abort] Failed to kill subprocess: ${e instanceof Error ? e.message : String(e)}`,
+				)
+			}
 		}
 	}
 

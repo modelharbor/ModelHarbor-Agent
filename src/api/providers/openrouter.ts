@@ -10,7 +10,6 @@ import {
 	DEEP_SEEK_DEFAULT_TEMPERATURE,
 	ApiProviderError,
 } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { NativeToolCallParser } from "../../core/assistant-message/NativeToolCallParser"
 
@@ -198,8 +197,6 @@ export class OpenRouterHandler extends BaseProvider implements SingleCompletionH
 			{ status: error?.code, error },
 		)
 
-		TelemetryService.instance.captureException(apiError)
-
 		throw new Error(`OpenRouter API Error ${error?.code}: ${rawErrorMessage}`)
 	}
 
@@ -323,38 +320,7 @@ export class OpenRouterHandler extends BaseProvider implements SingleCompletionH
 		try {
 			stream = await this.client.chat.completions.create(completionParams, requestOptions)
 		} catch (error) {
-			// Try to parse as OpenRouter error structure using Zod
-			const parseResult = OpenRouterErrorResponseSchema.safeParse(error)
-
-			if (parseResult.success && parseResult.data.error) {
-				const openRouterError = parseResult.data
-				const rawString = openRouterError.error?.metadata?.raw
-				const parsedError = extractErrorFromMetadataRaw(rawString)
-				const rawErrorMessage = parsedError || openRouterError.error?.message || "Unknown error"
-
-				const apiError = Object.assign(
-					new ApiProviderError(
-						rawErrorMessage,
-						this.providerName,
-						modelId,
-						"createMessage",
-						openRouterError.error?.code,
-					),
-					{
-						status: openRouterError.error?.code,
-						error: openRouterError.error,
-					},
-				)
-
-				TelemetryService.instance.captureException(apiError)
-				throw handleOpenAIError(error, this.providerName)
-			} else {
-				// Fallback for non-OpenRouter errors
-				const errorMessage = error instanceof Error ? error.message : String(error)
-				const apiError = new ApiProviderError(errorMessage, this.providerName, modelId, "createMessage")
-				TelemetryService.instance.captureException(apiError)
-				throw handleOpenAIError(error, this.providerName)
-			}
+			throw handleOpenAIError(error, this.providerName)
 		}
 
 		let lastUsage: CompletionUsage | undefined = undefined
@@ -586,38 +552,7 @@ export class OpenRouterHandler extends BaseProvider implements SingleCompletionH
 		try {
 			response = await this.client.chat.completions.create(completionParams, requestOptions)
 		} catch (error) {
-			// Try to parse as OpenRouter error structure using Zod
-			const parseResult = OpenRouterErrorResponseSchema.safeParse(error)
-
-			if (parseResult.success && parseResult.data.error) {
-				const openRouterError = parseResult.data
-				const rawString = openRouterError.error?.metadata?.raw
-				const parsedError = extractErrorFromMetadataRaw(rawString)
-				const rawErrorMessage = parsedError || openRouterError.error?.message || "Unknown error"
-
-				const apiError = Object.assign(
-					new ApiProviderError(
-						rawErrorMessage,
-						this.providerName,
-						modelId,
-						"completePrompt",
-						openRouterError.error?.code,
-					),
-					{
-						status: openRouterError.error?.code,
-						error: openRouterError.error,
-					},
-				)
-
-				TelemetryService.instance.captureException(apiError)
-				throw handleOpenAIError(error, this.providerName)
-			} else {
-				// Fallback for non-OpenRouter errors
-				const errorMessage = error instanceof Error ? error.message : String(error)
-				const apiError = new ApiProviderError(errorMessage, this.providerName, modelId, "completePrompt")
-				TelemetryService.instance.captureException(apiError)
-				throw handleOpenAIError(error, this.providerName)
-			}
+			throw handleOpenAIError(error, this.providerName)
 		}
 
 		if ("error" in response) {

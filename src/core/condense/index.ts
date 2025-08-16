@@ -1,8 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk"
 import crypto from "crypto"
 
-import { TelemetryService } from "@roo-code/telemetry"
-
 import { t } from "../../i18n"
 import { ApiHandler } from "../../api"
 import { ApiMessage } from "../task-persistence/apiMessages"
@@ -190,13 +188,6 @@ export async function summarizeConversation(
 	condensingApiHandler?: ApiHandler,
 	useNativeTools?: boolean,
 ): Promise<SummarizeResponse> {
-	TelemetryService.instance.captureContextCondensed(
-		taskId,
-		isAutomaticTrigger ?? false,
-		!!customCondensingPrompt?.trim(),
-		!!condensingApiHandler,
-	)
-
 	const response: SummarizeResponse = { messages, cost: 0, summary: "" }
 
 	// Always preserve the first message (which may contain slash command content)

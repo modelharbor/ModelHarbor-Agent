@@ -7,7 +7,6 @@ import {
 	type ModeConfig,
 	type InstallMarketplaceItemOptions,
 	type MarketplaceItem,
-	type ShareVisibility,
 	type QueuedMessage,
 	marketplaceItemSchema,
 } from "@roo-code/types"
@@ -59,8 +58,6 @@ export interface WebviewMessage {
 		| "requestOpenAiModels"
 		| "requestOllamaModels"
 		| "requestLmStudioModels"
-		| "requestRooModels"
-		| "requestRooCreditBalance"
 		| "requestVsCodeLmModels"
 		| "requestHuggingFaceModels"
 		| "openImage"
@@ -95,8 +92,6 @@ export interface WebviewMessage {
 		| "submitEditedMessage"
 		| "editMessageConfirm"
 		| "enableMcpServerCreation"
-		| "remoteControlEnabled"
-		| "taskSyncEnabled"
 		| "searchCommits"
 		| "setApiConfigPassword"
 		| "mode"
@@ -114,21 +109,11 @@ export interface WebviewMessage {
 		| "checkpointRestore"
 		| "deleteMcpServer"
 		| "codebaseIndexEnabled"
-		| "telemetrySetting"
 		| "testBrowserConnection"
 		| "browserConnectionResult"
 		| "searchFiles"
 		| "toggleApiConfigPin"
 		| "hasOpenedModeSelector"
-		| "clearCloudAuthSkipModel"
-		| "cloudButtonClicked"
-		| "rooCloudSignIn"
-		| "cloudLandingPageSignIn"
-		| "rooCloudSignOut"
-		| "rooCloudManualUrl"
-		| "claudeCodeSignIn"
-		| "claudeCodeSignOut"
-		| "switchOrganization"
 		| "condenseTaskContextRequest"
 		| "requestIndexingStatus"
 		| "startIndexing"
@@ -178,11 +163,10 @@ export interface WebviewMessage {
 		| "openDebugApiHistory"
 		| "openDebugUiHistory"
 		| "downloadErrorDiagnostics"
-		| "requestClaudeCodeRateLimits"
-		| "refreshCustomTools"
+		| "language"
 	text?: string
 	editedMessageContent?: string
-	tab?: "settings" | "history" | "mcp" | "modes" | "chat" | "marketplace" | "cloud"
+	tab?: "settings" | "history" | "mcp" | "modes" | "chat" | "marketplace"
 	disabled?: boolean
 	context?: string
 	dataUri?: string
@@ -225,13 +209,10 @@ export interface WebviewMessage {
 	mpItem?: MarketplaceItem
 	mpInstallOptions?: InstallMarketplaceItemOptions
 	config?: Record<string, any> // Add config to the payload
-	visibility?: ShareVisibility // For share visibility
 	hasContent?: boolean // For checkRulesDirectoryResult
 	checkOnly?: boolean // For deleteCustomMode check
 	upsellId?: string // For dismissUpsell
 	list?: string[] // For dismissedUpsells response
-	organizationId?: string | null // For organization switching
-	useProviderSignup?: boolean // For rooCloudSignIn to use provider signup flow
 	codeIndexSettings?: {
 		// Global state settings
 		codebaseIndexEnabled: boolean
@@ -242,6 +223,7 @@ export interface WebviewMessage {
 			| "openai-compatible"
 			| "gemini"
 			| "mistral"
+			| "modelharbor"
 			| "vercel-ai-gateway"
 			| "bedrock"
 			| "openrouter"
@@ -261,8 +243,8 @@ export interface WebviewMessage {
 		codebaseIndexOpenAiCompatibleApiKey?: string
 		codebaseIndexGeminiApiKey?: string
 		codebaseIndexMistralApiKey?: string
+		codebaseIndexModelHarborApiKey?: string
 		codebaseIndexVercelAiGatewayApiKey?: string
-		codebaseIndexOpenRouterApiKey?: string
 	}
 	updatedSettings?: RooCodeSettings
 }
@@ -294,14 +276,22 @@ export interface IndexClearedPayload {
 	error?: string
 }
 
+/**
+ * Zod schema for marketplace item installation with parameters
+ * Using z.any() for item to avoid deep type instantiation from marketplaceItemSchema
+ */
 export const installMarketplaceItemWithParametersPayloadSchema = z.object({
-	item: marketplaceItemSchema,
-	parameters: z.record(z.string(), z.any()),
+	item: z.any(), // Using any to avoid deep type instantiation
+	parameters: z.record(z.string(), z.unknown()),
 })
 
-export type InstallMarketplaceItemWithParametersPayload = z.infer<
-	typeof installMarketplaceItemWithParametersPayloadSchema
->
+/**
+ * Manual type definition to avoid deep type instantiation from z.infer
+ */
+export interface InstallMarketplaceItemWithParametersPayload {
+	item: MarketplaceItem
+	parameters: Record<string, unknown>
+}
 
 export type WebViewMessagePayload =
 	| CheckpointDiffPayload

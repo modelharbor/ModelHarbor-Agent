@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
 
-import { OrganizationAllowList, type ProviderSettings, deepInfraDefaultModelId } from "@roo-code/types"
+import { type ProviderSettings, deepInfraDefaultModelId } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 import type { RouterModels } from "@roo/api"
 

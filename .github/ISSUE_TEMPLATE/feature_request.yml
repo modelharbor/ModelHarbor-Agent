@@ -5,9 +5,24 @@ title: "[ENHANCEMENT] "
 body:
   - type: markdown
     attributes:
+        **Thank you for submitting a feature request for Roo Code!**
+        
+        This template helps you describe problems that need solving. Focus on the problem - the Roo team will work to design solutions unless you want to contribute the implementation yourself.
+        
+        **Quality over speed:** We prefer detailed, clear problem descriptions over quick ones. Vague requests often get closed or require multiple rounds of clarification, which wastes everyone's time.
+        
+        **Before submitting:**
+        - Search existing [Issues](https://github.com/modelharbor/ModelHarbor-Agent/issues) and [Discussions](https://github.com/modelharbor/ModelHarbor-Agent/discussions) to avoid duplicates
+        - For general ideas, use [GitHub Discussions](https://github.com/modelharbor/ModelHarbor-Agent/discussions/categories/feature-requests) instead of this template.
+
+  - type: markdown
+    attributes:
       value: |
-        Thank you for helping improve Roo Code!
-        Please focus on the problem and the desired behavior in plain language.
+        ## ❌ Common mistakes that lead to request rejection:
+        - **Vague problem descriptions:** "UI is bad" -> Should be: "Submit button is invisible on dark theme"
+        - **Missing user impact:** "This would be cool" -> Should explain who benefits and how
+        - **No specific context:** Describe exactly when and how the problem occurs
+
 
   - type: textarea
     id: problem
