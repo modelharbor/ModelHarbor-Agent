@@ -21,6 +21,7 @@ import {
 	deepSeekDefaultModelId,
 	moonshotDefaultModelId,
 	mistralDefaultModelId,
+	modelHarborDefaultModelId,
 	xaiDefaultModelId,
 	groqDefaultModelId,
 	cerebrasDefaultModelId,
@@ -73,6 +74,7 @@ import {
 	LMStudio,
 	LiteLLM,
 	Mistral,
+	ModelHarbor,
 	Moonshot,
 	Ollama,
 	OpenAI,
@@ -327,6 +329,7 @@ const ApiOptions = ({
 				},
 				fireworks: { field: "apiModelId", default: fireworksDefaultModelId },
 				"io-intelligence": { field: "ioIntelligenceModelId", default: ioIntelligenceDefaultModelId },
+				modelharbor: { field: "modelharborModelId", default: modelHarborDefaultModelId },
 				openai: { field: "openAiModelId" },
 				ollama: { field: "ollamaModelId" },
 				lmstudio: { field: "lmStudioModelId" },
@@ -577,6 +580,14 @@ const ApiOptions = ({
 
 			{selectedProvider === "fireworks" && (
 				<Fireworks apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
+
+			{selectedProvider === "modelharbor" && (
+				<ModelHarbor
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					organizationAllowList={organizationAllowList}
+				/>
 			)}
 
 			{selectedProviderModels.length > 0 && (

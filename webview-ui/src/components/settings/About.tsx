@@ -3,10 +3,9 @@ import { useAppTranslation } from "@/i18n/TranslationContext"
 import { Trans } from "react-i18next"
 import { Info, Download, Upload, TriangleAlert } from "lucide-react"
 
-import { VSCodeCheckbox, VSCodeLink } from "@vscode/webview-ui-toolkit/react"
+import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 
 import { Package } from "@roo/package"
-import { TelemetrySetting } from "@roo/TelemetrySetting"
 
 import { vscode } from "@/utils/vscode"
 import { cn } from "@/lib/utils"
@@ -15,12 +14,9 @@ import { Button } from "@/components/ui"
 import { SectionHeader } from "./SectionHeader"
 import { Section } from "./Section"
 
-type AboutProps = HTMLAttributes<HTMLDivElement> & {
-	telemetrySetting: TelemetrySetting
-	setTelemetrySetting: (setting: TelemetrySetting) => void
-}
+type AboutProps = HTMLAttributes<HTMLDivElement>
 
-export const About = ({ telemetrySetting, setTelemetrySetting, className, ...props }: AboutProps) => {
+export const About = ({ className, ...props }: AboutProps) => {
 	const { t } = useAppTranslation()
 
 	return (
@@ -38,30 +34,13 @@ export const About = ({ telemetrySetting, setTelemetrySetting, className, ...pro
 			</SectionHeader>
 
 			<Section>
-				<div>
-					<VSCodeCheckbox
-						checked={telemetrySetting === "enabled"}
-						onChange={(e: any) => {
-							const checked = e.target.checked === true
-							setTelemetrySetting(checked ? "enabled" : "disabled")
-						}}>
-						{t("settings:footer.telemetry.label")}
-					</VSCodeCheckbox>
-					<p className="text-vscode-descriptionForeground text-sm mt-0">
-						<Trans
-							i18nKey="settings:footer.telemetry.description"
-							components={{
-								privacyLink: <VSCodeLink href="https://roocode.com/privacy" />,
-							}}
-						/>
-					</p>
-				</div>
+				<div></div>
 
 				<div>
 					<Trans
 						i18nKey="settings:footer.feedback"
 						components={{
-							githubLink: <VSCodeLink href="https://github.com/RooCodeInc/Roo-Code" />,
+							githubLink: <VSCodeLink href="https://github.com/modelharbor/ModelHarbor-Agent" />,
 							redditLink: <VSCodeLink href="https://reddit.com/r/RooCode" />,
 							discordLink: <VSCodeLink href="https://discord.gg/roocode" />,
 						}}

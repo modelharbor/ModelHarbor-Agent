@@ -194,6 +194,8 @@ function getModelIdForProvider(apiConfiguration: ProviderSettings, provider: str
 			return apiConfiguration.huggingFaceModelId
 		case "io-intelligence":
 			return apiConfiguration.ioIntelligenceModelId
+		case "modelharbor":
+			return apiConfiguration.modelharborModelId
 		default:
 			return apiConfiguration.apiModelId
 	}
@@ -266,6 +268,9 @@ export function validateModelId(apiConfiguration: ProviderSettings, routerModels
 			break
 		case "io-intelligence":
 			modelId = apiConfiguration.ioIntelligenceModelId
+			break
+		case "modelharbor":
+			modelId = apiConfiguration.modelharborModelId ?? "qwen/qwen3-coder-480b-a35b-instruct"
 			break
 	}
 
