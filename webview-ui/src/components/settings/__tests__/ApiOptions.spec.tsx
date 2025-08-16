@@ -563,4 +563,66 @@ describe("ApiOptions", () => {
 			expect(screen.queryByTestId("litellm-provider")).not.toBeInTheDocument()
 		})
 	})
+
+	describe("ModelHarbor provider tests", () => {
+		it("does not interfere with modelharborModelId when provider uses its own model ID field", () => {
+			const mockSetApiConfigurationField = vi.fn()
+
+			renderApiOptions({
+				apiConfiguration: {
+					apiProvider: "modelharbor",
+					modelharborModelId: "anthropic/claude-3-5-sonnet-20241022",
+					// apiModelId should not be set or updated for modelharbor
+				},
+				setApiConfigurationField: mockSetApiConfigurationField,
+			})
+
+			// Verify that setApiConfigurationField was not called with "apiModelId"
+			// since modelharbor uses "modelharborModelId" instead
+			const apiModelIdCalls = mockSetApiConfigurationField.mock.calls.filter((call) => call[0] === "apiModelId")
+			expect(apiModelIdCalls).toHaveLength(0)
+		})
+
+		it("does not set apiModelId for modelharbor provider", () => {
+			const mockSetApiConfigurationField = vi.fn()
+
+			// Start with modelharbor configuration that already has a model set
+			const initialConfig = {
+				apiProvider: "modelharbor" as const,
+				modelharborModelId: "anthropic/claude-3-5-sonnet-20241022",
+			}
+
+			renderApiOptions({
+				apiConfiguration: initialConfig,
+				setApiConfigurationField: mockSetApiConfigurationField,
+			})
+
+			// Verify that setApiConfigurationField was not called with "apiModelId"
+			// since modelharbor uses "modelharborModelId" instead
+			const apiModelIdCalls = mockSetApiConfigurationField.mock.calls.filter((call) => call[0] === "apiModelId")
+			expect(apiModelIdCalls).toHaveLength(0)
+		})
+
+		it("sets default modelharborModelId when no model is initially set", () => {
+			const mockSetApiConfigurationField = vi.fn()
+
+			// Start with modelharbor provider but no modelharborModelId set
+			const initialConfig = {
+				apiProvider: "modelharbor" as const,
+				// No modelharborModelId set initially
+			}
+
+			renderApiOptions({
+				apiConfiguration: initialConfig,
+				setApiConfigurationField: mockSetApiConfigurationField,
+			})
+
+			// When no model is set, it should set the default ModelHarbor model
+			const modelharborModelIdCalls = mockSetApiConfigurationField.mock.calls.filter(
+				(call) => call[0] === "modelharborModelId",
+			)
+			expect(modelharborModelIdCalls.length).toBeGreaterThan(0)
+			expect(modelharborModelIdCalls[0][1]).toBe("anthropic/claude-sonnet-4-code") // Default model
+		})
+	})
 })
