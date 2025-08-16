@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         **Thanks for your report!** Please check existing issues first:  
-        👉 https://github.com/RooCodeInc/Roo-Code/issues
+        👉 https://github.com/modelharbor/ModelHarbor-Agent/issues
 
   - type: input
     id: version

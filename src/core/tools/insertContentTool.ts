@@ -113,10 +113,9 @@ export async function insertContentTool(
 		const state = await provider?.getState()
 		const diagnosticsEnabled = state?.diagnosticsEnabled ?? true
 		const writeDelayMs = state?.writeDelayMs ?? DEFAULT_WRITE_DELAY_MS
-		const isPreventFocusDisruptionEnabled = experiments.isEnabled(
-			state?.experiments ?? {},
-			EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION,
-		)
+		const isPreventFocusDisruptionEnabled = state?.experiments
+			? experiments.isEnabled(state.experiments, EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION)
+			: false
 
 		// For consistency with writeToFileTool, handle new files differently
 		let diff: string | undefined
