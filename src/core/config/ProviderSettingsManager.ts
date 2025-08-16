@@ -62,7 +62,7 @@ export class ProviderSettingsManager {
 
 	private readonly defaultProviderProfiles: ProviderProfiles = {
 		currentApiConfigName: "default",
-		apiConfigs: { default: { id: this.defaultConfigId } },
+		apiConfigs: { default: { id: this.defaultConfigId, apiProvider: "modelharbor" } },
 		modeApiConfigs: this.defaultModeApiConfigs,
 		migrations: {
 			rateLimitSecondsMigrated: true, // Mark as migrated on fresh installs
@@ -803,7 +803,7 @@ export class ProviderSettingsManager {
 				// Step 5: Handle case where all profiles might be deleted
 				if (Object.keys(providerProfiles.apiConfigs).length === 0 && changedProfiles.length > 0) {
 					// Create a default profile only if we have changed profiles
-					const defaultProfile = { id: this.generateId() }
+					const defaultProfile = { id: this.generateId(), apiProvider: "modelharbor" as const }
 					providerProfiles.apiConfigs["default"] = defaultProfile
 					activeProfileChanged = true
 					activeProfileId = defaultProfile.id || ""

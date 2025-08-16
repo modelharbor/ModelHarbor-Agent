@@ -16,6 +16,7 @@ import {
 	groqModels,
 	ioIntelligenceModels,
 	mistralModels,
+	modelHarborModels,
 	moonshotModels,
 	openAiNativeModels,
 	qwenCodeModels,
@@ -49,7 +50,7 @@ export const dynamicProviders = [
 	"requesty",
 	"unbound",
 	"glama",
-	"roo",
+	"modelharbor",
 ] as const
 
 export type DynamicProvider = (typeof dynamicProviders)[number]
@@ -140,6 +141,7 @@ export const providerNames = [
 	"vertex",
 	"xai",
 	"zai",
+	"modelharbor",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -408,6 +410,11 @@ const ioIntelligenceSchema = apiModelIdProviderModelSchema.extend({
 	ioIntelligenceApiKey: z.string().optional(),
 })
 
+const modelharborSchema = baseProviderSettingsSchema.extend({
+	modelharborApiKey: z.string().optional(),
+	modelharborModelId: z.string().optional(),
+})
+
 const qwenCodeSchema = apiModelIdProviderModelSchema.extend({
 	qwenCodeOauthPath: z.string().optional(),
 })
@@ -460,6 +467,7 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	fireworksSchema.merge(z.object({ apiProvider: z.literal("fireworks") })),
 	featherlessSchema.merge(z.object({ apiProvider: z.literal("featherless") })),
 	ioIntelligenceSchema.merge(z.object({ apiProvider: z.literal("io-intelligence") })),
+	modelharborSchema.merge(z.object({ apiProvider: z.literal("modelharbor") })),
 	qwenCodeSchema.merge(z.object({ apiProvider: z.literal("qwen-code") })),
 	rooSchema.merge(z.object({ apiProvider: z.literal("roo") })),
 	vercelAiGatewaySchema.merge(z.object({ apiProvider: z.literal("vercel-ai-gateway") })),
@@ -502,6 +510,7 @@ export const providerSettingsSchema = z.object({
 	...fireworksSchema.shape,
 	...featherlessSchema.shape,
 	...ioIntelligenceSchema.shape,
+	...modelharborSchema.shape,
 	...qwenCodeSchema.shape,
 	...rooSchema.shape,
 	...vercelAiGatewaySchema.shape,
@@ -537,6 +546,7 @@ export const modelIdKeys = [
 	"litellmModelId",
 	"huggingFaceModelId",
 	"ioIntelligenceModelId",
+	"modelharborModelId",
 	"vercelAiGatewayModelId",
 	"deepInfraModelId",
 ] as const satisfies readonly (keyof ProviderSettings)[]
@@ -589,6 +599,7 @@ export const modelIdKeysByProvider: Record<TypicalProvider, ModelIdKey> = {
 	fireworks: "apiModelId",
 	featherless: "apiModelId",
 	"io-intelligence": "ioIntelligenceModelId",
+	modelharbor: "modelharborModelId",
 	roo: "apiModelId",
 	"vercel-ai-gateway": "vercelAiGatewayModelId",
 }
@@ -692,6 +703,11 @@ export const MODELS_BY_PROVIDER: Record<
 		id: "minimax",
 		label: "MiniMax",
 		models: Object.keys(minimaxModels),
+	},
+	modelharbor: {
+		id: "modelharbor",
+		label: "ModelHarbor",
+		models: Object.keys(modelHarborModels),
 	},
 	"openai-native": {
 		id: "openai-native",

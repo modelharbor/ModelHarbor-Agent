@@ -22,6 +22,7 @@ import {
 	deepSeekDefaultModelId,
 	moonshotDefaultModelId,
 	mistralDefaultModelId,
+	modelHarborDefaultModelId,
 	xaiDefaultModelId,
 	groqDefaultModelId,
 	cerebrasDefaultModelId,
@@ -79,6 +80,7 @@ import {
 	LMStudio,
 	LiteLLM,
 	Mistral,
+	ModelHarbor,
 	Moonshot,
 	Ollama,
 	OpenAI,
@@ -200,14 +202,39 @@ const ApiOptions = ({
 			apiConfiguration.openRouterModelId in routerModels.openrouter,
 	})
 
-	// Update `apiModelId` whenever `selectedModelId` changes.
+	// Update `apiModelId` whenever `selectedModelId` changes, but only for providers that actually use `apiModelId`
+	// Providers with their own specific model ID fields (like modelharbor, openrouter, etc.) should not be affected
 	useEffect(() => {
-		if (selectedModelId && apiConfiguration.apiModelId !== selectedModelId) {
+		const providersUsingApiModelId = [
+			"anthropic",
+			"claude-code",
+			"openai-native",
+			"gemini",
+			"deepseek",
+			"doubao",
+			"moonshot",
+			"mistral",
+			"xai",
+			"groq",
+			"chutes",
+			"bedrock",
+			"vertex",
+			"sambanova",
+			"zai",
+			"fireworks",
+			"cerebras",
+		] as const
+
+		if (
+			selectedModelId &&
+			apiConfiguration.apiModelId !== selectedModelId &&
+			providersUsingApiModelId.includes(selectedProvider as any)
+		) {
 			// Pass false as third parameter to indicate this is not a user action
 			// This is an internal sync, not a user-initiated change
 			setApiConfigurationField("apiModelId", selectedModelId, false)
 		}
-	}, [selectedModelId, setApiConfigurationField, apiConfiguration.apiModelId])
+	}, [selectedModelId, setApiConfigurationField, apiConfiguration.apiModelId, selectedProvider])
 
 	// Debounced refresh model updates, only executed 250ms after the user
 	// stops typing.
@@ -361,6 +388,7 @@ const ApiOptions = ({
 				fireworks: { field: "apiModelId", default: fireworksDefaultModelId },
 				featherless: { field: "apiModelId", default: featherlessDefaultModelId },
 				"io-intelligence": { field: "ioIntelligenceModelId", default: ioIntelligenceDefaultModelId },
+				modelharbor: { field: "modelharborModelId", default: modelHarborDefaultModelId },
 				roo: { field: "apiModelId", default: rooDefaultModelId },
 				"vercel-ai-gateway": { field: "vercelAiGatewayModelId", default: vercelAiGatewayDefaultModelId },
 				openai: { field: "openAiModelId" },
@@ -679,6 +707,10 @@ const ApiOptions = ({
 				<Fireworks apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
 			)}
 
+			{selectedProvider === "modelharbor" && (
+				<ModelHarbor apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
+
 			{selectedProvider === "roo" && (
 				<Roo
 					apiConfiguration={apiConfiguration}
@@ -694,66 +726,69 @@ const ApiOptions = ({
 				<Featherless apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
 			)}
 
-			{selectedProviderModels.length > 0 && (
-				<>
-					<div>
-						<label className="block font-medium mb-1">{t("settings:providers.model")}</label>
-						<Select
-							value={selectedModelId === "custom-arn" ? "custom-arn" : selectedModelId}
-							onValueChange={(value) => {
-								setApiConfigurationField("apiModelId", value)
+			{selectedProviderModels.length > 0 &&
+				!["openrouter", "requesty", "glama", "unbound", "litellm", "modelharbor", "io-intelligence"].includes(
+					selectedProvider,
+				) && (
+					<>
+						<div>
+							<label className="block font-medium mb-1">{t("settings:providers.model")}</label>
+							<Select
+								value={selectedModelId === "custom-arn" ? "custom-arn" : selectedModelId}
+								onValueChange={(value) => {
+									setApiConfigurationField("apiModelId", value)
 
-								// Clear custom ARN if not using custom ARN option.
-								if (value !== "custom-arn" && selectedProvider === "bedrock") {
-									setApiConfigurationField("awsCustomArn", "")
-								}
+									// Clear custom ARN if not using custom ARN option.
+									if (value !== "custom-arn" && selectedProvider === "bedrock") {
+										setApiConfigurationField("awsCustomArn", "")
+									}
 
-								// Clear reasoning effort when switching models to allow the new model's default to take effect
-								// This is especially important for GPT-5 models which default to "medium"
-								if (selectedProvider === "openai-native") {
-									setApiConfigurationField("reasoningEffort", undefined)
-								}
-							}}>
-							<SelectTrigger className="w-full">
-								<SelectValue placeholder={t("settings:common.select")} />
-							</SelectTrigger>
-							<SelectContent>
-								{selectedProviderModels.map((option) => (
-									<SelectItem key={option.value} value={option.value}>
-										{option.label}
-									</SelectItem>
-								))}
-								{selectedProvider === "bedrock" && (
-									<SelectItem value="custom-arn">{t("settings:labels.useCustomArn")}</SelectItem>
-								)}
-							</SelectContent>
-						</Select>
-					</div>
+									// Clear reasoning effort when switching models to allow the new model's default to take effect
+									// This is especially important for GPT-5 models which default to "medium"
+									if (selectedProvider === "openai-native") {
+										setApiConfigurationField("reasoningEffort", undefined)
+									}
+								}}>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder={t("settings:common.select")} />
+								</SelectTrigger>
+								<SelectContent>
+									{selectedProviderModels.map((option) => (
+										<SelectItem key={option.value} value={option.value}>
+											{option.label}
+										</SelectItem>
+									))}
+									{selectedProvider === "bedrock" && (
+										<SelectItem value="custom-arn">{t("settings:labels.useCustomArn")}</SelectItem>
+									)}
+								</SelectContent>
+							</Select>
+						</div>
 
-					{/* Show error if a deprecated model is selected */}
-					{selectedModelInfo?.deprecated && (
-						<ApiErrorMessage errorMessage={t("settings:validation.modelDeprecated")} />
-					)}
+						{/* Show error if a deprecated model is selected */}
+						{selectedModelInfo?.deprecated && (
+							<ApiErrorMessage errorMessage={t("settings:validation.modelDeprecated")} />
+						)}
 
-					{selectedProvider === "bedrock" && selectedModelId === "custom-arn" && (
-						<BedrockCustomArn
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-						/>
-					)}
+						{selectedProvider === "bedrock" && selectedModelId === "custom-arn" && (
+							<BedrockCustomArn
+								apiConfiguration={apiConfiguration}
+								setApiConfigurationField={setApiConfigurationField}
+							/>
+						)}
 
-					{/* Only show model info if not deprecated */}
-					{!selectedModelInfo?.deprecated && (
-						<ModelInfoView
-							apiProvider={selectedProvider}
-							selectedModelId={selectedModelId}
-							modelInfo={selectedModelInfo}
-							isDescriptionExpanded={isDescriptionExpanded}
-							setIsDescriptionExpanded={setIsDescriptionExpanded}
-						/>
-					)}
-				</>
-			)}
+						{/* Only show model info if not deprecated */}
+						{!selectedModelInfo?.deprecated && (
+							<ModelInfoView
+								apiProvider={selectedProvider}
+								selectedModelId={selectedModelId}
+								modelInfo={selectedModelInfo}
+								isDescriptionExpanded={isDescriptionExpanded}
+								setIsDescriptionExpanded={setIsDescriptionExpanded}
+							/>
+						)}
+					</>
+				)}
 
 			{selectedProvider === "roo" ? (
 				<SimpleThinkingBudget

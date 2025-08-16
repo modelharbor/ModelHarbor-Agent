@@ -57,6 +57,7 @@ import {
 	qwenCodeModels,
 	vercelAiGatewayDefaultModelId,
 	BEDROCK_1M_CONTEXT_MODEL_IDS,
+	modelHarborDefaultModelId,
 	deepInfraDefaultModelId,
 } from "@roo-code/types"
 
@@ -68,7 +69,7 @@ import { useLmStudioModels } from "./useLmStudioModels"
 import { useOllamaModels } from "./useOllamaModels"
 
 export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
-	const provider = apiConfiguration?.apiProvider || "anthropic"
+	const provider = apiConfiguration?.apiProvider || "modelharbor"
 	const openRouterModelId = provider === "openrouter" ? apiConfiguration?.openRouterModelId : undefined
 	const lmStudioModelId = provider === "lmstudio" ? apiConfiguration?.lmStudioModelId : undefined
 	const ollamaModelId = provider === "ollama" ? apiConfiguration?.ollamaModelId : undefined
@@ -92,7 +93,7 @@ export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
 					lmStudioModels: lmStudioModels.data,
 					ollamaModels: ollamaModels.data,
 				})
-			: { id: anthropicDefaultModelId, info: undefined }
+			: { id: modelHarborDefaultModelId, info: undefined }
 
 	return {
 		provider,
@@ -333,6 +334,11 @@ function getSelectedModel({
 			const id = apiConfiguration.ioIntelligenceModelId ?? ioIntelligenceDefaultModelId
 			const info =
 				routerModels["io-intelligence"]?.[id] ?? ioIntelligenceModels[id as keyof typeof ioIntelligenceModels]
+			return { id, info }
+		}
+		case "modelharbor": {
+			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
+			const info = routerModels.modelharbor?.[id]
 			return { id, info }
 		}
 		case "roo": {

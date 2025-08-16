@@ -4,7 +4,7 @@ import OpenAI from "openai"
 import { rooDefaultModelId } from "@roo-code/types"
 import { CloudService } from "@roo-code/cloud"
 
-import type { ApiHandlerOptions, ModelRecord } from "../../shared/api"
+import type { ApiHandlerOptions } from "../../shared/api"
 import { ApiStream } from "../transform/stream"
 import { getModelParams } from "../transform/model-params"
 import { convertToOpenAiMessages } from "../transform/openai-format"
@@ -178,31 +178,10 @@ export class RooHandler extends BaseOpenAiCompatibleProvider<string> {
 		return super.completePrompt(prompt)
 	}
 
-	private async loadDynamicModels(baseURL: string, apiKey?: string): Promise<void> {
-		try {
-			// Fetch models and cache them in the shared cache
-			await getModels({
-				provider: "roo",
-				baseUrl: baseURL,
-				apiKey,
-			})
-		} catch (error) {
-			console.error("[RooHandler] Error loading dynamic models:", error)
-		}
-	}
-
 	override getModel() {
 		const modelId = this.options.apiModelId || rooDefaultModelId
 
-		// Get models from shared cache
-		const models = getModelsFromCache("roo") || {}
-		const modelInfo = models[modelId]
-
-		if (modelInfo) {
-			return { id: modelId, info: modelInfo }
-		}
-
-		// Return the requested model ID even if not found, with fallback info.
+		// Return static model info for roo provider
 		return {
 			id: modelId,
 			info: {

@@ -421,13 +421,17 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 			// Check experiment asynchronously and update strategy if needed.
 			provider.getState().then((state) => {
-				const isMultiFileApplyDiffEnabled = experiments.isEnabled(
-					state.experiments ?? {},
-					EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF,
-				)
+				// Only check experiments if they are explicitly configured
+				// When experiments are undefined, keep the default strategy
+				if (state.experiments) {
+					const isMultiFileApplyDiffEnabled = experiments.isEnabled(
+						state.experiments,
+						EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF,
+					)
 
-				if (isMultiFileApplyDiffEnabled) {
-					this.diffStrategy = new MultiFileSearchReplaceDiffStrategy(this.fuzzyMatchThreshold)
+					if (isMultiFileApplyDiffEnabled) {
+						this.diffStrategy = new MultiFileSearchReplaceDiffStrategy(this.fuzzyMatchThreshold)
+					}
 				}
 			})
 		}
@@ -1204,7 +1208,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	async sayAndCreateMissingParamError(toolName: ToolName, paramName: string, relPath?: string) {
 		await this.say(
 			"error",
-			`Roo tried to use ${toolName}${
+			`ModelHarbor tried to use ${toolName}${
 				relPath ? ` for '${relPath.toPosix()}'` : ""
 			} without value for required parameter '${paramName}'. Retrying...`,
 		)
