@@ -90,16 +90,6 @@ vi.mock("@src/components/marketplace/MarketplaceView", () => ({
 	},
 }))
 
-vi.mock("@src/components/cloud/CloudView", () => ({
-	CloudView: function CloudView({ onDone }: { onDone: () => void }) {
-		return (
-			<div data-testid="cloud-view" onClick={onDone}>
-				Cloud View
-			</div>
-		)
-	},
-}))
-
 const mockUseExtensionState = vi.fn()
 
 // Mock the HumanRelayDialog component

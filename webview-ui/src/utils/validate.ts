@@ -156,6 +156,9 @@ function validateModelsAndKeysProvided(apiConfiguration: ProviderSettings): stri
 				return i18next.t("settings:validation.apiKey")
 			}
 			break
+		case "modelharbor":
+			// ModelHarbor doesn't require API key validation
+			break
 	}
 
 	return undefined
@@ -206,6 +209,11 @@ function validateProviderAgainstOrganizationSettings(
 function getModelIdForProvider(apiConfiguration: ProviderSettings, provider: ProviderName): string | undefined {
 	if (provider === "vscode-lm") {
 		return apiConfiguration.vsCodeLmModelSelector?.id
+	}
+
+	// Handle ModelHarbor specifically
+	if (provider === "modelharbor") {
+		return apiConfiguration.modelharborModelId ?? "qwen/qwen3-coder-480b-a35b-instruct"
 	}
 
 	if (isCustomProvider(provider) || isFauxProvider(provider)) {
