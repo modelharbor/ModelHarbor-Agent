@@ -1,10 +1,13 @@
 import { useState, memo } from "react"
 import { Trans } from "react-i18next"
-import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 
 import { Package } from "@roo/package"
+
 import { useAppTranslation } from "@src/i18n/TranslationContext"
+<<<<<<< HEAD
 import { vscode } from "@src/utils/vscode"
+=======
+>>>>>>> 198cdcccf (Add ModelHarbor)
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@src/components/ui"
 import { Button } from "@src/components/ui"
 
@@ -40,6 +43,7 @@ const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 					<DialogTitle>{t("chat:announcement.title", { version: Package.version })}</DialogTitle>
 				</DialogHeader>
 				<div>
+<<<<<<< HEAD
 					{/* Regular Release Highlights */}
 					<div className="mb-4">
 						<p className="mb-3">{t("chat:announcement.release.heading")}</p>
@@ -83,18 +87,49 @@ const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 								className="w-full">
 								{t("chat:announcement.cloudAgents.createAgentButton")}
 							</Button>
+=======
+					<p className="mb-4 text-vscode-descriptionForeground">
+						{t("chat:announcement.description", { version: Package.version })}
+					</p>
+
+					<h3 className="text-sm font-semibold mb-3 text-vscode-foreground">
+						{t("chat:announcement.whatsNew")}
+					</h3>
+
+					<div className="space-y-3 mb-4">
+						<div>
+							<Trans
+								i18nKey="chat:announcement.feature1"
+								components={{
+									bold: <b />,
+								}}
+							/>
+						</div>
+
+						<div>
+							<Trans
+								i18nKey="chat:announcement.feature2"
+								components={{
+									bold: <b />,
+								}}
+							/>
+>>>>>>> 198cdcccf (Add ModelHarbor)
 						</div>
 					</div>
 
-					<div className="mt-4 text-sm text-center">
-						<Trans
-							i18nKey="chat:announcement.socialLinks"
-							components={{
-								xLink: <XLink />,
-								discordLink: <DiscordLink />,
-								redditLink: <RedditLink />,
+					<div className="mt-4 text-sm text-center text-vscode-descriptionForeground">
+						{t("chat:announcement.detailsDiscussLinks")}
+					</div>
+
+					<div className="mt-4">
+						<Button
+							onClick={() => {
+								setOpen(false)
+								hideAnnouncement()
 							}}
-						/>
+							className="w-full">
+							{t("chat:announcement.hideButton")}
+						</Button>
 					</div>
 				</div>
 			</DialogContent>
@@ -102,6 +137,7 @@ const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 	)
 }
 
+<<<<<<< HEAD
 const XLink = () => (
 	<VSCodeLink
 		href="https://x.com/roocode"
@@ -135,4 +171,6 @@ const RedditLink = () => (
 	</VSCodeLink>
 )
 
+=======
+>>>>>>> 198cdcccf (Add ModelHarbor)
 export default memo(Announcement)

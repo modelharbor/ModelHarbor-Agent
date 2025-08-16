@@ -248,8 +248,9 @@ describe("useSelectedModel", () => {
 			mockUseRouterModels.mockReturnValue({
 				data: {
 					openrouter: {
-						"anthropic/claude-sonnet-4": {
+						"qwen/qwen3-coder-480b-a35b-instruct": {
 							// Default model
+<<<<<<< HEAD
 							maxTokens: 8192,
 							contextWindow: 200_000,
 							supportsImages: true,
@@ -258,6 +259,15 @@ describe("useSelectedModel", () => {
 							outputPrice: 15.0,
 							cacheWritesPrice: 3.75,
 							cacheReadsPrice: 0.3,
+=======
+							maxTokens: 65536,
+							contextWindow: 262000,
+							supportsImages: false,
+							supportsComputerUse: false,
+							supportsPromptCache: false,
+							inputPrice: 0.6,
+							outputPrice: 1.8,
+>>>>>>> 198cdcccf (Add ModelHarbor)
 						},
 					},
 					requesty: {},
@@ -350,7 +360,7 @@ describe("useSelectedModel", () => {
 	})
 
 	describe("default behavior", () => {
-		it("should return anthropic default when no configuration is provided", () => {
+		it("should return modelharbor default when no configuration is provided", () => {
 			mockUseRouterModels.mockReturnValue({
 				data: undefined,
 				isLoading: false,
@@ -366,8 +376,8 @@ describe("useSelectedModel", () => {
 			const wrapper = createWrapper()
 			const { result } = renderHook(() => useSelectedModel(), { wrapper })
 
-			expect(result.current.provider).toBe("anthropic")
-			expect(result.current.id).toBe("claude-sonnet-4-20250514")
+			expect(result.current.provider).toBe("modelharbor")
+			expect(result.current.id).toBe("glm-4.6")
 			expect(result.current.info).toBeUndefined()
 		})
 	})

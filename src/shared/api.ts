@@ -161,6 +161,7 @@ const dynamicProviderExtras = {
 	requesty: {} as { apiKey?: string; baseUrl?: string },
 	unbound: {} as { apiKey?: string },
 	glama: {} as {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
+	modelharbor: {} as {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
 	ollama: {} as {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
 	lmstudio: {} as {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
 	roo: {} as { apiKey?: string; baseUrl?: string },
