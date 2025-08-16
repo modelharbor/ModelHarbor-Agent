@@ -5,7 +5,6 @@ import * as path from "path"
 import * as vscode from "vscode"
 
 import type { GlobalState, ProviderSettings } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { Task } from "../Task"
 import { ClineProvider } from "../../webview/ClineProvider"
@@ -147,9 +146,7 @@ describe("Grace Retry Error Handling", () => {
 	let mockExtensionContext: vscode.ExtensionContext
 
 	beforeEach(() => {
-		if (!TelemetryService.hasInstance()) {
-			TelemetryService.createInstance([])
-		}
+		// TelemetryService removed - skip telemetry initialization
 
 		const storageUri = {
 			fsPath: path.join(os.tmpdir(), "test-storage"),

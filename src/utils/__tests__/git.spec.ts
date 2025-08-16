@@ -481,7 +481,7 @@ describe("getGitRepositoryInfo", () => {
  ignorecase = true
  precomposeunicode = true
 [remote "origin"]
- url = https://github.com/RooCodeInc/Roo-Code.git
+ url = https://github.com/modelharbor/ModelHarbor-Agent.git
  fetch = +refs/heads/*:refs/remotes/origin/*
 [branch "main"]
  remote = origin
@@ -503,8 +503,8 @@ describe("getGitRepositoryInfo", () => {
 		const result = await getGitRepositoryInfo(workspaceRoot)
 
 		expect(result).toEqual({
-			repositoryUrl: "https://github.com/RooCodeInc/Roo-Code.git",
-			repositoryName: "RooCodeInc/Roo-Code",
+			repositoryUrl: "https://github.com/modelharbor/ModelHarbor-Agent.git",
+			repositoryName: "modelharbor/ModelHarbor-Agent",
 			defaultBranch: "main",
 		})
 
@@ -594,7 +594,7 @@ describe("getGitRepositoryInfo", () => {
 			if (path === configPath) {
 				return Promise.resolve(`
 [remote "origin"]
- url = https://github.com/RooCodeInc/Roo-Code.git
+ url = https://github.com/modelharbor/ModelHarbor-Agent.git
 `)
 			} else if (path === headPath) {
 				return Promise.reject(new Error("Failed to read HEAD"))
@@ -605,8 +605,8 @@ describe("getGitRepositoryInfo", () => {
 		const result = await getGitRepositoryInfo(workspaceRoot)
 
 		expect(result).toEqual({
-			repositoryUrl: "https://github.com/RooCodeInc/Roo-Code.git",
-			repositoryName: "RooCodeInc/Roo-Code",
+			repositoryUrl: "https://github.com/modelharbor/ModelHarbor-Agent.git",
+			repositoryName: "modelharbor/ModelHarbor-Agent",
 		})
 	})
 
@@ -659,10 +659,10 @@ describe("getGitRepositoryInfo", () => {
 
 describe("convertGitUrlToHttps", () => {
 	it("should leave HTTPS URLs unchanged", () => {
-		const url = "https://github.com/RooCodeInc/Roo-Code.git"
+		const url = "https://github.com/modelharbor/ModelHarbor-Agent.git"
 		const converted = convertGitUrlToHttps(url)
 
-		expect(converted).toBe("https://github.com/RooCodeInc/Roo-Code.git")
+		expect(converted).toBe("https://github.com/modelharbor/ModelHarbor-Agent.git")
 	})
 
 	it("should convert SSH URLs to HTTPS format", () => {
@@ -733,17 +733,17 @@ describe("sanitizeGitUrl", () => {
 
 describe("extractRepositoryName", () => {
 	it("should extract repository name from HTTPS URL", () => {
-		const url = "https://github.com/RooCodeInc/Roo-Code.git"
+		const url = "https://github.com/modelharbor/ModelHarbor-Agent.git"
 		const repoName = extractRepositoryName(url)
 
-		expect(repoName).toBe("RooCodeInc/Roo-Code")
+		expect(repoName).toBe("modelharbor/ModelHarbor-Agent")
 	})
 
 	it("should extract repository name from HTTPS URL without .git suffix", () => {
-		const url = "https://github.com/RooCodeInc/Roo-Code"
+		const url = "https://github.com/modelharbor/ModelHarbor-Agent"
 		const repoName = extractRepositoryName(url)
 
-		expect(repoName).toBe("RooCodeInc/Roo-Code")
+		expect(repoName).toBe("modelharbor/ModelHarbor-Agent")
 	})
 
 	it("should extract repository name from SSH URL", () => {
@@ -808,7 +808,7 @@ describe("getWorkspaceGitInfo", () => {
 		// Mock git config file content
 		const mockConfig = `
 [remote "origin"]
- url = https://github.com/RooCodeInc/Roo-Code.git
+ url = https://github.com/modelharbor/ModelHarbor-Agent.git
 [branch "main"]
  remote = origin
  merge = refs/heads/main
@@ -825,8 +825,8 @@ describe("getWorkspaceGitInfo", () => {
 		const result = await getWorkspaceGitInfo()
 
 		expect(result).toEqual({
-			repositoryUrl: "https://github.com/RooCodeInc/Roo-Code.git",
-			repositoryName: "RooCodeInc/Roo-Code",
+			repositoryUrl: "https://github.com/modelharbor/ModelHarbor-Agent.git",
+			repositoryName: "modelharbor/ModelHarbor-Agent",
 			defaultBranch: "main",
 		})
 

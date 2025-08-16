@@ -37,7 +37,6 @@ import {
 import { cn } from "@/lib/utils"
 
 import { useOpenRouterModels } from "@/hooks/use-open-router-models"
-import { useRooCodeCloudModels } from "@/hooks/use-roo-code-cloud-models"
 
 import {
 	Button,
@@ -47,7 +46,6 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-	Input,
 	Textarea,
 	Tabs,
 	TabsList,
@@ -94,7 +92,7 @@ type ConfigSelection = {
 export function NewRun() {
 	const router = useRouter()
 
-	const [provider, setModelSource] = useState<"roo" | "openrouter" | "other">("other")
+	const [provider, setModelSource] = useState<"openrouter" | "other">("other")
 	const [useNativeToolProtocol, setUseNativeToolProtocol] = useState(true)
 	const [commandExecutionTimeout, setCommandExecutionTimeout] = useState(20)
 	const [terminalShellIntegrationTimeout, setTerminalShellIntegrationTimeout] = useState(30) // seconds
@@ -111,11 +109,10 @@ export function NewRun() {
 	])
 
 	const openRouter = useOpenRouterModels()
-	const rooCodeCloud = useRooCodeCloudModels()
-	const models = provider === "openrouter" ? openRouter.data : rooCodeCloud.data
-	const searchValue = provider === "openrouter" ? openRouter.searchValue : rooCodeCloud.searchValue
-	const setSearchValue = provider === "openrouter" ? openRouter.setSearchValue : rooCodeCloud.setSearchValue
-	const onFilter = provider === "openrouter" ? openRouter.onFilter : rooCodeCloud.onFilter
+	const models = openRouter.data
+	const searchValue = openRouter.searchValue
+	const setSearchValue = openRouter.setSearchValue
+	const onFilter = openRouter.onFilter
 
 	const exercises = useQuery({ queryKey: ["getExercises"], queryFn: () => getExercises() })
 
@@ -133,7 +130,6 @@ export function NewRun() {
 			concurrency: CONCURRENCY_DEFAULT,
 			timeout: TIMEOUT_DEFAULT,
 			iterations: ITERATIONS_DEFAULT,
-			jobToken: "",
 		},
 	})
 
@@ -317,12 +313,6 @@ export function NewRun() {
 	const onSubmit = useCallback(
 		async (values: CreateRun) => {
 			try {
-				// Validate jobToken for Roo Code Cloud provider
-				if (provider === "roo" && !values.jobToken?.trim()) {
-					toast.error("Roo Code Cloud Token is required")
-					return
-				}
-
 				// Determine which selections to use based on provider
 				const selectionsToLaunch: { model: string; configName?: string }[] = []
 
@@ -334,7 +324,7 @@ export function NewRun() {
 						}
 					}
 				} else {
-					// For openrouter/roo, use model selections
+					// For openrouter, use model selections
 					for (const selection of modelSelections) {
 						if (selection.model) {
 							selectionsToLaunch.push({ model: selection.model })
@@ -368,16 +358,6 @@ export function NewRun() {
 							...(runValues.settings || {}),
 							apiProvider: "openrouter",
 							openRouterModelId: selection.model,
-							toolProtocol: useNativeToolProtocol ? "native" : "xml",
-							commandExecutionTimeout,
-							terminalShellIntegrationTimeout: terminalShellIntegrationTimeout * 1000,
-						}
-					} else if (provider === "roo") {
-						runValues.model = selection.model
-						runValues.settings = {
-							...(runValues.settings || {}),
-							apiProvider: "roo",
-							apiModelId: selection.model,
 							toolProtocol: useNativeToolProtocol ? "native" : "xml",
 							commandExecutionTimeout,
 							terminalShellIntegrationTimeout: terminalShellIntegrationTimeout * 1000,
@@ -480,10 +460,9 @@ export function NewRun() {
 							<FormItem>
 								<Tabs
 									value={provider}
-									onValueChange={(value) => setModelSource(value as "roo" | "openrouter" | "other")}>
+									onValueChange={(value) => setModelSource(value as "openrouter" | "other")}>
 									<TabsList className="mb-2">
 										<TabsTrigger value="other">Import</TabsTrigger>
-										<TabsTrigger value="roo">Roo Code Cloud</TabsTrigger>
 										<TabsTrigger value="openrouter">OpenRouter</TabsTrigger>
 									</TabsList>
 								</Tabs>
@@ -725,39 +704,6 @@ export function NewRun() {
 							</FormItem>
 						)}
 					/>
-
-					{provider === "roo" && (
-						<FormField
-							control={form.control}
-							name="jobToken"
-							render={({ field }) => (
-								<FormItem>
-									<div className="flex items-center gap-1">
-										<FormLabel>Roo Code Cloud Token</FormLabel>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Info className="size-4 text-muted-foreground cursor-help" />
-											</TooltipTrigger>
-											<TooltipContent side="right" className="max-w-xs">
-												<p>
-													If you have access to the Roo Code Cloud repository and the
-													decryption key for the .env.* files, generate a token with:
-												</p>
-												<code className="text-xs block mt-1">
-													pnpm --filter @roo-code-cloud/auth production:create-auth-token
-													[email] [org] [ttl]
-												</code>
-											</TooltipContent>
-										</Tooltip>
-									</div>
-									<FormControl>
-										<Input type="password" placeholder="Required" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					)}
 
 					<FormField
 						control={form.control}

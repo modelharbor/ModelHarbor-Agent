@@ -6,8 +6,7 @@ import fs from "fs/promises"
 import * as vscode from "vscode"
 import { z, ZodError } from "zod"
 
-import { globalSettingsSchema } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
+import { globalSettingsSchema, type ModeConfig } from "@roo-code/types"
 
 import { ProviderSettingsManager, providerProfilesSchema } from "./ProviderSettingsManager"
 import { ContextProxy } from "./ContextProxy"
@@ -40,8 +39,10 @@ export async function importSettingsFromPath(
 	filePath: string,
 	{ providerSettingsManager, contextProxy, customModesManager }: ImportOptions,
 ) {
+	// Use z.ZodType to avoid deep type instantiation while maintaining structure
+	// @ts-expect-error - Deep type instantiation is a known TypeScript limitation with complex Zod schemas
 	const schema = z.object({
-		providerProfiles: providerProfilesSchema,
+		providerProfiles: providerProfilesSchema as z.ZodType<any>,
 		globalSettings: globalSettingsSchema.optional(),
 	})
 
@@ -65,7 +66,9 @@ export async function importSettingsFromPath(
 		}
 
 		await Promise.all(
-			(globalSettings.customModes ?? []).map((mode) => customModesManager.updateCustomMode(mode.slug, mode)),
+			(globalSettings.customModes ?? []).map((mode: ModeConfig) =>
+				customModesManager.updateCustomMode(mode.slug, mode),
+			),
 		)
 
 		// OpenAI Compatible settings are now correctly stored in codebaseIndexConfig
@@ -94,7 +97,6 @@ export async function importSettingsFromPath(
 
 		if (e instanceof ZodError) {
 			error = e.issues.map((issue) => `[${issue.path.join(".")}]: ${issue.message}`).join("\n")
-			TelemetryService.instance.captureSchemaValidationError({ schemaName: "ImportExport", error: e })
 		} else if (e instanceof Error) {
 			error = e.message
 		}
@@ -145,7 +147,7 @@ export const importSettingsFromFile = async (
 export const exportSettings = async ({ providerSettingsManager, contextProxy }: ExportOptions) => {
 	const uri = await vscode.window.showSaveDialog({
 		filters: { JSON: ["json"] },
-		defaultUri: vscode.Uri.file(path.join(os.homedir(), "Documents", "roo-code-settings.json")),
+		defaultUri: vscode.Uri.file(path.join(os.homedir(), "Documents", "modelharbor-agent-settings.json")),
 	})
 
 	if (!uri) {

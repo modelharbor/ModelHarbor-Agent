@@ -72,7 +72,8 @@ describe("MarketplaceView", () => {
 		}
 	})
 
-	it("should trigger fetchMarketplaceData when organization settings version changes", async () => {
+	it.skip("should trigger fetchMarketplaceData when organization settings version changes", async () => {
+		// SKIPPED: organizationSettingsVersion was removed from ExtensionState as part of cloud/telemetry removal
 		const { rerender } = render(
 			<ExtensionStateContext.Provider value={mockExtensionState}>
 				<MarketplaceView stateManager={stateManager} />
@@ -106,7 +107,8 @@ describe("MarketplaceView", () => {
 		})
 	})
 
-	it("should trigger fetchMarketplaceData when organization settings version changes from -1", async () => {
+	it.skip("should trigger fetchMarketplaceData when organization settings version changes from -1", async () => {
+		// SKIPPED: organizationSettingsVersion was removed from ExtensionState as part of cloud/telemetry removal
 		// Start with -1 version (default)
 		mockExtensionState = {
 			...mockExtensionState,
@@ -142,7 +144,8 @@ describe("MarketplaceView", () => {
 		})
 	})
 
-	it("should not trigger fetchMarketplaceData when organization settings version remains the same", async () => {
+	it.skip("should not trigger fetchMarketplaceData when organization settings version remains the same", async () => {
+		// SKIPPED: organizationSettingsVersion was removed from ExtensionState as part of cloud/telemetry removal
 		const { rerender } = render(
 			<ExtensionStateContext.Provider value={mockExtensionState}>
 				<MarketplaceView stateManager={stateManager} />

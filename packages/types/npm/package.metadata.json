@@ -7,14 +7,14 @@
 		"name": "@roo-code/types",
 		"registry": "https://registry.npmjs.org/"
 	},
-	"author": "Roo Code Team",
+	"author": "ModelHarbor Agent Team",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RooCodeInc/Roo-Code.git"
+		"url": "git+https://github.com/modelharbor/ModelHarbor-Agent.git"
 	},
 	"bugs": {
-		"url": "https://github.com/RooCodeInc/Roo-Code/issues"
+		"url": "https://github.com/modelharbor/ModelHarbor-Agent/issues"
 	},
 	"homepage": "https://roocode.com",
 	"keywords": ["roo", "roo-code", "ai"],

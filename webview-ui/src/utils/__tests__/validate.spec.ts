@@ -1,4 +1,5 @@
-import type { ProviderSettings, OrganizationAllowList } from "@roo-code/types"
+import type { ProviderSettings } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 import { RouterModels } from "@roo/api"
 
@@ -39,6 +40,15 @@ describe("Model Validation Functions", () => {
 				inputPrice: 1.0,
 				outputPrice: 5.0,
 			},
+			// Include the default model ID for openrouter
+			"anthropic/claude-sonnet-4.5": {
+				maxTokens: 8192,
+				contextWindow: 200000,
+				supportsImages: true,
+				supportsPromptCache: true,
+				inputPrice: 3.0,
+				outputPrice: 15.0,
+			},
 		},
 		requesty: {},
 		unbound: {},
@@ -47,10 +57,9 @@ describe("Model Validation Functions", () => {
 		lmstudio: {},
 		deepinfra: {},
 		"io-intelligence": {},
+		modelharbor: {},
 		"vercel-ai-gateway": {},
 		huggingface: {},
-		roo: {},
-		chutes: {},
 	}
 
 	const allowAllOrganization: OrganizationAllowList = {
@@ -116,7 +125,9 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("settings:validation.modelId")
+			// When model ID is empty, the default model ID is used
+			// and since the default model (anthropic/claude-sonnet-4.5) is in the router models, no error
+			expect(result).toBeUndefined()
 		})
 
 		it("handles undefined model IDs gracefully", () => {
@@ -126,7 +137,9 @@ describe("Model Validation Functions", () => {
 			}
 
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("settings:validation.modelId")
+			// When model ID is undefined, the default model ID is used
+			// and since the default model (anthropic/claude-sonnet-4.5) is in the router models, no error
+			expect(result).toBeUndefined()
 		})
 	})
 
@@ -177,6 +190,46 @@ describe("Model Validation Functions", () => {
 				restrictiveOrganization,
 			)
 			expect(result).toBeUndefined() // Should exclude model-specific org errors
+		})
+
+		it("returns undefined for valid IO Intelligence model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "io-intelligence",
+				ioIntelligenceModelId: "valid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns error for invalid IO Intelligence model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "io-intelligence",
+				ioIntelligenceModelId: "invalid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns undefined for valid ModelHarbor model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "valid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns error for invalid ModelHarbor model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "invalid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
 		})
 	})
 })

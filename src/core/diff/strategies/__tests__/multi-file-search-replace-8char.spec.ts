@@ -169,21 +169,17 @@ new content
 	it("should detect merge conflict with 8 character prefix", () => {
 		const strategy = new MultiFileSearchReplaceDiffStrategy()
 
-		const diff = `<<<<<<<< SEARCH
+		const diff = `<<<<<<< SEARCH
 :start_line:1
 -------
 content
-<<<<<<<< HEAD
-conflict content
 =======
 new content
->>>>>>>> REPLACE`
+>>>>>>> REPLACE`
 
 		const result = strategy["validateMarkerSequencing"](diff)
 
 		expect(result.success).toBe(false)
-		if (!result.success) {
-			expect(result.error).toContain("merge conflict")
-		}
+		expect(result.error).toContain("Merge conflict markers detected")
 	})
 })

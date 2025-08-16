@@ -103,9 +103,9 @@ describe("OpenRouterHandler", () => {
 			baseURL: "https://openrouter.ai/api/v1",
 			apiKey: mockOptions.openRouterApiKey,
 			defaultHeaders: {
-				"HTTP-Referer": "https://github.com/RooVetGit/Roo-Cline",
-				"X-Title": "Roo Code",
-				"User-Agent": `RooCode/${Package.version}`,
+				"HTTP-Referer": "https://github.com/modelharbor/ModelHarbor-Agent",
+				"X-Title": "ModelHarbor Agent",
+				"User-Agent": `ModelHarbor/${Package.version}`,
 			},
 		})
 	})
@@ -316,7 +316,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("handles API errors and captures telemetry", async () => {
+		it.skip("handles API errors and captures telemetry", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const mockStream = {
 				async *[Symbol.asyncIterator]() {
@@ -344,7 +345,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("captures telemetry when createMessage throws an exception", async () => {
+		it.skip("captures telemetry when createMessage throws an exception", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const mockCreate = vitest.fn().mockRejectedValue(new Error("Connection failed"))
 			;(OpenAI as any).prototype.chat = {
@@ -364,7 +366,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("passes SDK exceptions with status 429 to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+		it.skip("passes SDK exceptions with status 429 to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const error = new Error("Rate limit exceeded: free-models-per-day") as any
 			error.status = 429
@@ -387,7 +390,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("passes SDK exceptions with 429 in message to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+		it.skip("passes SDK exceptions with 429 in message to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const error = new Error("429 Rate limit exceeded: free-models-per-day")
 			const mockCreate = vitest.fn().mockRejectedValue(error)
@@ -408,7 +412,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("passes SDK exceptions containing 'rate limit' to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+		it.skip("passes SDK exceptions containing 'rate limit' to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const error = new Error("Request failed due to rate limit")
 			const mockCreate = vitest.fn().mockRejectedValue(error)
@@ -429,7 +434,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("passes 429 rate limit errors from stream to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+		it.skip("passes 429 rate limit errors from stream to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const mockStream = {
 				async *[Symbol.asyncIterator]() {
@@ -557,7 +563,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("handles API errors and captures telemetry", async () => {
+		it.skip("handles API errors and captures telemetry", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const mockError = {
 				error: {
@@ -586,7 +593,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("handles unexpected errors and captures telemetry", async () => {
+		it.skip("handles unexpected errors and captures telemetry", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const error = new Error("Unexpected error")
 			const mockCreate = vitest.fn().mockRejectedValue(error)
@@ -607,7 +615,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("passes SDK exceptions with status 429 to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+		it.skip("passes SDK exceptions with status 429 to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const error = new Error("Rate limit exceeded: free-models-per-day") as any
 			error.status = 429
@@ -629,7 +638,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("passes SDK exceptions with 429 in message to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+		it.skip("passes SDK exceptions with 429 in message to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const error = new Error("429 Rate limit exceeded: free-models-per-day")
 			const mockCreate = vitest.fn().mockRejectedValue(error)
@@ -650,7 +660,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("passes SDK exceptions containing 'rate limit' to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+		it.skip("passes SDK exceptions containing 'rate limit' to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const error = new Error("Request failed due to rate limit")
 			const mockCreate = vitest.fn().mockRejectedValue(error)
@@ -671,7 +682,8 @@ describe("OpenRouterHandler", () => {
 			)
 		})
 
-		it("passes 429 rate limit errors from response to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+		it.skip("passes 429 rate limit errors from response to telemetry (filtering happens in PostHogTelemetryClient)", async () => {
+			// TelemetryService has been removed - telemetry capture is no longer available
 			const handler = new OpenRouterHandler(mockOptions)
 			const mockError = {
 				error: {

@@ -34,6 +34,7 @@ export type AvailableEmbedders =
 	| "openai-compatible"
 	| "gemini"
 	| "mistral"
+	| "modelharbor"
 	| "vercel-ai-gateway"
 	| "bedrock"
 	| "openrouter"

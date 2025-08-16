@@ -7,7 +7,6 @@ import {
 	type ModeConfig,
 	type InstallMarketplaceItemOptions,
 	type MarketplaceItem,
-	type ShareVisibility,
 	type QueuedMessage,
 	marketplaceItemSchema,
 } from "@roo-code/types"
@@ -227,7 +226,6 @@ export interface WebviewMessage {
 	mpItem?: MarketplaceItem
 	mpInstallOptions?: InstallMarketplaceItemOptions
 	config?: Record<string, any> // Add config to the payload
-	visibility?: ShareVisibility // For share visibility
 	hasContent?: boolean // For checkRulesDirectoryResult
 	checkOnly?: boolean // For deleteCustomMode check
 	upsellId?: string // For dismissUpsell
@@ -296,14 +294,19 @@ export interface IndexClearedPayload {
 	error?: string
 }
 
+// Use any to avoid deep type instantiation during schema building
 export const installMarketplaceItemWithParametersPayloadSchema = z.object({
-	item: marketplaceItemSchema,
+	item: marketplaceItemSchema as any,
 	parameters: z.record(z.string(), z.any()),
-})
+}) as z.ZodType<{
+	item: MarketplaceItem
+	parameters: Record<string, any>
+}>
 
-export type InstallMarketplaceItemWithParametersPayload = z.infer<
-	typeof installMarketplaceItemWithParametersPayloadSchema
->
+export type InstallMarketplaceItemWithParametersPayload = {
+	item: MarketplaceItem
+	parameters: Record<string, any>
+}
 
 export type WebViewMessagePayload =
 	| CheckpointDiffPayload

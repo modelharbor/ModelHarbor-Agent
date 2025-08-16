@@ -5,7 +5,6 @@ import * as vscode from "vscode"
 import delay from "delay"
 
 import { CommandExecutionStatus, DEFAULT_TERMINAL_OUTPUT_CHARACTER_LIMIT } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { Task } from "../task/Task"
 
@@ -73,6 +72,8 @@ export class ExecuteCommandTool extends BaseTool<"execute_command"> {
 				terminalOutputLineLimit = 500,
 				terminalOutputCharacterLimit = DEFAULT_TERMINAL_OUTPUT_CHARACTER_LIMIT,
 				terminalShellIntegrationDisabled = true,
+				superYoloMode = false,
+				superYoloStuckTimeoutMs = 300000, // Default: 5 minutes
 			} = providerState ?? {}
 
 			// Get command execution timeout from VSCode configuration (in seconds)
@@ -91,7 +92,17 @@ export class ExecuteCommandTool extends BaseTool<"execute_command"> {
 			)
 
 			// Convert seconds to milliseconds for internal use, but skip timeout if command is allowlisted
-			const commandExecutionTimeout = isCommandAllowlisted ? 0 : commandExecutionTimeoutSeconds * 1000
+			let commandExecutionTimeout = isCommandAllowlisted ? 0 : commandExecutionTimeoutSeconds * 1000
+
+			// In Super YOLO mode, enforce a maximum 5-minute timeout for command execution
+			// This prevents commands from getting stuck during execution (not just waiting for user input)
+			if (superYoloMode) {
+				const superYoloTimeout = superYoloStuckTimeoutMs ?? 300000 // Default 5 minutes
+				// Apply the minimum of user-configured timeout and Super YOLO timeout
+				if (commandExecutionTimeout === 0 || commandExecutionTimeout > superYoloTimeout) {
+					commandExecutionTimeout = superYoloTimeout
+				}
+			}
 
 			const options: ExecuteCommandOptions = {
 				executionId,
@@ -252,7 +263,6 @@ export async function executeCommandInTerminal(
 
 	if (terminalProvider === "vscode") {
 		callbacks.onNoShellIntegration = async (error: string) => {
-			TelemetryService.instance.captureShellIntegrationError(task.taskId)
 			shellIntegrationError = error
 		}
 	}
@@ -296,7 +306,7 @@ export async function executeCommandInTerminal(
 
 				return [
 					false,
-					`The command was terminated after exceeding a user-configured ${commandExecutionTimeoutSeconds}s timeout. Do not try to re-run the command.`,
+					`The command was terminated after exceeding a ${commandExecutionTimeoutSeconds}s timeout. Do not try to re-run the command.`,
 				]
 			}
 			throw error

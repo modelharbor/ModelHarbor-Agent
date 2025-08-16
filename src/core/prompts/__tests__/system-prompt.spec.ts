@@ -407,7 +407,7 @@ describe("SYSTEM_PROMPT", () => {
 	it("should include vscode language in custom instructions", async () => {
 		// Mock vscode.env.language
 		const vscode = vi.mocked(await import("vscode")) as any
-		vscode.env = { language: "es" }
+		vscode.env = { language: "th" }
 		// Ensure workspace mock is maintained
 		vscode.workspace = {
 			workspaceFolders: [
@@ -452,7 +452,7 @@ describe("SYSTEM_PROMPT", () => {
 		)
 
 		expect(prompt).toContain("Language Preference:")
-		expect(prompt).toContain('You should always speak and think in the "es" language')
+		expect(prompt).toContain('You should always speak and think in the "th" language')
 
 		// Reset mock
 		vscode.env = { language: "en" }

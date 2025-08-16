@@ -18,7 +18,11 @@
 		"strict": true,
 		"target": "ES2022",
 		"useDefineForClassFields": true,
-		"useUnknownInCatchVariables": false
+		"useUnknownInCatchVariables": false,
+		"baseUrl": ".",
+		"paths": {
+			"@roo-code/core": ["../packages/core/src"]
+		}
 	},
 	"include": ["."],
 	"exclude": ["node_modules"],

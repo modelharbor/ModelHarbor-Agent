@@ -8,9 +8,9 @@ import type { MarketplaceItemType } from "@roo-code/types"
 vi.mock("axios")
 const mockedAxios = axios as any
 
-// Mock the cloud config
+// Mock the cloud config - RemoteConfigLoader now hardcodes the API URL
 vi.mock("@roo-code/cloud", () => ({
-	getRooCodeApiUrl: () => "https://test.api.com",
+	getRooCodeApiUrl: () => "https://api.modelharbor.io",
 }))
 
 describe("RemoteConfigLoader", () => {
@@ -52,7 +52,7 @@ describe("RemoteConfigLoader", () => {
 
 			expect(mockedAxios.get).toHaveBeenCalledTimes(2)
 			expect(mockedAxios.get).toHaveBeenCalledWith(
-				"https://test.api.com/api/marketplace/modes",
+				"https://api.modelharbor.io/api/marketplace/modes",
 				expect.objectContaining({
 					timeout: 10000,
 					headers: {
@@ -62,7 +62,7 @@ describe("RemoteConfigLoader", () => {
 				}),
 			)
 			expect(mockedAxios.get).toHaveBeenCalledWith(
-				"https://test.api.com/api/marketplace/mcps",
+				"https://api.modelharbor.io/api/marketplace/mcps",
 				expect.objectContaining({
 					timeout: 10000,
 					headers: {
