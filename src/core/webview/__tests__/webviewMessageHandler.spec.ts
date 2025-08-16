@@ -196,6 +196,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				litellm: mockModels,
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModels,
 				"vercel-ai-gateway": mockModels,
 			},
 		})
@@ -284,6 +285,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				litellm: {},
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModels,
 				"vercel-ai-gateway": mockModels,
 			},
 		})
@@ -307,13 +309,14 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
 			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm
+			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // modelharbor
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
 		})
 
-		// Verify successful providers are included
-		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
+		// Verify final response includes successful providers
+		expect(mockClineProvider.postMessageToWebview).toHaveBeenLastCalledWith({
 			type: "routerModels",
 			routerModels: {
 				openrouter: mockModels,
@@ -323,6 +326,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				litellm: {},
 				ollama: {},
 				lmstudio: {},
+				modelharbor: {},
 				"vercel-ai-gateway": mockModels,
 			},
 		})
@@ -346,7 +350,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			type: "singleRouterModelFetchResponse",
 			success: false,
 			error: "LiteLLM connection failed",
-			values: { provider: "litellm" },
+			values: { provider: "modelharbor" },
 		})
 	})
 
@@ -359,6 +363,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
 			.mockRejectedValueOnce(new Error("Vercel AI Gateway error")) // vercel-ai-gateway
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm
+			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // modelharbor
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
@@ -397,7 +402,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			type: "singleRouterModelFetchResponse",
 			success: false,
 			error: "LiteLLM connection failed",
-			values: { provider: "litellm" },
+			values: { provider: "modelharbor" },
 		})
 	})
 

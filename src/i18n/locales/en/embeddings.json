@@ -41,12 +41,16 @@
 		"apiKeyRequired": "API key is required for this embedder",
 		"baseUrlRequired": "Base URL is required for this embedder"
 	},
+	"modelharbor": {
+		"invalidResponseFormat": "Invalid response format from ModelHarbor API"
+	},
 	"serviceFactory": {
 		"openAiConfigMissing": "OpenAI configuration missing for embedder creation",
 		"ollamaConfigMissing": "Ollama configuration missing for embedder creation",
 		"openAiCompatibleConfigMissing": "OpenAI Compatible configuration missing for embedder creation",
 		"geminiConfigMissing": "Gemini configuration missing for embedder creation",
 		"mistralConfigMissing": "Mistral configuration missing for embedder creation",
+		"modelHarborConfigMissing": "ModelHarbor configuration missing for embedder creation",
 		"vercelAiGatewayConfigMissing": "Vercel AI Gateway configuration missing for embedder creation",
 		"invalidEmbedderType": "Invalid embedder type configured: {{embedderProvider}}",
 		"vectorDimensionNotDeterminedOpenAiCompatible": "Could not determine vector dimension for model '{{modelId}}' with provider '{{provider}}'. Please ensure the 'Embedding Dimension' is correctly set in the OpenAI-Compatible provider settings.",

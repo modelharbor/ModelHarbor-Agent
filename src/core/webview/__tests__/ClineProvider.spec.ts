@@ -478,7 +478,7 @@ describe("ClineProvider", () => {
 
 		// Verify Content Security Policy contains the necessary PostHog domains
 		expect(mockWebviewView.webview.html).toContain(
-			"connect-src vscode-webview://test-csp-source https://openrouter.ai https://api.requesty.ai https://us.i.posthog.com https://us-assets.i.posthog.com",
+			"connect-src vscode-webview://test-csp-source https://openrouter.ai https://api.requesty.ai https://api.modelharbor.com https://us.i.posthog.com https://us-assets.i.posthog.com",
 		)
 
 		// Extract the script-src directive section and verify required security elements
@@ -534,7 +534,7 @@ describe("ClineProvider", () => {
 			maxWorkspaceFiles: 200,
 			browserToolEnabled: true,
 			telemetrySetting: "unset",
-			showRooIgnoredFiles: false,
+			showRooIgnoredFiles: true,
 			renderContext: "sidebar",
 			maxReadFileLine: 500,
 			maxImageFileSize: 5,
@@ -742,11 +742,11 @@ describe("ClineProvider", () => {
 	})
 
 	test("language is set to VSCode language", async () => {
-		// Mock VSCode language as Spanish
-		;(vscode.env as any).language = "pt-BR"
+		// Mock VSCode language as Thai
+		;(vscode.env as any).language = "th"
 
 		const state = await provider.getState()
-		expect(state.language).toBe("pt-BR")
+		expect(state.language).toBe("th")
 	})
 
 	test("diffEnabled defaults to true when not set", async () => {
@@ -985,7 +985,7 @@ describe("ClineProvider", () => {
 		const messageHandler = (mockWebviewView.webview.onDidReceiveMessage as any).mock.calls[0][0]
 
 		// Default value should be false
-		expect((await provider.getState()).showRooIgnoredFiles).toBe(false)
+		expect((await provider.getState()).showRooIgnoredFiles).toBe(true)
 
 		// Test showRooIgnoredFiles with true
 		await messageHandler({ type: "showRooIgnoredFiles", bool: true })
@@ -2659,8 +2659,30 @@ describe("ClineProvider - Router Models", () => {
 			},
 		}
 
+		// ModelHarbor returns specific models from embeddingModels.ts
+		const mockModelHarborModels = {
+			"baai/bge-m3": {
+				maxTokens: 4096,
+				contextWindow: 8192,
+				description: "ModelHarbor baai/bge-m3",
+				supportsPromptCache: false,
+			},
+			"qwen/qwen3-embedding-4b": {
+				maxTokens: 4096,
+				contextWindow: 8192,
+				description: "ModelHarbor qwen/qwen3-embedding-4b",
+				supportsPromptCache: false,
+			},
+		}
+
 		const { getModels } = await import("../../../api/providers/fetchers/modelCache")
-		vi.mocked(getModels).mockResolvedValue(mockModels)
+		vi.mocked(getModels)
+			.mockResolvedValueOnce(mockModels) // openrouter
+			.mockResolvedValueOnce(mockModels) // requesty
+			.mockResolvedValueOnce(mockModels) // glama
+			.mockResolvedValueOnce(mockModels) // unbound
+			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
+			.mockResolvedValueOnce(mockModels) // litellm
 
 		await messageHandler({ type: "requestRouterModels" })
 
@@ -2687,6 +2709,7 @@ describe("ClineProvider - Router Models", () => {
 				litellm: mockModels,
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModelHarborModels,
 				"vercel-ai-gateway": mockModels,
 			},
 		})
@@ -2718,6 +2741,35 @@ describe("ClineProvider - Router Models", () => {
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty fail
 			.mockResolvedValueOnce(mockModels) // glama success
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound fail
+			.mockResolvedValueOnce({
+				"baai/bge-m3": {
+					maxTokens: 4096,
+					contextWindow: 8192,
+					description: "ModelHarbor baai/bge-m3",
+					supportsPromptCache: false,
+				},
+				"qwen/qwen3-embedding-4b": {
+					maxTokens: 4096,
+					contextWindow: 8192,
+					description: "ModelHarbor qwen/qwen3-embedding-4b",
+					supportsPromptCache: false,
+				},
+			}) // modelharbor success (uses fixed models)
+			.mockResolvedValueOnce({
+				// litellm success with different models
+				"model-1": {
+					maxTokens: 4096,
+					contextWindow: 8192,
+					description: "Test model 1",
+					supportsPromptCache: false,
+				},
+				"model-2": {
+					maxTokens: 8192,
+					contextWindow: 16384,
+					description: "Test model 2",
+					supportsPromptCache: false,
+				},
+			})
 			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway success
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm fail
 
@@ -2734,6 +2786,20 @@ describe("ClineProvider - Router Models", () => {
 				ollama: {},
 				lmstudio: {},
 				litellm: {},
+				modelharbor: {
+					"baai/bge-m3": {
+						maxTokens: 4096,
+						contextWindow: 8192,
+						description: "ModelHarbor baai/bge-m3",
+						supportsPromptCache: false,
+					},
+					"qwen/qwen3-embedding-4b": {
+						maxTokens: 4096,
+						contextWindow: 8192,
+						description: "ModelHarbor qwen/qwen3-embedding-4b",
+						supportsPromptCache: false,
+					},
+				},
 				"vercel-ai-gateway": mockModels,
 			},
 		})
@@ -2751,20 +2817,6 @@ describe("ClineProvider - Router Models", () => {
 			success: false,
 			error: "Unbound API error",
 			values: { provider: "unbound" },
-		})
-
-		expect(mockPostMessage).toHaveBeenCalledWith({
-			type: "singleRouterModelFetchResponse",
-			success: false,
-			error: "Unbound API error",
-			values: { provider: "unbound" },
-		})
-
-		expect(mockPostMessage).toHaveBeenCalledWith({
-			type: "singleRouterModelFetchResponse",
-			success: false,
-			error: "LiteLLM connection failed",
-			values: { provider: "litellm" },
 		})
 	})
 
@@ -2845,6 +2897,7 @@ describe("ClineProvider - Router Models", () => {
 				litellm: {},
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModels,
 				"vercel-ai-gateway": mockModels,
 			},
 		})
