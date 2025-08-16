@@ -277,9 +277,7 @@ export const webviewMessageHandler = async (
 
 			// If user already opted in to telemetry, enable telemetry service
 			provider.getStateToPostToWebview().then((state) => {
-				const { telemetrySetting } = state
-				const isOptedIn = telemetrySetting === "enabled"
-				TelemetryService.instance.updateTelemetryState(isOptedIn)
+				TelemetryService.instance.updateTelemetryState(true)
 			})
 
 			provider.isViewLaunched = true
@@ -575,6 +573,7 @@ export const webviewMessageHandler = async (
 				},
 				{ key: "glama", options: { provider: "glama" } },
 				{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
+				{ key: "modelharbor", options: { provider: "modelharbor" } },
 			]
 
 			// Add IO Intelligence if API key is provided
@@ -607,9 +606,10 @@ export const webviewMessageHandler = async (
 
 			const fetchedRouterModels: Partial<Record<RouterName, ModelRecord>> = {
 				...routerModels,
-				// Initialize ollama and lmstudio with empty objects since they use separate handlers
+				// Initialize ollama, lmstudio, and modelharbor with empty objects
 				ollama: {},
 				lmstudio: {},
+				modelharbor: {},
 			}
 
 			results.forEach((result, index) => {
@@ -645,6 +645,9 @@ export const webviewMessageHandler = async (
 					})
 				}
 			})
+
+			// ModelHarbor embedding models are now fixed in embeddingModels.ts
+			// No need to update codebaseIndexModels dynamically from API
 
 			provider.postMessageToWebview({
 				type: "routerModels",
@@ -2007,14 +2010,6 @@ export const webviewMessageHandler = async (
 			}
 			break
 
-		case "telemetrySetting": {
-			const telemetrySetting = message.text as TelemetrySetting
-			await updateGlobalState("telemetrySetting", telemetrySetting)
-			const isOptedIn = telemetrySetting === "enabled"
-			TelemetryService.instance.updateTelemetryState(isOptedIn)
-			await provider.postStateToWebview()
-			break
-		}
 		case "accountButtonClicked": {
 			// Navigate to the account tab.
 			provider.postMessageToWebview({ type: "action", action: "accountButtonClicked" })
@@ -2097,6 +2092,12 @@ export const webviewMessageHandler = async (
 					await provider.contextProxy.storeSecret(
 						"codebaseIndexMistralApiKey",
 						settings.codebaseIndexMistralApiKey,
+					)
+				}
+				if (settings.codebaseIndexModelHarborApiKey !== undefined) {
+					await provider.contextProxy.storeSecret(
+						"codebaseIndexModelHarborApiKey",
+						settings.codebaseIndexModelHarborApiKey,
 					)
 				}
 
@@ -2233,6 +2234,7 @@ export const webviewMessageHandler = async (
 			))
 			const hasGeminiApiKey = !!(await provider.context.secrets.get("codebaseIndexGeminiApiKey"))
 			const hasMistralApiKey = !!(await provider.context.secrets.get("codebaseIndexMistralApiKey"))
+			const hasModelHarborApiKey = !!(await provider.context.secrets.get("codebaseIndexModelHarborApiKey"))
 
 			provider.postMessageToWebview({
 				type: "codeIndexSecretStatus",
@@ -2242,6 +2244,7 @@ export const webviewMessageHandler = async (
 					hasOpenAiCompatibleApiKey,
 					hasGeminiApiKey,
 					hasMistralApiKey,
+					hasModelHarborApiKey,
 				},
 			})
 			break

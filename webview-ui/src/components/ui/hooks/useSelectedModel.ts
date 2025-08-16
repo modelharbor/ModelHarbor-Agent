@@ -53,6 +53,7 @@ import {
 	rooDefaultModelId,
 	rooModels,
 	BEDROCK_CLAUDE_SONNET_4_MODEL_ID,
+	modelHarborDefaultModelId,
 } from "@roo-code/types"
 
 import type { ModelRecord, RouterModels } from "@roo/api"
@@ -62,7 +63,7 @@ import { useOpenRouterModelProviders } from "./useOpenRouterModelProviders"
 import { useLmStudioModels } from "./useLmStudioModels"
 
 export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
-	const provider = apiConfiguration?.apiProvider || "anthropic"
+	const provider = apiConfiguration?.apiProvider || "modelharbor"
 	const openRouterModelId = provider === "openrouter" ? apiConfiguration?.openRouterModelId : undefined
 	const lmStudioModelId = provider === "lmstudio" ? apiConfiguration?.lmStudioModelId : undefined
 
@@ -82,7 +83,7 @@ export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
 					openRouterModelProviders: openRouterModelProviders.data,
 					lmStudioModels: lmStudioModels.data,
 				})
-			: { id: anthropicDefaultModelId, info: undefined }
+			: { id: modelHarborDefaultModelId, info: undefined }
 
 	return {
 		provider,
@@ -303,6 +304,11 @@ function getSelectedModel({
 			const id = apiConfiguration.ioIntelligenceModelId ?? ioIntelligenceDefaultModelId
 			const info =
 				routerModels["io-intelligence"]?.[id] ?? ioIntelligenceModels[id as keyof typeof ioIntelligenceModels]
+			return { id, info }
+		}
+		case "modelharbor": {
+			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
+			const info = routerModels.modelharbor?.[id]
 			return { id, info }
 		}
 		case "roo": {

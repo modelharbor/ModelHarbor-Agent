@@ -35,6 +35,7 @@ import {
 	DoubaoHandler,
 	ZAiHandler,
 	FireworksHandler,
+	ModelHarborHandler,
 	RooHandler,
 	FeatherlessHandler,
 } from "./providers"
@@ -142,6 +143,8 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new FireworksHandler(options)
 		case "io-intelligence":
 			return new IOIntelligenceHandler(options)
+		case "modelharbor":
+			return new ModelHarborHandler(options)
 		case "roo":
 			// Never throw exceptions from provider constructors
 			// The provider-proxy server will handle authentication and return appropriate error codes

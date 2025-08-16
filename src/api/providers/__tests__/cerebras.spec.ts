@@ -14,9 +14,9 @@ vi.mock("../../i18n", () => ({
 // Mock DEFAULT_HEADERS
 vi.mock("../constants", () => ({
 	DEFAULT_HEADERS: {
-		"HTTP-Referer": "https://github.com/RooVetGit/Roo-Cline",
-		"X-Title": "Roo Code",
-		"User-Agent": "RooCode/1.0.0",
+		"HTTP-Referer": "https://github.com/modelharbor/ModelHarbor-Agent",
+			"X-Title": "ModelHarbor Agent",
+			"User-Agent": `ModelHarbor/1.0.0`,
 	},
 }))
 
@@ -104,9 +104,9 @@ describe("CerebrasHandler", () => {
 					headers: expect.objectContaining({
 						"Content-Type": "application/json",
 						Authorization: "Bearer test-api-key",
-						"HTTP-Referer": "https://github.com/RooVetGit/Roo-Cline",
-						"X-Title": "Roo Code",
-						"User-Agent": "RooCode/1.0.0",
+						"HTTP-Referer": "https://github.com/modelharbor/ModelHarbor-Agent",
+						"X-Title": "ModelHarbor Agent",
+						"User-Agent": "ModelHarbor/1.0.0",
 					}),
 				}),
 			)

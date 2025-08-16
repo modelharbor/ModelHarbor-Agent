@@ -36,12 +36,10 @@ import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { useSelectedModel } from "@src/components/ui/hooks/useSelectedModel"
 import RooHero from "@src/components/welcome/RooHero"
 import RooTips from "@src/components/welcome/RooTips"
-import RooCloudCTA from "@src/components/welcome/RooCloudCTA"
 import { StandardTooltip } from "@src/components/ui"
 import { useAutoApprovalState } from "@src/hooks/useAutoApprovalState"
 import { useAutoApprovalToggles } from "@src/hooks/useAutoApprovalToggles"
 
-import TelemetryBanner from "../common/TelemetryBanner"
 import VersionIndicator from "../common/VersionIndicator"
 import { useTaskSearch } from "../history/useTaskSearch"
 import HistoryPreview from "../history/HistoryPreview"
@@ -112,12 +110,11 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 		alwaysAllowFollowupQuestions,
 		alwaysAllowUpdateTodoList,
 		customModes,
-		telemetrySetting,
 		hasSystemPromptOverride,
 		historyPreviewCollapsed, // Added historyPreviewCollapsed
 		soundEnabled,
 		soundVolume,
-		cloudIsAuthenticated,
+		// cloudIsAuthenticated, // Removed unused variable
 	} = useExtensionState()
 
 	const messagesRef = useRef(messages)
@@ -1845,10 +1842,9 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 						/>
 
 						<RooHero />
-						{telemetrySetting === "unset" && <TelemetryBanner />}
 
 						<div className="mb-2.5">
-							{cloudIsAuthenticated || taskHistory.length < 4 ? <RooTips /> : <RooCloudCTA />}
+							<RooTips />
 						</div>
 						{/* Show the task history preview if expanded and tasks exist */}
 						{taskHistory.length > 0 && isExpanded && <HistoryPreview />}
