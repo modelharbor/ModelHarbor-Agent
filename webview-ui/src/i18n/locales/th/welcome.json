@@ -1,0 +1,36 @@
+{
+	"greeting": "ยินดีต้อนรับสู่ ModelHarbor Agent!",
+	"introduction": "ด้วยโหมดในตัวและแบบขยายได้หลากหลาย ModelHarbor Agent ช่วยให้คุณวางแผน ออกแบบสถาปัตยกรรม เขียนโค้ด แก้ไขข้อบกพร่อง และเพิ่มประสิทธิภาพการทำงานได้อย่างที่ไม่เคยมีมาก่อน",
+	"notice": "ในการเริ่มต้น extension นี้ต้องการผู้ให้บริการ API",
+	"start": "ไปกันเลย!",
+	"routers": {
+		"requesty": {
+			"description": "LLM router ที่ปรับแต่งมาแล้ว",
+			"incentive": "เครดิตฟรี $1"
+		},
+		"openrouter": {
+			"description": "อินเทอร์เฟซแบบรวมสำหรับ LLMs"
+		},
+		"roo": {
+			"description": "โมเดลฟรีที่ดีที่สุดเพื่อเริ่มต้น",
+			"incentive": "ลอง Roo ฟรี"
+		}
+	},
+	"chooseProvider": "เพื่อทำความมหัศจรรย์ ModelHarbor ต้องการ API key",
+	"startRouter": "เราแนะนำให้ใช้ LLM Router:",
+	"startCustom": "หรือคุณสามารถนำ API key ของผู้ให้บริการของคุณมา:",
+	"modelHarbor": "คุณสามารถรับ API key ได้จาก ModelHarbor.com",
+	"modelHarborFacebook": "ติดตาม ModelHarbor บน Facebook",
+	"telemetry": {
+		"title": "ช่วยปรับปรุง ModelHarbor Agent",
+		"anonymousTelemetry": "ส่งข้อมูลข้อผิดพลาดและการใช้งานแบบไม่ระบุตัวตนเพื่อช่วยเราแก้ไขจุดบกพร่องและปรับปรุง extension ไม่มีโค้ด พรอมต์ หรือข้อมูลส่วนบุคคลถูกส่งไปเลย",
+		"changeSettings": "คุณสามารถเปลี่ยนแปลงได้เสมอที่ด้านล่างของ <settingsLink>การตั้งค่า</settingsLink>",
+		"settings": "การตั้งค่า",
+		"allow": "อนุญาต",
+		"deny": "ปฏิเสธ"
+	},
+	"importSettings": "นำเข้าการตั้งค่า",
+	"languageSelector": {
+		"label": "ภาษา"
+	}
+}

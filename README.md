@@ -1,186 +1,99 @@
-<p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=RooVeterinaryInc.roo-cline"><img src="https://img.shields.io/visual-studio-marketplace/v/RooVeterinaryInc.roo-cline.svg?label=VS%20Code&color=%23007ACC&style=flat&logo=visualstudiocode&logoColor=white" alt="VS Code"></a>
-  <a href="https://x.com/roocode"><img src="https://img.shields.io/badge/roocode-000000?style=flat&logo=x&logoColor=white" alt="X"></a>
-  <a href="https://youtube.com/@roocodeyt?feature=shared"><img src="https://img.shields.io/badge/YouTube-FF0000?style=flat&logo=youtube&logoColor=white" alt="YouTube"></a>
-  <a href="https://discord.gg/roocode"><img src="https://img.shields.io/badge/Join%20Discord-5865F2?style=flat&logo=discord&logoColor=white" alt="Join Discord"></a>
-  <a href="https://www.reddit.com/r/RooCode/"><img src="https://img.shields.io/badge/Join%20r%2FRooCode-FF4500?style=flat&logo=reddit&logoColor=white" alt="Join r/RooCode"></a>
-</p>
-<p align="center">
-  <em>Get help fast → <a href="https://discord.gg/roocode">Join Discord</a> • Prefer async? → <a href="https://www.reddit.com/r/RooCode/">Join r/RooCode</a></em>
-</p>
+# ModelHarbor
 
-# Roo Code
+## [TH]
 
-> Your AI-Powered Dev Team, Right in Your Editor
+### ModelHarbor คืออะไร ❓
 
-<details>
-  <summary>🌐 Available languages</summary>
+ModelHarbor คือผู้ให้บริการ AI Inference สัญชาติไทย ที่รวบรวม front-tier AI Models เช่น Deepseek, Kimi K2, Qwen3 235B, และ Qwen3 Coder และอีกหลากหลายโมเดลคุณภาพสูง ให้ใช้งานง่ายผ่าน API. เราเป็นผู้พัฒนา ModelHarbor Agent ซึ่งเป็น Extension สำหรับ Visual Studio Code ที่ช่วยให้สามารถใช้งาน Large Language Model ได้โดยตรงบน Code Editor ผ่านการเชื่อมต่อ API ของเรา.
 
-- [English](README.md)
-- [Català](locales/ca/README.md)
-- [Deutsch](locales/de/README.md)
-- [Español](locales/es/README.md)
-- [Français](locales/fr/README.md)
-- [हिंदी](locales/hi/README.md)
-- [Bahasa Indonesia](locales/id/README.md)
-- [Italiano](locales/it/README.md)
-- [日本語](locales/ja/README.md)
-- [한국어](locales/ko/README.md)
-- [Nederlands](locales/nl/README.md)
-- [Polski](locales/pl/README.md)
-- [Português (BR)](locales/pt-BR/README.md)
-- [Русский](locales/ru/README.md)
-- [Türkçe](locales/tr/README.md)
-- [Tiếng Việt](locales/vi/README.md)
-- [简体中文](locales/zh-CN/README.md)
-- [繁體中文](locales/zh-TW/README.md)
-- ...
-      </details>
+### เกี่ยวกับเรา
 
----
+ModelHarbor ก่อตั้งโดยบริษัท นิวเทคโนโลยี่ อินฟอร์เมชั่น จำกัด (NTI) ซึ่งเป็นบริษัทที่ให้บริการ IT Solution ครบวงจรมามากกว่า 30 ปี. ภารกิจของเราคือการเปลี่ยนแปลงขั้นตอนการพัฒนาของคุณด้วยบริการและเครื่องมือใช้งานปัญญาประดิษฐ์ชั้นนำ. วิสัยทัศน์ของเราคือการมอบบริการด้าน IT ที่มีคุณภาพสูงสุดผ่านทีมงานที่มีประสบการณ์และการจัดการที่เป็นมาตรฐาน.
 
-## What Can Roo Code Do For YOU?
+### ModelHarbor Agent: AI Coding Agent ใน Visual Studio Code
 
-- Generate Code from natural language descriptions and specs
-- Adapt with Modes: Code, Architect, Ask, Debug, and Custom Modes
-- Refactor & Debug existing code
-- Write & Update documentation
-- Answer Questions about your codebase
-- Automate repetitive tasks
-- Utilize MCP Servers
+ModelHarbor Agent เป็นเครื่องมือ AI Coding Agent สัญชาติไทยที่ให้คุณใช้งานบน Visual Studio Code เพื่อเชื่อมต่อกับ API ของ ModelHarbor ได้โดยตรง. Agent นี้ช่วยให้นักพัฒนาสามารถพัฒนาโค้ดได้เร็วขึ้น, ลดภาระการจำ syntax และช่วยงานได้หลายอย่าง ไม่ว่าจะเป็นการหา Error, สร้างโค้ด, วางโครงสร้างโปรเจค, และ Debug ผ่านคำสั่งที่เป็นภาษามนุษย์.
 
-## Modes
+คุณสามารถทดลองใช้งานได้ง่ายๆ เพียงล็อกอินด้วยบัญชี Gmail บนเว็บไซต์ modelharbor.com เพื่อรับเครดิตใช้งานฟรี และหากรีวิวแอปนี้ก็จะได้รับเครดิตเพิ่มเติมเช่นกัน.
 
-Roo Code adapts to how you work:
+### การชำระเงิน
 
-- Code Mode: everyday coding, edits, and file ops
-- Architect Mode: plan systems, specs, and migrations
-- Ask Mode: fast answers, explanations, and docs
-- Debug Mode: trace issues, add logs, isolate root causes
-- Custom Modes: build specialized modes for your team or workflow
-- Roomote Control: Roomote Control lets you remotely control tasks running in your local VS Code instance.
+สำหรับผู้ใช้งานในประเทศไทย ทางบริษัทรับช่องทางการชำระทั้งบัตรเครดิต (USD และ THB) และช่องทางพร้อมเพย์ (PromptPay). นอกจากนี้ เรายังเข้าร่วมบริการ e-Tax invoice สำหรับใช้ลดหย่อนภาษีด้วย.
 
-Learn more: [Using Modes](https://docs.roocode.com/basic-usage/using-modes) • [Custom Modes](https://docs.roocode.com/advanced-usage/custom-modes) • [Roomote Control](https://docs.roocode.com/roo-code-cloud/roomote-control)
+### โปรโมชั่น
 
-## Tutorial & Feature Videos
+**การอบรมเครื่องมือโปรแกรมมิ่งสำหรับสถาบันอุดมศึกษา**
+เรามีการจัดอบรมฟรีสำหรับสถาบันอุดมศึกษาที่ใช้ ModelHarbor Agent ซึ่งเป็นเครื่องมือช่วยเขียนโปรแกรมโอเพนซอร์สบน Visual Studio Code.
 
-<div align="center">
+- **สำหรับผู้เข้าอบรม:** นักศึกษาที่เข้าร่วมการอบรมจะได้รับเครดิตมูลค่า 100 บาทต่อคน.
+- **สำหรับนักศึกษาในสาขา:** นักศึกษาในสาขาเดียวกันที่ไม่ได้เข้าอบรมจะได้รับเครดิตมูลค่า 50 บาทต่อคน ตามจำนวนผู้เข้าอบรม.
 
-|                                                                                                                                                                           |                                                                                                                                                                            |                                                                                                                                                                         |
-| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| <a href="https://www.youtube.com/watch?v=Mcq3r1EPZ-4"><img src="https://img.youtube.com/vi/Mcq3r1EPZ-4/maxresdefault.jpg" width="100%"></a><br><b>Installing Roo Code</b> | <a href="https://www.youtube.com/watch?v=ZBML8h5cCgo"><img src="https://img.youtube.com/vi/ZBML8h5cCgo/maxresdefault.jpg" width="100%"></a><br><b>Configuring Profiles</b> | <a href="https://www.youtube.com/watch?v=r1bpod1VWhg"><img src="https://img.youtube.com/vi/r1bpod1VWhg/maxresdefault.jpg" width="100%"></a><br><b>Codebase Indexing</b> |
-|    <a href="https://www.youtube.com/watch?v=iiAv1eKOaxk"><img src="https://img.youtube.com/vi/iiAv1eKOaxk/maxresdefault.jpg" width="100%"></a><br><b>Custom Modes</b>     |     <a href="https://www.youtube.com/watch?v=Ho30nyY332E"><img src="https://img.youtube.com/vi/Ho30nyY332E/maxresdefault.jpg" width="100%"></a><br><b>Checkpoints</b>      |    <a href="https://www.youtube.com/watch?v=6h5vB9PpoPk"><img src="https://img.youtube.com/vi/6h5vB9PpoPk/maxresdefault.jpg" width="100%"></a><br><b>Todo Lists</b>     |
+**หลักสูตรการอบรมที่มีให้เลือก:**
 
-</div>
-<p align="center">
-<a href="https://docs.roocode.com/tutorial-videos">More quick tutorial and feature videos...</a>
-</p>
+- การพัฒนาด้วย Python
+- การพัฒนาด้วย .NET
+- Frontend ด้วย Vue.js
+- การเชื่อมต่อฐานข้อมูล (MySQL, PostgreSQL, Supabase)
 
-## Resources
+### 🚀 โครงการสำหรับนักศึกษา: University AI Club Sponsorship
 
-- **[Documentation](https://docs.roocode.com):** The official guide to installing, configuring, and mastering Roo Code.
-- **[YouTube Channel](https://youtube.com/@roocodeyt?feature=shared):** Watch tutorials and see features in action.
-- **[Discord Server](https://discord.gg/roocode):** Join the community for real-time help and discussion.
-- **[Reddit Community](https://www.reddit.com/r/RooCode):** Share your experiences and see what others are building.
-- **[GitHub Issues](https://github.com/RooCodeInc/Roo-Code/issues):** Report bugs and track development.
-- **[Feature Requests](https://github.com/RooCodeInc/Roo-Code/discussions/categories/feature-requests?discussions_q=is%3Aopen+category%3A%22Feature+Requests%22+sort%3Atop):** Have an idea? Share it with the developers.
+ModelHarbor ขอเชิญชวนนิสิตนักศึกษาผู้มี Passion ในสาย AI ทั่วประเทศ เข้าร่วมโครงการ "ModelHarbor University AI Club Sponsorship" เพื่อก่อตั้งหรือเป็นประธานชมรมปัญญาประดิษฐ์ (AI Club) ในมหาวิทยาลัย.
+
+**สิ่งที่ผู้เข้าร่วมโครงการจะได้รับ:**
+
+- ✅ เครดิตใช้ AI Models ระดับโปรฯ ภายในชมรม ฟรี! (มูลค่า 120,000 บาท)
+- ✅ รับคำปรึกษา (Mentor) โดยตรงจากทีมงาน ModelHarbor
+- ✅ โอกาสสร้าง Portfolio ที่โดดเด่นกว่าใคร
+- ✅ พัฒนาทักษะผู้นำและการบริหารจัดการ
+
+**สมัครได้แล้ววันนี้ - 31 สิงหาคม 2568**
 
 ---
 
-## Local Setup & Development
+## [EN]
 
-1. **Clone** the repo:
+### What is ModelHarbor?
 
-```sh
-git clone https://github.com/RooCodeInc/Roo-Code.git
-```
+ModelHarbor is a Thai-based AI Inference Service provider that offers a collection of front-tier AI models like DeepSeek, Kimi K2, Qwen3 235B, and Qwen3 Coder through an easy-to-use API. We also developed the ModelHarbor Agent, a Visual Studio Code extension that allows direct use of Large Language Models within your code editor by connecting to our API.
 
-2. **Install dependencies**:
+### About Us
 
-```sh
-pnpm install
-```
+ModelHarbor is founded by New Technology Information Co., Ltd. (NTI), a company with over 30 years of experience providing comprehensive IT solutions. Our mission is to transform your development workflow with our flagship AI inference services and tools. Our vision is to deliver the highest quality IT services through experienced teams and standardized management.
 
-3. **Run the extension**:
+### ModelHarbor Agent: AI Coding Agent for VS Code
 
-There are several ways to run the Roo Code extension:
+The ModelHarbor Agent is our AI tool for Visual Studio Code, enabling a direct connection to the ModelHarbor API. This agent helps developers code faster by reducing the need to memorize syntax and assisting with various tasks such as error detection, code generation, project structuring, and debugging using natural language commands.
 
-### Development Mode (F5)
+You can try it out easily by logging in with your Gmail account to get free trial credits. You will also receive additional credits if you review the app.
 
-For active development, use VSCode's built-in debugging:
+### Payment
 
-Press `F5` (or go to **Run** → **Start Debugging**) in VSCode. This will open a new VSCode window with the Roo Code extension running.
+For users in Thailand, we accept payments via credit card (in both USD and THB) and PromptPay. We also provide e-Tax invoice services for tax deduction purposes.
 
-- Changes to the webview will appear immediately.
-- Changes to the core extension will also hot reload automatically.
+### Promotions
 
-### Automated VSIX Installation
+**Programming Tools Training for Educational Institutions**
+We offer free training for higher education institutions using the ModelHarbor Agent, an open-source programming assistant tool on Visual Studio Code.
 
-To build and install the extension as a VSIX package directly into VSCode:
+- **For Training Participants:** Students who attend the training will receive 100 THB in credits.
+- **For Department Students:** Students in the same department who do not attend will receive 50 THB in credits per person, based on the number of training participants.
 
-```sh
-pnpm install:vsix [-y] [--editor=<command>]
-```
+**Available Training Programs:**
 
-This command will:
+- Python Development
+- .NET Development
+- Vue.js Frontend
+- Database Integration (MySQL, PostgreSQL, Supabase)
 
-- Ask which editor command to use (code/cursor/code-insiders) - defaults to 'code'
-- Uninstall any existing version of the extension.
-- Build the latest VSIX package.
-- Install the newly built VSIX.
-- Prompt you to restart VS Code for changes to take effect.
+### 🚀 Student Program: University AI Club Sponsorship
 
-Options:
+ModelHarbor invites university students with a passion for AI across the nation to join the "ModelHarbor University AI Club Sponsorship" program. We are looking for founders or presidents of university AI Clubs.
 
-- `-y`: Skip all confirmation prompts and use defaults
-- `--editor=<command>`: Specify the editor command (e.g., `--editor=cursor` or `--editor=code-insiders`)
+**What participants will receive:**
 
-### Manual VSIX Installation
+- ✅ Free credits (valued at 120,000 THB) to use professional-grade AI Models within the club.
+- ✅ Direct mentorship from the ModelHarbor team.
+- ✅ The opportunity to build a standout portfolio.
+- ✅ Development of leadership and management skills.
 
-If you prefer to install the VSIX package manually:
-
-1.  First, build the VSIX package:
-    ```sh
-    pnpm vsix
-    ```
-2.  A `.vsix` file will be generated in the `bin/` directory (e.g., `bin/roo-cline-<version>.vsix`).
-3.  Install it manually using the VSCode CLI:
-    ```sh
-    code --install-extension bin/roo-cline-<version>.vsix
-    ```
-
----
-
-We use [changesets](https://github.com/changesets/changesets) for versioning and publishing. Check our `CHANGELOG.md` for release notes.
-
----
-
-## Disclaimer
-
-**Please note** that Roo Code, Inc does **not** make any representations or warranties regarding any code, models, or other tools provided or made available in connection with Roo Code, any associated third-party tools, or any resulting outputs. You assume **all risks** associated with the use of any such tools or outputs; such tools are provided on an **"AS IS"** and **"AS AVAILABLE"** basis. Such risks may include, without limitation, intellectual property infringement, cyber vulnerabilities or attacks, bias, inaccuracies, errors, defects, viruses, downtime, property loss or damage, and/or personal injury. You are solely responsible for your use of any such tools or outputs (including, without limitation, the legality, appropriateness, and results thereof).
-
----
-
-## Contributing
-
-We love community contributions! Get started by reading our [CONTRIBUTING.md](CONTRIBUTING.md).
-
----
-
-## Contributors
-
-Thanks to all our contributors who have helped make Roo Code better!
-
-<!-- START CONTRIBUTORS SECTION - AUTO-GENERATED, DO NOT EDIT MANUALLY -->
-
-[![Contributors](https://contrib.rocks/image?repo=RooCodeInc/roo-code&max=120&columns=12&cacheBust=0000000000)](https://github.com/RooCodeInc/roo-code/graphs/contributors)
-
-<!-- END CONTRIBUTORS SECTION -->
-
-## License
-
-[Apache 2.0 © 2025 Roo Code, Inc.](./LICENSE)
-
----
-
-**Enjoy Roo Code!** Whether you keep it on a short leash or let it roam autonomously, we can’t wait to see what you build. If you have questions or feature ideas, drop by our [Reddit community](https://www.reddit.com/r/RooCode/) or [Discord](https://discord.gg/roocode). Happy coding!
+**Applications are open from now until August 31, 2025.**

@@ -27,7 +27,6 @@ import {
 	xaiModels,
 	groqModels,
 	groqDefaultModelId,
-	chutesDefaultModelId,
 	vscodeLlmModels,
 	vscodeLlmDefaultModelId,
 	openRouterDefaultModelId,
@@ -51,11 +50,12 @@ import {
 	featherlessDefaultModelId,
 	ioIntelligenceDefaultModelId,
 	ioIntelligenceModels,
-	rooDefaultModelId,
+	// rooDefaultModelId as _rooDefaultModelId,
 	qwenCodeDefaultModelId,
 	qwenCodeModels,
 	vercelAiGatewayDefaultModelId,
 	BEDROCK_1M_CONTEXT_MODEL_IDS,
+	modelHarborDefaultModelId,
 	deepInfraDefaultModelId,
 	isDynamicProvider,
 } from "@roo-code/types"
@@ -68,7 +68,7 @@ import { useLmStudioModels } from "./useLmStudioModels"
 import { useOllamaModels } from "./useOllamaModels"
 
 export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
-	const provider = apiConfiguration?.apiProvider || "anthropic"
+	const provider = apiConfiguration?.apiProvider || "modelharbor"
 	const openRouterModelId = provider === "openrouter" ? apiConfiguration?.openRouterModelId : undefined
 	const lmStudioModelId = provider === "lmstudio" ? apiConfiguration?.lmStudioModelId : undefined
 	const ollamaModelId = provider === "ollama" ? apiConfiguration?.ollamaModelId : undefined
@@ -96,6 +96,8 @@ export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
 		(!needRouterModels || typeof routerModels.data !== "undefined") &&
 		(!needOpenRouterProviders || typeof openRouterModelProviders.data !== "undefined")
 
+	// When not ready, still call getSelectedModel with empty router models
+	// This ensures we get the configured model ID, not just the default
 	const { id, info } =
 		apiConfiguration && isReady
 			? getSelectedModel({
@@ -106,7 +108,18 @@ export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
 					lmStudioModels: (lmStudioModels.data || undefined) as ModelRecord | undefined,
 					ollamaModels: (ollamaModels.data || undefined) as ModelRecord | undefined,
 				})
-			: { id: anthropicDefaultModelId, info: undefined }
+			: apiConfiguration
+				? // Not ready but have config - use empty router models to get configured ID
+					getSelectedModel({
+						provider,
+						apiConfiguration,
+						routerModels: {} as RouterModels,
+						openRouterModelProviders: {},
+						lmStudioModels: undefined,
+						ollamaModels: undefined,
+					})
+				: // No config at all - use default
+					{ id: modelHarborDefaultModelId, info: undefined }
 
 	return {
 		provider,
@@ -198,11 +211,6 @@ function getSelectedModel({
 				supportsImages: false,
 				supportsPromptCache: false,
 			}
-			return { id, info }
-		}
-		case "chutes": {
-			const id = apiConfiguration.apiModelId ?? chutesDefaultModelId
-			const info = routerModels.chutes[id]
 			return { id, info }
 		}
 		case "bedrock": {
@@ -351,10 +359,9 @@ function getSelectedModel({
 				routerModels["io-intelligence"]?.[id] ?? ioIntelligenceModels[id as keyof typeof ioIntelligenceModels]
 			return { id, info }
 		}
-		case "roo": {
-			// Roo is a dynamic provider - models are loaded from API
-			const id = apiConfiguration.apiModelId ?? rooDefaultModelId
-			const info = routerModels.roo[id]
+		case "modelharbor": {
+			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
+			const info = routerModels.modelharbor?.[id]
 			return { id, info }
 		}
 		case "qwen-code": {

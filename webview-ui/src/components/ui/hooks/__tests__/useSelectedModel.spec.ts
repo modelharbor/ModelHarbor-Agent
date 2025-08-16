@@ -248,16 +248,15 @@ describe("useSelectedModel", () => {
 			mockUseRouterModels.mockReturnValue({
 				data: {
 					openrouter: {
-						"anthropic/claude-sonnet-4": {
+						"qwen/qwen3-coder-480b-a35b-instruct": {
 							// Default model
-							maxTokens: 8192,
-							contextWindow: 200_000,
-							supportsImages: true,
-							supportsPromptCache: true,
-							inputPrice: 3.0,
-							outputPrice: 15.0,
-							cacheWritesPrice: 3.75,
-							cacheReadsPrice: 0.3,
+							maxTokens: 65536,
+							contextWindow: 262000,
+							supportsImages: false,
+							supportsComputerUse: false,
+							supportsPromptCache: false,
+							inputPrice: 0.6,
+							outputPrice: 1.8,
 						},
 					},
 					requesty: {},
@@ -305,9 +304,10 @@ describe("useSelectedModel", () => {
 			} as any)
 
 			const wrapper = createWrapper()
-			const { result } = renderHook(() => useSelectedModel(), { wrapper })
+			// Explicitly set provider to anthropic (static provider) to test the gating behavior
+			const { result } = renderHook(() => useSelectedModel({ apiProvider: "anthropic" }), { wrapper })
 
-			// With static provider default (anthropic), useSelectedModel gates router fetches, so loading should be false
+			// With static provider (anthropic), useSelectedModel gates router fetches, so loading should be false
 			expect(result.current.isLoading).toBe(false)
 		})
 
@@ -345,15 +345,16 @@ describe("useSelectedModel", () => {
 			} as any)
 
 			const wrapper = createWrapper()
-			const { result } = renderHook(() => useSelectedModel(), { wrapper })
+			// Explicitly set provider to anthropic (static provider) to test the gating behavior
+			const { result } = renderHook(() => useSelectedModel({ apiProvider: "anthropic" }), { wrapper })
 
-			// Error from gated routerModels should not bubble for static provider default
+			// Error from gated routerModels should not bubble for static provider
 			expect(result.current.isError).toBe(false)
 		})
 	})
 
 	describe("default behavior", () => {
-		it("should return anthropic default when no configuration is provided", () => {
+		it("should return modelharbor default when no configuration is provided", () => {
 			mockUseRouterModels.mockReturnValue({
 				data: undefined,
 				isLoading: false,
@@ -369,8 +370,8 @@ describe("useSelectedModel", () => {
 			const wrapper = createWrapper()
 			const { result } = renderHook(() => useSelectedModel(), { wrapper })
 
-			expect(result.current.provider).toBe("anthropic")
-			expect(result.current.id).toBe("claude-sonnet-4-20250514")
+			expect(result.current.provider).toBe("modelharbor")
+			expect(result.current.id).toBe("glm-4.6")
 			expect(result.current.info).toBeUndefined()
 		})
 	})

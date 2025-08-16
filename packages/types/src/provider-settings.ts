@@ -15,6 +15,7 @@ import {
 	groqModels,
 	ioIntelligenceModels,
 	mistralModels,
+	modelHarborModels,
 	moonshotModels,
 	openAiNativeModels,
 	qwenCodeModels,
@@ -48,8 +49,7 @@ export const dynamicProviders = [
 	"requesty",
 	"unbound",
 	"glama",
-	"roo",
-	"chutes",
+	"modelharbor",
 ] as const
 
 export type DynamicProvider = (typeof dynamicProviders)[number]
@@ -134,11 +134,11 @@ export const providerNames = [
 	"minimax",
 	"openai-native",
 	"qwen-code",
-	"roo",
 	"sambanova",
 	"vertex",
 	"xai",
 	"zai",
+	"modelharbor",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -366,9 +366,6 @@ const huggingFaceSchema = baseProviderSettingsSchema.extend({
 	huggingFaceInferenceProvider: z.string().optional(),
 })
 
-const chutesSchema = apiModelIdProviderModelSchema.extend({
-	chutesApiKey: z.string().optional(),
-})
 
 const litellmSchema = baseProviderSettingsSchema.extend({
 	litellmBaseUrl: z.string().optional(),
@@ -407,12 +404,13 @@ const ioIntelligenceSchema = apiModelIdProviderModelSchema.extend({
 	ioIntelligenceApiKey: z.string().optional(),
 })
 
-const qwenCodeSchema = apiModelIdProviderModelSchema.extend({
-	qwenCodeOauthPath: z.string().optional(),
+const modelharborSchema = baseProviderSettingsSchema.extend({
+	modelharborApiKey: z.string().optional(),
+	modelharborModelId: z.string().optional(),
 })
 
-const rooSchema = apiModelIdProviderModelSchema.extend({
-	// No additional fields needed - uses cloud authentication.
+const qwenCodeSchema = apiModelIdProviderModelSchema.extend({
+	qwenCodeOauthPath: z.string().optional(),
 })
 
 const vercelAiGatewaySchema = baseProviderSettingsSchema.extend({
@@ -451,7 +449,6 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	xaiSchema.merge(z.object({ apiProvider: z.literal("xai") })),
 	groqSchema.merge(z.object({ apiProvider: z.literal("groq") })),
 	huggingFaceSchema.merge(z.object({ apiProvider: z.literal("huggingface") })),
-	chutesSchema.merge(z.object({ apiProvider: z.literal("chutes") })),
 	litellmSchema.merge(z.object({ apiProvider: z.literal("litellm") })),
 	cerebrasSchema.merge(z.object({ apiProvider: z.literal("cerebras") })),
 	sambaNovaSchema.merge(z.object({ apiProvider: z.literal("sambanova") })),
@@ -459,8 +456,8 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	fireworksSchema.merge(z.object({ apiProvider: z.literal("fireworks") })),
 	featherlessSchema.merge(z.object({ apiProvider: z.literal("featherless") })),
 	ioIntelligenceSchema.merge(z.object({ apiProvider: z.literal("io-intelligence") })),
+	modelharborSchema.merge(z.object({ apiProvider: z.literal("modelharbor") })),
 	qwenCodeSchema.merge(z.object({ apiProvider: z.literal("qwen-code") })),
-	rooSchema.merge(z.object({ apiProvider: z.literal("roo") })),
 	vercelAiGatewaySchema.merge(z.object({ apiProvider: z.literal("vercel-ai-gateway") })),
 	defaultSchema,
 ])
@@ -493,7 +490,6 @@ export const providerSettingsSchema = z.object({
 	...xaiSchema.shape,
 	...groqSchema.shape,
 	...huggingFaceSchema.shape,
-	...chutesSchema.shape,
 	...litellmSchema.shape,
 	...cerebrasSchema.shape,
 	...sambaNovaSchema.shape,
@@ -501,8 +497,8 @@ export const providerSettingsSchema = z.object({
 	...fireworksSchema.shape,
 	...featherlessSchema.shape,
 	...ioIntelligenceSchema.shape,
+	...modelharborSchema.shape,
 	...qwenCodeSchema.shape,
-	...rooSchema.shape,
 	...vercelAiGatewaySchema.shape,
 	...codebaseIndexProviderSchema.shape,
 })
@@ -536,6 +532,7 @@ export const modelIdKeys = [
 	"litellmModelId",
 	"huggingFaceModelId",
 	"ioIntelligenceModelId",
+	"modelharborModelId",
 	"vercelAiGatewayModelId",
 	"deepInfraModelId",
 ] as const satisfies readonly (keyof ProviderSettings)[]
@@ -579,7 +576,6 @@ export const modelIdKeysByProvider: Record<TypicalProvider, ModelIdKey> = {
 	requesty: "requestyModelId",
 	xai: "apiModelId",
 	groq: "apiModelId",
-	chutes: "apiModelId",
 	litellm: "litellmModelId",
 	huggingface: "huggingFaceModelId",
 	cerebras: "apiModelId",
@@ -588,7 +584,7 @@ export const modelIdKeysByProvider: Record<TypicalProvider, ModelIdKey> = {
 	fireworks: "apiModelId",
 	featherless: "apiModelId",
 	"io-intelligence": "ioIntelligenceModelId",
-	roo: "apiModelId",
+	modelharbor: "modelharborModelId",
 	"vercel-ai-gateway": "vercelAiGatewayModelId",
 }
 
@@ -609,12 +605,7 @@ export const getApiProtocol = (provider: ProviderName | undefined, modelId?: str
 	}
 
 	// Vercel AI Gateway uses anthropic protocol for anthropic models.
-	if (
-		provider &&
-		["vercel-ai-gateway", "roo"].includes(provider) &&
-		modelId &&
-		modelId.toLowerCase().startsWith("anthropic/")
-	) {
+	if (provider && provider === "vercel-ai-gateway" && modelId && modelId.toLowerCase().startsWith("anthropic/")) {
 		return "anthropic"
 	}
 
@@ -687,13 +678,17 @@ export const MODELS_BY_PROVIDER: Record<
 		label: "MiniMax",
 		models: Object.keys(minimaxModels),
 	},
+	modelharbor: {
+		id: "modelharbor",
+		label: "ModelHarbor",
+		models: Object.keys(modelHarborModels),
+	},
 	"openai-native": {
 		id: "openai-native",
 		label: "OpenAI",
 		models: Object.keys(openAiNativeModels),
 	},
 	"qwen-code": { id: "qwen-code", label: "Qwen Code", models: Object.keys(qwenCodeModels) },
-	roo: { id: "roo", label: "Roo Code Cloud", models: [] },
 	sambanova: {
 		id: "sambanova",
 		label: "SambaNova",
@@ -721,7 +716,6 @@ export const MODELS_BY_PROVIDER: Record<
 	unbound: { id: "unbound", label: "Unbound", models: [] },
 	deepinfra: { id: "deepinfra", label: "DeepInfra", models: [] },
 	"vercel-ai-gateway": { id: "vercel-ai-gateway", label: "Vercel AI Gateway", models: [] },
-	chutes: { id: "chutes", label: "Chutes AI", models: [] },
 
 	// Local providers; models discovered from localhost endpoints.
 	lmstudio: { id: "lmstudio", label: "LM Studio", models: [] },
