@@ -237,6 +237,7 @@ export interface WebviewMessage {
 			| "openai-compatible"
 			| "gemini"
 			| "mistral"
+			| "modelharbor"
 			| "vercel-ai-gateway"
 			| "bedrock"
 			| "openrouter"
@@ -255,8 +256,8 @@ export interface WebviewMessage {
 		codebaseIndexOpenAiCompatibleApiKey?: string
 		codebaseIndexGeminiApiKey?: string
 		codebaseIndexMistralApiKey?: string
+		codebaseIndexModelHarborApiKey?: string
 		codebaseIndexVercelAiGatewayApiKey?: string
-		codebaseIndexOpenRouterApiKey?: string
 	}
 	updatedSettings?: RooCodeSettings
 }

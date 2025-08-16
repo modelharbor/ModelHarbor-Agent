@@ -21,7 +21,6 @@ type RooProps = {
 export const Roo = ({
 	apiConfiguration,
 	setApiConfigurationField,
-	routerModels,
 	cloudIsAuthenticated,
 	organizationAllowList,
 	modelValidationError,
@@ -51,7 +50,7 @@ export const Roo = ({
 				apiConfiguration={apiConfiguration}
 				setApiConfigurationField={setApiConfigurationField}
 				defaultModelId={rooDefaultModelId}
-				models={routerModels?.roo ?? {}}
+				models={{}}
 				modelIdKey="apiModelId"
 				serviceName="Roo Code Cloud"
 				serviceUrl="https://roocode.com"

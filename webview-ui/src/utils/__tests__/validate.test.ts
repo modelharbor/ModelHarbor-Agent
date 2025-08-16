@@ -41,10 +41,9 @@ describe("Model Validation Functions", () => {
 		lmstudio: {},
 		deepinfra: {},
 		"io-intelligence": {},
+		modelharbor: {},
 		"vercel-ai-gateway": {},
 		huggingface: {},
-		roo: {},
-		chutes: {},
 	}
 
 	const allowAllOrganization: OrganizationAllowList = {
@@ -207,6 +206,26 @@ describe("Model Validation Functions", () => {
 			const config: ProviderSettings = {
 				apiProvider: "io-intelligence",
 				glamaModelId: "invalid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns undefined for valid ModelHarbor model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "valid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns error for invalid ModelHarbor model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "invalid-model",
 			}
 
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)

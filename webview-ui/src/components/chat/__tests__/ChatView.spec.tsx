@@ -1,4 +1,4 @@
-// pnpm --filter @roo-code/vscode-webview test src/components/chat/__tests__/ChatView.spec.tsx
+// npx vitest run src/components/chat/__tests__/ChatView.spec.tsx
 
 import React from "react"
 import { render, waitFor, act, fireEvent } from "@/utils/test-utils"
@@ -82,13 +82,6 @@ vi.mock("../Announcement", () => ({
 	},
 }))
 
-// Mock DismissibleUpsell component
-vi.mock("@/components/common/DismissibleUpsell", () => ({
-	default: function MockDismissibleUpsell({ children }: { children: React.ReactNode }) {
-		return <div data-testid="dismissible-upsell">{children}</div>
-	},
-}))
-
 // Mock QueuedMessages component
 vi.mock("../QueuedMessages", () => ({
 	QueuedMessages: function MockQueuedMessages({
@@ -128,13 +121,6 @@ vi.mock("@src/components/welcome/RooTips", () => ({
 vi.mock("@src/components/welcome/RooHero", () => ({
 	default: function MockRooHero() {
 		return <div data-testid="roo-hero">Hero content</div>
-	},
-}))
-
-// Mock TelemetryBanner component
-vi.mock("../common/TelemetryBanner", () => ({
-	default: function MockTelemetryBanner() {
-		return null // Don't render anything to avoid interference
 	},
 }))
 
@@ -267,7 +253,6 @@ const mockPostMessage = (state: Partial<ExtensionState>) => {
 				allowedCommands: [],
 				alwaysAllowExecute: false,
 				cloudIsAuthenticated: false,
-				telemetrySetting: "enabled",
 				...state,
 			},
 		},
@@ -293,8 +278,643 @@ const renderChatView = (props: Partial<ChatViewProps> = {}) => {
 	)
 }
 
+describe("ChatView - Auto Approval Tests", () => {
+	beforeEach(() => vi.clearAllMocks())
+
+	it("does not auto-approve any actions when autoApprovalEnabled is false", () => {
+		renderChatView()
+
+		// First hydrate state with initial task
+		mockPostMessage({
+			autoApprovalEnabled: false,
+			alwaysAllowBrowser: true,
+			alwaysAllowReadOnly: true,
+			alwaysAllowWrite: true,
+			alwaysAllowExecute: true,
+			allowedCommands: ["npm test"],
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+			],
+		})
+
+		// Test various types of actions that should not be auto-approved
+		const testCases = [
+			{
+				ask: "browser_action_launch",
+				text: JSON.stringify({ action: "launch", url: "http://example.com" }),
+			},
+			{
+				ask: "tool",
+				text: JSON.stringify({ tool: "readFile", path: "test.txt" }),
+			},
+			{
+				ask: "tool",
+				text: JSON.stringify({ tool: "editedExistingFile", path: "test.txt" }),
+			},
+			{
+				ask: "command",
+				text: "npm test",
+			},
+		]
+
+		testCases.forEach((testCase) => {
+			mockPostMessage({
+				autoApprovalEnabled: false,
+				alwaysAllowBrowser: true,
+				alwaysAllowReadOnly: true,
+				alwaysAllowWrite: true,
+				alwaysAllowExecute: true,
+				allowedCommands: ["npm test"],
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: testCase.ask as any,
+						ts: Date.now(),
+						text: testCase.text,
+					},
+				],
+			})
+
+			// Should not auto-approve when autoApprovalEnabled is false
+			expect(vscode.postMessage).not.toHaveBeenCalledWith({
+				type: "askResponse",
+				askResponse: "yesButtonClicked",
+			})
+		})
+	})
+
+	it("auto-approves browser actions when alwaysAllowBrowser is enabled", async () => {
+		renderChatView()
+
+		// First hydrate state with initial task
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowBrowser: true,
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+			],
+		})
+
+		// Clear any initial calls
+		vi.mocked(vscode.postMessage).mockClear()
+
+		// Add browser action
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowBrowser: true,
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+				{
+					type: "ask",
+					ask: "browser_action_launch",
+					ts: Date.now(),
+					text: JSON.stringify({ action: "launch", url: "http://example.com" }),
+				},
+			],
+		})
+
+		// Wait for auto-approval to happen
+		await waitFor(() => {
+			expect(vscode.postMessage).toHaveBeenCalledWith({
+				type: "askResponse",
+				askResponse: "yesButtonClicked",
+			})
+		})
+	})
+
+	it("auto-approves read-only tools when alwaysAllowReadOnly is enabled", async () => {
+		renderChatView()
+
+		// First hydrate state with initial task
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowReadOnly: true,
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+			],
+		})
+
+		// Clear any initial calls
+		vi.mocked(vscode.postMessage).mockClear()
+
+		// Add read-only tool request
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowReadOnly: true,
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+				{
+					type: "ask",
+					ask: "tool",
+					ts: Date.now(),
+					text: JSON.stringify({ tool: "readFile", path: "test.txt" }),
+				},
+			],
+		})
+
+		// Wait for auto-approval to happen
+		await waitFor(() => {
+			expect(vscode.postMessage).toHaveBeenCalledWith({
+				type: "askResponse",
+				askResponse: "yesButtonClicked",
+			})
+		})
+	})
+
+	describe("Write Tool Auto-Approval Tests", () => {
+		it("auto-approves write tools when alwaysAllowWrite is enabled and message is a tool request", async () => {
+			renderChatView()
+
+			// First hydrate state with initial task
+			mockPostMessage({
+				autoApprovalEnabled: true,
+				alwaysAllowWrite: true,
+				writeDelayMs: 100, // Short delay for testing
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+				],
+			})
+
+			// Clear any initial calls
+			vi.mocked(vscode.postMessage).mockClear()
+
+			// Add write tool request
+			mockPostMessage({
+				autoApprovalEnabled: true,
+				alwaysAllowWrite: true,
+				writeDelayMs: 100, // Short delay for testing
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: "tool",
+						ts: Date.now(),
+						text: JSON.stringify({ tool: "editedExistingFile", path: "test.txt" }),
+						partial: false,
+					},
+				],
+			})
+
+			// Wait for auto-approval to happen (with delay for write tools)
+			await waitFor(
+				() => {
+					expect(vscode.postMessage).toHaveBeenCalledWith({
+						type: "askResponse",
+						askResponse: "yesButtonClicked",
+					})
+				},
+				{ timeout: 1000 },
+			)
+		})
+
+		it("does not auto-approve write operations when alwaysAllowWrite is enabled but message is not a tool request", () => {
+			renderChatView()
+
+			// First hydrate state with initial task
+			mockPostMessage({
+				autoApprovalEnabled: true,
+				alwaysAllowWrite: true,
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+				],
+			})
+
+			// Clear any initial calls
+			vi.mocked(vscode.postMessage).mockClear()
+
+			// Add non-tool write request
+			mockPostMessage({
+				autoApprovalEnabled: true,
+				alwaysAllowWrite: true,
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: "write_to_file",
+						ts: Date.now(),
+						text: "Writing to test.txt",
+					},
+				],
+			})
+
+			// Should not auto-approve non-tool write operations
+			expect(vscode.postMessage).not.toHaveBeenCalledWith({
+				type: "askResponse",
+				askResponse: "yesButtonClicked",
+			})
+		})
+	})
+
+	it("auto-approves allowed commands when alwaysAllowExecute is enabled", async () => {
+		renderChatView()
+
+		// First hydrate state with initial task
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowExecute: true,
+			allowedCommands: ["npm test", "npm run build"],
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+			],
+		})
+
+		// Clear any initial calls
+		vi.mocked(vscode.postMessage).mockClear()
+
+		// Add allowed command
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowExecute: true,
+			allowedCommands: ["npm test", "npm run build"],
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+				{
+					type: "ask",
+					ask: "command",
+					ts: Date.now(),
+					text: "npm test",
+				},
+			],
+		})
+
+		// Wait for auto-approval to happen
+		await waitFor(() => {
+			expect(vscode.postMessage).toHaveBeenCalledWith({
+				type: "askResponse",
+				askResponse: "yesButtonClicked",
+			})
+		})
+	})
+
+	it("does not auto-approve disallowed commands even when alwaysAllowExecute is enabled", () => {
+		renderChatView()
+
+		// First hydrate state with initial task
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowExecute: true,
+			allowedCommands: ["npm test"],
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+			],
+		})
+
+		// Clear any initial calls
+		vi.mocked(vscode.postMessage).mockClear()
+
+		// Add disallowed command
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowExecute: true,
+			allowedCommands: ["npm test"],
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+				{
+					type: "ask",
+					ask: "command",
+					ts: Date.now(),
+					text: "rm -rf /",
+				},
+			],
+		})
+
+		// Should not auto-approve disallowed command
+		expect(vscode.postMessage).not.toHaveBeenCalledWith({
+			type: "askResponse",
+			askResponse: "yesButtonClicked",
+		})
+	})
+
+	describe("Command Chaining Tests", () => {
+		it("auto-approves chained commands when all parts are allowed", async () => {
+			renderChatView()
+
+			// First hydrate state with initial task
+			mockPostMessage({
+				autoApprovalEnabled: true,
+				alwaysAllowExecute: true,
+				allowedCommands: ["npm test", "npm run build", "echo"],
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+				],
+			})
+
+			// Clear any initial calls
+			vi.mocked(vscode.postMessage).mockClear()
+
+			// Test various chained commands
+			const chainedCommands = [
+				"npm test && npm run build",
+				"npm test || echo 'test failed'",
+				"npm test; npm run build",
+			]
+
+			for (const command of chainedCommands) {
+				vi.mocked(vscode.postMessage).mockClear()
+
+				mockPostMessage({
+					autoApprovalEnabled: true,
+					alwaysAllowExecute: true,
+					allowedCommands: ["npm test", "npm run build", "echo"],
+					clineMessages: [
+						{
+							type: "say",
+							say: "task",
+							ts: Date.now() - 2000,
+							text: "Initial task",
+						},
+						{
+							type: "ask",
+							ask: "command",
+							ts: Date.now(),
+							text: command,
+						},
+					],
+				})
+
+				// Wait for auto-approval to happen
+				await waitFor(() => {
+					expect(vscode.postMessage).toHaveBeenCalledWith({
+						type: "askResponse",
+						askResponse: "yesButtonClicked",
+					})
+				})
+			}
+		})
+
+		it("does not auto-approve chained commands when any part is disallowed", () => {
+			renderChatView()
+
+			// First hydrate state with initial task
+			mockPostMessage({
+				autoApprovalEnabled: true,
+				alwaysAllowExecute: true,
+				allowedCommands: ["npm test", "echo"],
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+				],
+			})
+
+			// Clear any initial calls
+			vi.mocked(vscode.postMessage).mockClear()
+
+			// Add chained command with disallowed part
+			mockPostMessage({
+				autoApprovalEnabled: true,
+				alwaysAllowExecute: true,
+				allowedCommands: ["npm test", "echo"],
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: "command",
+						ts: Date.now(),
+						text: "npm test && rm -rf /",
+					},
+				],
+			})
+
+			// Should not auto-approve chained command with disallowed part
+			expect(vscode.postMessage).not.toHaveBeenCalledWith({
+				type: "askResponse",
+				askResponse: "yesButtonClicked",
+			})
+		})
+
+		it("handles complex PowerShell command chains correctly", async () => {
+			renderChatView()
+
+			// First hydrate state with initial task
+			mockPostMessage({
+				autoApprovalEnabled: true,
+				alwaysAllowExecute: true,
+				allowedCommands: ["Get-Process", "Where-Object", "Select-Object"],
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+				],
+			})
+
+			// Clear any initial calls
+			vi.mocked(vscode.postMessage).mockClear()
+
+			// Add PowerShell piped command
+			mockPostMessage({
+				autoApprovalEnabled: true,
+				alwaysAllowExecute: true,
+				allowedCommands: ["Get-Process", "Where-Object", "Select-Object"],
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: "command",
+						ts: Date.now(),
+						text: "Get-Process | Where-Object {$_.CPU -gt 10} | Select-Object Name, CPU",
+					},
+				],
+			})
+
+			// Wait for auto-approval to happen
+			await waitFor(() => {
+				expect(vscode.postMessage).toHaveBeenCalledWith({
+					type: "askResponse",
+					askResponse: "yesButtonClicked",
+				})
+			})
+		})
+	})
+})
+
 describe("ChatView - Sound Playing Tests", () => {
 	beforeEach(() => vi.clearAllMocks())
+
+	it("does not play sound for auto-approved browser actions", () => {
+		renderChatView()
+
+		// First hydrate state with initial task
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowBrowser: true,
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+			],
+		})
+
+		// Clear any initial calls
+		mockPlayFunction.mockClear()
+
+		// Add browser action that will be auto-approved
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowBrowser: true,
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+				{
+					type: "ask",
+					ask: "browser_action_launch",
+					ts: Date.now(),
+					text: JSON.stringify({ action: "launch", url: "http://example.com" }),
+				},
+			],
+		})
+
+		// Should not play sound for auto-approved action
+		expect(mockPlayFunction).not.toHaveBeenCalled()
+	})
+
+	it("plays notification sound for non-auto-approved browser actions", async () => {
+		renderChatView()
+
+		// First hydrate state with initial task
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowBrowser: false, // Browser actions not auto-approved
+			soundEnabled: true, // Enable sound
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+			],
+		})
+
+		// Clear any initial calls
+		mockPlayFunction.mockClear()
+
+		// Add browser action that won't be auto-approved
+		mockPostMessage({
+			autoApprovalEnabled: true,
+			alwaysAllowBrowser: false,
+			soundEnabled: true, // Enable sound
+			clineMessages: [
+				{
+					type: "say",
+					say: "task",
+					ts: Date.now() - 2000,
+					text: "Initial task",
+				},
+				{
+					type: "ask",
+					ask: "browser_action_launch",
+					ts: Date.now(),
+					text: JSON.stringify({ action: "launch", url: "http://example.com" }),
+					partial: false, // Ensure it's not partial
+				},
+			],
+		})
+
+		// Wait for sound to be played
+		await waitFor(() => {
+			expect(mockPlayFunction).toHaveBeenCalled()
+		})
+	})
 
 	it("plays celebration sound for completion results", async () => {
 		renderChatView()
@@ -649,11 +1269,11 @@ describe("ChatView - Version Indicator Tests", () => {
 	})
 })
 
-describe("ChatView - DismissibleUpsell Display Tests", () => {
+describe("ChatView - RooTips Display Tests", () => {
 	beforeEach(() => vi.clearAllMocks())
 
-	it("does not show DismissibleUpsell when user is authenticated to Cloud", () => {
-		const { queryByTestId } = renderChatView()
+	it("shows RooTips when user is authenticated", () => {
+		const { getByTestId } = renderChatView()
 
 		// Hydrate state with user authenticated to cloud
 		mockPostMessage({
@@ -667,14 +1287,14 @@ describe("ChatView - DismissibleUpsell Display Tests", () => {
 			clineMessages: [], // No active task
 		})
 
-		// Should not show DismissibleUpsell when authenticated
-		expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
+		// Should show RooTips
+		expect(getByTestId("roo-tips")).toBeInTheDocument()
 	})
 
-	it("does not show DismissibleUpsell when user has only run 3 tasks in their history", () => {
-		const { queryByTestId } = renderChatView()
+	it("shows RooTips when user has fewer than 4 tasks", () => {
+		const { getByTestId } = renderChatView()
 
-		// Hydrate state with user not authenticated but only 3 tasks
+		// Hydrate state with user not authenticated but fewer than 4 tasks
 		mockPostMessage({
 			cloudIsAuthenticated: false,
 			taskHistory: [
@@ -685,35 +1305,30 @@ describe("ChatView - DismissibleUpsell Display Tests", () => {
 			clineMessages: [], // No active task
 		})
 
-		// Should not show DismissibleUpsell with less than 4 tasks
-		expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
+		// Should show RooTips
+		expect(getByTestId("roo-tips")).toBeInTheDocument()
 	})
 
-	it("shows DismissibleUpsell when user is not authenticated and has run 6 or more tasks", async () => {
+	it("shows RooTips when user has 4 or more tasks", () => {
 		const { getByTestId } = renderChatView()
 
 		// Hydrate state with user not authenticated and 4 tasks
 		mockPostMessage({
 			cloudIsAuthenticated: false,
 			taskHistory: [
-				{ id: "1", ts: Date.now() - 6000 },
-				{ id: "2", ts: Date.now() - 5000 },
-				{ id: "3", ts: Date.now() - 4000 },
-				{ id: "4", ts: Date.now() - 3000 },
-				{ id: "5", ts: Date.now() - 2000 },
-				{ id: "6", ts: Date.now() - 1000 },
-				{ id: "7", ts: Date.now() },
+				{ id: "1", ts: Date.now() - 3000 },
+				{ id: "2", ts: Date.now() - 2000 },
+				{ id: "3", ts: Date.now() - 1000 },
+				{ id: "4", ts: Date.now() },
 			],
 			clineMessages: [], // No active task
 		})
 
-		// Wait for component to render and show DismissibleUpsell
-		await waitFor(() => {
-			expect(getByTestId("dismissible-upsell")).toBeInTheDocument()
-		})
+		// Should show RooTips
+		expect(getByTestId("roo-tips")).toBeInTheDocument()
 	})
 
-	it("does not show DismissibleUpsell when there is an active task (regardless of auth status)", async () => {
+	it("does not show RooTips when there is an active task", async () => {
 		const { queryByTestId } = renderChatView()
 
 		// Hydrate state with active task
@@ -737,52 +1352,11 @@ describe("ChatView - DismissibleUpsell Display Tests", () => {
 
 		// Wait for component to render with active task
 		await waitFor(() => {
-			// Should not show DismissibleUpsell during active task
-			expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
 			// Should not show RooTips either since the entire welcome screen is hidden during active tasks
 			expect(queryByTestId("roo-tips")).not.toBeInTheDocument()
 			// Should not show RooHero either since the entire welcome screen is hidden during active tasks
 			expect(queryByTestId("roo-hero")).not.toBeInTheDocument()
 		})
-	})
-
-	it("shows RooTips when user is authenticated (instead of DismissibleUpsell)", () => {
-		const { queryByTestId, getByTestId } = renderChatView()
-
-		// Hydrate state with user authenticated to cloud
-		mockPostMessage({
-			cloudIsAuthenticated: true,
-			taskHistory: [
-				{ id: "1", ts: Date.now() - 3000 },
-				{ id: "2", ts: Date.now() - 2000 },
-				{ id: "3", ts: Date.now() - 1000 },
-				{ id: "4", ts: Date.now() },
-			],
-			clineMessages: [], // No active task
-		})
-
-		// Should not show DismissibleUpsell but should show RooTips
-		expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
-		expect(getByTestId("roo-tips")).toBeInTheDocument()
-	})
-
-	it("shows RooTips when user has fewer than 6 tasks (instead of DismissibleUpsell)", () => {
-		const { queryByTestId, getByTestId } = renderChatView()
-
-		// Hydrate state with user not authenticated but fewer than 4 tasks
-		mockPostMessage({
-			cloudIsAuthenticated: false,
-			taskHistory: [
-				{ id: "1", ts: Date.now() - 2000 },
-				{ id: "2", ts: Date.now() - 1000 },
-				{ id: "3", ts: Date.now() },
-			],
-			clineMessages: [], // No active task
-		})
-
-		// Should not show DismissibleUpsell but should show RooTips
-		expect(queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
-		expect(getByTestId("roo-tips")).toBeInTheDocument()
 	})
 })
 

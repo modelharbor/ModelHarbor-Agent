@@ -36,6 +36,7 @@ type ModelIdKey = keyof Pick<
 	| "litellmModelId"
 	| "deepInfraModelId"
 	| "ioIntelligenceModelId"
+	| "modelharborModelId"
 	| "vercelAiGatewayModelId"
 	| "apiModelId"
 >
@@ -83,12 +84,15 @@ export const ModelPicker = ({
 	const modelIds = useMemo(() => {
 		const filteredModels = filterModels(models, apiConfiguration.apiProvider, organizationAllowList)
 
-		// Include the currently selected model even if deprecated (so users can see what they have selected)
+		// Get the actual configured model ID (not the derived selectedModelId)
+		const configuredModelId = apiConfiguration[modelIdKey]
+
+		// Include the currently configured model even if deprecated (so users can see what they have selected)
 		// But filter out other deprecated models from being newly selectable
 		const availableModels = Object.entries(filteredModels ?? {})
 			.filter(([modelId, modelInfo]) => {
-				// Always include the currently selected model
-				if (modelId === selectedModelId) return true
+				// Always include the currently configured model
+				if (modelId === configuredModelId) return true
 				// Filter out deprecated models that aren't currently selected
 				return !modelInfo.deprecated
 			})
@@ -101,7 +105,7 @@ export const ModelPicker = ({
 			)
 
 		return Object.keys(availableModels).sort((a, b) => a.localeCompare(b))
-	}, [models, apiConfiguration.apiProvider, organizationAllowList, selectedModelId])
+	}, [models, apiConfiguration, organizationAllowList, modelIdKey])
 
 	const [searchValue, setSearchValue] = useState("")
 
@@ -146,13 +150,16 @@ export const ModelPicker = ({
 	}, [])
 
 	useEffect(() => {
-		if (!selectedModelId && !isInitialized.current) {
-			const initialValue = modelIds.includes(selectedModelId) ? selectedModelId : defaultModelId
-			setApiConfigurationField(modelIdKey, initialValue, false) // false = automatic initialization
+		if (!isInitialized.current) {
+			// Only set default if no model is currently configured
+			const currentModelId = apiConfiguration[modelIdKey]
+			if (!currentModelId) {
+				setApiConfigurationField(modelIdKey, defaultModelId, false) // false = automatic initialization
+			}
 		}
 
 		isInitialized.current = true
-	}, [modelIds, setApiConfigurationField, modelIdKey, selectedModelId, defaultModelId])
+	}, [setApiConfigurationField, modelIdKey, defaultModelId, apiConfiguration])
 
 	// Cleanup timeouts on unmount to prevent test flakiness
 	useEffect(() => {

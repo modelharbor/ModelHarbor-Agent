@@ -67,7 +67,6 @@ export class ProfileValidator {
 			case "xai":
 			case "groq":
 			case "sambanova":
-			case "chutes":
 			case "fireworks":
 			case "featherless":
 				return profile.apiModelId

@@ -14,6 +14,7 @@ export interface CodeIndexConfig {
 	openAiCompatibleOptions?: { baseUrl: string; apiKey: string }
 	geminiOptions?: { apiKey: string }
 	mistralOptions?: { apiKey: string }
+	modelHarborOptions?: { apiKey: string }
 	vercelAiGatewayOptions?: { apiKey: string }
 	bedrockOptions?: { region: string; profile?: string }
 	openRouterOptions?: { apiKey: string }
@@ -38,6 +39,7 @@ export type PreviousConfigSnapshot = {
 	openAiCompatibleApiKey?: string
 	geminiApiKey?: string
 	mistralApiKey?: string
+	modelHarborApiKey?: string
 	vercelAiGatewayApiKey?: string
 	bedrockRegion?: string
 	bedrockProfile?: string

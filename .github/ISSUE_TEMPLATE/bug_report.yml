@@ -5,9 +5,8 @@ title: "[BUG] "
 body:
   - type: markdown
     attributes:
-      value: |
         Thank you for your report! Please search existing issues first:
-        https://github.com/RooCodeInc/Roo-Code/issues
+        https://github.com/modelharbor/ModelHarbor-Agent/issues
 
   - type: textarea
     id: problem

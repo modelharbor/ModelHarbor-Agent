@@ -10,7 +10,6 @@ import {
 import { historyItemSchema } from "./history.js"
 import { codebaseIndexModelsSchema, codebaseIndexConfigSchema } from "./codebase-index.js"
 import { experimentsSchema } from "./experiment.js"
-import { telemetrySettingsSchema } from "./telemetry.js"
 import { modeConfigSchema } from "./mode.js"
 import { customModePromptsSchema, customSupportPromptsSchema } from "./mode.js"
 import { languagesSchema } from "./vscode.js"
@@ -173,8 +172,6 @@ export const globalSettingsSchema = z.object({
 
 	language: languagesSchema.optional(),
 
-	telemetrySetting: telemetrySettingsSchema.optional(),
-
 	mcpEnabled: z.boolean().optional(),
 	enableMcpServerCreation: z.boolean().optional(),
 
@@ -230,7 +227,6 @@ export const SECRET_STATE_KEYS = [
 	"requestyApiKey",
 	"xaiApiKey",
 	"groqApiKey",
-	"chutesApiKey",
 	"litellmApiKey",
 	"deepInfraApiKey",
 	"codeIndexOpenAiKey",
@@ -238,6 +234,7 @@ export const SECRET_STATE_KEYS = [
 	"codebaseIndexOpenAiCompatibleApiKey",
 	"codebaseIndexGeminiApiKey",
 	"codebaseIndexMistralApiKey",
+	"codebaseIndexModelHarborApiKey",
 	"codebaseIndexVercelAiGatewayApiKey",
 	"codebaseIndexOpenRouterApiKey",
 	"huggingFaceApiKey",
@@ -246,6 +243,7 @@ export const SECRET_STATE_KEYS = [
 	"fireworksApiKey",
 	"featherlessApiKey",
 	"ioIntelligenceApiKey",
+	"modelharborApiKey",
 	"vercelAiGatewayApiKey",
 	"basetenApiKey",
 ] as const
@@ -355,7 +353,6 @@ export const EVALS_SETTINGS: RooCodeSettings = {
 	maxDiagnosticMessages: 50,
 
 	language: "en",
-	telemetrySetting: "enabled",
 
 	mcpEnabled: false,
 
