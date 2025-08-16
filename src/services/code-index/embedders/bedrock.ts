@@ -10,9 +10,6 @@ import {
 import { getDefaultModelId } from "../../../shared/embeddingModels"
 import { t } from "../../../i18n"
 import { withValidationErrorHandling, formatEmbeddingError, HttpError } from "../shared/validation-helpers"
-import { TelemetryEventName } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
-
 /**
  * Amazon Bedrock implementation of the embedder interface with batching and rate limiting
  */
@@ -156,14 +153,6 @@ export class BedrockEmbedder implements IEmbedder {
 					continue
 				}
 
-				// Capture telemetry before reformatting the error
-				TelemetryService.instance.captureEvent(TelemetryEventName.CODE_INDEX_ERROR, {
-					error: error instanceof Error ? error.message : String(error),
-					stack: error instanceof Error ? error.stack : undefined,
-					location: "BedrockEmbedder:_embedBatchWithRetries",
-					attempt: attempts + 1,
-				})
-
 				// Log the error for debugging
 				console.error(`Bedrock embedder error (attempt ${attempts + 1}/${MAX_RETRIES}):`, error)
 
@@ -302,12 +291,6 @@ export class BedrockEmbedder implements IEmbedder {
 					}
 				}
 
-				// Capture telemetry for validation errors
-				TelemetryService.instance.captureEvent(TelemetryEventName.CODE_INDEX_ERROR, {
-					error: error instanceof Error ? error.message : String(error),
-					stack: error instanceof Error ? error.stack : undefined,
-					location: "BedrockEmbedder:validateConfiguration",
-				})
 				throw error
 			}
 		}, "bedrock")

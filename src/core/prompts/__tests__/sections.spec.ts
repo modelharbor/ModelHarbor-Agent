@@ -1,4 +1,4 @@
-import { addCustomInstructions } from "../sections/custom-instructions"
+import { addCustomInstructions, loadRuleFiles, customIntructions } from "../sections/custom-instructions"
 import { getCapabilitiesSection } from "../sections/capabilities"
 import { getRulesSection } from "../sections/rules"
 import { McpHub } from "../../../services/mcp/McpHub"
@@ -10,11 +10,11 @@ describe("addCustomInstructions", () => {
 			"global instructions",
 			"/test/path",
 			"test-mode",
-			{ language: "fr" },
+			{ language: "th" },
 		)
 
 		expect(result).toContain("Language Preference:")
-		expect(result).toContain('You should always speak and think in the "Français" (fr) language')
+		expect(result).toContain('You should always speak and think in the "ภาษาไทย" (th) language')
 	})
 
 	it("works without vscode language", async () => {
@@ -27,6 +27,20 @@ describe("addCustomInstructions", () => {
 
 		expect(result).not.toContain("Language Preference:")
 		expect(result).not.toContain("You should always speak and think in")
+	})
+})
+
+describe("loadRuleFiles", () => {
+	it("returns customIntructions when no rule files are found", async () => {
+		// Use a temporary directory that definitely doesn't have any rule files
+		const nonExistentPath = "/tmp/test-no-rules-" + Date.now()
+
+		const result = await loadRuleFiles(nonExistentPath)
+
+		// Should return customIntructions instead of empty string
+		expect(result).toBe(customIntructions)
+		expect(result).toContain("# Collaboration Rules")
+		expect(result).toContain("## Core Behavior")
 	})
 })
 

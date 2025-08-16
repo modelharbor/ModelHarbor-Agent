@@ -3,7 +3,8 @@ import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 import { Trans } from "react-i18next"
 import { ChevronsUpDown, Check, X, Info } from "lucide-react"
 
-import type { ProviderSettings, ModelInfo, OrganizationAllowList } from "@roo-code/types"
+import type { ProviderSettings, ModelInfo } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { useSelectedModel } from "@/components/ui/hooks/useSelectedModel"
@@ -35,6 +36,7 @@ type ModelIdKey = keyof Pick<
 	| "litellmModelId"
 	| "deepInfraModelId"
 	| "ioIntelligenceModelId"
+	| "modelharborModelId"
 	| "vercelAiGatewayModelId"
 	| "apiModelId"
 >
@@ -79,15 +81,22 @@ export const ModelPicker = ({
 
 	const { id: selectedModelId, info: selectedModelInfo } = useSelectedModel(apiConfiguration)
 
+	// Use the actual configured model ID for display, not the validated/default one
+	// This prevents the UI from showing the default model while models are loading
+	const displayedModelId = apiConfiguration[modelIdKey] || selectedModelId
+
 	const modelIds = useMemo(() => {
 		const filteredModels = filterModels(models, apiConfiguration.apiProvider, organizationAllowList)
 
-		// Include the currently selected model even if deprecated (so users can see what they have selected)
+		// Get the actual configured model ID (not the derived selectedModelId)
+		const configuredModelId = apiConfiguration[modelIdKey]
+
+		// Include the currently configured model even if deprecated (so users can see what they have selected)
 		// But filter out other deprecated models from being newly selectable
 		const availableModels = Object.entries(filteredModels ?? {})
 			.filter(([modelId, modelInfo]) => {
-				// Always include the currently selected model
-				if (modelId === selectedModelId) return true
+				// Always include the currently configured model
+				if (modelId === configuredModelId) return true
 				// Filter out deprecated models that aren't currently selected
 				return !modelInfo.deprecated
 			})
@@ -100,7 +109,7 @@ export const ModelPicker = ({
 			)
 
 		return Object.keys(availableModels).sort((a, b) => a.localeCompare(b))
-	}, [models, apiConfiguration.apiProvider, organizationAllowList, selectedModelId])
+	}, [models, apiConfiguration, organizationAllowList, modelIdKey])
 
 	const [searchValue, setSearchValue] = useState("")
 
@@ -145,13 +154,15 @@ export const ModelPicker = ({
 	}, [])
 
 	useEffect(() => {
-		if (!selectedModelId && !isInitialized.current) {
-			const initialValue = modelIds.includes(selectedModelId) ? selectedModelId : defaultModelId
-			setApiConfigurationField(modelIdKey, initialValue, false) // false = automatic initialization
+		if (!isInitialized.current) {
+			// Only set default if no model is currently configured
+			const currentModelId = apiConfiguration[modelIdKey]
+			if (!currentModelId) {
+				setApiConfigurationField(modelIdKey, defaultModelId, false) // false = automatic initialization
+			}
+			isInitialized.current = true
 		}
-
-		isInitialized.current = true
-	}, [modelIds, setApiConfigurationField, modelIdKey, selectedModelId, defaultModelId])
+	}, [setApiConfigurationField, modelIdKey, defaultModelId, apiConfiguration])
 
 	// Cleanup timeouts on unmount to prevent test flakiness
 	useEffect(() => {
@@ -180,7 +191,7 @@ export const ModelPicker = ({
 							aria-expanded={open}
 							className="w-full justify-between"
 							data-testid="model-picker-button">
-							<div className="truncate">{selectedModelId ?? t("settings:common.select")}</div>
+							<div className="truncate">{displayedModelId ?? t("settings:common.select")}</div>
 							<ChevronsUpDown className="opacity-50" />
 						</Button>
 					</PopoverTrigger>
@@ -225,7 +236,7 @@ export const ModelPicker = ({
 											<Check
 												className={cn(
 													"size-4 p-0.5 ml-auto",
-													model === selectedModelId ? "opacity-100" : "opacity-0",
+													model === displayedModelId ? "opacity-100" : "opacity-0",
 												)}
 											/>
 										</CommandItem>

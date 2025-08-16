@@ -9,7 +9,6 @@ import {
 	DEEP_SEEK_DEFAULT_TEMPERATURE,
 	ApiProviderError,
 } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { NativeToolCallParser } from "../../core/assistant-message/NativeToolCallParser"
 
@@ -134,8 +133,6 @@ export class OpenRouterHandler extends BaseProvider implements SingleCompletionH
 			{ status: error?.code, error: { message: error?.message, metadata: error?.metadata } },
 		)
 
-		TelemetryService.instance.captureException(apiError)
-
 		throw new Error(`OpenRouter API Error ${error?.code}: ${rawErrorMessage}`)
 	}
 
@@ -256,9 +253,6 @@ export class OpenRouterHandler extends BaseProvider implements SingleCompletionH
 		try {
 			stream = await this.client.chat.completions.create(completionParams, requestOptions)
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : String(error)
-			const apiError = new ApiProviderError(errorMessage, this.providerName, modelId, "createMessage")
-			TelemetryService.instance.captureException(apiError)
 			throw handleOpenAIError(error, this.providerName)
 		}
 
@@ -476,9 +470,6 @@ export class OpenRouterHandler extends BaseProvider implements SingleCompletionH
 		try {
 			response = await this.client.chat.completions.create(completionParams, requestOptions)
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : String(error)
-			const apiError = new ApiProviderError(errorMessage, this.providerName, modelId, "completePrompt")
-			TelemetryService.instance.captureException(apiError)
 			throw handleOpenAIError(error, this.providerName)
 		}
 

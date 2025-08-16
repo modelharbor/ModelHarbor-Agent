@@ -12,12 +12,8 @@ try {
 	console.warn("Failed to load environment variables:", e)
 }
 
-import type { CloudUserInfo, AuthState } from "@roo-code/types"
-import { CloudService, BridgeOrchestrator } from "@roo-code/cloud"
-import { TelemetryService, PostHogTelemetryClient } from "@roo-code/telemetry"
-
 import "./utils/path" // Necessary to have access to String.prototype.toPosix.
-import { createOutputChannelLogger, createDualLogger } from "./utils/outputChannelLogger"
+import { createOutputChannelLogger } from "./utils/outputChannelLogger"
 
 import { Package } from "./shared/package"
 import { formatLanguage } from "./shared/language"
@@ -52,11 +48,6 @@ import { flushModels, getModels, initializeModelCacheRefresh } from "./api/provi
 
 let outputChannel: vscode.OutputChannel
 let extensionContext: vscode.ExtensionContext
-let cloudService: CloudService | undefined
-
-let authStateChangedHandler: ((data: { state: AuthState; previousState: AuthState }) => Promise<void>) | undefined
-let settingsUpdatedHandler: (() => void) | undefined
-let userInfoHandler: ((data: { userInfo: CloudUserInfo }) => Promise<void>) | undefined
 
 // This method is called when your extension is activated.
 // Your extension is activated the very first time the command is executed.
@@ -69,20 +60,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Migrate old settings to new
 	await migrateSettings(context, outputChannel)
 
-	// Initialize telemetry service.
-	const telemetryService = TelemetryService.createInstance()
-
-	try {
-		telemetryService.register(new PostHogTelemetryClient())
-	} catch (error) {
-		console.warn("Failed to register PostHogTelemetryClient:", error)
-	}
-
-	// Create logger for cloud services.
-	const cloudLogger = createDualLogger(createOutputChannelLogger(outputChannel))
-
 	// Initialize MDM service
-	const mdmService = await MdmService.createInstance(cloudLogger)
+	const mdmLogger = createOutputChannelLogger(outputChannel)
+	const mdmService = await MdmService.createInstance(mdmLogger)
 
 	// Initialize i18n for internationalization support.
 	initializeI18n(context.globalState.get("language") ?? formatLanguage(vscode.env.language))
@@ -123,136 +103,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	}
 
-	// Initialize the provider *before* the Roo Code Cloud service.
+	// Initialize the provider.
 	const provider = new ClineProvider(context, outputChannel, "sidebar", contextProxy, mdmService)
-
-	// Initialize Roo Code Cloud service.
-	const postStateListener = () => ClineProvider.getVisibleInstance()?.postStateToWebview()
-
-	authStateChangedHandler = async (data: { state: AuthState; previousState: AuthState }) => {
-		postStateListener()
-
-		if (data.state === "logged-out") {
-			try {
-				await provider.remoteControlEnabled(false)
-			} catch (error) {
-				cloudLogger(
-					`[authStateChangedHandler] remoteControlEnabled(false) failed: ${error instanceof Error ? error.message : String(error)}`,
-				)
-			}
-		}
-
-		// Handle Roo models cache based on auth state
-		const handleRooModelsCache = async () => {
-			try {
-				// Flush and refresh cache on auth state changes
-				await flushModels("roo", true)
-
-				if (data.state === "active-session") {
-					cloudLogger(`[authStateChangedHandler] Refreshed Roo models cache for active session`)
-				} else {
-					cloudLogger(`[authStateChangedHandler] Flushed Roo models cache on logout`)
-				}
-			} catch (error) {
-				cloudLogger(
-					`[authStateChangedHandler] Failed to handle Roo models cache: ${error instanceof Error ? error.message : String(error)}`,
-				)
-			}
-		}
-
-		if (data.state === "active-session" || data.state === "logged-out") {
-			await handleRooModelsCache()
-
-			// Apply stored provider model to API configuration if present
-			if (data.state === "active-session") {
-				try {
-					const storedModel = context.globalState.get<string>("roo-provider-model")
-					if (storedModel) {
-						cloudLogger(`[authStateChangedHandler] Applying stored provider model: ${storedModel}`)
-						// Get the current API configuration name
-						const currentConfigName =
-							provider.contextProxy.getGlobalState("currentApiConfigName") || "default"
-						// Update it with the stored model using upsertProviderProfile
-						await provider.upsertProviderProfile(currentConfigName, {
-							apiProvider: "roo",
-							apiModelId: storedModel,
-						})
-						// Clear the stored model after applying
-						await context.globalState.update("roo-provider-model", undefined)
-						cloudLogger(`[authStateChangedHandler] Applied and cleared stored provider model`)
-					}
-				} catch (error) {
-					cloudLogger(
-						`[authStateChangedHandler] Failed to apply stored provider model: ${error instanceof Error ? error.message : String(error)}`,
-					)
-				}
-			}
-		}
-	}
-
-	settingsUpdatedHandler = async () => {
-		const userInfo = CloudService.instance.getUserInfo()
-
-		if (userInfo && CloudService.instance.cloudAPI) {
-			try {
-				provider.remoteControlEnabled(CloudService.instance.isTaskSyncEnabled())
-			} catch (error) {
-				cloudLogger(
-					`[settingsUpdatedHandler] remoteControlEnabled failed: ${error instanceof Error ? error.message : String(error)}`,
-				)
-			}
-		}
-
-		postStateListener()
-	}
-
-	userInfoHandler = async ({ userInfo }: { userInfo: CloudUserInfo }) => {
-		postStateListener()
-
-		if (!CloudService.instance.cloudAPI) {
-			cloudLogger("[userInfoHandler] CloudAPI is not initialized")
-			return
-		}
-
-		try {
-			provider.remoteControlEnabled(CloudService.instance.isTaskSyncEnabled())
-		} catch (error) {
-			cloudLogger(
-				`[userInfoHandler] remoteControlEnabled failed: ${error instanceof Error ? error.message : String(error)}`,
-			)
-		}
-	}
-
-	cloudService = await CloudService.createInstance(context, cloudLogger, {
-		"auth-state-changed": authStateChangedHandler,
-		"settings-updated": settingsUpdatedHandler,
-		"user-info": userInfoHandler,
-	})
-
-	try {
-		if (cloudService.telemetryClient) {
-			TelemetryService.instance.register(cloudService.telemetryClient)
-		}
-	} catch (error) {
-		outputChannel.appendLine(
-			`[CloudService] Failed to register TelemetryClient: ${error instanceof Error ? error.message : String(error)}`,
-		)
-	}
-
-	// Add to subscriptions for proper cleanup on deactivate.
-	context.subscriptions.push(cloudService)
-
-	// Trigger initial cloud profile sync now that CloudService is ready.
-	try {
-		await provider.initializeCloudProfileSyncWhenReady()
-	} catch (error) {
-		outputChannel.appendLine(
-			`[CloudService] Failed to initialize cloud profile sync: ${error instanceof Error ? error.message : String(error)}`,
-		)
-	}
-
-	// Finish initializing the provider.
-	TelemetryService.instance.setProvider(provider)
 
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(ClineProvider.sideBarId, provider, {
@@ -313,10 +165,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerCodeActions(context)
 	registerTerminalActions(context)
 
-	// Allows other extensions to activate once Roo is ready.
+	// Allows other extensions to activate once ModelHarbor Agent is ready.
 	vscode.commands.executeCommand(`${Package.name}.activationCompleted`)
 
-	// Implements the `RooCodeAPI` interface.
+	// Implements the `ModelHarborAgentAPI` interface.
 	const socketPath = process.env.ROO_CODE_IPC_SOCKET_PATH
 	const enableLogging = typeof socketPath === "string"
 
@@ -325,8 +177,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		const watchPaths = [
 			{ path: context.extensionPath, pattern: "**/*.ts" },
 			{ path: path.join(context.extensionPath, "../packages/types"), pattern: "**/*.ts" },
-			{ path: path.join(context.extensionPath, "../packages/telemetry"), pattern: "**/*.ts" },
-			{ path: path.join(context.extensionPath, "node_modules/@roo-code/cloud"), pattern: "**/*" },
 		]
 
 		console.log(
@@ -382,35 +232,6 @@ export async function activate(context: vscode.ExtensionContext) {
 export async function deactivate() {
 	outputChannel.appendLine(`${Package.name} extension deactivated`)
 
-	if (cloudService && CloudService.hasInstance()) {
-		try {
-			if (authStateChangedHandler) {
-				CloudService.instance.off("auth-state-changed", authStateChangedHandler)
-			}
-
-			if (settingsUpdatedHandler) {
-				CloudService.instance.off("settings-updated", settingsUpdatedHandler)
-			}
-
-			if (userInfoHandler) {
-				CloudService.instance.off("user-info", userInfoHandler as any)
-			}
-
-			outputChannel.appendLine("CloudService event handlers cleaned up")
-		} catch (error) {
-			outputChannel.appendLine(
-				`Failed to clean up CloudService event handlers: ${error instanceof Error ? error.message : String(error)}`,
-			)
-		}
-	}
-
-	const bridge = BridgeOrchestrator.getInstance()
-
-	if (bridge) {
-		await bridge.disconnect()
-	}
-
 	await McpServerManager.cleanup(extensionContext)
-	TelemetryService.instance.shutdown()
 	TerminalRegistry.cleanup()
 }

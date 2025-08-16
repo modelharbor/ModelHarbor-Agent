@@ -68,8 +68,8 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 		// Default mock: return distinct model maps per provider so we can verify keys
 		getModelsMock.mockImplementation(async (options: any) => {
 			switch (options?.provider) {
-				case "roo":
-					return { "roo/sonnet": { contextWindow: 8192, supportsPromptCache: false } }
+				case "modelharbor":
+					return { "modelharbor/claude-3-5-sonnet": { contextWindow: 8192, supportsPromptCache: false } }
 				case "openrouter":
 					return { "openrouter/qwen2.5": { contextWindow: 32768, supportsPromptCache: false } }
 				case "requesty":
@@ -90,12 +90,12 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 		})
 	})
 
-	it("fetches only requested provider when values.provider is present ('roo')", async () => {
+	it("fetches only requested provider when values.provider is present ('modelharbor')", async () => {
 		await webviewMessageHandler(
 			mockProvider as any,
 			{
 				type: "requestRouterModels",
-				values: { provider: "roo" },
+				values: { provider: "modelharbor" },
 			} as any,
 		)
 
@@ -111,14 +111,14 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 		const payload = call[0]
 		const routerModels = payload.routerModels as Record<string, Record<string, any>>
 
-		// Only "roo" key should be present
+		// Only "modelharbor" key should be present
 		const keys = Object.keys(routerModels)
-		expect(keys).toEqual(["roo"])
-		expect(Object.keys(routerModels.roo || {})).toContain("roo/sonnet")
+		expect(keys).toEqual(["modelharbor"])
+		expect(Object.keys(routerModels.modelharbor || {})).toContain("modelharbor/claude-3-5-sonnet")
 
-		// getModels should have been called exactly once for roo
+		// getModels should have been called exactly once for modelharbor
 		const providersCalled = getModelsMock.mock.calls.map((c: any[]) => c[0]?.provider)
-		expect(providersCalled).toEqual(["roo"])
+		expect(providersCalled).toEqual(["modelharbor"])
 	})
 
 	it("defaults to aggregate fetching when no provider filter is sent", async () => {
@@ -137,7 +137,7 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 
 		// Aggregate handler initializes many known routers - ensure a few expected keys exist
 		expect(routerModels).toHaveProperty("openrouter")
-		expect(routerModels).toHaveProperty("roo")
+		expect(routerModels).toHaveProperty("modelharbor")
 		expect(routerModels).toHaveProperty("requesty")
 	})
 
@@ -217,6 +217,68 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 			provider: "litellm",
 			apiKey: "stored-api-key",
 			baseUrl: "http://stored:4000",
+		})
+	})
+
+	it("flushes modelharbor cache when modelharborApiKey is provided via message values", async () => {
+		mockProvider.getState.mockResolvedValue({
+			apiConfiguration: {
+				modelharborApiKey: "stored-api-key",
+			},
+		})
+
+		await webviewMessageHandler(
+			mockProvider as any,
+			{
+				type: "requestRouterModels",
+				values: {
+					provider: "modelharbor",
+					modelharborApiKey: "new-api-key",
+				},
+			} as any,
+		)
+
+		// flushModels should have been called for modelharbor with refresh=true
+		const modelharborFlushCalls = flushModelsMock.mock.calls.filter((c: any[]) => c[0] === "modelharbor")
+		expect(modelharborFlushCalls.length).toBe(1)
+		expect(modelharborFlushCalls[0]).toEqual(["modelharbor", true])
+
+		// getModels should have been called with the new API key from message values
+		const modelharborCalls = getModelsMock.mock.calls.filter((c: any[]) => c[0]?.provider === "modelharbor")
+		expect(modelharborCalls.length).toBe(1)
+		expect(modelharborCalls[0][0]).toEqual({
+			provider: "modelharbor",
+			apiKey: "new-api-key",
+		})
+	})
+
+	it("does not flush modelharbor cache when modelharborApiKey is not provided via message values", async () => {
+		mockProvider.getState.mockResolvedValue({
+			apiConfiguration: {
+				modelharborApiKey: "stored-api-key",
+			},
+		})
+
+		await webviewMessageHandler(
+			mockProvider as any,
+			{
+				type: "requestRouterModels",
+				values: {
+					provider: "modelharbor",
+				},
+			} as any,
+		)
+
+		// flushModels should NOT have been called for modelharbor
+		const modelharborFlushCalls = flushModelsMock.mock.calls.filter((c: any[]) => c[0] === "modelharbor")
+		expect(modelharborFlushCalls.length).toBe(0)
+
+		// getModels should still have been called with stored credentials
+		const modelharborCalls = getModelsMock.mock.calls.filter((c: any[]) => c[0]?.provider === "modelharbor")
+		expect(modelharborCalls.length).toBe(1)
+		expect(modelharborCalls[0][0]).toEqual({
+			provider: "modelharbor",
+			apiKey: "stored-api-key",
 		})
 	})
 })

@@ -1,6 +1,6 @@
 // pnpm --filter @roo-code/vscode-webview test src/components/settings/__tests__/SettingsView.spec.tsx
 
-import { render, screen, fireEvent } from "@/utils/test-utils"
+import { render, screen, fireEvent, waitFor } from "@/utils/test-utils"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { vscode } from "@/utils/vscode"
@@ -280,7 +280,7 @@ describe("SettingsView - Sound Settings", () => {
 		expect(screen.queryByTestId("tts-speed-slider")).not.toBeInTheDocument()
 	})
 
-	it("initializes with sound disabled by default", () => {
+	it("initializes with sound enabled by default", () => {
 		// Render once and get the activateTab helper
 		const { activateTab } = renderSettingsView()
 
@@ -288,10 +288,10 @@ describe("SettingsView - Sound Settings", () => {
 		activateTab("notifications")
 
 		const soundCheckbox = screen.getByTestId("sound-enabled-checkbox")
-		expect(soundCheckbox).not.toBeChecked()
+		expect(soundCheckbox).toBeChecked()
 
-		// Volume slider should not be visible when sound is disabled
-		expect(screen.queryByTestId("sound-volume-slider")).not.toBeInTheDocument()
+		// Volume slider should be visible when sound is enabled
+		expect(screen.getByTestId("sound-volume-slider")).toBeInTheDocument()
 	})
 
 	it("toggles tts setting and sends message to VSCode", () => {
@@ -330,9 +330,9 @@ describe("SettingsView - Sound Settings", () => {
 
 		const soundCheckbox = screen.getByTestId("sound-enabled-checkbox")
 
-		// Enable sound
+		// Disable sound (it starts enabled)
 		fireEvent.click(soundCheckbox)
-		expect(soundCheckbox).toBeChecked()
+		expect(soundCheckbox).not.toBeChecked()
 
 		// Click Save to save settings
 		const saveButton = screen.getByTestId("save-button")
@@ -342,7 +342,7 @@ describe("SettingsView - Sound Settings", () => {
 			expect.objectContaining({
 				type: "updateSettings",
 				updatedSettings: expect.objectContaining({
-					soundEnabled: true,
+					soundEnabled: false,
 				}),
 			}),
 		)
@@ -372,11 +372,7 @@ describe("SettingsView - Sound Settings", () => {
 		// Activate the notifications tab
 		activateTab("notifications")
 
-		// Enable sound
-		const soundCheckbox = screen.getByTestId("sound-enabled-checkbox")
-		fireEvent.click(soundCheckbox)
-
-		// Volume slider should be visible
+		// Sound is enabled by default, volume slider should be visible
 		const volumeSlider = screen.getByTestId("sound-volume-slider")
 		expect(volumeSlider).toBeInTheDocument()
 		expect(volumeSlider).toHaveValue("0.5")
@@ -419,11 +415,7 @@ describe("SettingsView - Sound Settings", () => {
 		// Activate the notifications tab
 		activateTab("notifications")
 
-		// Enable sound
-		const soundCheckbox = screen.getByTestId("sound-enabled-checkbox")
-		fireEvent.click(soundCheckbox)
-
-		// Change volume
+		// Sound is enabled by default, change volume
 		const volumeSlider = screen.getByTestId("sound-volume-slider")
 		fireEvent.change(volumeSlider, { target: { value: "0.75" } })
 
@@ -460,31 +452,52 @@ describe("SettingsView - Allowed Commands", () => {
 		vi.clearAllMocks()
 	})
 
-	it("shows allowed commands section when alwaysAllowExecute is enabled", () => {
-		// Render once and get the activateTab helper
-		const { activateTab } = renderSettingsView()
+	it("shows allowed commands section when alwaysAllowExecute is enabled", async () => {
+		// Render directly with autoApprove tab active and alwaysAllowExecute initially true
+		const onDone = vi.fn()
+		const queryClient = new QueryClient()
 
-		// Activate the autoApprove tab
-		activateTab("autoApprove")
+		render(
+			<ExtensionStateContextProvider>
+				<QueryClientProvider client={queryClient}>
+					<SettingsView onDone={onDone} targetSection="autoApprove" />
+				</QueryClientProvider>
+			</ExtensionStateContextProvider>,
+		)
 
-		// Enable always allow execute
-		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
-		fireEvent.click(executeCheckbox)
-		// Verify allowed commands section appears
-		expect(screen.getByTestId("allowed-commands-heading")).toBeInTheDocument()
+		// Hydrate initial state with alwaysAllowExecute set to true
+		mockPostMessage({ alwaysAllowExecute: true })
+
+		// Allowed commands section should be visible
+		await waitFor(
+			() => {
+				expect(screen.getByTestId("allowed-commands-heading")).toBeInTheDocument()
+			},
+			{ timeout: 3000 },
+		)
 		expect(screen.getByTestId("command-input")).toBeInTheDocument()
 	})
 
-	it("adds new command to the list", () => {
-		// Render once and get the activateTab helper
-		const { activateTab } = renderSettingsView()
+	it("adds new command to the list", async () => {
+		// Render directly with autoApprove tab active and alwaysAllowExecute initially true
+		const onDone = vi.fn()
+		const queryClient = new QueryClient()
 
-		// Activate the autoApprove tab
-		activateTab("autoApprove")
+		render(
+			<ExtensionStateContextProvider>
+				<QueryClientProvider client={queryClient}>
+					<SettingsView onDone={onDone} targetSection="autoApprove" />
+				</QueryClientProvider>
+			</ExtensionStateContextProvider>,
+		)
 
-		// Enable always allow execute
-		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
-		fireEvent.click(executeCheckbox)
+		// Hydrate initial state with alwaysAllowExecute set to true
+		mockPostMessage({ alwaysAllowExecute: true })
+
+		// Wait for command input to appear
+		await waitFor(() => {
+			expect(screen.getByTestId("command-input")).toBeInTheDocument()
+		})
 
 		// Add a new command
 		const input = screen.getByTestId("command-input")
@@ -494,7 +507,9 @@ describe("SettingsView - Allowed Commands", () => {
 		fireEvent.click(addButton)
 
 		// Verify command was added
-		expect(screen.getByText("npm test")).toBeInTheDocument()
+		await waitFor(() => {
+			expect(screen.getByText("npm test")).toBeInTheDocument()
+		})
 
 		// Verify VSCode message was sent
 		expect(vscode.postMessage).toHaveBeenCalledWith({
@@ -505,16 +520,26 @@ describe("SettingsView - Allowed Commands", () => {
 		})
 	})
 
-	it("removes command from the list", () => {
-		// Render once and get the activateTab helper
-		const { activateTab } = renderSettingsView()
+	it("removes command from the list", async () => {
+		// Render directly with autoApprove tab active and alwaysAllowExecute initially true
+		const onDone = vi.fn()
+		const queryClient = new QueryClient()
 
-		// Activate the autoApprove tab
-		activateTab("autoApprove")
+		render(
+			<ExtensionStateContextProvider>
+				<QueryClientProvider client={queryClient}>
+					<SettingsView onDone={onDone} targetSection="autoApprove" />
+				</QueryClientProvider>
+			</ExtensionStateContextProvider>,
+		)
 
-		// Enable always allow execute
-		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
-		fireEvent.click(executeCheckbox)
+		// Hydrate initial state with alwaysAllowExecute set to true
+		mockPostMessage({ alwaysAllowExecute: true })
+
+		// Wait for command input to appear
+		await waitFor(() => {
+			expect(screen.getByTestId("command-input")).toBeInTheDocument()
+		})
 
 		// Add a command
 		const input = screen.getByTestId("command-input")
@@ -522,12 +547,19 @@ describe("SettingsView - Allowed Commands", () => {
 		const addButton = screen.getByTestId("add-command-button")
 		fireEvent.click(addButton)
 
+		// Wait for command to appear
+		await waitFor(() => {
+			expect(screen.getByText("npm test")).toBeInTheDocument()
+		})
+
 		// Remove the command
 		const removeButton = screen.getByTestId("remove-command-0")
 		fireEvent.click(removeButton)
 
 		// Verify command was removed
-		expect(screen.queryByText("npm test")).not.toBeInTheDocument()
+		await waitFor(() => {
+			expect(screen.queryByText("npm test")).not.toBeInTheDocument()
+		})
 
 		// Verify VSCode message was sent
 		expect(vscode.postMessage).toHaveBeenLastCalledWith({
@@ -597,16 +629,26 @@ describe("SettingsView - Duplicate Commands", () => {
 		vi.clearAllMocks()
 	})
 
-	it("prevents duplicate commands", () => {
-		// Render once and get the activateTab helper
-		const { activateTab } = renderSettingsView()
+	it("prevents duplicate commands", async () => {
+		// Render directly with autoApprove tab active and alwaysAllowExecute initially true
+		const onDone = vi.fn()
+		const queryClient = new QueryClient()
 
-		// Activate the autoApprove tab
-		activateTab("autoApprove")
+		render(
+			<ExtensionStateContextProvider>
+				<QueryClientProvider client={queryClient}>
+					<SettingsView onDone={onDone} targetSection="autoApprove" />
+				</QueryClientProvider>
+			</ExtensionStateContextProvider>,
+		)
 
-		// Enable always allow execute
-		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
-		fireEvent.click(executeCheckbox)
+		// Hydrate initial state with alwaysAllowExecute set to true
+		mockPostMessage({ alwaysAllowExecute: true })
+
+		// Wait for command input to appear
+		await waitFor(() => {
+			expect(screen.getByTestId("command-input")).toBeInTheDocument()
+		})
 
 		// Add a command twice
 		const input = screen.getByTestId("command-input")
@@ -615,6 +657,11 @@ describe("SettingsView - Duplicate Commands", () => {
 		// First addition
 		fireEvent.change(input, { target: { value: "npm test" } })
 		fireEvent.click(addButton)
+
+		// Wait for first command to appear
+		await waitFor(() => {
+			expect(screen.getByText("npm test")).toBeInTheDocument()
+		})
 
 		// Second addition attempt
 		fireEvent.change(input, { target: { value: "npm test" } })
@@ -625,22 +672,37 @@ describe("SettingsView - Duplicate Commands", () => {
 		expect(commands).toHaveLength(1)
 	})
 
-	it("saves allowed commands when clicking Save", () => {
-		// Render once and get the activateTab helper
-		const { activateTab } = renderSettingsView()
+	it("saves allowed commands when clicking Save", async () => {
+		// Render directly with autoApprove tab active and alwaysAllowExecute initially true
+		const onDone = vi.fn()
+		const queryClient = new QueryClient()
 
-		// Activate the autoApprove tab
-		activateTab("autoApprove")
+		render(
+			<ExtensionStateContextProvider>
+				<QueryClientProvider client={queryClient}>
+					<SettingsView onDone={onDone} targetSection="autoApprove" />
+				</QueryClientProvider>
+			</ExtensionStateContextProvider>,
+		)
 
-		// Enable always allow execute
-		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
-		fireEvent.click(executeCheckbox)
+		// Hydrate initial state with alwaysAllowExecute set to true
+		mockPostMessage({ alwaysAllowExecute: true })
+
+		// Wait for command input to appear
+		await waitFor(() => {
+			expect(screen.getByTestId("command-input")).toBeInTheDocument()
+		})
 
 		// Add a command
 		const input = screen.getByTestId("command-input")
 		fireEvent.change(input, { target: { value: "npm test" } })
 		const addButton = screen.getByTestId("add-command-button")
 		fireEvent.click(addButton)
+
+		// Wait for command to appear
+		await waitFor(() => {
+			expect(screen.getByText("npm test")).toBeInTheDocument()
+		})
 
 		// Click Save - use getAllByTestId to handle multiple elements
 		const saveButtons = screen.getAllByTestId("save-button")

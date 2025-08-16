@@ -1,4 +1,5 @@
-import type { ProviderSettings, OrganizationAllowList } from "@roo-code/types"
+import type { ProviderSettings } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 import { RouterModels } from "@roo/api"
 
@@ -31,10 +32,9 @@ describe("Model Validation Functions", () => {
 		lmstudio: {},
 		deepinfra: {},
 		"io-intelligence": {},
+		modelharbor: {},
 		"vercel-ai-gateway": {},
 		huggingface: {},
-		roo: {},
-		chutes: {},
 	}
 
 	const allowAllOrganization: OrganizationAllowList = {
@@ -161,6 +161,46 @@ describe("Model Validation Functions", () => {
 				restrictiveOrganization,
 			)
 			expect(result).toBeUndefined() // Should exclude model-specific org errors
+		})
+
+		it("returns undefined for valid IO Intelligence model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "io-intelligence",
+				ioIntelligenceModelId: "valid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns error for invalid IO Intelligence model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "io-intelligence",
+				ioIntelligenceModelId: "invalid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns undefined for valid ModelHarbor model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "valid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns error for invalid ModelHarbor model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "invalid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
 		})
 	})
 })

@@ -24,7 +24,6 @@ import {
 	xaiDefaultModelId,
 	groqDefaultModelId,
 	cerebrasDefaultModelId,
-	chutesDefaultModelId,
 	basetenDefaultModelId,
 	bedrockDefaultModelId,
 	vertexDefaultModelId,
@@ -34,10 +33,10 @@ import {
 	fireworksDefaultModelId,
 	featherlessDefaultModelId,
 	ioIntelligenceDefaultModelId,
-	rooDefaultModelId,
 	vercelAiGatewayDefaultModelId,
 	deepInfraDefaultModelId,
 	minimaxDefaultModelId,
+	modelHarborDefaultModelId,
 	type ToolProtocol,
 	TOOL_PROTOCOL,
 } from "@roo-code/types"
@@ -47,7 +46,7 @@ import { validateApiConfigurationExcludingModelErrors, getModelValidationError }
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { useRouterModels } from "@src/components/ui/hooks/useRouterModels"
 import { useSelectedModel } from "@src/components/ui/hooks/useSelectedModel"
-import { useExtensionState } from "@src/context/ExtensionStateContext"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 import {
 	useOpenRouterModelProviders,
 	OPENROUTER_DEFAULT_PROVIDER_NAME,
@@ -70,7 +69,6 @@ import {
 	Baseten,
 	Bedrock,
 	Cerebras,
-	Chutes,
 	ClaudeCode,
 	DeepSeek,
 	Doubao,
@@ -81,6 +79,7 @@ import {
 	LMStudio,
 	LiteLLM,
 	Mistral,
+	ModelHarbor,
 	Moonshot,
 	Ollama,
 	OpenAI,
@@ -88,7 +87,6 @@ import {
 	OpenRouter,
 	QwenCode,
 	Requesty,
-	Roo,
 	SambaNova,
 	Unbound,
 	Vertex,
@@ -114,7 +112,6 @@ import { TemperatureControl } from "./TemperatureControl"
 import { RateLimitSecondsControl } from "./RateLimitSecondsControl"
 import { ConsecutiveMistakeLimitControl } from "./ConsecutiveMistakeLimitControl"
 import { BedrockCustomArn } from "./providers/BedrockCustomArn"
-import { RooBalanceDisplay } from "./providers/RooBalanceDisplay"
 import { buildDocLink } from "@src/utils/docLinks"
 import { BookOpenText } from "lucide-react"
 
@@ -140,7 +137,10 @@ const ApiOptions = ({
 	setErrorMessage,
 }: ApiOptionsProps) => {
 	const { t } = useAppTranslation()
-	const { organizationAllowList, cloudIsAuthenticated } = useExtensionState()
+	// Since cloud functionality is removed, use ORGANIZATION_ALLOW_ALL for organization filtering
+	// This is now defined locally in ProfileValidator.ts
+	// Wrap in useMemo to fix exhaustive-deps warnings
+	const effectiveOrganizationAllowList = useMemo<OrganizationAllowList>(() => ({ allowAll: true, providers: {} }), [])
 
 	const [customHeaders, setCustomHeaders] = useState<[string, string][]>(() => {
 		const headers = apiConfiguration?.openAiHeaders || {}
@@ -191,6 +191,7 @@ const ApiOptions = ({
 		provider: selectedProvider,
 		id: selectedModelId,
 		info: selectedModelInfo,
+		isLoading: isModelLoading,
 	} = useSelectedModel(apiConfiguration)
 
 	const { data: routerModels, refetch: refetchRouterModels } = useRouterModels()
@@ -208,13 +209,14 @@ const ApiOptions = ({
 	)
 
 	// Update `apiModelId` whenever `selectedModelId` changes.
+	// Do not sync when models are still loading to prevent overwriting user selections with default fallbacks
 	useEffect(() => {
-		if (selectedModelId && apiConfiguration.apiModelId !== selectedModelId) {
+		if (selectedModelId && apiConfiguration.apiModelId !== selectedModelId && !isModelLoading) {
 			// Pass false as third parameter to indicate this is not a user action
 			// This is an internal sync, not a user-initiated change
 			setApiConfigurationField("apiModelId", selectedModelId, false)
 		}
-	}, [selectedModelId, setApiConfigurationField, apiConfiguration.apiModelId])
+	}, [selectedModelId, setApiConfigurationField, apiConfiguration.apiModelId, isModelLoading])
 
 	// Debounced refresh model updates, only executed 250ms after the user
 	// stops typing.
@@ -239,11 +241,7 @@ const ApiOptions = ({
 				vscode.postMessage({ type: "requestLmStudioModels" })
 			} else if (selectedProvider === "vscode-lm") {
 				vscode.postMessage({ type: "requestVsCodeLmModels" })
-			} else if (
-				selectedProvider === "litellm" ||
-				selectedProvider === "deepinfra" ||
-				selectedProvider === "roo"
-			) {
+			} else if (selectedProvider === "litellm" || selectedProvider === "deepinfra") {
 				vscode.postMessage({ type: "requestRouterModels" })
 			}
 		},
@@ -267,17 +265,17 @@ const ApiOptions = ({
 		const apiValidationResult = validateApiConfigurationExcludingModelErrors(
 			apiConfiguration,
 			routerModels,
-			organizationAllowList,
+			effectiveOrganizationAllowList,
 		)
 		setErrorMessage(apiValidationResult)
-	}, [apiConfiguration, routerModels, organizationAllowList, setErrorMessage])
+	}, [apiConfiguration, routerModels, effectiveOrganizationAllowList, setErrorMessage])
 
 	const selectedProviderModels = useMemo(() => {
 		const models = MODELS_BY_PROVIDER[selectedProvider]
 
 		if (!models) return []
 
-		const filteredModels = filterModels(models, selectedProvider, organizationAllowList)
+		const filteredModels = filterModels(models, selectedProvider, effectiveOrganizationAllowList)
 
 		// Include the currently selected model even if deprecated (so users can see what they have selected)
 		// But filter out other deprecated models from being newly selectable
@@ -296,7 +294,7 @@ const ApiOptions = ({
 			: []
 
 		return availableModels
-	}, [selectedProvider, organizationAllowList, selectedModelId])
+	}, [selectedProvider, effectiveOrganizationAllowList, selectedModelId])
 
 	const onProviderChange = useCallback(
 		(value: ProviderName) => {
@@ -336,6 +334,7 @@ const ApiOptions = ({
 					}
 				>
 			> = {
+				modelharbor: { field: "modelharborModelId", default: modelHarborDefaultModelId },
 				deepinfra: { field: "deepInfraModelId", default: deepInfraDefaultModelId },
 				openrouter: { field: "openRouterModelId", default: openRouterDefaultModelId },
 				unbound: { field: "unboundModelId", default: unboundDefaultModelId },
@@ -354,7 +353,6 @@ const ApiOptions = ({
 				mistral: { field: "apiModelId", default: mistralDefaultModelId },
 				xai: { field: "apiModelId", default: xaiDefaultModelId },
 				groq: { field: "apiModelId", default: groqDefaultModelId },
-				chutes: { field: "apiModelId", default: chutesDefaultModelId },
 				baseten: { field: "apiModelId", default: basetenDefaultModelId },
 				bedrock: { field: "apiModelId", default: bedrockDefaultModelId },
 				vertex: { field: "apiModelId", default: vertexDefaultModelId },
@@ -369,7 +367,6 @@ const ApiOptions = ({
 				fireworks: { field: "apiModelId", default: fireworksDefaultModelId },
 				featherless: { field: "apiModelId", default: featherlessDefaultModelId },
 				"io-intelligence": { field: "ioIntelligenceModelId", default: ioIntelligenceDefaultModelId },
-				roo: { field: "apiModelId", default: rooDefaultModelId },
 				"vercel-ai-gateway": { field: "vercelAiGatewayModelId", default: vercelAiGatewayDefaultModelId },
 				openai: { field: "openAiModelId" },
 				ollama: { field: "ollamaModelId" },
@@ -389,8 +386,8 @@ const ApiOptions = ({
 	)
 
 	const modelValidationError = useMemo(() => {
-		return getModelValidationError(apiConfiguration, routerModels, organizationAllowList)
-	}, [apiConfiguration, routerModels, organizationAllowList])
+		return getModelValidationError(apiConfiguration, routerModels, effectiveOrganizationAllowList)
+	}, [apiConfiguration, routerModels, effectiveOrganizationAllowList])
 
 	const docs = useMemo(() => {
 		const provider = PROVIDERS.find(({ value }) => value === selectedProvider)
@@ -427,7 +424,7 @@ const ApiOptions = ({
 	// Convert providers to SearchableSelect options
 	const providerOptions = useMemo(() => {
 		// First filter by organization allow list
-		const allowedProviders = filterProviders(PROVIDERS, organizationAllowList)
+		const allowedProviders = filterProviders(PROVIDERS, effectiveOrganizationAllowList)
 
 		// Then filter out static providers that have no models (unless currently selected)
 		const providersWithModels = allowedProviders.filter(({ value }) => {
@@ -442,7 +439,7 @@ const ApiOptions = ({
 
 			// If it's a static provider, check if it has any models after filtering
 			if (staticModels) {
-				const filteredModels = filterModels(staticModels, value as ProviderName, organizationAllowList)
+				const filteredModels = filterModels(staticModels, value as ProviderName, effectiveOrganizationAllowList)
 				// Hide the provider if it has no models after filtering
 				return filteredModels && Object.keys(filteredModels).length > 0
 			}
@@ -457,38 +454,19 @@ const ApiOptions = ({
 			label,
 		}))
 
-		// Pin "roo" to the top if not on welcome screen
-		if (!fromWelcomeView) {
-			const rooIndex = options.findIndex((opt) => opt.value === "roo")
-			if (rooIndex > 0) {
-				const [rooOption] = options.splice(rooIndex, 1)
-				options.unshift(rooOption)
-			}
-		} else {
-			const openRouterIndex = options.findIndex((opt) => opt.value === "openrouter")
-			if (openRouterIndex > 0) {
-				const [openRouterOption] = options.splice(openRouterIndex, 1)
-				options.unshift(openRouterOption)
-			}
-		}
-
 		return options
-	}, [organizationAllowList, apiConfiguration.apiProvider, fromWelcomeView])
+	}, [effectiveOrganizationAllowList, apiConfiguration.apiProvider])
 
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="flex flex-col gap-1 relative">
 				<div className="flex justify-between items-center">
 					<label className="block font-medium">{t("settings:providers.apiProvider")}</label>
-					{selectedProvider === "roo" && cloudIsAuthenticated ? (
-						<RooBalanceDisplay />
-					) : (
-						docs && (
-							<VSCodeLink href={docs.url} target="_blank" className="flex gap-2">
-								{docs.name}
-								<BookOpenText className="size-4 inline ml-2" />
-							</VSCodeLink>
-						)
+					{docs && (
+						<VSCodeLink href={docs.url} target="_blank" className="flex gap-2">
+							{docs.name}
+							<BookOpenText className="size-4 inline ml-2" />
+						</VSCodeLink>
 					)}
 				</div>
 				<SearchableSelect
@@ -505,6 +483,10 @@ const ApiOptions = ({
 
 			{errorMessage && <ApiErrorMessage errorMessage={errorMessage} />}
 
+			{selectedProvider === "modelharbor" && (
+				<ModelHarbor apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
+
 			{selectedProvider === "openrouter" && (
 				<OpenRouter
 					apiConfiguration={apiConfiguration}
@@ -513,7 +495,7 @@ const ApiOptions = ({
 					selectedModelId={selectedModelId}
 					uriScheme={uriScheme}
 					simplifySettings={fromWelcomeView}
-					organizationAllowList={organizationAllowList}
+					organizationAllowList={effectiveOrganizationAllowList}
 					modelValidationError={modelValidationError}
 				/>
 			)}
@@ -525,7 +507,7 @@ const ApiOptions = ({
 					setApiConfigurationField={setApiConfigurationField}
 					routerModels={routerModels}
 					refetchRouterModels={refetchRouterModels}
-					organizationAllowList={organizationAllowList}
+					organizationAllowList={effectiveOrganizationAllowList}
 					modelValidationError={modelValidationError}
 					simplifySettings={fromWelcomeView}
 				/>
@@ -536,7 +518,7 @@ const ApiOptions = ({
 					apiConfiguration={apiConfiguration}
 					setApiConfigurationField={setApiConfigurationField}
 					routerModels={routerModels}
-					organizationAllowList={organizationAllowList}
+					organizationAllowList={effectiveOrganizationAllowList}
 					modelValidationError={modelValidationError}
 					simplifySettings={fromWelcomeView}
 				/>
@@ -548,7 +530,7 @@ const ApiOptions = ({
 					setApiConfigurationField={setApiConfigurationField}
 					routerModels={routerModels}
 					refetchRouterModels={refetchRouterModels}
-					organizationAllowList={organizationAllowList}
+					organizationAllowList={effectiveOrganizationAllowList}
 					modelValidationError={modelValidationError}
 					simplifySettings={fromWelcomeView}
 				/>
@@ -624,7 +606,7 @@ const ApiOptions = ({
 				<OpenAICompatible
 					apiConfiguration={apiConfiguration}
 					setApiConfigurationField={setApiConfigurationField}
-					organizationAllowList={organizationAllowList}
+					organizationAllowList={effectiveOrganizationAllowList}
 					modelValidationError={modelValidationError}
 					simplifySettings={fromWelcomeView}
 				/>
@@ -698,22 +680,11 @@ const ApiOptions = ({
 				<Cerebras apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
 			)}
 
-			{selectedProvider === "chutes" && (
-				<Chutes
-					apiConfiguration={apiConfiguration}
-					setApiConfigurationField={setApiConfigurationField}
-					routerModels={routerModels}
-					organizationAllowList={organizationAllowList}
-					modelValidationError={modelValidationError}
-					simplifySettings={fromWelcomeView}
-				/>
-			)}
-
 			{selectedProvider === "litellm" && (
 				<LiteLLM
 					apiConfiguration={apiConfiguration}
 					setApiConfigurationField={setApiConfigurationField}
-					organizationAllowList={organizationAllowList}
+					organizationAllowList={effectiveOrganizationAllowList}
 					modelValidationError={modelValidationError}
 					simplifySettings={fromWelcomeView}
 				/>
@@ -731,7 +702,7 @@ const ApiOptions = ({
 				<IOIntelligence
 					apiConfiguration={apiConfiguration}
 					setApiConfigurationField={setApiConfigurationField}
-					organizationAllowList={organizationAllowList}
+					organizationAllowList={effectiveOrganizationAllowList}
 					modelValidationError={modelValidationError}
 					simplifySettings={fromWelcomeView}
 				/>
@@ -742,7 +713,7 @@ const ApiOptions = ({
 					apiConfiguration={apiConfiguration}
 					setApiConfigurationField={setApiConfigurationField}
 					routerModels={routerModels}
-					organizationAllowList={organizationAllowList}
+					organizationAllowList={effectiveOrganizationAllowList}
 					modelValidationError={modelValidationError}
 					simplifySettings={fromWelcomeView}
 				/>
@@ -761,18 +732,6 @@ const ApiOptions = ({
 
 			{selectedProvider === "fireworks" && (
 				<Fireworks apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
-			)}
-
-			{selectedProvider === "roo" && (
-				<Roo
-					apiConfiguration={apiConfiguration}
-					setApiConfigurationField={setApiConfigurationField}
-					routerModels={routerModels}
-					cloudIsAuthenticated={cloudIsAuthenticated}
-					organizationAllowList={organizationAllowList}
-					modelValidationError={modelValidationError}
-					simplifySettings={fromWelcomeView}
-				/>
 			)}
 
 			{selectedProvider === "featherless" && (

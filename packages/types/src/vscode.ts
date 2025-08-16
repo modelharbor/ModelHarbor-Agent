@@ -33,8 +33,9 @@ export const commandIds = [
 	"historyButtonClicked",
 	"marketplaceButtonClicked",
 	"popoutButtonClicked",
-	"cloudButtonClicked",
 	"settingsButtonClicked",
+	"promptsButtonClicked",
+	"mcpButtonClicked",
 
 	"openInNewTab",
 
@@ -60,26 +61,7 @@ export type CommandId = (typeof commandIds)[number]
  * Language
  */
 
-export const languages = [
-	"ca",
-	"de",
-	"en",
-	"es",
-	"fr",
-	"hi",
-	"id",
-	"it",
-	"ja",
-	"ko",
-	"nl",
-	"pl",
-	"pt-BR",
-	"ru",
-	"tr",
-	"vi",
-	"zh-CN",
-	"zh-TW",
-] as const
+export const languages = ["en", "th"] as const
 
 export const languagesSchema = z.enum(languages)
 

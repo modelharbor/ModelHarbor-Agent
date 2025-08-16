@@ -3,6 +3,7 @@
 import { ExtensionContext } from "vscode"
 
 import type { ProviderSettings } from "@roo-code/types"
+import { modelHarborDefaultModelId } from "@roo-code/types"
 
 import { ProviderSettingsManager, ProviderProfiles, SyncCloudProfilesResult } from "../ProviderSettingsManager"
 
@@ -47,6 +48,25 @@ describe("ProviderSettingsManager", () => {
 
 			// Should not write to storage because readConfig returns defaultConfig
 			expect(mockSecrets.store).not.toHaveBeenCalled()
+		})
+
+		it("should have default modelharbor provider with modelharborModelId set on fresh install", async () => {
+			// When secrets.get returns null, the manager should use defaultProviderProfiles
+			mockSecrets.get.mockResolvedValueOnce(null)
+
+			await providerSettingsManager.initialize()
+
+			// After initializing, list configs to verify the default profile
+			const configs = await providerSettingsManager.listConfig()
+
+			expect(configs).toEqual([
+				{
+					name: "default",
+					id: expect.any(String),
+					apiProvider: "modelharbor",
+					modelId: modelHarborDefaultModelId,
+				},
+			])
 		})
 
 		it("should not initialize config if it exists and migrations are complete", async () => {
@@ -229,7 +249,7 @@ describe("ProviderSettingsManager", () => {
 			expect(storedConfig.migrations.todoListEnabledMigrated).toEqual(true)
 		})
 
-		it("should apply model migrations for all providers", async () => {
+		it("should not change configs when no migrations are needed", async () => {
 			mockSecrets.get.mockResolvedValue(
 				JSON.stringify({
 					currentApiConfigName: "default",
@@ -237,25 +257,21 @@ describe("ProviderSettingsManager", () => {
 						default: {
 							config: {},
 							id: "default",
-							apiProvider: "roo",
-							apiModelId: "roo/code-supernova", // Old model ID
+							apiProvider: "anthropic",
+							apiModelId: "claude-3-opus-20240229",
 						},
 						test: {
-							apiProvider: "roo",
-							apiModelId: "roo/code-supernova", // Old model ID
-						},
-						existing: {
-							apiProvider: "roo",
-							apiModelId: "roo/code-supernova-1-million", // Already migrated
-						},
-						otherProvider: {
+							id: "test-id",
 							apiProvider: "anthropic",
-							apiModelId: "roo/code-supernova", // Should not be migrated (different provider)
+							apiModelId: "claude-3-5-sonnet-20241022",
 						},
-						noProvider: {
-							id: "no-provider",
-							apiModelId: "roo/code-supernova", // Should not be migrated (no provider)
-						},
+					},
+					modeApiConfigs: {
+						architect: "default",
+						code: "default",
+						ask: "default",
+						debug: "default",
+						orchestrator: "default",
 					},
 					migrations: {
 						rateLimitSecondsMigrated: true,
@@ -269,31 +285,28 @@ describe("ProviderSettingsManager", () => {
 
 			await providerSettingsManager.initialize()
 
-			// Get the last call to store, which should contain the migrated config
-			const calls = mockSecrets.store.mock.calls
-			const storedConfig = JSON.parse(calls[calls.length - 1][1])
-
-			// Roo provider configs should be migrated
-			expect(storedConfig.apiConfigs.default.apiModelId).toEqual("roo/code-supernova-1-million")
-			expect(storedConfig.apiConfigs.test.apiModelId).toEqual("roo/code-supernova-1-million")
-			expect(storedConfig.apiConfigs.existing.apiModelId).toEqual("roo/code-supernova-1-million")
-
-			// Non-roo provider configs should not be migrated
-			expect(storedConfig.apiConfigs.otherProvider.apiModelId).toEqual("roo/code-supernova")
-			expect(storedConfig.apiConfigs.noProvider.apiModelId).toEqual("roo/code-supernova")
+			// Should not write anything since no migrations are needed
+			expect(mockSecrets.store).not.toHaveBeenCalled()
 		})
 
-		it("should apply model migrations every time, not just once", async () => {
-			// First load with old model
+		it("should preserve model IDs when no migrations needed on re-initialize", async () => {
+			// First load with valid config
 			mockSecrets.get.mockResolvedValue(
 				JSON.stringify({
 					currentApiConfigName: "default",
 					apiConfigs: {
 						default: {
-							apiProvider: "roo",
-							apiModelId: "roo/code-supernova",
+							apiProvider: "anthropic",
+							apiModelId: "claude-3-opus-20240229",
 							id: "default",
 						},
+					},
+					modeApiConfigs: {
+						architect: "default",
+						code: "default",
+						ask: "default",
+						debug: "default",
+						orchestrator: "default",
 					},
 					migrations: {
 						rateLimitSecondsMigrated: true,
@@ -307,24 +320,29 @@ describe("ProviderSettingsManager", () => {
 
 			await providerSettingsManager.initialize()
 
-			// Verify migration happened
-			let calls = mockSecrets.store.mock.calls
-			let storedConfig = JSON.parse(calls[calls.length - 1][1])
-			expect(storedConfig.apiConfigs.default.apiModelId).toEqual("roo/code-supernova-1-million")
+			// Should not write anything
+			expect(mockSecrets.store).not.toHaveBeenCalled()
 
 			// Create a new instance to simulate another load
 			const newManager = new ProviderSettingsManager(mockContext)
 
-			// Somehow the model got reverted (e.g., manual edit, sync issue)
+			// Config unchanged
 			mockSecrets.get.mockResolvedValue(
 				JSON.stringify({
 					currentApiConfigName: "default",
 					apiConfigs: {
 						default: {
-							apiProvider: "roo",
-							apiModelId: "roo/code-supernova", // Old model again
+							apiProvider: "anthropic",
+							apiModelId: "claude-3-opus-20240229",
 							id: "default",
 						},
+					},
+					modeApiConfigs: {
+						architect: "default",
+						code: "default",
+						ask: "default",
+						debug: "default",
+						orchestrator: "default",
 					},
 					migrations: {
 						rateLimitSecondsMigrated: true,
@@ -338,10 +356,8 @@ describe("ProviderSettingsManager", () => {
 
 			await newManager.initialize()
 
-			// Verify migration happened again
-			calls = mockSecrets.store.mock.calls
-			storedConfig = JSON.parse(calls[calls.length - 1][1])
-			expect(storedConfig.apiConfigs.default.apiModelId).toEqual("roo/code-supernova-1-million")
+			// Should still not write anything
+			expect(mockSecrets.store).not.toHaveBeenCalled()
 		})
 
 		it("should throw error if secrets storage fails", async () => {
@@ -1264,6 +1280,8 @@ describe("ProviderSettingsManager", () => {
 			const storedConfig = JSON.parse(mockSecrets.store.mock.calls[0][1])
 			expect(storedConfig.apiConfigs["default"]).toBeDefined()
 			expect(storedConfig.apiConfigs["default"].id).toBe(result.activeProfileId)
+			expect(storedConfig.apiConfigs["default"].apiProvider).toBe("modelharbor")
+			expect(storedConfig.apiConfigs["default"].modelharborModelId).toBe(modelHarborDefaultModelId)
 		})
 
 		it("should not mark active profile as changed when it's not affected", async () => {

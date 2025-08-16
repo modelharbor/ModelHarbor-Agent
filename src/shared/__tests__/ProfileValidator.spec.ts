@@ -1,8 +1,8 @@
 // npx vitest run src/shared/__tests__/ProfileValidator.spec.ts
 
-import type { ProviderSettings, OrganizationAllowList } from "@roo-code/types"
+import type { ProviderSettings } from "@roo-code/types"
 
-import { ProfileValidator } from "../ProfileValidator"
+import { ProfileValidator, type OrganizationAllowList } from "../ProfileValidator"
 
 describe("ProfileValidator", () => {
 	describe("isProfileAllowed", () => {
@@ -191,7 +191,6 @@ describe("ProfileValidator", () => {
 			"deepseek",
 			"xai",
 			"groq",
-			"chutes",
 			"sambanova",
 			"fireworks",
 			"featherless",

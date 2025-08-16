@@ -1,7 +1,6 @@
 // npx vitest run __tests__/extension.spec.ts
 
 import type * as vscode from "vscode"
-import type { AuthState } from "@roo-code/types"
 
 vi.mock("vscode", () => ({
 	window: {
@@ -44,27 +43,6 @@ vi.mock("vscode", () => ({
 
 vi.mock("@dotenvx/dotenvx", () => ({
 	config: vi.fn(),
-}))
-
-const mockBridgeOrchestratorDisconnect = vi.fn().mockResolvedValue(undefined)
-
-vi.mock("@roo-code/cloud", () => ({
-	CloudService: {
-		createInstance: vi.fn(),
-		hasInstance: vi.fn().mockReturnValue(true),
-		get instance() {
-			return {
-				off: vi.fn(),
-				on: vi.fn(),
-				getUserInfo: vi.fn().mockReturnValue(null),
-				isTaskSyncEnabled: vi.fn().mockReturnValue(false),
-			}
-		},
-	},
-	BridgeOrchestrator: {
-		disconnect: mockBridgeOrchestratorDisconnect,
-	},
-	getRooCodeApiUrl: vi.fn().mockReturnValue("https://app.roocode.com"),
 }))
 
 vi.mock("@roo-code/telemetry", () => ({
@@ -171,19 +149,13 @@ vi.mock("../i18n", () => ({
 	t: vi.fn((key) => key),
 }))
 
-// Mock ClineProvider - remoteControlEnabled must call BridgeOrchestrator.disconnect for the test
-vi.mock("../core/webview/ClineProvider", async () => {
-	const { BridgeOrchestrator } = await import("@roo-code/cloud")
+// Mock ClineProvider
+vi.mock("../core/webview/ClineProvider", () => {
 	const mockInstance = {
 		resolveWebviewView: vi.fn(),
 		postMessageToWebview: vi.fn(),
 		postStateToWebview: vi.fn(),
 		getState: vi.fn().mockResolvedValue({}),
-		remoteControlEnabled: vi.fn().mockImplementation(async (enabled: boolean) => {
-			if (!enabled) {
-				await BridgeOrchestrator.disconnect()
-			}
-		}),
 		initializeCloudProfileSyncWhenReady: vi.fn().mockResolvedValue(undefined),
 		providerSettingsManager: {},
 		contextProxy: { getGlobalState: vi.fn() },
@@ -211,13 +183,9 @@ vi.mock("../api/providers/fetchers/modelCache", () => ({
 
 describe("extension.ts", () => {
 	let mockContext: vscode.ExtensionContext
-	let authStateChangedHandler:
-		| ((data: { state: AuthState; previousState: AuthState }) => void | Promise<void>)
-		| undefined
 
 	beforeEach(() => {
 		vi.clearAllMocks()
-		mockBridgeOrchestratorDisconnect.mockClear()
 
 		mockContext = {
 			extensionPath: "/test/path",
@@ -227,70 +195,12 @@ describe("extension.ts", () => {
 			},
 			subscriptions: [],
 		} as unknown as vscode.ExtensionContext
-
-		authStateChangedHandler = undefined
 	})
 
-	test("authStateChangedHandler calls BridgeOrchestrator.disconnect when logged-out event fires", async () => {
-		const { CloudService, BridgeOrchestrator } = await import("@roo-code/cloud")
-
-		// Capture the auth state changed handler.
-		vi.mocked(CloudService.createInstance).mockImplementation(async (_context, _logger, handlers) => {
-			if (handlers?.["auth-state-changed"]) {
-				authStateChangedHandler = handlers["auth-state-changed"]
-			}
-
-			return {
-				off: vi.fn(),
-				on: vi.fn(),
-				telemetryClient: null,
-			} as any
-		})
-
-		// Activate the extension.
+	test("should activate extension", async () => {
 		const { activate } = await import("../extension")
-		await activate(mockContext)
-
-		// Verify handler was registered.
-		expect(authStateChangedHandler).toBeDefined()
-
-		// Trigger logout.
-		await authStateChangedHandler!({
-			state: "logged-out" as AuthState,
-			previousState: "logged-in" as AuthState,
-		})
-
-		// Verify BridgeOrchestrator.disconnect was called
-		expect(mockBridgeOrchestratorDisconnect).toHaveBeenCalled()
-	})
-
-	test("authStateChangedHandler does not call BridgeOrchestrator.disconnect for other states", async () => {
-		const { CloudService } = await import("@roo-code/cloud")
-
-		// Capture the auth state changed handler.
-		vi.mocked(CloudService.createInstance).mockImplementation(async (_context, _logger, handlers) => {
-			if (handlers?.["auth-state-changed"]) {
-				authStateChangedHandler = handlers["auth-state-changed"]
-			}
-
-			return {
-				off: vi.fn(),
-				on: vi.fn(),
-				telemetryClient: null,
-			} as any
-		})
-
-		// Activate the extension.
-		const { activate } = await import("../extension")
-		await activate(mockContext)
-
-		// Trigger login.
-		await authStateChangedHandler!({
-			state: "logged-in" as AuthState,
-			previousState: "logged-out" as AuthState,
-		})
-
-		// Verify BridgeOrchestrator.disconnect was NOT called.
-		expect(mockBridgeOrchestratorDisconnect).not.toHaveBeenCalled()
+		const result = await activate(mockContext)
+		// The activate function returns an API instance, not undefined
+		expect(result).toBeDefined()
 	})
 })
