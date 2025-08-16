@@ -62,13 +62,20 @@ export async function applyDiffTool(
 	const provider = cline.providerRef.deref()
 	if (provider) {
 		const state = await provider.getState()
-		const isMultiFileApplyDiffEnabled = experiments.isEnabled(
-			state.experiments ?? {},
-			EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF,
-		)
+		// Only check experiments if they are explicitly configured
+		// When experiments are undefined, use the legacy tool
+		if (state.experiments) {
+			const isMultiFileApplyDiffEnabled = experiments.isEnabled(
+				state.experiments,
+				EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF,
+			)
 
-		// If experiment is disabled, use legacy tool
-		if (!isMultiFileApplyDiffEnabled) {
+			// If experiment is disabled, use legacy tool
+			if (!isMultiFileApplyDiffEnabled) {
+				return applyDiffToolLegacy(cline, block, askApproval, handleError, pushToolResult, removeClosingTag)
+			}
+		} else {
+			// When experiments are not defined, use legacy tool
 			return applyDiffToolLegacy(cline, block, askApproval, handleError, pushToolResult, removeClosingTag)
 		}
 	}
