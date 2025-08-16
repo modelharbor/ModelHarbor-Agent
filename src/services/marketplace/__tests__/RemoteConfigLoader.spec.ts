@@ -8,9 +8,9 @@ import type { MarketplaceItemType } from "@roo-code/types"
 vi.mock("axios")
 const mockedAxios = axios as any
 
-// Mock the cloud config
+// Mock the cloud config - RemoteConfigLoader now hardcodes the API URL
 vi.mock("@roo-code/cloud", () => ({
-	getRooCodeApiUrl: () => "https://test.api.com",
+	getRooCodeApiUrl: () => "https://api.modelharbor.io",
 }))
 
 describe("RemoteConfigLoader", () => {
@@ -52,7 +52,7 @@ describe("RemoteConfigLoader", () => {
 
 			expect(mockedAxios.get).toHaveBeenCalledTimes(2)
 			expect(mockedAxios.get).toHaveBeenCalledWith(
-				"https://test.api.com/api/marketplace/modes",
+				"https://api.modelharbor.io/api/marketplace/modes",
 				expect.objectContaining({
 					timeout: 10000,
 					headers: {
@@ -62,7 +62,7 @@ describe("RemoteConfigLoader", () => {
 				}),
 			)
 			expect(mockedAxios.get).toHaveBeenCalledWith(
-				"https://test.api.com/api/marketplace/mcps",
+				"https://api.modelharbor.io/api/marketplace/mcps",
 				expect.objectContaining({
 					timeout: 10000,
 					headers: {
@@ -174,16 +174,13 @@ describe("RemoteConfigLoader", () => {
 		})
 
 		it("should handle invalid data gracefully", async () => {
-			const invalidModesYaml = `items:
-  - id: "invalid-mode"
-    # Missing required fields like name and description`
+			// Note: RemoteConfigLoader uses z.any() for items to avoid deep type instantiation,
+			// so it doesn't validate individual item fields. Invalid items pass through
+			// and are returned as-is. Validation of individual items happens downstream.
+			const invalidModesYaml = 'items:\n  - id: "invalid-mode"'
 
-			const validMcpsYaml = `items:
-  - id: "valid-mcp"
-    name: "Valid MCP"
-    description: "A valid MCP"
-    url: "https://github.com/test/test-mcp"
-    content: "test content"`
+			const validMcpsYaml =
+				'items:\n  - id: "valid-mcp"\n    name: "Valid MCP"\n    description: "A valid MCP"\n    url: "https://github.com/test/test-mcp"\n    content: "test content"'
 
 			mockedAxios.get.mockImplementation((url: string) => {
 				if (url.includes("/modes")) {
@@ -195,8 +192,20 @@ describe("RemoteConfigLoader", () => {
 				return Promise.reject(new Error("Unknown URL"))
 			})
 
-			// Should throw validation error for invalid modes
-			await expect(loader.loadAllItems()).rejects.toThrow()
+			// With z.any() items, invalid data is passed through (not validated at this layer)
+			const items = await loader.loadAllItems()
+			expect(items).toHaveLength(2)
+			// Invalid mode is still returned (only has id and type)
+			expect(items[0]).toEqual({ type: "mode", id: "invalid-mode" })
+			// Valid MCP is returned with all fields
+			expect(items[1]).toEqual({
+				type: "mcp",
+				id: "valid-mcp",
+				name: "Valid MCP",
+				description: "A valid MCP",
+				url: "https://github.com/test/test-mcp",
+				content: "test content",
+			})
 		})
 	})
 

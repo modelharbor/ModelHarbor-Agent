@@ -27,7 +27,6 @@ import {
 	XAIHandler,
 	GroqHandler,
 	HuggingFaceHandler,
-	ChutesHandler,
 	LiteLLMHandler,
 	ClaudeCodeHandler,
 	QwenCodeHandler,
@@ -36,7 +35,7 @@ import {
 	DoubaoHandler,
 	ZAiHandler,
 	FireworksHandler,
-	RooHandler,
+	ModelHarborHandler,
 	FeatherlessHandler,
 	VercelAiGatewayHandler,
 	DeepInfraHandler,
@@ -180,8 +179,6 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new DeepInfraHandler(options)
 		case "huggingface":
 			return new HuggingFaceHandler(options)
-		case "chutes":
-			return new ChutesHandler(options)
 		case "litellm":
 			return new LiteLLMHandler(options)
 		case "cerebras":
@@ -194,10 +191,8 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new FireworksHandler(options)
 		case "io-intelligence":
 			return new IOIntelligenceHandler(options)
-		case "roo":
-			// Never throw exceptions from provider constructors
-			// The provider-proxy server will handle authentication and return appropriate error codes
-			return new RooHandler(options)
+		case "modelharbor":
+			return new ModelHarborHandler(options)
 		case "featherless":
 			return new FeatherlessHandler(options)
 		case "vercel-ai-gateway":

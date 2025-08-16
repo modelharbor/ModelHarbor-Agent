@@ -12,8 +12,8 @@ import {
 	getModelId,
 	type ProviderName,
 	isProviderName,
+	modelHarborDefaultModelId,
 } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { Mode, modes } from "../../shared/modes"
 import { buildApiHandler } from "../../api"
@@ -23,11 +23,7 @@ type ModelMigrations = {
 	[K in ProviderName]?: Record<string, string>
 }
 
-const MODEL_MIGRATIONS: ModelMigrations = {
-	roo: {
-		"roo/code-supernova": "roo/code-supernova-1-million",
-	},
-} as const satisfies ModelMigrations
+const MODEL_MIGRATIONS: ModelMigrations = {} as const satisfies ModelMigrations
 
 export interface SyncCloudProfilesResult {
 	hasChanges: boolean
@@ -35,9 +31,10 @@ export interface SyncCloudProfilesResult {
 	activeProfileId: string
 }
 
+// Using z.any() to avoid deep type instantiation from providerSettingsWithIdSchema
 export const providerProfilesSchema = z.object({
 	currentApiConfigName: z.string(),
-	apiConfigs: z.record(z.string(), providerSettingsWithIdSchema),
+	apiConfigs: z.record(z.string(), z.any()),
 	modeApiConfigs: z.record(z.string(), z.string()).optional(),
 	cloudProfileIds: z.array(z.string()).optional(),
 	migrations: z
@@ -64,7 +61,13 @@ export class ProviderSettingsManager {
 
 	private readonly defaultProviderProfiles: ProviderProfiles = {
 		currentApiConfigName: "default",
-		apiConfigs: { default: { id: this.defaultConfigId } },
+		apiConfigs: {
+			default: {
+				id: this.defaultConfigId,
+				apiProvider: "modelharbor",
+				modelharborModelId: modelHarborDefaultModelId,
+			},
+		},
 		modeApiConfigs: this.defaultModeApiConfigs,
 		migrations: {
 			rateLimitSecondsMigrated: true, // Mark as migrated on fresh installs
@@ -638,13 +641,6 @@ export class ProviderSettingsManager {
 				),
 			}
 		} catch (error) {
-			if (error instanceof ZodError) {
-				TelemetryService.instance.captureSchemaValidationError({
-					schemaName: "ProviderProfiles",
-					error,
-				})
-			}
-
 			throw new Error(`Failed to read provider profiles from secrets: ${error}`)
 		}
 	}
@@ -856,7 +852,11 @@ export class ProviderSettingsManager {
 				// Step 5: Handle case where all profiles might be deleted
 				if (Object.keys(providerProfiles.apiConfigs).length === 0 && changedProfiles.length > 0) {
 					// Create a default profile only if we have changed profiles
-					const defaultProfile = { id: this.generateId() }
+					const defaultProfile = {
+						id: this.generateId(),
+						apiProvider: "modelharbor" as const,
+						modelharborModelId: modelHarborDefaultModelId,
+					}
 					providerProfiles.apiConfigs["default"] = defaultProfile
 					activeProfileChanged = true
 					activeProfileId = defaultProfile.id || ""

@@ -1,7 +1,6 @@
 import * as vscode from "vscode"
 
 import { RooCodeEventName, type HistoryItem } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { Task } from "../task/Task"
 import { formatResponse } from "../prompts/responses"
@@ -92,7 +91,6 @@ export class AttemptCompletionTool extends BaseTool<"attempt_completion"> {
 			// and properly updates the snapshot to prevent redundant emissions
 			task.emitFinalTokenUsageUpdate()
 
-			TelemetryService.instance.captureTaskCompleted(task.taskId)
 			task.emit(RooCodeEventName.TaskCompleted, task.taskId, task.getTokenUsage(), task.toolUsage)
 
 			// Check for subtask using parentTaskId (metadata-driven delegation)
@@ -208,7 +206,6 @@ export class AttemptCompletionTool extends BaseTool<"attempt_completion"> {
 				// Force final token usage update before emitting TaskCompleted for consistency
 				task.emitFinalTokenUsageUpdate()
 
-				TelemetryService.instance.captureTaskCompleted(task.taskId)
 				task.emit(RooCodeEventName.TaskCompleted, task.taskId, task.getTokenUsage(), task.toolUsage)
 
 				await task

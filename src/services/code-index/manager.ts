@@ -13,8 +13,6 @@ import fs from "fs/promises"
 import ignore from "ignore"
 import path from "path"
 import { t } from "../../i18n"
-import { TelemetryService } from "@roo-code/telemetry"
-import { TelemetryEventName } from "@roo-code/types"
 
 export class CodeIndexManager {
 	// --- Singleton Implementation ---
@@ -89,8 +87,13 @@ export class CodeIndexManager {
 		if (!this.isFeatureEnabled) {
 			return "Standby"
 		}
-		this.assertInitialized()
-		return this._orchestrator!.state
+		// Return current status from state manager if not fully initialized
+		// This prevents throwing during error recovery or partial initialization
+		if (!this._orchestrator) {
+			const status = this._stateManager.getCurrentStatus()
+			return status.systemStatus as IndexingState
+		}
+		return this._orchestrator.state
 	}
 
 	public get isFeatureEnabled(): boolean {
@@ -187,8 +190,13 @@ export class CodeIndexManager {
 			return
 		}
 
-		this.assertInitialized()
-		await this._orchestrator!.startIndexing()
+		// If not fully initialized, the caller should call initialize() first
+		if (!this._orchestrator) {
+			console.log("CodeIndexManager.startIndexing: Not initialized, skipping. Call initialize() first.")
+			return
+		}
+
+		await this._orchestrator.startIndexing()
 	}
 
 	/**
@@ -321,11 +329,6 @@ export class CodeIndexManager {
 		} catch (error) {
 			// Should never happen: reading file failed even though it exists
 			console.error("Unexpected error loading .gitignore:", error)
-			TelemetryService.instance.captureEvent(TelemetryEventName.CODE_INDEX_ERROR, {
-				error: error instanceof Error ? error.message : String(error),
-				stack: error instanceof Error ? error.stack : undefined,
-				location: "_recreateServices",
-			})
 		}
 
 		// Create RooIgnoreController instance
@@ -408,11 +411,7 @@ export class CodeIndexManager {
 				} catch (error) {
 					// Error state already set in _recreateServices
 					console.error("Failed to recreate services:", error)
-					TelemetryService.instance.captureEvent(TelemetryEventName.CODE_INDEX_ERROR, {
-						error: error instanceof Error ? error.message : String(error),
-						stack: error instanceof Error ? error.stack : undefined,
-						location: "handleSettingsChange",
-					})
+
 					// Re-throw the error so the caller knows validation failed
 					throw error
 				}

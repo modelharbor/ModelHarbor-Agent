@@ -10,7 +10,6 @@ import {
 import { historyItemSchema } from "./history.js"
 import { codebaseIndexModelsSchema, codebaseIndexConfigSchema } from "./codebase-index.js"
 import { experimentsSchema } from "./experiment.js"
-import { telemetrySettingsSchema } from "./telemetry.js"
 import { modeConfigSchema } from "./mode.js"
 import { customModePromptsSchema, customSupportPromptsSchema } from "./mode.js"
 import { languagesSchema } from "./vscode.js"
@@ -45,6 +44,13 @@ export const MAX_CHECKPOINT_TIMEOUT_SECONDS = 60
 export const DEFAULT_CHECKPOINT_TIMEOUT_SECONDS = 15
 
 /**
+ * Default Super YOLO Mode stuck timeout in milliseconds (5 minutes).
+ * When Super YOLO mode is enabled and task is waiting for user input for this duration,
+ * it will automatically continue.
+ */
+export const DEFAULT_SUPER_YOLO_STUCK_TIMEOUT_MS = 300_000
+
+/**
  * GlobalSettings
  */
 
@@ -59,7 +65,7 @@ export const globalSettingsSchema = z.object({
 	dismissedUpsells: z.array(z.string()).optional(),
 
 	// Image generation settings (experimental) - flattened for simplicity
-	imageGenerationProvider: z.enum(["openrouter", "roo"]).optional(),
+	imageGenerationProvider: z.enum(["openrouter"]).optional(),
 	openRouterImageApiKey: z.string().optional(),
 	openRouterImageGenerationSelectedModel: z.string().optional(),
 
@@ -86,6 +92,8 @@ export const globalSettingsSchema = z.object({
 	commandExecutionTimeout: z.number().optional(),
 	commandTimeoutAllowlist: z.array(z.string()).optional(),
 	preventCompletionWithOpenTodos: z.boolean().optional(),
+	superYoloMode: z.boolean().optional(),
+	superYoloStuckTimeoutMs: z.number().optional(),
 	allowedMaxRequests: z.number().nullish(),
 	allowedMaxCost: z.number().nullish(),
 	autoCondenseContext: z.boolean().optional(),
@@ -172,8 +180,6 @@ export const globalSettingsSchema = z.object({
 
 	language: languagesSchema.optional(),
 
-	telemetrySetting: telemetrySettingsSchema.optional(),
-
 	mcpEnabled: z.boolean().optional(),
 	enableMcpServerCreation: z.boolean().optional(),
 
@@ -197,6 +203,9 @@ export const globalSettingsSchema = z.object({
 	hasOpenedModeSelector: z.boolean().optional(),
 	lastModeExportPath: z.string().optional(),
 	lastModeImportPath: z.string().optional(),
+	alwaysApproveResubmit: z.boolean().optional(),
+	alwaysAllowUpdateTodoList: z.boolean().optional(),
+	openRouterUseMiddleOutTransform: z.boolean().optional(),
 })
 
 export type GlobalSettings = z.infer<typeof globalSettingsSchema>
@@ -235,7 +244,6 @@ export const SECRET_STATE_KEYS = [
 	"requestyApiKey",
 	"xaiApiKey",
 	"groqApiKey",
-	"chutesApiKey",
 	"litellmApiKey",
 	"deepInfraApiKey",
 	"codeIndexOpenAiKey",
@@ -243,6 +251,7 @@ export const SECRET_STATE_KEYS = [
 	"codebaseIndexOpenAiCompatibleApiKey",
 	"codebaseIndexGeminiApiKey",
 	"codebaseIndexMistralApiKey",
+	"codebaseIndexModelHarborApiKey",
 	"codebaseIndexVercelAiGatewayApiKey",
 	"codebaseIndexOpenRouterApiKey",
 	"huggingFaceApiKey",
@@ -251,6 +260,7 @@ export const SECRET_STATE_KEYS = [
 	"fireworksApiKey",
 	"featherlessApiKey",
 	"ioIntelligenceApiKey",
+	"modelharborApiKey",
 	"vercelAiGatewayApiKey",
 	"basetenApiKey",
 ] as const
@@ -316,6 +326,8 @@ export const EVALS_SETTINGS: RooCodeSettings = {
 	commandExecutionTimeout: 20,
 	commandTimeoutAllowlist: [],
 	preventCompletionWithOpenTodos: false,
+	superYoloMode: false,
+	superYoloStuckTimeoutMs: DEFAULT_SUPER_YOLO_STUCK_TIMEOUT_MS,
 
 	browserToolEnabled: false,
 	browserViewportSize: "900x600",
@@ -357,7 +369,6 @@ export const EVALS_SETTINGS: RooCodeSettings = {
 	maxDiagnosticMessages: 50,
 
 	language: "en",
-	telemetrySetting: "enabled",
 
 	mcpEnabled: false,
 

@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useState } from "react"
 import { VSCodeCheckbox, VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
 
-import {
-	type ProviderSettings,
-	type OrganizationAllowList,
-	type RouterModels,
-	requestyDefaultModelId,
-} from "@roo-code/types"
+import { type ProviderSettings, requestyDefaultModelId } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
+
+import type { RouterModels } from "@roo/api"
 
 import { vscode } from "@src/utils/vscode"
 import { useAppTranslation } from "@src/i18n/TranslationContext"

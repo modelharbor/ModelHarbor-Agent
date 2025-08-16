@@ -2,12 +2,10 @@ import { useCallback, useState } from "react"
 import { Checkbox } from "vscrui"
 import { VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
 
-import {
-	type ProviderSettings,
-	type OrganizationAllowList,
-	type RouterModels,
-	openRouterDefaultModelId,
-} from "@roo-code/types"
+import { type ProviderSettings, openRouterDefaultModelId } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
+
+import type { RouterModels } from "@roo/api"
 
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { getOpenRouterAuthUrl } from "@src/oauth/urls"

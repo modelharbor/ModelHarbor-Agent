@@ -10,20 +10,13 @@ import {
 	type Language,
 	type GlobalState,
 	type ClineMessage,
-	type TelemetrySetting,
-	type UserSettingsConfig,
-	type ModelRecord,
 	type WebviewMessage,
 	type EditQueuedMessagePayload,
-	TelemetryEventName,
 	RooCodeSettings,
 	ExperimentId,
 	checkoutDiffPayloadSchema,
 	checkoutRestorePayloadSchema,
 } from "@roo-code/types"
-import { customToolRegistry } from "@roo-code/core"
-import { CloudService } from "@roo-code/cloud"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { type ApiMessage } from "../task-persistence/apiMessages"
 import { saveTaskMessages } from "../task-persistence"
@@ -34,7 +27,7 @@ import { handleCheckpointRestoreOperation } from "./checkpointRestoreHandler"
 import { generateErrorDiagnostics } from "./diagnosticsHandler"
 import { changeLanguage, t } from "../../i18n"
 import { Package } from "../../shared/package"
-import { type RouterName, toRouterName } from "../../shared/api"
+import { type RouterName, type ModelRecord, type RouterModels, toRouterName } from "../../shared/api"
 import { MessageEnhancer } from "./messageEnhancer"
 
 import { checkExistKey } from "../../shared/checkExistApiConfig"
@@ -512,13 +505,6 @@ export const webviewMessageHandler = async (
 					),
 				)
 
-			// Enable telemetry by default (when unset) or when explicitly enabled
-			provider.getStateToPostToWebview().then((state) => {
-				const { telemetrySetting } = state
-				const isOptedIn = telemetrySetting !== "disabled"
-				TelemetryService.instance.updateTelemetryState(isOptedIn)
-			})
-
 			provider.isViewLaunched = true
 			break
 		case "newTask":
@@ -683,51 +669,6 @@ export const webviewMessageHandler = async (
 				provider.exportTaskWithId(currentTaskId)
 			}
 			break
-		case "shareCurrentTask":
-			const shareTaskId = provider.getCurrentTask()?.taskId
-			const clineMessages = provider.getCurrentTask()?.clineMessages
-
-			if (!shareTaskId) {
-				vscode.window.showErrorMessage(t("common:errors.share_no_active_task"))
-				break
-			}
-
-			try {
-				const visibility = message.visibility || "organization"
-				const result = await CloudService.instance.shareTask(shareTaskId, visibility, clineMessages)
-
-				if (result.success && result.shareUrl) {
-					// Show success notification
-					const messageKey =
-						visibility === "public"
-							? "common:info.public_share_link_copied"
-							: "common:info.organization_share_link_copied"
-					vscode.window.showInformationMessage(t(messageKey))
-
-					// Send success feedback to webview for inline display
-					await provider.postMessageToWebview({
-						type: "shareTaskSuccess",
-						visibility,
-						text: result.shareUrl,
-					})
-				} else {
-					// Handle error
-					const errorMessage = result.error || "Failed to create share link"
-					if (errorMessage.includes("Authentication")) {
-						vscode.window.showErrorMessage(t("common:errors.share_auth_required"))
-					} else if (errorMessage.includes("sharing is not enabled")) {
-						vscode.window.showErrorMessage(t("common:errors.share_not_enabled"))
-					} else if (errorMessage.includes("not found")) {
-						vscode.window.showErrorMessage(t("common:errors.share_task_not_found"))
-					} else {
-						vscode.window.showErrorMessage(errorMessage)
-					}
-				}
-			} catch (error) {
-				provider.log(`[shareCurrentTask] Unexpected error: ${error}`)
-				vscode.window.showErrorMessage(t("common:errors.share_task_failed"))
-			}
-			break
 		case "showTaskWithId":
 			provider.showTaskWithId(message.text!)
 			break
@@ -834,20 +775,30 @@ export const webviewMessageHandler = async (
 			const routerNameFlush: RouterName = toRouterName(message.text)
 			// Note: flushRouterModels is a generic flush without credentials
 			// For providers that need credentials, use their specific handlers
-			await flushModels({ provider: routerNameFlush } as GetModelsOptions, true)
+			await flushModels(routerNameFlush, true)
 			break
 		case "requestRouterModels":
 			const { apiConfiguration } = await provider.getState()
 
-			// Optional single provider filter from webview
-			const requestedProvider = message?.values?.provider
-			const providerFilter = requestedProvider ? toRouterName(requestedProvider) : undefined
+			// Flush litellm cache if credentials are provided via message.values (e.g., Refresh Models button)
+			if (message?.values?.litellmApiKey && message?.values?.litellmBaseUrl) {
+				await flushModels("litellm", true)
+			}
+
+			// Flush modelharbor cache if API key is provided via message.values (e.g., Refresh Models button)
+			if (message?.values?.modelharborApiKey) {
+				await flushModels("modelharbor", true)
+			}
 
 			// Optional refresh flag to flush cache before fetching (useful for providers requiring credentials)
 			const shouldRefresh = message?.values?.refresh === true
 
-			const routerModels: Record<RouterName, ModelRecord> = providerFilter
-				? ({} as Record<RouterName, ModelRecord>)
+			// Check if a specific provider is requested
+			const requestedProvider = message?.values?.provider
+
+			// Initialize routerModels - if filtering by provider, only include that one
+			const routerModels: Record<string, ModelRecord> = requestedProvider
+				? { [requestedProvider]: {} }
 				: {
 						openrouter: {},
 						"vercel-ai-gateway": {},
@@ -859,8 +810,7 @@ export const webviewMessageHandler = async (
 						unbound: {},
 						ollama: {},
 						lmstudio: {},
-						roo: {},
-						chutes: {},
+						modelharbor: {},
 					}
 
 			const safeGetModels = async (options: GetModelsOptions): Promise<ModelRecord> => {
@@ -876,77 +826,135 @@ export const webviewMessageHandler = async (
 				}
 			}
 
-			// Base candidates (only those handled by this aggregate fetcher)
-			const candidates: { key: RouterName; options: GetModelsOptions }[] = [
-				{ key: "openrouter", options: { provider: "openrouter" } },
-				{
-					key: "requesty",
-					options: {
-						provider: "requesty",
-						apiKey: apiConfiguration.requestyApiKey,
-						baseUrl: apiConfiguration.requestyBaseUrl,
-					},
-				},
-				{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
-				{ key: "vercel-ai-gateway", options: { provider: "vercel-ai-gateway" } },
-				{
-					key: "deepinfra",
-					options: {
-						provider: "deepinfra",
-						apiKey: apiConfiguration.deepInfraApiKey,
-						baseUrl: apiConfiguration.deepInfraBaseUrl,
-					},
-				},
-				{
-					key: "roo",
-					options: {
-						provider: "roo",
-						baseUrl: process.env.ROO_CODE_PROVIDER_URL ?? "https://api.roocode.com/proxy",
-						apiKey: CloudService.hasInstance()
-							? CloudService.instance.authService?.getSessionToken()
-							: undefined,
-					},
-				},
-				{
-					key: "chutes",
-					options: { provider: "chutes", apiKey: apiConfiguration.chutesApiKey },
-				},
-			]
+			const modelFetchPromises: { key: RouterName; options: GetModelsOptions }[] = []
 
-			// IO Intelligence is conditional on api key
-			if (apiConfiguration.ioIntelligenceApiKey) {
-				candidates.push({
-					key: "io-intelligence",
-					options: { provider: "io-intelligence", apiKey: apiConfiguration.ioIntelligenceApiKey },
-				})
-			}
+			// If a specific provider is requested, only fetch that one
+			if (requestedProvider) {
+				// Build the options for the requested provider
+				switch (requestedProvider) {
+					case "openrouter":
+						modelFetchPromises.push({ key: "openrouter", options: { provider: "openrouter" } })
+						break
+					case "requesty":
+						modelFetchPromises.push({
+							key: "requesty",
+							options: {
+								provider: "requesty",
+								apiKey: apiConfiguration.requestyApiKey,
+								baseUrl: apiConfiguration.requestyBaseUrl,
+							},
+						})
+						break
+					case "unbound":
+						modelFetchPromises.push({
+							key: "unbound",
+							options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey },
+						})
+						break
+					case "modelharbor": {
+						const modelharborApiKey =
+							message?.values?.modelharborApiKey || apiConfiguration.modelharborApiKey
+						modelFetchPromises.push({
+							key: "modelharbor",
+							options: { provider: "modelharbor", apiKey: modelharborApiKey },
+						})
+						break
+					}
+					case "vercel-ai-gateway":
+						modelFetchPromises.push({
+							key: "vercel-ai-gateway",
+							options: { provider: "vercel-ai-gateway" },
+						})
+						break
+					case "deepinfra":
+						modelFetchPromises.push({
+							key: "deepinfra",
+							options: {
+								provider: "deepinfra",
+								apiKey: apiConfiguration.deepInfraApiKey,
+								baseUrl: apiConfiguration.deepInfraBaseUrl,
+							},
+						})
+						break
+					case "io-intelligence":
+						if (apiConfiguration.ioIntelligenceApiKey) {
+							modelFetchPromises.push({
+								key: "io-intelligence",
+								options: { provider: "io-intelligence", apiKey: apiConfiguration.ioIntelligenceApiKey },
+							})
+						}
+						break
+					case "litellm": {
+						const litellmApiKey = apiConfiguration.litellmApiKey || message?.values?.litellmApiKey
+						const litellmBaseUrl = apiConfiguration.litellmBaseUrl || message?.values?.litellmBaseUrl
+						if (litellmApiKey && litellmBaseUrl) {
+							modelFetchPromises.push({
+								key: "litellm",
+								options: { provider: "litellm", apiKey: litellmApiKey, baseUrl: litellmBaseUrl },
+							})
+						}
+						break
+					}
+				}
+			} else {
+				// No specific provider requested - fetch all (aggregate mode)
+				modelFetchPromises.push(
+					{ key: "openrouter", options: { provider: "openrouter" } },
+					{
+						key: "requesty",
+						options: {
+							provider: "requesty",
+							apiKey: apiConfiguration.requestyApiKey,
+							baseUrl: apiConfiguration.requestyBaseUrl,
+						},
+					},
+					{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
+					{
+						key: "modelharbor",
+						options: {
+							provider: "modelharbor",
+							apiKey: message?.values?.modelharborApiKey || apiConfiguration.modelharborApiKey,
+						},
+					},
+					{ key: "vercel-ai-gateway", options: { provider: "vercel-ai-gateway" } },
+					{
+						key: "deepinfra",
+						options: {
+							provider: "deepinfra",
+							apiKey: apiConfiguration.deepInfraApiKey,
+							baseUrl: apiConfiguration.deepInfraBaseUrl,
+						},
+					},
+				)
 
-			// LiteLLM is conditional on baseUrl+apiKey
-			const litellmApiKey = apiConfiguration.litellmApiKey || message?.values?.litellmApiKey
-			const litellmBaseUrl = apiConfiguration.litellmBaseUrl || message?.values?.litellmBaseUrl
+				// Add IO Intelligence if API key is provided.
+				const ioIntelligenceApiKey = apiConfiguration.ioIntelligenceApiKey
 
-			if (litellmApiKey && litellmBaseUrl) {
-				// If explicit credentials are provided in message.values (from Refresh Models button),
-				// flush the cache first to ensure we fetch fresh data with the new credentials
-				if (message?.values?.litellmApiKey || message?.values?.litellmBaseUrl) {
-					await flushModels({ provider: "litellm", apiKey: litellmApiKey, baseUrl: litellmBaseUrl }, true)
+				if (ioIntelligenceApiKey) {
+					modelFetchPromises.push({
+						key: "io-intelligence",
+						options: { provider: "io-intelligence", apiKey: ioIntelligenceApiKey },
+					})
 				}
 
-				candidates.push({
-					key: "litellm",
-					options: { provider: "litellm", apiKey: litellmApiKey, baseUrl: litellmBaseUrl },
-				})
+				// Don't fetch Ollama and LM Studio models by default anymore.
+				// They have their own specific handlers: requestOllamaModels and requestLmStudioModels.
+
+				const litellmApiKey = apiConfiguration.litellmApiKey || message?.values?.litellmApiKey
+				const litellmBaseUrl = apiConfiguration.litellmBaseUrl || message?.values?.litellmBaseUrl
+
+				if (litellmApiKey && litellmBaseUrl) {
+					modelFetchPromises.push({
+						key: "litellm",
+						options: { provider: "litellm", apiKey: litellmApiKey, baseUrl: litellmBaseUrl },
+					})
+				}
 			}
 
-			// Apply single provider filter if specified
-			const modelFetchPromises = providerFilter
-				? candidates.filter(({ key }) => key === providerFilter)
-				: candidates
-
 			// If refresh flag is set and we have a specific provider, flush its cache first
-			if (shouldRefresh && providerFilter && modelFetchPromises.length > 0) {
+			if (shouldRefresh && requestedProvider && modelFetchPromises.length > 0) {
 				const targetCandidate = modelFetchPromises[0]
-				await flushModels(targetCandidate.options, true)
+				await flushModels(targetCandidate.key, true)
 			}
 
 			const results = await Promise.allSettled(
@@ -962,7 +970,18 @@ export const webviewMessageHandler = async (
 				if (result.status === "fulfilled") {
 					routerModels[routerName] = result.value.models
 
-					// Ollama and LM Studio settings pages still need these events. They are not fetched here.
+					// Ollama and LM Studio settings pages still need these events.
+					if (routerName === "ollama" && Object.keys(result.value.models).length > 0) {
+						provider.postMessageToWebview({
+							type: "ollamaModels",
+							ollamaModels: result.value.models,
+						})
+					} else if (routerName === "lmstudio" && Object.keys(result.value.models).length > 0) {
+						provider.postMessageToWebview({
+							type: "lmStudioModels",
+							lmStudioModels: result.value.models,
+						})
+					}
 				} else {
 					// Handle rejection: Post a specific error message for this provider.
 					const errorMessage = result.reason instanceof Error ? result.reason.message : String(result.reason)
@@ -979,11 +998,7 @@ export const webviewMessageHandler = async (
 				}
 			})
 
-			provider.postMessageToWebview({
-				type: "routerModels",
-				routerModels,
-				values: providerFilter ? { provider: requestedProvider } : undefined,
-			})
+			provider.postMessageToWebview({ type: "routerModels", routerModels: routerModels as RouterModels })
 			break
 		case "requestOllamaModels": {
 			// Specific handler for Ollama models only.
@@ -995,7 +1010,7 @@ export const webviewMessageHandler = async (
 					apiKey: ollamaApiConfig.ollamaApiKey,
 				}
 				// Flush cache and refresh to ensure fresh models.
-				await flushModels(ollamaOptions, true)
+				await flushModels("ollama", true)
 
 				const ollamaModels = await getModels(ollamaOptions)
 
@@ -1017,7 +1032,7 @@ export const webviewMessageHandler = async (
 					baseUrl: lmStudioApiConfig.lmStudioBaseUrl,
 				}
 				// Flush cache and refresh to ensure fresh models.
-				await flushModels(lmStudioOptions, true)
+				await flushModels("lmstudio", true)
 
 				const lmStudioModels = await getModels(lmStudioOptions)
 
@@ -1030,64 +1045,6 @@ export const webviewMessageHandler = async (
 			} catch (error) {
 				// Silently fail - user hasn't configured LM Studio yet.
 				console.debug("LM Studio models fetch failed:", error)
-			}
-			break
-		}
-		case "requestRooModels": {
-			// Specific handler for Roo models only - flushes cache to ensure fresh auth token is used
-			try {
-				const rooOptions = {
-					provider: "roo" as const,
-					baseUrl: process.env.ROO_CODE_PROVIDER_URL ?? "https://api.roocode.com/proxy",
-					apiKey: CloudService.hasInstance()
-						? CloudService.instance.authService?.getSessionToken()
-						: undefined,
-				}
-				// Flush cache and refresh to ensure fresh models with current auth state
-				await flushModels(rooOptions, true)
-
-				const rooModels = await getModels(rooOptions)
-
-				// Always send a response, even if no models are returned
-				provider.postMessageToWebview({
-					type: "singleRouterModelFetchResponse",
-					success: true,
-					values: { provider: "roo", models: rooModels },
-				})
-			} catch (error) {
-				// Send error response
-				const errorMessage = error instanceof Error ? error.message : String(error)
-				provider.postMessageToWebview({
-					type: "singleRouterModelFetchResponse",
-					success: false,
-					error: errorMessage,
-					values: { provider: "roo" },
-				})
-			}
-			break
-		}
-		case "requestRooCreditBalance": {
-			// Fetch Roo credit balance using CloudAPI
-			const requestId = message.requestId
-			try {
-				if (!CloudService.hasInstance() || !CloudService.instance.cloudAPI) {
-					throw new Error("Cloud service not available")
-				}
-
-				const balance = await CloudService.instance.cloudAPI.creditBalance()
-
-				provider.postMessageToWebview({
-					type: "rooCreditBalance",
-					requestId,
-					values: { balance },
-				})
-			} catch (error) {
-				const errorMessage = error instanceof Error ? error.message : String(error)
-				provider.postMessageToWebview({
-					type: "rooCreditBalance",
-					requestId,
-					values: { error: errorMessage },
-				})
 			}
 			break
 		}
@@ -1413,32 +1370,6 @@ export const webviewMessageHandler = async (
 			await updateGlobalState("enableMcpServerCreation", message.bool ?? true)
 			await provider.postStateToWebview()
 			break
-		case "remoteControlEnabled":
-			try {
-				await CloudService.instance.updateUserSettings({ extensionBridgeEnabled: message.bool ?? false })
-			} catch (error) {
-				provider.log(
-					`CloudService#updateUserSettings failed: ${error instanceof Error ? error.message : String(error)}`,
-				)
-			}
-			break
-
-		case "taskSyncEnabled":
-			const enabled = message.bool ?? false
-			const updatedSettings: Partial<UserSettingsConfig> = { taskSyncEnabled: enabled }
-
-			// If disabling task sync, also disable remote control.
-			if (!enabled) {
-				updatedSettings.extensionBridgeEnabled = false
-			}
-
-			try {
-				await CloudService.instance.updateUserSettings(updatedSettings)
-			} catch (error) {
-				provider.log(`Failed to update cloud settings for task sync: ${error}`)
-			}
-
-			break
 
 		case "refreshAllMcpServers": {
 			const mcpHub = provider.getMcpHub()
@@ -1564,21 +1495,6 @@ export const webviewMessageHandler = async (
 					hasOpenedModeSelector: currentState.hasOpenedModeSelector ?? false,
 				}
 				provider.postMessageToWebview({ type: "state", state: stateWithPrompts })
-
-				if (TelemetryService.hasInstance()) {
-					// Determine which setting was changed by comparing objects
-					const oldPrompt = existingPrompts[message.promptMode] || {}
-					const newPrompt = message.customPrompt
-					const changedSettings = Object.keys(newPrompt).filter(
-						(key) =>
-							JSON.stringify((oldPrompt as Record<string, unknown>)[key]) !==
-							JSON.stringify((newPrompt as Record<string, unknown>)[key]),
-					)
-
-					if (changedSettings.length > 0) {
-						TelemetryService.instance.captureModeSettingChanged(changedSettings[0])
-					}
-				}
 			}
 			break
 		case "deleteMessage": {
@@ -1678,7 +1594,6 @@ export const webviewMessageHandler = async (
 					})
 
 					if (result.success && result.enhancedText) {
-						MessageEnhancer.captureTelemetry(currentCline?.taskId, includeTaskHistoryInEnhance)
 						await provider.postMessageToWebview({ type: "enhancedPrompt", text: result.enhancedText })
 					} else {
 						throw new Error(result.error || "Unknown error")
@@ -1813,25 +1728,6 @@ export const webviewMessageHandler = async (
 			if (Array.isArray(todos)) {
 				await setPendingTodoList(todos)
 			}
-			break
-		}
-		case "refreshCustomTools": {
-			try {
-				const toolDirs = getRooDirectoriesForCwd(getCurrentCwd()).map((dir) => path.join(dir, "tools"))
-				await customToolRegistry.loadFromDirectories(toolDirs)
-
-				await provider.postMessageToWebview({
-					type: "customToolsResult",
-					tools: customToolRegistry.getAllSerialized(),
-				})
-			} catch (error) {
-				await provider.postMessageToWebview({
-					type: "customToolsResult",
-					tools: [],
-					error: error instanceof Error ? error.message : String(error),
-				})
-			}
-
 			break
 		}
 		case "saveApiConfiguration":
@@ -2011,30 +1907,7 @@ export const webviewMessageHandler = async (
 					await updateGlobalState("mode", message.modeConfig.slug)
 					await provider.postStateToWebview()
 
-					// Track telemetry for custom mode creation or update
-					if (TelemetryService.hasInstance()) {
-						if (isNewMode) {
-							// This is a new custom mode
-							TelemetryService.instance.captureCustomModeCreated(
-								message.modeConfig.slug,
-								message.modeConfig.name,
-							)
-						} else {
-							// Determine which setting was changed by comparing objects
-							const existingMode = existingModes.find((mode) => mode.slug === message.modeConfig?.slug)
-							const changedSettings = existingMode
-								? Object.keys(message.modeConfig).filter(
-										(key) =>
-											JSON.stringify((existingMode as Record<string, unknown>)[key]) !==
-											JSON.stringify((message.modeConfig as Record<string, unknown>)[key]),
-									)
-								: []
-
-							if (changedSettings.length > 0) {
-								TelemetryService.instance.captureModeSettingChanged(changedSettings[0])
-							}
-						}
-					}
+					// TelemetryService removed - skip telemetry tracking
 				} catch (error) {
 					// Error already shown to user by updateCustomMode
 					// Just prevent unhandled rejection and skip state updates
@@ -2299,77 +2172,12 @@ export const webviewMessageHandler = async (
 				})
 			}
 			break
-		case "telemetrySetting": {
-			const telemetrySetting = message.text as TelemetrySetting
-			const previousSetting = getGlobalState("telemetrySetting") || "unset"
-			const isOptedIn = telemetrySetting !== "disabled"
-			const wasPreviouslyOptedIn = previousSetting !== "disabled"
 
-			// If turning telemetry OFF, fire event BEFORE disabling
-			if (wasPreviouslyOptedIn && !isOptedIn && TelemetryService.hasInstance()) {
-				TelemetryService.instance.captureTelemetrySettingsChanged(previousSetting, telemetrySetting)
-			}
-
-			// Update the telemetry state
-			await updateGlobalState("telemetrySetting", telemetrySetting)
-
-			if (TelemetryService.hasInstance()) {
-				TelemetryService.instance.updateTelemetryState(isOptedIn)
-			}
-
-			// If turning telemetry ON, fire event AFTER enabling
-			if (!wasPreviouslyOptedIn && isOptedIn && TelemetryService.hasInstance()) {
-				TelemetryService.instance.captureTelemetrySettingsChanged(previousSetting, telemetrySetting)
-			}
-
-			await provider.postStateToWebview()
-			break
-		}
 		case "debugSetting": {
 			await vscode.workspace
 				.getConfiguration(Package.name)
 				.update("debug", message.bool ?? false, vscode.ConfigurationTarget.Global)
 			await provider.postStateToWebview()
-			break
-		}
-		case "cloudButtonClicked": {
-			// Navigate to the cloud tab.
-			provider.postMessageToWebview({ type: "action", action: "cloudButtonClicked" })
-			break
-		}
-		case "rooCloudSignIn": {
-			try {
-				TelemetryService.instance.captureEvent(TelemetryEventName.AUTHENTICATION_INITIATED)
-				// Use provider signup flow if useProviderSignup is explicitly true
-				await CloudService.instance.login(undefined, message.useProviderSignup ?? false)
-			} catch (error) {
-				provider.log(`AuthService#login failed: ${error}`)
-				vscode.window.showErrorMessage("Sign in failed.")
-			}
-
-			break
-		}
-		case "cloudLandingPageSignIn": {
-			try {
-				const landingPageSlug = message.text || "supernova"
-				TelemetryService.instance.captureEvent(TelemetryEventName.AUTHENTICATION_INITIATED)
-				await CloudService.instance.login(landingPageSlug)
-			} catch (error) {
-				provider.log(`CloudService#login failed: ${error}`)
-				vscode.window.showErrorMessage("Sign in failed.")
-			}
-			break
-		}
-		case "rooCloudSignOut": {
-			try {
-				await CloudService.instance.logout()
-				await provider.postStateToWebview()
-				provider.postMessageToWebview({ type: "authenticatedUser", userInfo: undefined })
-			} catch (error) {
-				provider.log(`AuthService#logout failed: ${error}`)
-				vscode.window.showErrorMessage("Sign out failed.")
-			}
-
 			break
 		}
 		case "claudeCodeSignIn": {
@@ -2450,86 +2258,24 @@ export const webviewMessageHandler = async (
 			}
 			break
 		}
-		case "rooCloudManualUrl": {
-			try {
-				if (!message.text) {
-					vscode.window.showErrorMessage(t("common:errors.manual_url_empty"))
-					break
-				}
-
-				// Parse the callback URL to extract parameters
-				const callbackUrl = message.text.trim()
-				const uri = vscode.Uri.parse(callbackUrl)
-
-				if (!uri.query) {
-					throw new Error(t("common:errors.manual_url_no_query"))
-				}
-
-				const query = new URLSearchParams(uri.query)
-				const code = query.get("code")
-				const state = query.get("state")
-				const organizationId = query.get("organizationId")
-
-				if (!code || !state) {
-					throw new Error(t("common:errors.manual_url_missing_params"))
-				}
-
-				// Reuse the existing authentication flow
-				await CloudService.instance.handleAuthCallback(
-					code,
-					state,
-					organizationId === "null" ? null : organizationId,
-				)
-
-				await provider.postStateToWebview()
-			} catch (error) {
-				provider.log(`ManualUrl#handleAuthCallback failed: ${error}`)
-				const errorMessage = error instanceof Error ? error.message : t("common:errors.manual_url_auth_failed")
-
-				// Show error message through VS Code UI
-				vscode.window.showErrorMessage(`${t("common:errors.manual_url_auth_error")}: ${errorMessage}`)
-			}
-
-			break
-		}
-		case "clearCloudAuthSkipModel": {
-			// Clear the flag that indicates auth completed without model selection
-			await provider.context.globalState.update("roo-auth-skip-model", undefined)
-			await provider.postStateToWebview()
-			break
-		}
-		case "switchOrganization": {
-			try {
-				const organizationId = message.organizationId ?? null
-
-				// Switch to the new organization context
-				await CloudService.instance.switchOrganization(organizationId)
-
-				// Refresh the state to update UI
-				await provider.postStateToWebview()
-
-				// Send success response back to webview
-				await provider.postMessageToWebview({
-					type: "organizationSwitchResult",
-					success: true,
-					organizationId: organizationId,
+		case "humanRelayResponse":
+			if (message.requestId && message.text) {
+				vscode.commands.executeCommand(getCommand("handleHumanRelayResponse"), {
+					requestId: message.requestId,
+					text: message.text,
+					cancelled: false,
 				})
-			} catch (error) {
-				provider.log(`Organization switch failed: ${error}`)
-				const errorMessage = error instanceof Error ? error.message : String(error)
-
-				// Send error response back to webview
-				await provider.postMessageToWebview({
-					type: "organizationSwitchResult",
-					success: false,
-					error: errorMessage,
-					organizationId: message.organizationId ?? null,
-				})
-
-				vscode.window.showErrorMessage(`Failed to switch organization: ${errorMessage}`)
 			}
 			break
-		}
+
+		case "humanRelayCancel":
+			if (message.requestId) {
+				vscode.commands.executeCommand(getCommand("handleHumanRelayResponse"), {
+					requestId: message.requestId,
+					cancelled: true,
+				})
+			}
+			break
 
 		case "saveCodeIndexSettingsAtomic": {
 			if (!message.codeIndexSettings) {
@@ -2589,16 +2335,16 @@ export const webviewMessageHandler = async (
 						settings.codebaseIndexMistralApiKey,
 					)
 				}
+				if (settings.codebaseIndexModelHarborApiKey !== undefined) {
+					await provider.contextProxy.storeSecret(
+						"codebaseIndexModelHarborApiKey",
+						settings.codebaseIndexModelHarborApiKey,
+					)
+				}
 				if (settings.codebaseIndexVercelAiGatewayApiKey !== undefined) {
 					await provider.contextProxy.storeSecret(
 						"codebaseIndexVercelAiGatewayApiKey",
 						settings.codebaseIndexVercelAiGatewayApiKey,
-					)
-				}
-				if (settings.codebaseIndexOpenRouterApiKey !== undefined) {
-					await provider.contextProxy.storeSecret(
-						"codebaseIndexOpenRouterApiKey",
-						settings.codebaseIndexOpenRouterApiKey,
 					)
 				}
 
@@ -2735,10 +2481,10 @@ export const webviewMessageHandler = async (
 			))
 			const hasGeminiApiKey = !!(await provider.context.secrets.get("codebaseIndexGeminiApiKey"))
 			const hasMistralApiKey = !!(await provider.context.secrets.get("codebaseIndexMistralApiKey"))
+			const hasModelHarborApiKey = !!(await provider.context.secrets.get("codebaseIndexModelHarborApiKey"))
 			const hasVercelAiGatewayApiKey = !!(await provider.context.secrets.get(
 				"codebaseIndexVercelAiGatewayApiKey",
 			))
-			const hasOpenRouterApiKey = !!(await provider.context.secrets.get("codebaseIndexOpenRouterApiKey"))
 
 			provider.postMessageToWebview({
 				type: "codeIndexSecretStatus",
@@ -2748,8 +2494,8 @@ export const webviewMessageHandler = async (
 					hasOpenAiCompatibleApiKey,
 					hasGeminiApiKey,
 					hasMistralApiKey,
+					hasModelHarborApiKey,
 					hasVercelAiGatewayApiKey,
-					hasOpenRouterApiKey,
 				},
 			})
 			break
@@ -2955,11 +2701,6 @@ export const webviewMessageHandler = async (
 
 		case "switchTab": {
 			if (message.tab) {
-				// Capture tab shown event for all switchTab messages (which are user-initiated).
-				if (TelemetryService.hasInstance()) {
-					TelemetryService.instance.captureTabShown(message.tab)
-				}
-
 				await provider.postMessageToWebview({
 					type: "action",
 					action: "switchTab",
@@ -3168,11 +2909,6 @@ export const webviewMessageHandler = async (
 					text: text,
 				})
 			}
-			break
-		}
-		case "showMdmAuthRequiredNotification": {
-			// Show notification that organization requires authentication
-			vscode.window.showWarningMessage(t("common:mdm.info.organization_requires_auth"))
 			break
 		}
 

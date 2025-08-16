@@ -9,10 +9,8 @@ import {
 	type ClineMessage,
 	type ExtensionMessage,
 	type ExtensionState,
-	ORGANIZATION_ALLOW_ALL,
 	DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
 } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { defaultModeSlug } from "../../../shared/modes"
 import { experimentDefault } from "../../../shared/experiments"
@@ -238,7 +236,6 @@ vi.mock("../../../integrations/misc/extract-text", () => ({
 vi.mock("../../../api/providers/fetchers/modelCache", () => ({
 	getModels: vi.fn().mockResolvedValue({}),
 	flushModels: vi.fn(),
-	getModelsFromCache: vi.fn().mockReturnValue(undefined),
 }))
 
 vi.mock("../../../shared/modes", () => ({
@@ -310,7 +307,6 @@ vi.mock("../../../integrations/misc/extract-text", () => ({
 vi.mock("../../../api/providers/fetchers/modelCache", () => ({
 	getModels: vi.fn().mockResolvedValue({}),
 	flushModels: vi.fn(),
-	getModelsFromCache: vi.fn().mockReturnValue(undefined),
 }))
 
 vi.mock("../diff/strategies/multi-search-replace", () => ({
@@ -378,10 +374,6 @@ describe("ClineProvider", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks()
-
-		if (!TelemetryService.hasInstance()) {
-			TelemetryService.createInstance([])
-		}
 
 		const globalState: Record<string, string | undefined> = {
 			mode: "architect",
@@ -512,7 +504,7 @@ describe("ClineProvider", () => {
 
 		// Verify Content Security Policy contains the necessary PostHog domains
 		expect(mockWebviewView.webview.html).toContain(
-			"connect-src vscode-webview://test-csp-source https://openrouter.ai https://api.requesty.ai https://ph.roocode.com",
+			"connect-src vscode-webview://test-csp-source https://openrouter.ai https://api.requesty.ai https://api.modelharbor.com https://us.i.posthog.com https://us-assets.i.posthog.com",
 		)
 
 		// Extract the script-src directive section and verify required security elements
@@ -561,34 +553,26 @@ describe("ClineProvider", () => {
 			fuzzyMatchThreshold: 1.0,
 			mcpEnabled: true,
 			enableMcpServerCreation: false,
+			requestDelaySeconds: 5,
 			mode: defaultModeSlug,
 			customModes: [],
 			experiments: experimentDefault,
 			maxOpenTabsContext: 20,
 			maxWorkspaceFiles: 200,
 			browserToolEnabled: true,
-			telemetrySetting: "unset",
 			showRooIgnoredFiles: false,
 			enableSubfolderRules: false,
 			renderContext: "sidebar",
 			maxReadFileLine: 500,
 			maxImageFileSize: 5,
 			maxTotalImageSize: 20,
-			cloudUserInfo: null,
-			organizationAllowList: ORGANIZATION_ALLOW_ALL,
 			autoCondenseContext: true,
 			autoCondenseContextPercent: 100,
-			cloudIsAuthenticated: false,
-			sharingEnabled: false,
-			publicSharingEnabled: false,
 			profileThresholds: {},
 			hasOpenedModeSelector: false,
 			diagnosticsEnabled: true,
 			openRouterImageApiKey: undefined,
 			openRouterImageGenerationSelectedModel: undefined,
-			remoteControlEnabled: false,
-			taskSyncEnabled: false,
-			featureRoomoteControlEnabled: false,
 			checkpointTimeout: DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
 		}
 
@@ -772,11 +756,11 @@ describe("ClineProvider", () => {
 	})
 
 	test("language is set to VSCode language", async () => {
-		// Mock VSCode language as Spanish
-		;(vscode.env as any).language = "pt-BR"
+		// Mock VSCode language as Thai
+		;(vscode.env as any).language = "th"
 
 		const state = await provider.getState()
-		expect(state.language).toBe("pt-BR")
+		expect(state.language).toBe("th")
 	})
 
 	test("diffEnabled defaults to true when not set", async () => {
@@ -837,6 +821,27 @@ describe("ClineProvider", () => {
 		expect(setTtsEnabled).toHaveBeenCalledWith(false)
 		expect(mockContext.globalState.update).toHaveBeenCalledWith("ttsEnabled", false)
 		expect(mockPostMessage).toHaveBeenCalled()
+	})
+
+	test("requestDelaySeconds defaults to 10 seconds", async () => {
+		// Mock globalState.get to return undefined for requestDelaySeconds
+		;(mockContext.globalState.get as any).mockImplementation((key: string) => {
+			if (key === "requestDelaySeconds") {
+				return undefined
+			}
+			return null
+		})
+
+		const state = await provider.getState()
+		expect(state.requestDelaySeconds).toBe(10)
+	})
+
+	test("alwaysApproveResubmit defaults to false", async () => {
+		// Mock globalState.get to return undefined for alwaysApproveResubmit
+		;(mockContext.globalState.get as any).mockReturnValue(undefined)
+
+		const state = await provider.getState()
+		expect(state.alwaysApproveResubmit).toBe(false)
 	})
 
 	test("autoCondenseContext defaults to true", async () => {
@@ -995,7 +1000,7 @@ describe("ClineProvider", () => {
 		const messageHandler = (mockWebviewView.webview.onDidReceiveMessage as any).mock.calls[0][0]
 
 		// Default value should be false
-		expect((await provider.getState()).showRooIgnoredFiles).toBe(false)
+		expect((await provider.getState()).showRooIgnoredFiles).toBe(true)
 
 		// Test showRooIgnoredFiles with true
 		await messageHandler({ type: "updateSettings", updatedSettings: { showRooIgnoredFiles: true } })
@@ -1008,6 +1013,22 @@ describe("ClineProvider", () => {
 		expect(mockContext.globalState.update).toHaveBeenCalledWith("showRooIgnoredFiles", false)
 		expect(mockPostMessage).toHaveBeenCalled()
 		expect((await provider.getState()).showRooIgnoredFiles).toBe(false)
+	})
+
+	test("handles request delay settings messages", async () => {
+		await provider.resolveWebviewView(mockWebviewView)
+		const messageHandler = (mockWebviewView.webview.onDidReceiveMessage as any).mock.calls[0][0]
+
+		// Test alwaysApproveResubmit
+		await messageHandler({ type: "updateSettings", updatedSettings: { alwaysApproveResubmit: true } })
+		expect(updateGlobalStateSpy).toHaveBeenCalledWith("alwaysApproveResubmit", true)
+		expect(mockContext.globalState.update).toHaveBeenCalledWith("alwaysApproveResubmit", true)
+		expect(mockPostMessage).toHaveBeenCalled()
+
+		// Test requestDelaySeconds
+		await messageHandler({ type: "updateSettings", updatedSettings: { requestDelaySeconds: 10 } })
+		expect(mockContext.globalState.update).toHaveBeenCalledWith("requestDelaySeconds", 10)
+		expect(mockPostMessage).toHaveBeenCalled()
 	})
 
 	test("handles updatePrompt message correctly", async () => {
@@ -2400,167 +2421,6 @@ describe.skip("ContextProxy integration", () => {
 	})
 })
 
-describe("getTelemetryProperties", () => {
-	let defaultTaskOptions: TaskOptions
-	let provider: ClineProvider
-	let mockContext: vscode.ExtensionContext
-	let mockOutputChannel: vscode.OutputChannel
-	let mockCline: any
-
-	beforeEach(() => {
-		// Reset mocks
-		vi.clearAllMocks()
-
-		// Initialize TelemetryService if not already initialized
-		if (!TelemetryService.hasInstance()) {
-			TelemetryService.createInstance([])
-		}
-
-		// Setup basic mocks
-		mockContext = {
-			globalState: {
-				get: vi.fn().mockImplementation((key: string) => {
-					if (key === "mode") return "code"
-					if (key === "apiProvider") return "anthropic"
-					return undefined
-				}),
-				update: vi.fn(),
-				keys: vi.fn().mockReturnValue([]),
-			},
-			secrets: { get: vi.fn(), store: vi.fn(), delete: vi.fn() },
-			extensionUri: {} as vscode.Uri,
-			globalStorageUri: { fsPath: "/test/path" },
-			extension: { packageJSON: { version: "1.0.0" } },
-		} as unknown as vscode.ExtensionContext
-
-		mockOutputChannel = { appendLine: vi.fn() } as unknown as vscode.OutputChannel
-		provider = new ClineProvider(mockContext, mockOutputChannel, "sidebar", new ContextProxy(mockContext))
-
-		defaultTaskOptions = {
-			provider,
-			apiConfiguration: {
-				apiProvider: "openrouter",
-			},
-		}
-
-		// Setup Task instance with mocked getModel method
-		mockCline = new Task(defaultTaskOptions)
-		mockCline.api = {
-			getModel: vi.fn().mockReturnValue({
-				id: "claude-sonnet-4-20250514",
-				info: { contextWindow: 200000 },
-			}),
-		}
-	})
-
-	test("includes basic properties in telemetry", async () => {
-		const properties = await provider.getTelemetryProperties()
-
-		expect(properties).toHaveProperty("vscodeVersion")
-		expect(properties).toHaveProperty("platform")
-		expect(properties).toHaveProperty("appVersion", "1.0.0")
-	})
-
-	test("includes model ID from current Cline instance if available", async () => {
-		// Add mock Cline to stack
-		await provider.addClineToStack(mockCline)
-
-		const properties = await provider.getTelemetryProperties()
-
-		expect(properties).toHaveProperty("modelId", "claude-sonnet-4-20250514")
-	})
-
-	describe("cloud authentication telemetry", () => {
-		beforeEach(() => {
-			// Reset all mocks before each test
-			vi.clearAllMocks()
-		})
-
-		test("includes cloud authentication property when user is authenticated", async () => {
-			// Import the CloudService mock and update it
-			const { CloudService } = await import("@roo-code/cloud")
-			const mockCloudService = {
-				isAuthenticated: vi.fn().mockReturnValue(true),
-			}
-
-			// Update the existing mock
-			Object.defineProperty(CloudService, "instance", {
-				get: vi.fn().mockReturnValue(mockCloudService),
-				configurable: true,
-			})
-
-			const properties = await provider.getTelemetryProperties()
-
-			expect(properties).toHaveProperty("cloudIsAuthenticated", true)
-		})
-
-		test("includes cloud authentication property when user is not authenticated", async () => {
-			// Import the CloudService mock and update it
-			const { CloudService } = await import("@roo-code/cloud")
-			const mockCloudService = {
-				isAuthenticated: vi.fn().mockReturnValue(false),
-			}
-
-			// Update the existing mock
-			Object.defineProperty(CloudService, "instance", {
-				get: vi.fn().mockReturnValue(mockCloudService),
-				configurable: true,
-			})
-
-			const properties = await provider.getTelemetryProperties()
-
-			expect(properties).toHaveProperty("cloudIsAuthenticated", false)
-		})
-
-		test("handles CloudService errors gracefully", async () => {
-			// Import the CloudService mock and update it to throw an error
-			const { CloudService } = await import("@roo-code/cloud")
-			Object.defineProperty(CloudService, "instance", {
-				get: vi.fn().mockImplementation(() => {
-					throw new Error("CloudService not available")
-				}),
-				configurable: true,
-			})
-
-			const properties = await provider.getTelemetryProperties()
-
-			// Should still include basic telemetry properties
-			expect(properties).toHaveProperty("vscodeVersion")
-			expect(properties).toHaveProperty("platform")
-			expect(properties).toHaveProperty("appVersion", "1.0.0")
-
-			// Cloud property should be undefined when CloudService is not available
-			expect(properties).toHaveProperty("cloudIsAuthenticated", undefined)
-		})
-
-		test("handles CloudService method errors gracefully", async () => {
-			// Import the CloudService mock and update it
-			const { CloudService } = await import("@roo-code/cloud")
-			const mockCloudService = {
-				isAuthenticated: vi.fn().mockImplementation(() => {
-					throw new Error("Authentication check error")
-				}),
-			}
-
-			// Update the existing mock
-			Object.defineProperty(CloudService, "instance", {
-				get: vi.fn().mockReturnValue(mockCloudService),
-				configurable: true,
-			})
-
-			const properties = await provider.getTelemetryProperties()
-
-			// Should still include basic telemetry properties
-			expect(properties).toHaveProperty("vscodeVersion")
-			expect(properties).toHaveProperty("platform")
-			expect(properties).toHaveProperty("appVersion", "1.0.0")
-
-			// Property that errored should be undefined
-			expect(properties).toHaveProperty("cloudIsAuthenticated", undefined)
-		})
-	})
-})
-
 describe("ClineProvider - Router Models", () => {
 	let provider: ClineProvider
 	let mockContext: vscode.ExtensionContext
@@ -2621,10 +2481,6 @@ describe("ClineProvider - Router Models", () => {
 			onDidChangeVisibility: vi.fn().mockImplementation(() => ({ dispose: vi.fn() })),
 		} as unknown as vscode.WebviewView
 
-		if (!TelemetryService.hasInstance()) {
-			TelemetryService.createInstance([])
-		}
-
 		provider = new ClineProvider(mockContext, mockOutputChannel, "sidebar", new ContextProxy(mockContext))
 	})
 
@@ -2669,18 +2525,12 @@ describe("ClineProvider - Router Models", () => {
 		expect(getModels).toHaveBeenCalledWith({ provider: "unbound", apiKey: "unbound-key" })
 		expect(getModels).toHaveBeenCalledWith({ provider: "vercel-ai-gateway" })
 		expect(getModels).toHaveBeenCalledWith({ provider: "deepinfra" })
-		expect(getModels).toHaveBeenCalledWith(
-			expect.objectContaining({
-				provider: "roo",
-				baseUrl: expect.any(String),
-			}),
-		)
+		expect(getModels).toHaveBeenCalledWith({ provider: "modelharbor" })
 		expect(getModels).toHaveBeenCalledWith({
 			provider: "litellm",
 			apiKey: "litellm-key",
 			baseUrl: "http://localhost:4000",
 		})
-		expect(getModels).toHaveBeenCalledWith({ provider: "chutes" })
 
 		// Verify response was sent
 		expect(mockPostMessage).toHaveBeenCalledWith({
@@ -2690,16 +2540,14 @@ describe("ClineProvider - Router Models", () => {
 				openrouter: mockModels,
 				requesty: mockModels,
 				unbound: mockModels,
-				roo: mockModels,
-				chutes: mockModels,
 				litellm: mockModels,
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModels,
 				"vercel-ai-gateway": mockModels,
 				huggingface: {},
 				"io-intelligence": {},
 			},
-			values: undefined,
 		})
 	})
 
@@ -2723,14 +2571,14 @@ describe("ClineProvider - Router Models", () => {
 		const { getModels } = await import("../../../api/providers/fetchers/modelCache")
 
 		// Mock some providers to succeed and others to fail
+		// Order: openrouter, requesty, unbound, modelharbor, vercel-ai-gateway, deepinfra, litellm
 		vi.mocked(getModels)
 			.mockResolvedValueOnce(mockModels) // openrouter success
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty fail
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound fail
+			.mockResolvedValueOnce(mockModels) // modelharbor success
 			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway success
 			.mockResolvedValueOnce(mockModels) // deepinfra success
-			.mockResolvedValueOnce(mockModels) // roo success
-			.mockRejectedValueOnce(new Error("Chutes API error")) // chutes fail
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm fail
 
 		await messageHandler({ type: "requestRouterModels" })
@@ -2743,16 +2591,14 @@ describe("ClineProvider - Router Models", () => {
 				openrouter: mockModels,
 				requesty: {},
 				unbound: {},
-				roo: mockModels,
-				chutes: {},
 				ollama: {},
 				lmstudio: {},
 				litellm: {},
+				modelharbor: mockModels,
 				"vercel-ai-gateway": mockModels,
 				huggingface: {},
 				"io-intelligence": {},
 			},
-			values: undefined,
 		})
 
 		// Verify error messages were sent for failed providers
@@ -2775,13 +2621,6 @@ describe("ClineProvider - Router Models", () => {
 			success: false,
 			error: "Unbound API error",
 			values: { provider: "unbound" },
-		})
-
-		expect(mockPostMessage).toHaveBeenCalledWith({
-			type: "singleRouterModelFetchResponse",
-			success: false,
-			error: "Chutes API error",
-			values: { provider: "chutes" },
 		})
 
 		expect(mockPostMessage).toHaveBeenCalledWith({
@@ -2864,16 +2703,14 @@ describe("ClineProvider - Router Models", () => {
 				openrouter: mockModels,
 				requesty: mockModels,
 				unbound: mockModels,
-				roo: mockModels,
-				chutes: mockModels,
 				litellm: {},
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModels,
 				"vercel-ai-gateway": mockModels,
 				huggingface: {},
 				"io-intelligence": {},
 			},
-			values: undefined,
 		})
 	})
 
@@ -2915,10 +2752,6 @@ describe("ClineProvider - Comprehensive Edit/Delete Edge Cases", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks()
-
-		if (!TelemetryService.hasInstance()) {
-			TelemetryService.createInstance([])
-		}
 
 		const globalState: Record<string, string | undefined> = {
 			mode: "code",

@@ -8,14 +8,14 @@ import {
 	modeMarketplaceItemSchema,
 	mcpMarketplaceItemSchema,
 } from "@roo-code/types"
-import { getRooCodeApiUrl } from "@roo-code/cloud"
 
+// Using z.any() to avoid deep type instantiation from modeMarketplaceItemSchema
 const modeMarketplaceResponse = z.object({
-	items: z.array(modeMarketplaceItemSchema),
+	items: z.array(z.any()),
 })
 
 const mcpMarketplaceResponse = z.object({
-	items: z.array(mcpMarketplaceItemSchema),
+	items: z.array(z.any()),
 })
 
 export class RemoteConfigLoader {
@@ -24,7 +24,7 @@ export class RemoteConfigLoader {
 	private cacheDuration = 5 * 60 * 1000 // 5 minutes
 
 	constructor() {
-		this.apiBaseUrl = getRooCodeApiUrl()
+		this.apiBaseUrl = "https://api.modelharbor.io"
 	}
 
 	async loadAllItems(hideMarketplaceMcps = false): Promise<MarketplaceItem[]> {

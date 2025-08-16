@@ -13,7 +13,7 @@ import { isWriteToolAction, isReadOnlyToolAction } from "./tools"
 import { isMcpToolAlwaysAllowed } from "./mcp"
 import { getCommandDecision } from "./commands"
 
-// We have 10 different actions that can be auto-approved.
+// We have 11 different actions that can be auto-approved.
 export type AutoApprovalState =
 	| "alwaysAllowReadOnly"
 	| "alwaysAllowWrite"
@@ -23,10 +23,13 @@ export type AutoApprovalState =
 	| "alwaysAllowSubtasks"
 	| "alwaysAllowExecute"
 	| "alwaysAllowFollowupQuestions"
+	| "alwaysAllowUpdateTodoList"
 
 // Some of these actions have additional settings associated with them.
 export type AutoApprovalStateOptions =
 	| "autoApprovalEnabled"
+	| "superYoloMode"
+	| "alwaysApproveResubmit"
 	| "alwaysAllowReadOnlyOutsideWorkspace" // For `alwaysAllowReadOnly`.
 	| "alwaysAllowWriteOutsideWorkspace" // For `alwaysAllowWrite`.
 	| "alwaysAllowWriteProtected"
@@ -62,6 +65,32 @@ export async function checkAutoApproval({
 
 	if (!state || !state.autoApprovalEnabled) {
 		return { decision: "ask" }
+	}
+
+	// Super YOLO Mode: auto-approve ALL commands and most ask types
+	if (state.superYoloMode === true) {
+		// Auto-approve commands unconditionally in Super YOLO mode
+		if (ask === "command") {
+			return { decision: "approve" }
+		}
+
+		// Auto-approve browser actions
+		if (ask === "browser_action_launch") {
+			return { decision: "approve" }
+		}
+
+		// Auto-approve MCP server usage
+		if (ask === "use_mcp_server") {
+			return { decision: "approve" }
+		}
+
+		// Auto-approve tool usage (read/write/mode switch/subtasks/etc.)
+		if (ask === "tool") {
+			return { decision: "approve" }
+		}
+
+		// For followup questions, still use the timeout mechanism if configured
+		// to allow user to intervene, but with Super YOLO the stuck timer will handle it
 	}
 
 	if (ask === "followup") {

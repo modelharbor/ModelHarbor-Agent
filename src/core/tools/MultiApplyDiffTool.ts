@@ -2,7 +2,6 @@ import path from "path"
 import fs from "fs/promises"
 
 import { type ClineSayTool, DEFAULT_WRITE_DELAY_MS, isNativeProtocol } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { getReadablePath } from "../../utils/path"
 import { Task } from "../task/Task"
@@ -61,7 +60,7 @@ export async function applyDiffTool(
 ) {
 	// Check if native protocol is enabled - if so, always use single-file class-based tool
 	// Use the task's locked protocol for consistency throughout the task lifetime
-	const toolProtocol = resolveToolProtocol(cline.apiConfiguration, cline.api.getModel().info, cline.taskToolProtocol)
+	const toolProtocol = resolveToolProtocol(cline.apiConfiguration, cline.api.getModel().info)
 	if (isNativeProtocol(toolProtocol)) {
 		return applyDiffToolClass.handle(cline, block as ToolUse<"apply_diff">, {
 			askApproval,
@@ -189,7 +188,6 @@ Expected structure:
 Original error: ${errorMessage}`
 			cline.consecutiveMistakeCount++
 			cline.recordToolError("apply_diff")
-			TelemetryService.instance.captureDiffApplicationError(cline.taskId, cline.consecutiveMistakeCount)
 			await cline.say("diff_error", `Failed to parse apply_diff XML: ${errorMessage}`)
 			pushToolResult(detailedError)
 			cline.processQueuedMessages()
@@ -503,8 +501,6 @@ Original error: ${errorMessage}`
 					const currentCount = (cline.consecutiveMistakeCountForApplyDiff.get(relPath) || 0) + 1
 					cline.consecutiveMistakeCountForApplyDiff.set(relPath, currentCount)
 
-					TelemetryService.instance.captureDiffApplicationError(cline.taskId, currentCount)
-
 					if (diffResult.failParts && diffResult.failParts.length > 0) {
 						for (let i = 0; i < diffResult.failParts.length; i++) {
 							const failPart = diffResult.failParts[i]
@@ -736,11 +732,7 @@ ${errorDetails ? `\nTechnical details:\n${errorDetails}\n` : ""}
 		}
 
 		// Check protocol for notice formatting - reuse the task's locked protocol
-		const noticeProtocol = resolveToolProtocol(
-			cline.apiConfiguration,
-			cline.api.getModel().info,
-			cline.taskToolProtocol,
-		)
+		const noticeProtocol = resolveToolProtocol(cline.apiConfiguration, cline.api.getModel().info)
 		const singleBlockNotice =
 			totalSearchBlocks === 1
 				? isNativeProtocol(noticeProtocol)

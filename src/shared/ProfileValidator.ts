@@ -1,4 +1,25 @@
-import type { ProviderSettings, OrganizationAllowList } from "@roo-code/types"
+import type { ProviderSettings } from "@roo-code/types"
+
+/**
+ * Organization allow list type for provider filtering
+ * This is defined locally since it's used for profile validation
+ * without requiring cloud/organization functionality
+ */
+export interface OrganizationAllowList {
+	allowAll: boolean
+	providers: Record<
+		string,
+		{
+			allowAll?: boolean
+			models?: string[]
+		}
+	>
+}
+
+export const ORGANIZATION_ALLOW_ALL: OrganizationAllowList = {
+	allowAll: true,
+	providers: {},
+}
 
 export class ProfileValidator {
 	public static isProfileAllowed(profile: ProviderSettings, allowList: OrganizationAllowList): boolean {
@@ -63,7 +84,6 @@ export class ProfileValidator {
 			case "xai":
 			case "groq":
 			case "sambanova":
-			case "chutes":
 			case "fireworks":
 			case "featherless":
 				return profile.apiModelId

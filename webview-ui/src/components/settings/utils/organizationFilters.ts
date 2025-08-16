@@ -1,4 +1,5 @@
-import type { ProviderName, ModelInfo, OrganizationAllowList } from "@roo-code/types"
+import type { ProviderName, ModelInfo } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 export const filterProviders = (
 	providers: Array<{ value: string; label: string }>,

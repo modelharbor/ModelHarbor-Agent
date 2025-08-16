@@ -37,7 +37,6 @@ import {
 	type ClineApiReqCancelReason,
 	type ClineApiReqInfo,
 	RooCodeEventName,
-	TelemetryEventName,
 	TaskStatus,
 	TodoItem,
 	getApiProtocol,
@@ -52,11 +51,8 @@ import {
 	MAX_CHECKPOINT_TIMEOUT_SECONDS,
 	MIN_CHECKPOINT_TIMEOUT_SECONDS,
 	TOOL_PROTOCOL,
-	ConsecutiveMistakeError,
 } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
-import { CloudService, BridgeOrchestrator } from "@roo-code/cloud"
-import { resolveToolProtocol, detectToolProtocolFromHistory } from "../../utils/resolveToolProtocol"
+import { resolveToolProtocol } from "../../utils/resolveToolProtocol"
 
 // api
 import { ApiHandler, ApiHandlerCreateMessageMetadata, buildApiHandler } from "../../api"
@@ -209,30 +205,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	private _taskMode: string | undefined
 
 	/**
-	 * The tool protocol locked to this task. Once set, the task will continue
-	 * using this protocol even if user settings change.
-	 *
-	 * ## Why This Matters
-	 * When NTC (Native Tool Calling) is enabled, XML parsing does NOT occur.
-	 * If a task previously used XML tools, resuming it with NTC enabled would
-	 * break because the tool calls in the history would not be parseable.
-	 *
-	 * ## Lifecycle
-	 *
-	 * ### For new tasks:
-	 * 1. Set immediately in constructor via `resolveToolProtocol()`
-	 * 2. Locked for the lifetime of the task
-	 *
-	 * ### For history items:
-	 * 1. If `historyItem.toolProtocol` exists, use it
-	 * 2. Otherwise, detect from API history via `detectToolProtocolFromHistory()`
-	 * 3. If no tools in history, use `resolveToolProtocol()` from current settings
-	 *
-	 * @private
-	 */
-	private _taskToolProtocol: ToolProtocol | undefined
-
-	/**
 	 * Promise that resolves when the task mode has been initialized.
 	 * This ensures async mode initialization completes before the task is used.
 	 *
@@ -351,6 +323,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	private askResponseImages?: string[]
 	public lastMessageTs?: number
 	private autoApprovalTimeoutRef?: NodeJS.Timeout
+	private superYoloStuckTimeoutRef?: NodeJS.Timeout
 
 	// Tool Use
 	consecutiveMistakeCount: number = 0
@@ -430,9 +403,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	// Token Usage Throttling - Debounced emit function
 	private readonly TOKEN_USAGE_EMIT_INTERVAL_MS = 2000 // 2 seconds
 	private debouncedEmitTokenUsage: ReturnType<typeof debounce>
-
-	// Cloud Sync Tracking
-	private cloudSyncedMessageTimestamps: Set<number> = new Set()
 
 	// Initial status for the task's history item (set at creation time to avoid race conditions)
 	private readonly initialStatus?: "active" | "delegated" | "completed"
@@ -557,7 +527,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			this._taskApiConfigName = historyItem.apiConfigName
 			this.taskModeReady = Promise.resolve()
 			this.taskApiConfigReady = Promise.resolve()
-			TelemetryService.instance.captureTaskRestarted(this.taskId)
 
 			// For history items, use the persisted tool protocol if available.
 			// If not available (old tasks), it will be detected in resumeTaskFromHistory.
@@ -568,7 +537,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			this._taskApiConfigName = undefined
 			this.taskModeReady = this.initializeTaskMode(provider)
 			this.taskApiConfigReady = this.initializeTaskApiConfigName(provider)
-			TelemetryService.instance.captureTaskCreated(this.taskId)
 
 			// For new tasks, resolve and lock the tool protocol immediately.
 			// This ensures the task will continue using this protocol even if
@@ -577,12 +545,12 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			this._taskToolProtocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
 		}
 
-		// Initialize the assistant message parser based on the locked tool protocol.
+		// Initialize the assistant message parser only for XML protocol.
 		// For native protocol, tool calls come as tool_call chunks, not XML.
-		// For history items without a persisted protocol, we default to XML parser
-		// and will update it in resumeTaskFromHistory after detection.
-		const effectiveProtocol = this._taskToolProtocol || "xml"
-		this.assistantMessageParser = effectiveProtocol !== "native" ? new AssistantMessageParser() : undefined
+		// experiments is always provided via TaskOptions (defaults to experimentDefault in provider)
+		const modelInfo = this.api.getModel().info
+		const toolProtocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
+		this.assistantMessageParser = toolProtocol !== "native" ? new AssistantMessageParser() : undefined
 
 		this.messageQueueService = new MessageQueueService()
 
@@ -603,13 +571,17 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 			// Check experiment asynchronously and update strategy if needed.
 			provider.getState().then((state) => {
-				const isMultiFileApplyDiffEnabled = experiments.isEnabled(
-					state.experiments ?? {},
-					EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF,
-				)
+				// Only check experiments if they are explicitly configured
+				// When experiments are undefined, keep the default strategy
+				if (state.experiments) {
+					const isMultiFileApplyDiffEnabled = experiments.isEnabled(
+						state.experiments,
+						EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF,
+					)
 
-				if (isMultiFileApplyDiffEnabled) {
-					this.diffStrategy = new MultiFileSearchReplaceDiffStrategy(this.fuzzyMatchThreshold)
+					if (isMultiFileApplyDiffEnabled) {
+						this.diffStrategy = new MultiFileSearchReplaceDiffStrategy(this.fuzzyMatchThreshold)
+					}
 				}
 			})
 		}
@@ -977,8 +949,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				messageWithTs.reasoning_details = reasoningDetails
 			}
 
-			// Store reasoning: Anthropic thinking (with signature), plain text (most providers), or encrypted (OpenAI Native)
+			// Store reasoning: plain text (most providers) or encrypted (OpenAI Native)
 			// Skip if reasoning_details already contains the reasoning (to avoid duplication)
+<<<<<<< HEAD
 			if (isAnthropicProtocol && reasoning && thoughtSignature && !reasoningDetails) {
 				// Anthropic provider with extended thinking: Store as proper `thinking` block
 				// This format passes through anthropic-filter.ts and is properly round-tripped
@@ -1001,6 +974,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				}
 			} else if (reasoning && !reasoningDetails) {
 				// Other providers (non-Anthropic): Store as generic reasoning block
+=======
+			if (reasoning && !reasoningDetails) {
+>>>>>>> 8576680f3 (Add ModelHarbor provider integration)
 				const reasoningBlock = {
 					type: "reasoning",
 					text: reasoning,
@@ -1138,51 +1114,18 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		await provider?.postStateToWebview()
 		this.emit(RooCodeEventName.Message, { action: "created", message })
 		await this.saveClineMessages()
-
-		const shouldCaptureMessage = message.partial !== true && CloudService.isEnabled()
-
-		if (shouldCaptureMessage) {
-			CloudService.instance.captureEvent({
-				event: TelemetryEventName.TASK_MESSAGE,
-				properties: { taskId: this.taskId, message },
-			})
-			// Track that this message has been synced to cloud
-			this.cloudSyncedMessageTimestamps.add(message.ts)
-		}
 	}
 
 	public async overwriteClineMessages(newMessages: ClineMessage[]) {
 		this.clineMessages = newMessages
 		restoreTodoListForTask(this)
 		await this.saveClineMessages()
-
-		// When overwriting messages (e.g., during task resume), repopulate the cloud sync tracking Set
-		// with timestamps from all non-partial messages to prevent re-syncing previously synced messages
-		this.cloudSyncedMessageTimestamps.clear()
-		for (const msg of newMessages) {
-			if (msg.partial !== true) {
-				this.cloudSyncedMessageTimestamps.add(msg.ts)
-			}
-		}
 	}
 
 	private async updateClineMessage(message: ClineMessage) {
 		const provider = this.providerRef.deref()
 		await provider?.postMessageToWebview({ type: "messageUpdated", clineMessage: message })
 		this.emit(RooCodeEventName.Message, { action: "updated", message })
-
-		// Check if we should sync to cloud and haven't already synced this message
-		const shouldCaptureMessage = message.partial !== true && CloudService.isEnabled()
-		const hasNotBeenSynced = !this.cloudSyncedMessageTimestamps.has(message.ts)
-
-		if (shouldCaptureMessage && hasNotBeenSynced) {
-			CloudService.instance.captureEvent({
-				event: TelemetryEventName.TASK_MESSAGE,
-				properties: { taskId: this.taskId, message },
-			})
-			// Track that this message has been synced to cloud
-			this.cloudSyncedMessageTimestamps.add(message.ts)
-		}
 	}
 
 	private async saveClineMessages() {
@@ -1208,7 +1151,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				mode: this._taskMode || defaultModeSlug, // Use the task's own mode, not the current provider mode.
 				apiConfigName: this._taskApiConfigName, // Use the task's own provider profile, not the current provider profile.
 				initialStatus: this.initialStatus,
-				toolProtocol: this._taskToolProtocol, // Persist the locked tool protocol.
 			})
 
 			// Emit token/tool usage updates using debounced function
@@ -1373,6 +1315,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 							this.interactiveAsk = message
 							this.emit(RooCodeEventName.TaskInteractive, this.taskId)
 							provider?.postMessageToWebview({ type: "interactionRequired" })
+							// Start Super YOLO stuck timer when task becomes interactive
+							this.startSuperYoloStuckTimer(type)
 						}
 					}, statusMutationTimeout),
 				)
@@ -1384,6 +1328,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						if (message) {
 							this.resumableAsk = message
 							this.emit(RooCodeEventName.TaskResumable, this.taskId)
+							// Start Super YOLO stuck timer when task becomes resumable
+							this.startSuperYoloStuckTimer(type)
 						}
 					}, statusMutationTimeout),
 				)
@@ -1395,6 +1341,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						if (message) {
 							this.idleAsk = message
 							this.emit(RooCodeEventName.TaskIdle, this.taskId)
+							// Start Super YOLO stuck timer when task becomes idle
+							this.startSuperYoloStuckTimer(type)
 						}
 					}, statusMutationTimeout),
 				)
@@ -1422,37 +1370,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		}
 
 		// Wait for askResponse to be set
-		await pWaitFor(
-			() => {
-				if (this.askResponse !== undefined || this.lastMessageTs !== askTs) {
-					return true
-				}
-
-				// If a queued message arrives while we're blocked on an ask (e.g. a follow-up
-				// suggestion click that was incorrectly queued due to UI state), consume it
-				// immediately so the task doesn't hang.
-				if (!this.messageQueueService.isEmpty()) {
-					const message = this.messageQueueService.dequeueMessage()
-					if (message) {
-						// If this is a tool approval ask, we need to approve first (yesButtonClicked)
-						// and include any queued text/images.
-						if (
-							type === "tool" ||
-							type === "command" ||
-							type === "browser_action_launch" ||
-							type === "use_mcp_server"
-						) {
-							this.handleWebviewAskResponse("yesButtonClicked", message.text, message.images)
-						} else {
-							this.handleWebviewAskResponse("messageResponse", message.text, message.images)
-						}
-					}
-				}
-
-				return false
-			},
-			{ interval: 100 },
-		)
+		await pWaitFor(() => this.askResponse !== undefined || this.lastMessageTs !== askTs, { interval: 100 })
 
 		if (this.lastMessageTs !== askTs) {
 			// Could happen if we send multiple asks in a row i.e. with
@@ -1524,6 +1442,61 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			clearTimeout(this.autoApprovalTimeoutRef)
 			this.autoApprovalTimeoutRef = undefined
 		}
+		// Also cancel Super YOLO stuck timer when user interacts
+		this.cancelSuperYoloStuckTimer()
+	}
+
+	/**
+	 * Start the Super YOLO stuck detection timer.
+	 * When Super YOLO mode is enabled and task is stuck waiting for user input,
+	 * this timer will auto-continue the task after the configured timeout.
+	 */
+	private async startSuperYoloStuckTimer(askType: ClineAsk): Promise<void> {
+		// Cancel any existing timer first
+		this.cancelSuperYoloStuckTimer()
+
+		const provider = this.providerRef.deref()
+		const state = provider ? await provider.getState() : undefined
+
+		// Only start timer if Super YOLO mode is enabled and auto-approval is enabled
+		if (!state?.autoApprovalEnabled || !state?.superYoloMode) {
+			return
+		}
+
+		// Get the timeout from settings (default: 5 minutes = 300000ms)
+		const stuckTimeoutMs = state.superYoloStuckTimeoutMs ?? 300000
+
+		console.log(
+			`[Task#${this.taskId}] Super YOLO stuck timer started for ask type: ${askType}, timeout: ${stuckTimeoutMs}ms`,
+		)
+
+		this.superYoloStuckTimeoutRef = setTimeout(async () => {
+			console.log(`[Task#${this.taskId}] Super YOLO stuck timer fired for ask type: ${askType}`)
+
+			// Determine how to auto-continue based on the ask type
+			if (askType === "command_output" || askType === "tool") {
+				// For terminal/tool operations, continue the process
+				this.handleTerminalOperation("continue")
+			} else if (askType === "followup") {
+				// For followup questions, try to use the first suggestion or just approve
+				this.handleWebviewAskResponse("yesButtonClicked")
+			} else {
+				// For other ask types, approve to continue
+				this.handleWebviewAskResponse("yesButtonClicked")
+			}
+
+			this.superYoloStuckTimeoutRef = undefined
+		}, stuckTimeoutMs)
+	}
+
+	/**
+	 * Cancel any pending Super YOLO stuck detection timer.
+	 */
+	private cancelSuperYoloStuckTimer(): void {
+		if (this.superYoloStuckTimeoutRef) {
+			clearTimeout(this.superYoloStuckTimeoutRef)
+			this.superYoloStuckTimeoutRef = undefined
+		}
 	}
 
 	public approveAsk({ text, images }: { text?: string; images?: string[] } = {}) {
@@ -1539,9 +1512,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	}
 
 	/**
-	 * Updates the API configuration but preserves the locked tool protocol.
-	 * The task's tool protocol is locked at creation time and should NOT change
-	 * even when switching between models/profiles with different settings.
+	 * Updates the API configuration and reinitializes the parser based on the new tool protocol.
+	 * This should be called when switching between models/profiles with different tool protocols
+	 * to prevent the parser from being left in an inconsistent state.
 	 *
 	 * @param newApiConfiguration - The new API configuration to use
 	 */
@@ -1550,10 +1523,26 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		this.apiConfiguration = newApiConfiguration
 		this.api = buildApiHandler(this.apiConfiguration)
 
-		// IMPORTANT: Do NOT change the parser based on the new configuration!
-		// The task's tool protocol is locked at creation time and must remain
-		// consistent throughout the task's lifetime to ensure history can be
-		// properly resumed.
+		// Determine what the tool protocol should be
+		const modelInfo = this.api.getModel().info
+		const protocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
+		const shouldUseXmlParser = protocol === "xml"
+
+		// Ensure parser state matches protocol requirement
+		const parserStateCorrect =
+			(shouldUseXmlParser && this.assistantMessageParser) || (!shouldUseXmlParser && !this.assistantMessageParser)
+
+		if (parserStateCorrect) {
+			return
+		}
+
+		// Fix parser state
+		if (shouldUseXmlParser && !this.assistantMessageParser) {
+			this.assistantMessageParser = new AssistantMessageParser()
+		} else if (!shouldUseXmlParser && this.assistantMessageParser) {
+			this.assistantMessageParser.reset()
+			this.assistantMessageParser = undefined
+		}
 	}
 
 	public async submitUserMessage(
@@ -1640,8 +1629,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		const { contextTokens: prevContextTokens } = this.getTokenUsage()
 
 		// Determine if we're using native tool protocol for proper message handling
-		// Use the task's locked protocol, NOT the current settings (fallback to xml if not set)
-		const useNativeTools = isNativeProtocol(this._taskToolProtocol ?? "xml")
+		const modelInfo = this.api.getModel().info
+		const protocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
+		const useNativeTools = isNativeProtocol(protocol)
 
 		const {
 			messages,
@@ -1819,30 +1809,20 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	async sayAndCreateMissingParamError(toolName: ToolName, paramName: string, relPath?: string) {
 		await this.say(
 			"error",
-			`Roo tried to use ${toolName}${
+			`ModelHarbor tried to use ${toolName}${
 				relPath ? ` for '${relPath.toPosix()}'` : ""
 			} without value for required parameter '${paramName}'. Retrying...`,
 		)
-		// Use the task's locked protocol, NOT the current settings (fallback to xml if not set)
-		return formatResponse.toolError(
-			formatResponse.missingToolParameterError(paramName, this._taskToolProtocol ?? "xml"),
-		)
+		const modelInfo = this.api.getModel().info
+		const state = await this.providerRef.deref()?.getState()
+		const toolProtocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
+		return formatResponse.toolError(formatResponse.missingToolParameterError(paramName, toolProtocol))
 	}
 
 	// Lifecycle
 	// Start / Resume / Abort / Dispose
 
 	private async startTask(task?: string, images?: string[]): Promise<void> {
-		if (this.enableBridge) {
-			try {
-				await BridgeOrchestrator.subscribeToTask(this)
-			} catch (error) {
-				console.error(
-					`[Task#startTask] BridgeOrchestrator.subscribeToTask() failed: ${error instanceof Error ? error.message : String(error)}`,
-				)
-			}
-		}
-
 		// `conversationHistory` (for API) and `clineMessages` (for webview)
 		// need to be in sync.
 		// If the extension process were killed, then on restart the
@@ -1881,16 +1861,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	}
 
 	private async resumeTaskFromHistory() {
-		if (this.enableBridge) {
-			try {
-				await BridgeOrchestrator.subscribeToTask(this)
-			} catch (error) {
-				console.error(
-					`[Task#resumeTaskFromHistory] BridgeOrchestrator.subscribeToTask() failed: ${error instanceof Error ? error.message : String(error)}`,
-				)
-			}
-		}
-
 		const modifiedClineMessages = await this.getSavedClineMessages()
 
 		// Remove any resume messages that may have been added before.
@@ -1942,31 +1912,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// the task first.
 		this.apiConversationHistory = await this.getSavedApiConversationHistory()
 
-		// If we don't have a persisted tool protocol (old tasks before this feature),
-		// detect it from the API history. This ensures tasks that previously used
-		// XML tools will continue using XML even if NTC is now enabled.
-		if (!this._taskToolProtocol) {
-			const detectedProtocol = detectToolProtocolFromHistory(this.apiConversationHistory)
-			if (detectedProtocol) {
-				// Found tool calls in history - lock to that protocol
-				this._taskToolProtocol = detectedProtocol
-			} else {
-				// No tool calls in history yet - use current settings
-				const modelInfo = this.api.getModel().info
-				this._taskToolProtocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
-			}
-
-			// Update parser state to match the detected/resolved protocol
-			const shouldUseXmlParser = this._taskToolProtocol === "xml"
-			if (shouldUseXmlParser && !this.assistantMessageParser) {
-				this.assistantMessageParser = new AssistantMessageParser()
-			} else if (!shouldUseXmlParser && this.assistantMessageParser) {
-				this.assistantMessageParser.reset()
-				this.assistantMessageParser = undefined
-			}
-		} else {
-		}
-
 		const lastClineMessage = this.clineMessages
 			.slice()
 			.reverse()
@@ -2000,8 +1945,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// we need to replace all tool use blocks with a text block since the API disallows
 		// conversations with tool uses and no tool schema.
 		// For native protocol, we preserve tool_use and tool_result blocks as they're expected by the API.
-		// IMPORTANT: Use the task's locked protocol, NOT the current settings!
-		const useNative = isNativeProtocol(this._taskToolProtocol)
+		const state = await this.providerRef.deref()?.getState()
+		const protocol = resolveToolProtocol(this.apiConfiguration, this.api.getModel().info)
+		const useNative = isNativeProtocol(protocol)
 
 		// Only convert tool blocks to text for XML protocol
 		// For native protocol, the API expects proper tool_use/tool_result structure
@@ -2010,9 +1956,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				if (Array.isArray(message.content)) {
 					const newContent = message.content.map((block) => {
 						if (block.type === "tool_use") {
-							// Format tool invocation based on the task's locked protocol
+							// Format tool invocation based on protocol
 							const params = block.input as Record<string, any>
-							const formattedText = formatToolInvocation(block.name, params, this._taskToolProtocol)
+							const formattedText = formatToolInvocation(block.name, params, protocol)
 
 							return {
 								type: "text",
@@ -2202,10 +2148,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 		this.abort = true
 
-		// Reset consecutive error counters on abort (manual intervention)
-		this.consecutiveNoToolUseCount = 0
-		this.consecutiveNoAssistantMessagesCount = 0
-
 		// Force final token usage update before abort event
 		this.emitFinalTokenUsageUpdate()
 
@@ -2234,6 +2176,13 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			this.cancelCurrentRequest()
 		} catch (error) {
 			console.error("Error cancelling current request:", error)
+		}
+
+		// Cancel any pending auto-approval and stuck timers
+		try {
+			this.cancelAutoApprovalTimeout()
+		} catch (error) {
+			console.error("Error cancelling auto-approval timeout:", error)
 		}
 
 		// Remove provider profile change listener
@@ -2266,16 +2215,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			this.removeAllListeners()
 		} catch (error) {
 			console.error("Error removing event listeners:", error)
-		}
-
-		if (this.enableBridge) {
-			BridgeOrchestrator.getInstance()
-				?.unsubscribeFromTask(this.taskId)
-				.catch((error) =>
-					console.error(
-						`[Task#dispose] BridgeOrchestrator#unsubscribeFromTask() failed: ${error instanceof Error ? error.message : String(error)}`,
-					),
-				)
 		}
 
 		// Release any terminals associated with this task.
@@ -2458,8 +2397,11 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				// the user hits max requests and denies resetting the count.
 				break
 			} else {
-				// Use the task's locked protocol, NOT the current settings (fallback to xml if not set)
-				nextUserContent = [{ type: "text", text: formatResponse.noToolsUsed(this._taskToolProtocol ?? "xml") }]
+				const modelInfo = this.api.getModel().info
+				const state = await this.providerRef.deref()?.getState()
+				const toolProtocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
+				nextUserContent = [{ type: "text", text: formatResponse.noToolsUsed(toolProtocol) }]
+				this.consecutiveMistakeCount++
 			}
 		}
 	}
@@ -2487,22 +2429,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			}
 
 			if (this.consecutiveMistakeLimit > 0 && this.consecutiveMistakeCount >= this.consecutiveMistakeLimit) {
-				// Track consecutive mistake errors in telemetry via event and PostHog exception tracking.
-				// The reason is "no_tools_used" because this limit is reached via initiateTaskLoop
-				// which increments consecutiveMistakeCount when the model doesn't use any tools.
-				TelemetryService.instance.captureConsecutiveMistakeError(this.taskId)
-				TelemetryService.instance.captureException(
-					new ConsecutiveMistakeError(
-						`Task reached consecutive mistake limit (${this.consecutiveMistakeLimit})`,
-						this.taskId,
-						this.consecutiveMistakeCount,
-						this.consecutiveMistakeLimit,
-						"no_tools_used",
-						this.apiConfiguration.apiProvider,
-						getModelId(this.apiConfiguration),
-					),
-				)
-
 				const { response, text, images } = await this.ask(
 					"mistake_limit_reached",
 					t("common:errors.mistake_limit_guidance"),
@@ -2556,7 +2482,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				maxReadFileLine = -1,
 			} = (await this.providerRef.deref()?.getState()) ?? {}
 
-			const { content: parsedUserContent, mode: slashCommandMode } = await processUserContentMentions({
+			const { content: parsedUserContent } = await processUserContentMentions({
 				userContent: currentUserContent,
 				cwd: this.cwd,
 				urlContentFetcher: this.urlContentFetcher,
@@ -2568,18 +2494,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				maxReadFileLine,
 			})
 
-			// Switch mode if specified in a slash command's frontmatter
-			if (slashCommandMode) {
-				const provider = this.providerRef.deref()
-				if (provider) {
-					const state = await provider.getState()
-					const targetMode = getModeBySlug(slashCommandMode, state?.customModes)
-					if (targetMode) {
-						await provider.handleModeSwitch(slashCommandMode)
-					}
-				}
-			}
-
 			const environmentDetails = await getEnvironmentDetails(this, currentIncludeFileDetails)
 
 			// Remove any existing environment_details blocks before adding fresh ones.
@@ -2587,7 +2501,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			// where the old user message content may already contain environment details from the previous session.
 			// We check for both opening and closing tags to ensure we're matching complete environment detail blocks,
 			// not just mentions of the tag in regular content.
-			const contentWithoutEnvDetails = parsedUserContent.filter((block) => {
+			const contentWithoutEnvDetails = parsedUserContent.filter((block: Anthropic.Messages.ContentBlockParam) => {
 				if (block.type === "text" && typeof block.text === "string") {
 					// Check if this text block is a complete environment_details block
 					// by verifying it starts with the opening tag and ends with the closing tag
@@ -2613,7 +2527,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				((currentItem.retryAttempt ?? 0) === 0 && !isEmptyUserContent) || currentItem.userMessageWasRemoved
 			if (shouldAddUserMessage) {
 				await this.addToApiConversationHistory({ role: "user", content: finalUserContent })
-				TelemetryService.instance.captureConversationMessage(this.taskId, "user")
 			}
 
 			// Since we sent off a placeholder api_req_started message to update the
@@ -2735,14 +2648,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				this.cachedStreamingModel = this.api.getModel()
 				const streamModelInfo = this.cachedStreamingModel.info
 				const cachedModelId = this.cachedStreamingModel.id
-				// Use the task's locked protocol instead of resolving fresh.
-				// This ensures task resumption works correctly even if NTC settings changed.
-				// Fallback to resolving if somehow _taskToolProtocol is not set (should not happen).
-				const streamProtocol = resolveToolProtocol(
-					this.apiConfiguration,
-					streamModelInfo,
-					this._taskToolProtocol,
-				)
+				const streamProtocol = resolveToolProtocol(this.apiConfiguration, streamModelInfo)
 				const shouldUseXmlParser = streamProtocol === "xml"
 
 				// Yields only if the first chunk is successful, otherwise will
@@ -3178,14 +3084,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 												tokens.cacheWrite,
 												tokens.cacheRead,
 											)
-
-								TelemetryService.instance.captureLlmCompletion(this.taskId, {
-									inputTokens: costResult.totalInputTokens,
-									outputTokens: costResult.totalOutputTokens,
-									cacheWriteTokens: tokens.cacheWrite,
-									cacheReadTokens: tokens.cacheRead,
-									cost: tokens.total ?? costResult.totalCost,
-								})
 							}
 						}
 
@@ -3301,8 +3199,12 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 							// Apply exponential backoff similar to first-chunk errors when auto-resubmit is enabled
 							const stateForBackoff = await this.providerRef.deref()?.getState()
-							if (stateForBackoff?.autoApprovalEnabled) {
-								await this.backoffAndAnnounce(currentItem.retryAttempt ?? 0, error)
+							if (stateForBackoff?.autoApprovalEnabled && stateForBackoff?.alwaysApproveResubmit) {
+								await this.backoffAndAnnounce(
+									currentItem.retryAttempt ?? 0,
+									error,
+									streamingFailedMessage,
+								)
 
 								// Check if task was aborted during the backoff
 								if (this.abort) {
@@ -3404,17 +3306,15 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				// Need to save assistant responses to file before proceeding to
 				// tool use since user can exit at any moment and we wouldn't be
 				// able to save the assistant's response.
+				let didEndLoop = false
 
 				// Check if we have any content to process (text or tool uses)
 				const hasTextContent = assistantMessage.length > 0
-
 				const hasToolUses = this.assistantMessageContent.some(
 					(block) => block.type === "tool_use" || block.type === "mcp_tool_use",
 				)
 
 				if (hasTextContent || hasToolUses) {
-					// Reset counter when we get a successful response with content
-					this.consecutiveNoAssistantMessagesCount = 0
 					// Display grounding sources to the user if they exist
 					if (pendingGroundingSources.length > 0) {
 						const citationLinks = pendingGroundingSources.map((source, i) => `[${i + 1}](${source.url})`)
@@ -3501,11 +3401,12 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 					}
 
 					await this.addToApiConversationHistory(
-						{ role: "assistant", content: assistantContent },
+						{
+							role: "assistant",
+							content: assistantContent,
+						},
 						reasoningMessage || undefined,
 					)
-
-					TelemetryService.instance.captureConversationMessage(this.taskId, "assistant")
 
 					// NOTE: This comment is here for future reference - this was a
 					// workaround for `userMessageContent` not getting set to true.
@@ -3532,24 +3433,11 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 					)
 
 					if (!didToolUse) {
-						// Increment consecutive no-tool-use counter
-						this.consecutiveNoToolUseCount++
-
-						// Only show error and count toward mistake limit after 2 consecutive failures
-						if (this.consecutiveNoToolUseCount >= 2) {
-							await this.say("error", "MODEL_NO_TOOLS_USED")
-							// Only count toward mistake limit after second consecutive failure
-							this.consecutiveMistakeCount++
-						}
-
-						// Use the task's locked protocol for consistent behavior
-						this.userMessageContent.push({
-							type: "text",
-							text: formatResponse.noToolsUsed(this._taskToolProtocol ?? "xml"),
-						})
-					} else {
-						// Reset counter when tools are used successfully
-						this.consecutiveNoToolUseCount = 0
+						const modelInfo = this.api.getModel().info
+						const state = await this.providerRef.deref()?.getState()
+						const toolProtocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
+						this.userMessageContent.push({ type: "text", text: formatResponse.noToolsUsed(toolProtocol) })
+						this.consecutiveMistakeCount++
 					}
 
 					// Push to stack if there's content OR if we're paused waiting for a subtask.
@@ -3563,29 +3451,22 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						// Add periodic yielding to prevent blocking
 						await new Promise((resolve) => setImmediate(resolve))
 					}
-
+					// Continue to next iteration instead of setting didEndLoop from recursive call
 					continue
 				} else {
 					// If there's no assistant_responses, that means we got no text
 					// or tool_use content blocks from API which we should assume is
 					// an error.
 
-					// Increment consecutive no-assistant-messages counter
-					this.consecutiveNoAssistantMessagesCount++
-
-					// Only show error and count toward mistake limit after 2 consecutive failures
-					// This provides a "grace retry" - first failure retries silently
-					if (this.consecutiveNoAssistantMessagesCount >= 2) {
-						await this.say("error", "MODEL_NO_ASSISTANT_MESSAGES")
-					}
-
 					// IMPORTANT: For native tool protocol, we already added the user message to
 					// apiConversationHistory at line 1876. Since the assistant failed to respond,
 					// we need to remove that message before retrying to avoid having two consecutive
 					// user messages (which would cause tool_result validation errors).
 					let state = await this.providerRef.deref()?.getState()
-					// Use the task's locked protocol, NOT current settings
-					if (isNativeProtocol(this._taskToolProtocol ?? "xml") && this.apiConversationHistory.length > 0) {
+					if (
+						isNativeProtocol(resolveToolProtocol(this.apiConfiguration, this.api.getModel().info)) &&
+						this.apiConversationHistory.length > 0
+					) {
 						const lastMessage = this.apiConversationHistory[this.apiConversationHistory.length - 1]
 						if (lastMessage.role === "user") {
 							// Remove the last user message that we added earlier
@@ -3595,13 +3476,15 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 					// Check if we should auto-retry or prompt the user
 					// Reuse the state variable from above
-					if (state?.autoApprovalEnabled) {
+					if (state?.autoApprovalEnabled && state?.alwaysApproveResubmit) {
 						// Auto-retry with backoff - don't persist failure message when retrying
+						const errorMsg =
+							"Unexpected API Response: The language model did not provide any assistant messages. This may indicate an issue with the API or the model's output."
+
 						await this.backoffAndAnnounce(
 							currentItem.retryAttempt ?? 0,
-							new Error(
-								"Unexpected API Response: The language model did not provide any assistant messages. This may indicate an issue with the API or the model's output.",
-							),
+							new Error("Empty assistant response"),
+							errorMsg,
 						)
 
 						// Check if task was aborted during the backoff
@@ -3645,8 +3528,10 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						} else {
 							// User declined to retry
 							// For native protocol, re-add the user message we removed
-							// Use the task's locked protocol, NOT current settings
-							if (isNativeProtocol(this._taskToolProtocol ?? "xml")) {
+							// Reuse the state variable from above
+							if (
+								isNativeProtocol(resolveToolProtocol(this.apiConfiguration, this.api.getModel().info))
+							) {
 								await this.addToApiConversationHistory({
 									role: "user",
 									content: currentUserContent,
@@ -3744,14 +3629,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 			const canUseBrowserTool = modelSupportsBrowser && modeSupportsBrowser && (browserToolEnabled ?? true)
 
-			// Use the task's locked protocol for system prompt consistency.
-			// This ensures the system prompt matches the protocol the task was started with,
-			// even if user settings have changed since then.
-			const toolProtocol = resolveToolProtocol(
-				apiConfiguration ?? this.apiConfiguration,
-				modelInfo,
-				this._taskToolProtocol,
-			)
+			// Resolve the tool protocol based on profile, model, and provider settings
+			const toolProtocol = resolveToolProtocol(apiConfiguration ?? this.apiConfiguration, modelInfo)
 
 			return SYSTEM_PROMPT(
 				provider.context,
@@ -3785,7 +3664,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				},
 				undefined, // todoList
 				this.api.getModel().id,
-				provider.getSkillsManager(),
 			)
 		})()
 	}
@@ -3823,8 +3701,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		)
 
 		// Determine if we're using native tool protocol for proper message handling
-		// Use the task's locked protocol, NOT the current settings
-		const useNativeTools = isNativeProtocol(this._taskToolProtocol ?? "xml")
+		const protocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
+		const useNativeTools = isNativeProtocol(protocol)
 
 		// Send condenseTaskContextStarted to show in-progress indicator
 		await this.providerRef.deref()?.postMessageToWebview({ type: "condenseTaskContextStarted", text: this.taskId })
@@ -3930,6 +3808,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		const {
 			apiConfiguration,
 			autoApprovalEnabled,
+			alwaysApproveResubmit,
 			requestDelaySeconds,
 			mode,
 			autoCondenseContext = true,
@@ -3992,8 +3871,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			const currentProfileId = this.getCurrentProfileId(state)
 
 			// Determine if we're using native tool protocol for proper message handling
-			// Use the task's locked protocol, NOT the current settings
-			const useNativeTools = isNativeProtocol(this._taskToolProtocol ?? "xml")
+			const modelInfoForProtocol = this.api.getModel().info
+			const protocol = resolveToolProtocol(this.apiConfiguration, modelInfoForProtocol)
+			const useNativeTools = isNativeProtocol(protocol)
 
 			// Check if context management will likely run (threshold check)
 			// This allows us to show an in-progress indicator to the user
@@ -4118,13 +3998,11 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		}
 
 		// Determine if we should include native tools based on:
-		// 1. Task's locked tool protocol is set to NATIVE
+		// 1. Tool protocol is set to NATIVE
 		// 2. Model supports native tools
-		// CRITICAL: Use the task's locked protocol to ensure tasks that started with XML
-		// tools continue using XML even if NTC settings have since changed.
 		const modelInfo = this.api.getModel().info
-		const taskProtocol = this._taskToolProtocol ?? "xml"
-		const shouldIncludeTools = taskProtocol === TOOL_PROTOCOL.NATIVE && (modelInfo.supportsNativeTools ?? false)
+		const toolProtocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
+		const shouldIncludeTools = toolProtocol === TOOL_PROTOCOL.NATIVE && (modelInfo.supportsNativeTools ?? false)
 
 		// Build complete tools array: native tools + dynamic MCP tools
 		// When includeAllToolsWithRestrictions is true, returns all tools but provides
@@ -4174,6 +4052,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			suppressPreviousResponseId: this.skipPrevResponseIdOnce,
 			// Include tools and tool protocol when using native protocol and model supports it
 			...(shouldIncludeTools
+<<<<<<< HEAD
 				? {
 						tools: allTools,
 						tool_choice: "auto",
@@ -4183,6 +4062,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						// like Gemini can see all tools in history but only call allowed ones
 						...(allowedFunctionNames ? { allowedFunctionNames } : {}),
 					}
+=======
+				? { tools: allTools, tool_choice: "auto", toolProtocol, parallelToolCalls: parallelToolCallsEnabled }
+>>>>>>> 8576680f3 (Add ModelHarbor provider integration)
 				: {}),
 		}
 
@@ -4244,9 +4126,19 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			}
 
 			// note that this api_req_failed ask is unique in that we only present this option if the api hasn't streamed any content yet (ie it fails on the first chunk due), as it would allow them to hit a retry button. However if the api failed mid-stream, it could be in any arbitrary state where some tools may have executed, so that error is handled differently and requires cancelling the task entirely.
-			if (autoApprovalEnabled) {
+			if (autoApprovalEnabled && alwaysApproveResubmit) {
+				let errorMsg
+
+				if (error.error?.metadata?.raw) {
+					errorMsg = JSON.stringify(error.error.metadata.raw, null, 2)
+				} else if (error.message) {
+					errorMsg = error.message
+				} else {
+					errorMsg = "Unknown error"
+				}
+
 				// Apply shared exponential backoff and countdown UX
-				await this.backoffAndAnnounce(retryAttempt, error)
+				await this.backoffAndAnnounce(retryAttempt, error, errorMsg)
 
 				// CRITICAL: Check if task was aborted during the backoff countdown
 				// This prevents infinite loops when users cancel during auto-retry
@@ -4294,7 +4186,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	}
 
 	// Shared exponential backoff for retries (first-chunk and mid-stream)
-	private async backoffAndAnnounce(retryAttempt: number, error: any): Promise<void> {
+	private async backoffAndAnnounce(retryAttempt: number, error: any, header?: string): Promise<void> {
 		try {
 			const state = await this.providerRef.deref()?.getState()
 			const baseDelay = state?.requestDelaySeconds || 5
@@ -4324,18 +4216,15 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			}
 
 			const finalDelay = Math.max(exponentialDelay, rateLimitDelay)
-			if (finalDelay <= 0) {
-				return
-			}
+			if (finalDelay <= 0) return
 
 			// Build header text; fall back to error message if none provided
 			let headerText
 			if (error.status) {
-				// Include both status code (for ChatRow parsing) and detailed message (for error details)
-				// Format: "<status>\n<message>" allows ChatRow to extract status via parseInt(text.substring(0,3))
-				// while preserving the full error message in errorDetails for debugging
-				const errorMessage = error?.message || "Unknown error"
-				headerText = `${error.status}\n${errorMessage}`
+				// This sets the message as just the error code, for which
+				// ChatRow knows how to handle and use an i18n'd error string
+				// In development, hardcode headerText to an HTTP status code to check it
+				headerText = error.status
 			} else if (error?.message) {
 				headerText = error.message
 			} else {
@@ -4585,16 +4474,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 	public get cwd() {
 		return this.workspacePath
-	}
-
-	/**
-	 * Get the tool protocol locked to this task.
-	 * Returns undefined only if the task hasn't been fully initialized yet.
-	 *
-	 * @see {@link _taskToolProtocol} for lifecycle details
-	 */
-	public get taskToolProtocol() {
-		return this._taskToolProtocol
 	}
 
 	/**

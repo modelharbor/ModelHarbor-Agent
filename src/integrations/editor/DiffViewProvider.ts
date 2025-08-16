@@ -18,7 +18,7 @@ import { resolveToolProtocol } from "../../utils/resolveToolProtocol"
 import { DecorationController } from "./DecorationController"
 
 export const DIFF_VIEW_URI_SCHEME = "cline-diff"
-export const DIFF_VIEW_LABEL_CHANGES = "Original ↔ Roo's Changes"
+export const DIFF_VIEW_LABEL_CHANGES = "Original ↔ ModelHarbor's Changes"
 
 // TODO: https://github.com/cline/cline/pull/3354
 export class DiffViewProvider {
@@ -327,7 +327,7 @@ export class DiffViewProvider {
 		}
 
 		// Check which protocol we're using - use the task's locked protocol for consistency
-		const toolProtocol = resolveToolProtocol(task.apiConfiguration, task.api.getModel().info, task.taskToolProtocol)
+		const toolProtocol = resolveToolProtocol(task.apiConfiguration, task.api.getModel().info)
 		const useNative = isNativeProtocol(toolProtocol)
 
 		// Build notices array

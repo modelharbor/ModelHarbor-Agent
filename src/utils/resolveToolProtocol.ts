@@ -1,5 +1,6 @@
 import { ToolProtocol, TOOL_PROTOCOL } from "@roo-code/types"
 import type { ProviderSettings } from "@roo-code/types"
+import type { ApiHandlerOptions } from "../shared/api"
 import type { Anthropic } from "@anthropic-ai/sdk"
 import { findLast, findLastIndex } from "../shared/array"
 
@@ -12,24 +13,48 @@ type ApiMessageForDetection = Anthropic.MessageParam & {
 }
 
 /**
+ * Check if ModelHarbor model supports native tools based on model name patterns.
+ * Models that support native tools return tool calls in delta.tool_calls (OpenAI format).
+ * Models that don't support native tools return tool calls as XML text in the content.
+ *
+ * Models supporting native tools: haiku, anthropic, qwen, gpt
+ * Models returning XML tool calls: glm, deepseek, and others
+ *
+ * @param modelId - The model ID to check
+ * @returns true if the model supports native tools, false otherwise
+ */
+function supportsNativeToolsByModelName(modelId: string): boolean {
+	const lowerModelId = modelId.toLowerCase()
+	return lowerModelId.includes("haiku")
+}
+
+/**
  * Resolve the effective tool protocol.
  *
+ * **ModelHarbor and LiteLLM Special Case:**
+ * These providers use a hybrid approach depending on the backend model:
+ * - Models supporting native tools (haiku, anthropic, qwen, gpt) return tool_calls in delta
+ * - Other models (glm, deepseek, etc.) return tool calls as XML text in content
+ *
+ * For models that return XML tool calls, we must use XML protocol to parse them.
+ *
  * **Deprecation Note (XML Protocol):**
- * XML tool protocol has been deprecated. All models now use Native tool calling.
+ * XML tool protocol has been deprecated for most providers. All models now use Native tool calling.
  * User/profile preferences (`providerSettings.toolProtocol`) and model defaults
  * (`modelInfo.defaultToolProtocol`) are ignored.
  *
  * Precedence:
  * 1. Locked Protocol (task-level lock for resumed tasks - highest priority)
- * 2. Native (always, for all new tasks)
+ * 2. ModelHarbor/LiteLLM with non-native-tool model -> XML
+ * 3. Native (always, for all other new tasks)
  *
- * @param _providerSettings - The provider settings (toolProtocol field is ignored)
+ * @param providerSettings - The provider settings (used to identify ModelHarbor/LiteLLM)
  * @param _modelInfo - Unused, kept for API compatibility
  * @param lockedProtocol - Optional task-locked protocol that takes absolute precedence
  * @returns The resolved tool protocol (either "xml" or "native")
  */
 export function resolveToolProtocol(
-	_providerSettings: ProviderSettings,
+	providerSettings: ProviderSettings,
 	_modelInfo?: unknown,
 	lockedProtocol?: ToolProtocol,
 ): ToolProtocol {
@@ -39,7 +64,26 @@ export function resolveToolProtocol(
 		return lockedProtocol
 	}
 
-	// 2. Always return Native protocol for new tasks
+	// 2. Special case for ModelHarbor and LiteLLM: use XML protocol for models that don't support native tools
+	if (providerSettings.apiProvider === "modelharbor" || providerSettings.apiProvider === "litellm") {
+		const apiHandlerOptions = providerSettings as ApiHandlerOptions
+
+		// Get the model ID - check both possible field names for each provider
+		let modelId = ""
+		if (providerSettings.apiProvider === "modelharbor") {
+			modelId = (apiHandlerOptions as any).modelharborModelId || ""
+		} else if (providerSettings.apiProvider === "litellm") {
+			modelId = (apiHandlerOptions as any).litellmModelId || ""
+		}
+
+		// If the model doesn't support native tools, use XML protocol
+		// This allows the XML parser to extract tool calls from text content
+		if (modelId && !supportsNativeToolsByModelName(modelId)) {
+			return TOOL_PROTOCOL.XML
+		}
+	}
+
+	// 3. Always return Native protocol for new tasks
 	// All models now support native tools; XML is deprecated
 	return TOOL_PROTOCOL.NATIVE
 }

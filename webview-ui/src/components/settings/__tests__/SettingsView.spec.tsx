@@ -1,6 +1,6 @@
 // pnpm --filter @roo-code/vscode-webview test src/components/settings/__tests__/SettingsView.spec.tsx
 
-import { render, screen, fireEvent, within } from "@/utils/test-utils"
+import { render, screen, fireEvent, within, waitFor } from "@/utils/test-utils"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { vscode } from "@/utils/vscode"
@@ -286,7 +286,7 @@ describe("SettingsView - Sound Settings", () => {
 		expect(within(content).queryByTestId("tts-speed-slider")).not.toBeInTheDocument()
 	})
 
-	it("initializes with sound disabled by default", () => {
+	it("initializes with sound enabled by default", () => {
 		// Render once and get the activateTab helper
 		const { activateTab, getSettingsContent } = renderSettingsView()
 
@@ -339,9 +339,9 @@ describe("SettingsView - Sound Settings", () => {
 		const content = getSettingsContent()
 		const soundCheckbox = within(content).getByTestId("sound-enabled-checkbox")
 
-		// Enable sound
+		// Disable sound (it starts enabled)
 		fireEvent.click(soundCheckbox)
-		expect(soundCheckbox).toBeChecked()
+		expect(soundCheckbox).not.toBeChecked()
 
 		// Click Save to save settings
 		const saveButton = screen.getByTestId("save-button")
@@ -351,7 +351,7 @@ describe("SettingsView - Sound Settings", () => {
 			expect.objectContaining({
 				type: "updateSettings",
 				updatedSettings: expect.objectContaining({
-					soundEnabled: true,
+					soundEnabled: false,
 				}),
 			}),
 		)
@@ -553,59 +553,59 @@ describe("SettingsView - Allowed Commands", () => {
 			},
 		})
 	})
+})
 
-	describe("SettingsView - Tab Navigation", () => {
-		beforeEach(() => {
-			vi.clearAllMocks()
-		})
+describe("SettingsView - Tab Navigation", () => {
+	beforeEach(() => {
+		vi.clearAllMocks()
+	})
 
-		it("renders with providers tab active by default", () => {
-			renderSettingsView()
+	it("renders with providers tab active by default", () => {
+		renderSettingsView()
 
-			// Check that the tab list is rendered
-			const tabList = screen.getByTestId("settings-tab-list")
-			expect(tabList).toBeInTheDocument()
+		// Check that the tab list is rendered
+		const tabList = screen.getByTestId("settings-tab-list")
+		expect(tabList).toBeInTheDocument()
 
-			// Check that providers content is visible
-			expect(screen.getByTestId("api-config-management")).toBeInTheDocument()
-		})
+		// Check that providers content is visible
+		expect(screen.getByTestId("api-config-management")).toBeInTheDocument()
+	})
 
-		it("shows unsaved changes dialog when clicking Done with unsaved changes", () => {
-			// Render once and get the activateTab helper
-			const { activateTab, getSettingsContent } = renderSettingsView()
+	it("shows unsaved changes dialog when clicking Done with unsaved changes", () => {
+		// Render once and get the activateTab helper
+		const { activateTab, getSettingsContent } = renderSettingsView()
 
-			// Activate the notifications tab
-			activateTab("notifications")
+		// Activate the notifications tab
+		activateTab("notifications")
 
-			const content = getSettingsContent()
-			// Make a change to create unsaved changes
-			const soundCheckbox = within(content).getByTestId("sound-enabled-checkbox")
-			fireEvent.click(soundCheckbox)
+		const content = getSettingsContent()
+		// Make a change to create unsaved changes
+		const soundCheckbox = within(content).getByTestId("sound-enabled-checkbox")
+		fireEvent.click(soundCheckbox)
 
-			// Click the Done button
-			const doneButton = screen.getByText("settings:common.done")
-			fireEvent.click(doneButton)
+		// Click the Done button
+		const doneButton = screen.getByText("settings:common.done")
+		fireEvent.click(doneButton)
 
-			// Check that unsaved changes dialog is shown
-			expect(screen.getByText("settings:unsavedChangesDialog.title")).toBeInTheDocument()
-		})
+		// Check that unsaved changes dialog is shown
+		expect(screen.getByText("settings:unsavedChangesDialog.title")).toBeInTheDocument()
+	})
 
-		it("renders with targetSection prop", () => {
-			// Render with a specific target section
-			render(
-				<ExtensionStateContextProvider>
-					<QueryClientProvider client={new QueryClient()}>
-						<SettingsView onDone={vi.fn()} targetSection="browser" />
-					</QueryClientProvider>
-				</ExtensionStateContextProvider>,
-			)
+	it("renders with targetSection prop", () => {
+		// Render with a specific target section
+		render(
+			<ExtensionStateContextProvider>
+				<QueryClientProvider client={new QueryClient()}>
+					<SettingsView onDone={vi.fn()} targetSection="browser" />
+				</QueryClientProvider>
+			</ExtensionStateContextProvider>,
+		)
 
-			// Hydrate initial state
-			mockPostMessage({})
+		// Hydrate initial state
+		mockPostMessage({})
 
-			// Verify browser-related content is visible and API config is not
-			expect(screen.queryByTestId("api-config-management")).not.toBeInTheDocument()
-		})
+		// Verify browser-related content is visible and API config is not
+		expect(screen.queryByTestId("api-config-management")).not.toBeInTheDocument()
 	})
 })
 

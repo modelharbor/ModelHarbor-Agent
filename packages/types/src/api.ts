@@ -6,6 +6,19 @@ import type { RooCodeSettings } from "./global-settings.js"
 import type { ProviderSettingsEntry, ProviderSettings } from "./provider-settings.js"
 import type { IpcMessage, IpcServerEvents } from "./ipc.js"
 
+export class ApiProviderError extends Error {
+	constructor(
+		message: string,
+		public provider: string,
+		public modelId: string,
+		public operation: string,
+		public code?: number,
+	) {
+		super(message)
+		this.name = "ApiProviderError"
+	}
+}
+
 export type RooCodeAPIEvents = RooCodeEvents
 
 export interface RooCodeAPI extends EventEmitter<RooCodeAPIEvents> {

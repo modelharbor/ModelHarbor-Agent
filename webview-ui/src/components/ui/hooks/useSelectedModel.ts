@@ -57,7 +57,7 @@ function getValidatedModelId(
 }
 
 export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
-	const provider = apiConfiguration?.apiProvider || "anthropic"
+	const provider = apiConfiguration?.apiProvider || "modelharbor"
 	const openRouterModelId = provider === "openrouter" ? apiConfiguration?.openRouterModelId : undefined
 	const lmStudioModelId = provider === "lmstudio" ? apiConfiguration?.lmStudioModelId : undefined
 	const ollamaModelId = provider === "ollama" ? apiConfiguration?.ollamaModelId : undefined
@@ -171,6 +171,15 @@ function getSelectedModel({
 			const info = routerInfo ? { ...NATIVE_TOOL_DEFAULTS, ...routerInfo } : undefined
 			return { id, info }
 		}
+		case "modelharbor": {
+			const id = getValidatedModelId(
+				apiConfiguration.modelharborModelId,
+				routerModels.modelharbor,
+				defaultModelId,
+			)
+			const info = routerModels.modelharbor?.[id]
+			return { id, info }
+		}
 		case "litellm": {
 			const id = getValidatedModelId(apiConfiguration.litellmModelId, routerModels.litellm, defaultModelId)
 			const routerInfo = routerModels.litellm?.[id]
@@ -196,11 +205,6 @@ function getSelectedModel({
 				supportsImages: false,
 				supportsPromptCache: false,
 			}
-			return { id, info }
-		}
-		case "chutes": {
-			const id = getValidatedModelId(apiConfiguration.apiModelId, routerModels.chutes, defaultModelId)
-			const info = routerModels.chutes?.[id]
 			return { id, info }
 		}
 		case "baseten": {
@@ -370,11 +374,6 @@ function getSelectedModel({
 			)
 			const info =
 				routerModels["io-intelligence"]?.[id] ?? ioIntelligenceModels[id as keyof typeof ioIntelligenceModels]
-			return { id, info }
-		}
-		case "roo": {
-			const id = getValidatedModelId(apiConfiguration.apiModelId, routerModels.roo, defaultModelId)
-			const info = routerModels.roo?.[id]
 			return { id, info }
 		}
 		case "qwen-code": {
