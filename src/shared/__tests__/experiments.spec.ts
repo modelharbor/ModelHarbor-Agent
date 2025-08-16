@@ -18,7 +18,7 @@ describe("experiments", () => {
 		it("is configured correctly", () => {
 			expect(EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF).toBe("multiFileApplyDiff")
 			expect(experimentConfigsMap.MULTI_FILE_APPLY_DIFF).toMatchObject({
-				enabled: false,
+				enabled: true,
 			})
 		})
 	})
@@ -27,8 +27,8 @@ describe("experiments", () => {
 		it("returns false when POWER_STEERING experiment is not enabled", () => {
 			const experiments: Record<ExperimentId, boolean> = {
 				powerSteering: false,
-				multiFileApplyDiff: false,
-				preventFocusDisruption: false,
+				multiFileApplyDiff: true,
+				preventFocusDisruption: true,
 				imageGeneration: false,
 				runSlashCommand: false,
 			}
@@ -38,8 +38,8 @@ describe("experiments", () => {
 		it("returns true when experiment POWER_STEERING is enabled", () => {
 			const experiments: Record<ExperimentId, boolean> = {
 				powerSteering: true,
-				multiFileApplyDiff: false,
-				preventFocusDisruption: false,
+				multiFileApplyDiff: true,
+				preventFocusDisruption: true,
 				imageGeneration: false,
 				runSlashCommand: false,
 			}
@@ -49,8 +49,8 @@ describe("experiments", () => {
 		it("returns false when experiment is not present", () => {
 			const experiments: Record<ExperimentId, boolean> = {
 				powerSteering: false,
-				multiFileApplyDiff: false,
-				preventFocusDisruption: false,
+				multiFileApplyDiff: true,
+				preventFocusDisruption: true,
 				imageGeneration: false,
 				runSlashCommand: false,
 			}

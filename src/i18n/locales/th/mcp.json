@@ -1,0 +1,25 @@
+{
+	"errors": {
+		"invalid_settings_format": "รูปแบบ JSON ของการตั้งค่า MCP ไม่ถูกต้อง โปรดตรวจสอบว่าการตั้งค่าของคุณเป็นไปตามรูปแบบ JSON ที่ถูกต้อง",
+		"invalid_settings_syntax": "รูปแบบ JSON ของการตั้งค่า MCP ไม่ถูกต้อง โปรดตรวจสอบไฟล์การตั้งค่าของคุณเพื่อหาข้อผิดพลาดทางไวยากรณ์",
+		"invalid_settings_validation": "รูปแบบการตั้งค่า MCP ไม่ถูกต้อง: {{errorMessages}}",
+		"create_json": "ไม่สามารถสร้างหรือเปิด .roo/mcp.json: {{error}}",
+		"failed_update_project": "ไม่สามารถอัปเดตเซิร์ฟเวอร์ MCP ของโปรเจกต์ได้",
+		"invalidJsonArgument": "ModelHarbor Agent พยายามใช้ {{toolName}} ด้วยอาร์กิวเมนต์ JSON ที่ไม่ถูกต้อง กำลังลองใหม่...",
+		"refresh_after_disable": "ไม่สามารถรีเฟรชการเชื่อมต่อ MCP หลังจากการปิดใช้งาน",
+		"refresh_after_enable": "ไม่สามารถรีเฟรชการเชื่อมต่อ MCP หลังจากการเปิดใช้งาน",
+		"disconnect_servers_partial": "ไม่สามารถตัดการเชื่อมต่อเซิร์ฟเวอร์ MCP {{count}} ตัว ตรวจสอบผลลัพธ์สำหรับรายละเอียด"
+	},
+	"info": {
+		"server_restarting": "กำลังรีสตาร์ทเซิร์ฟเวอร์ MCP {{serverName}}...",
+		"server_connected": "เซิร์ฟเวอร์ MCP {{serverName}} เชื่อมต่อแล้ว",
+		"server_deleted": "ลบเซิร์ฟเวอร์ MCP: {{serverName}}",
+		"server_not_found": "ไม่พบเซิร์ฟเวอร์ \"{{serverName}}\" ในการกำหนดค่า",
+		"global_servers_active": "เซิร์ฟเวอร์ MCP ส่วนกลางที่ใช้งานอยู่: {{mcpServers}}",
+		"project_servers_active": "เซิร์ฟเวอร์ MCP ของโปรเจกต์ที่ใช้งานอยู่: {{mcpServers}}",
+		"already_refreshing": "กำลังรีเฟรชเซิร์ฟเวอร์ MCP อยู่แล้ว",
+		"refreshing_all": "กำลังรีเฟรชเซิร์ฟเวอร์ MCP ทั้งหมด...",
+		"all_refreshed": "เซิร์ฟเวอร์ MCP ทั้งหมดได้รับการรีเฟรชแล้ว",
+		"project_config_deleted": "ไฟล์การกำหนดค่า MCP ของโปรเจกต์ถูกลบแล้ว เซิร์ฟเวอร์ MCP ของโปรเจกต์ทั้งหมดถูกตัดการเชื่อมต่อแล้ว"
+	}
+}

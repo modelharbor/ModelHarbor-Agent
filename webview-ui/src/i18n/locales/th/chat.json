@@ -1,0 +1,397 @@
+{
+	"greeting": "ยินดีต้อนรับสู่ ModelHarbor Agent!",
+	"task": {
+		"title": "งาน",
+		"expand": "ขยายงาน",
+		"collapse": "ย่องาน",
+		"seeMore": "ดูเพิ่มเติม",
+		"seeLess": "ดูน้อยลง",
+		"tokens": "โทเค็น",
+		"cache": "แคช",
+		"apiCost": "ต้นทุน API",
+		"size": "ขนาด",
+		"condenseContext": "บีบอัดบริบทอย่างชาญฉลาด",
+		"contextWindow": "ความยาวบริบท",
+		"closeAndStart": "ปิดงานและเริ่มงานใหม่",
+		"export": "ส่งออกประวัติงาน",
+		"share": "แชร์งาน",
+		"delete": "ลบงาน (Shift + คลิกเพื่อข้ามการยืนยัน)",
+		"shareWithOrganization": "แชร์กับองค์กร",
+		"shareWithOrganizationDescription": "เฉพาะสมาชิกในองค์กรของคุณเท่านั้นที่สามารถเข้าถึงได้",
+		"sharePublicly": "แชร์สาธารณะ",
+		"sharePubliclyDescription": "ใครก็ตามที่มีลิงก์สามารถเข้าถึงได้",
+		"connectToCloud": "เชื่อมต่อกับ Cloud",
+		"connectToCloudDescription": "เข้าสู่ระบบ ModelHarbor Agent Cloud เพื่อแชร์งาน",
+		"sharingDisabledByOrganization": "การแชร์ถูกปิดใช้งานโดยองค์กร",
+		"shareSuccessOrganization": "คัดลอกลิงก์องค์กรไปยังคลิปบอร์ดแล้ว",
+		"shareSuccessPublic": "คัดลอกลิงก์สาธารณะไปยังคลิปบอร์ดแล้ว",
+		"openFolder": "เปิดโฟลเดอร์แชท"
+	},
+	"unpin": "ยกเลิกการปักหมุด",
+	"pin": "ปักหมุด",
+	"retry": {
+		"title": "ลองใหม่",
+		"tooltip": "ลองดำเนินการอีกครั้ง"
+	},
+	"startNewTask": {
+		"title": "เริ่มงานใหม่",
+		"tooltip": "เริ่มงานใหม่"
+	},
+	"proceedAnyways": {
+		"title": "ดำเนินการต่อ",
+		"tooltip": "ดำเนินการต่อขณะที่คำสั่งทำงาน"
+	},
+	"save": {
+		"title": "บันทึก",
+		"tooltip": "บันทึกการเปลี่ยนแปลงข้อความ"
+	},
+	"tokenProgress": {
+		"availableSpace": "พื้นที่ว่าง: {{amount}} โทเค็น",
+		"tokensUsed": "โทเค็นที่ใช้: {{used}} จาก {{total}}",
+		"reservedForResponse": "สำรองสำหรับการตอบสนองของโมเดล: {{amount}} โทเค็น"
+	},
+	"reject": {
+		"title": "ปฏิเสธ",
+		"tooltip": "ปฏิเสธการกระทำนี้"
+	},
+	"completeSubtaskAndReturn": "ทำงานย่อยให้เสร็จและกลับ",
+	"approve": {
+		"title": "อนุมัติ",
+		"tooltip": "อนุมัติการกระทำนี้"
+	},
+	"read-batch": {
+		"approve": {
+			"title": "อนุมัติทั้งหมด"
+		},
+		"deny": {
+			"title": "ปฏิเสธทั้งหมด"
+		}
+	},
+	"runCommand": {
+		"title": "รันคำสั่ง",
+		"tooltip": "รันคำสั่งนี้"
+	},
+	"proceedWhileRunning": {
+		"title": "ดำเนินการต่อขณะทำงาน",
+		"tooltip": "ดำเนินการต่อแม้มีคำเตือน"
+	},
+	"killCommand": {
+		"title": "ฆ่าคำสั่ง",
+		"tooltip": "ฆ่าคำสั่งปัจจุบัน"
+	},
+	"resumeTask": {
+		"title": "ดำเนินงานต่อ",
+		"tooltip": "ดำเนินงานปัจจุบันต่อ"
+	},
+	"terminate": {
+		"title": "ยุติ",
+		"tooltip": "ยุติงานปัจจุบัน"
+	},
+	"cancel": {
+		"title": "ยกเลิก",
+		"tooltip": "ยกเลิกการดำเนินการปัจจุบัน"
+	},
+	"editMessage": {
+		"placeholder": "แก้ไขข้อความของคุณ..."
+	},
+	"scrollToBottom": "เลื่อนไปด้านล่างของแชท",
+	"about": "สร้าง ปรับปรุง และแก้ไขข้อบกพร่องโค้ดด้วยการช่วยเหลือของ AI ดู<DocsLink>เอกสาร</DocsLink>ของเราเพื่อเรียนรู้เพิ่มเติม",
+	"onboarding": "รายการงานของคุณในพื้นที่ทำงานนี้ว่างเปล่า",
+	"rooTips": {
+		"boomerangTasks": {
+			"title": "การประสานงาน",
+			"description": "แบ่งงานออกเป็นส่วนเล็กๆ ที่จัดการได้"
+		},
+		"stickyModels": {
+			"title": "โมเดลแบบติด",
+			"description": "แต่ละโหมดจำโมเดลที่คุณใช้ล่าสุด"
+		},
+		"tools": {
+			"title": "เครื่องมือ",
+			"description": "อนุญาตให้ AI แก้ปัญหาโดยการเรียกดูเว็บ รันคำสั่ง และอื่นๆ"
+		},
+		"customizableModes": {
+			"title": "โหมดที่ปรับแต่งได้",
+			"description": "บุคลิกเฉพาะทางที่มีพฤติกรรมและโมเดลที่กำหนดของตัวเอง"
+		}
+	},
+	"selectMode": "เลือกโหมดสำหรับการโต้ตอบ",
+	"selectApiConfig": "เลือกการกำหนดค่า API",
+	"enhancePrompt": "ปรับปรุงพรอมต์ด้วยบริบทเพิ่มเติม",
+	"modeSelector": {
+		"title": "โหมด",
+		"marketplace": "ตลาดกลางโหมด",
+		"settings": "การตั้งค่าโหมด",
+		"description": "บุคลิกเฉพาะทางที่ปรับแต่งพฤติกรรมของ ModelHarbor",
+		"searchPlaceholder": "ค้นหาโหมด...",
+		"noResults": "ไม่พบผลลัพธ์"
+	},
+	"enhancePromptDescription": "ปุ่ม 'ปรับปรุงพรอมต์' ช่วยปรับปรุงพรอมต์ของคุณโดยให้บริบทเพิ่มเติม การชี้แจง หรือการเปลี่ยนแปลงถ้อยคำ ลองพิมพ์พรอมต์ที่นี่และคลิกปุ่มอีกครั้งเพื่อดูว่ามันทำงานอย่างไร",
+	"addImages": "เพิ่มรูปภาพไปยังข้อความ",
+	"sendMessage": "ส่งข้อความ",
+	"stopTts": "หยุดการอ่านออกเสียง",
+	"typeMessage": "พิมพ์ข้อความ...",
+	"typeTask": "พิมพ์งานของคุณที่นี่...",
+	"addContext": "@ เพื่อเพิ่มบริบท, / สำหรับคำสั่ง",
+	"dragFiles": "กด shift เพื่อลากไฟล์",
+	"dragFilesImages": "กด shift เพื่อลากไฟล์/รูปภาพ",
+	"errorReadingFile": "ข้อผิดพลาดในการอ่านไฟล์:",
+	"noValidImages": "ไม่มีรูปภาพที่ถูกต้องถูกประมวลผล",
+	"separator": "ตัวแยก",
+	"edit": "แก้ไข...",
+	"forNextMode": "สำหรับโหมดถัดไป",
+	"forPreviousMode": "สำหรับโหมดก่อนหน้า",
+	"apiRequest": {
+		"title": "การร้องขอ API",
+		"failed": "การร้องขอ API ล้มเหลว",
+		"streaming": "การร้องขอ API...",
+		"cancelled": "การร้องขอ API ถูกยกเลิก",
+		"streamingFailed": "การสตรีม API ล้มเหลว"
+	},
+	"checkpoint": {
+		"regular": "จุดตรวจ",
+		"initializingWarning": "ยังคงกำลังเตรียมจุดตรวจ... หากใช้เวลานานเกินไป คุณสามารถปิดจุดตรวจใน<settingsLink>การตั้งค่า</settingsLink>และเริ่มงานใหม่",
+		"menu": {
+			"viewDiff": "ดู Diff",
+			"restore": "กู้คืนจุดตรวจ",
+			"restoreFiles": "กู้คืนไฟล์",
+			"restoreFilesDescription": "กู้คืนไฟล์ของโปรเจ็กต์กลับไปยังสแนปช็อตที่ถ่ายไว้ ณ จุดนี้",
+			"restoreFilesAndTask": "กู้คืนไฟล์และงาน",
+			"confirm": "ยืนยัน",
+			"cancel": "ยกเลิก",
+			"cannotUndo": "การกระทำนี้ไม่สามารถยกเลิกได้",
+			"restoreFilesAndTaskDescription": "กู้คืนไฟล์ของโปรเจ็กต์กลับไปยังสแนปช็อตที่ถ่ายไว้ ณ จุดนี้และลบข้อความทั้งหมดหลังจากจุดนี้"
+		},
+		"current": "ปัจจุบัน"
+	},
+	"contextCondense": {
+		"title": "บริบทถูกบีบอัด",
+		"condensing": "กำลังบีบอัดบริบท...",
+		"errorHeader": "ไม่สามารถบีบอัดบริบทได้",
+		"tokens": "โทเค็น"
+	},
+	"instructions": {
+		"wantsToFetch": "ModelHarbor ต้องการดึงคำแนะนำโดยละเอียดเพื่อช่วยเหลือในงานปัจจุบัน"
+	},
+	"fileOperations": {
+		"wantsToRead": "ModelHarbor ต้องการอ่านไฟล์นี้:",
+		"wantsToReadMultiple": "ModelHarbor ต้องการอ่านหลายไฟล์:",
+		"wantsToReadAndXMore": "ModelHarbor ต้องการอ่านไฟล์นี้และอีก {{count}} ไฟล์:",
+		"wantsToReadOutsideWorkspace": "ModelHarbor ต้องการอ่านไฟล์นี้นอกพื้นที่ทำงาน:",
+		"didRead": "ModelHarbor อ่านไฟล์นี้:",
+		"wantsToEdit": "ModelHarbor ต้องการแก้ไขไฟล์นี้:",
+		"wantsToEditOutsideWorkspace": "ModelHarbor ต้องการแก้ไขไฟล์นี้นอกพื้นที่ทำงาน:",
+		"wantsToEditProtected": "ModelHarbor ต้องการแก้ไขไฟล์การกำหนดค่าที่ป้องกัน:",
+		"wantsToApplyBatchChanges": "ModelHarbor ต้องการนำการเปลี่ยนแปลงไปใช้กับหลายไฟล์:",
+		"wantsToGenerateImage": "ModelHarbor ต้องการสร้างรูปภาพ:",
+		"wantsToGenerateImageOutsideWorkspace": "ModelHarbor ต้องการสร้างรูปภาพนอกพื้นที่ทำงาน:",
+		"wantsToGenerateImageProtected": "ModelHarbor ต้องการสร้างรูปภาพในตำแหน่งที่ได้รับการป้องกัน:",
+		"didGenerateImage": "ModelHarbor สร้างรูปภาพ:",
+		"wantsToCreate": "ModelHarbor ต้องการสร้างไฟล์ใหม่:",
+		"wantsToSearchReplace": "ModelHarbor ต้องการค้นหาและแทนที่ในไฟล์นี้:",
+		"didSearchReplace": "ModelHarbor ทำการค้นหาและแทนที่ในไฟล์นี้:",
+		"wantsToInsert": "ModelHarbor ต้องการแทรกเนื้อหาลงในไฟล์นี้:",
+		"wantsToInsertWithLineNumber": "ModelHarbor ต้องการแทรกเนื้อหาลงในไฟล์นี้ที่บรรทัด {{lineNumber}}:",
+		"wantsToInsertAtEnd": "ModelHarbor ต้องการผนวกเนื้อหาไปยังท้ายไฟล์นี้:"
+	},
+	"directoryOperations": {
+		"wantsToViewTopLevel": "ModelHarbor ต้องการดูไฟล์ระดับบนสุดในไดเร็กทอรีนี้:",
+		"didViewTopLevel": "ModelHarbor ดูไฟล์ระดับบนสุดในไดเร็กทอรีนี้:",
+		"wantsToViewTopLevelOutsideWorkspace": "ModelHarbor ต้องการดูไฟล์ระดับบนสุดในไดเร็กทอรีนี้ (นอกพื้นที่ทำงาน):",
+		"didViewTopLevelOutsideWorkspace": "ModelHarbor ดูไฟล์ระดับบนสุดในไดเร็กทอรีนี้ (นอกพื้นที่ทำงาน):",
+		"wantsToViewRecursive": "ModelHarbor ต้องการดูไฟล์ทั้งหมดในไดเร็กทอรีนี้แบบเรียกซ้ำ:",
+		"didViewRecursive": "ModelHarbor ดูไฟล์ทั้งหมดในไดเร็กทอรีนี้แบบเรียกซ้ำ:",
+		"wantsToViewRecursiveOutsideWorkspace": "ModelHarbor ต้องการดูไฟล์ทั้งหมดในไดเร็กทอรีนี้แบบเรียกซ้ำ (นอกพื้นที่ทำงาน):",
+		"didViewRecursiveOutsideWorkspace": "ModelHarbor ดูไฟล์ทั้งหมดในไดเร็กทอรีนี้แบบเรียกซ้ำ (นอกพื้นที่ทำงาน):",
+		"wantsToViewDefinitions": "ModelHarbor ต้องการดูชื่อคำจำกัดความของซอร์สโค้ดที่ใช้ในไดเร็กทอรีนี้:",
+		"didViewDefinitions": "ModelHarbor ดูชื่อคำจำกัดความของซอร์สโค้ดที่ใช้ในไดเร็กทอรีนี้:",
+		"wantsToViewDefinitionsOutsideWorkspace": "ModelHarbor ต้องการดูชื่อคำจำกัดความของซอร์สโค้ดที่ใช้ในไดเร็กทอรีนี้ (นอกพื้นที่ทำงาน):",
+		"didViewDefinitionsOutsideWorkspace": "ModelHarbor ดูชื่อคำจำกัดความของซอร์สโค้ดที่ใช้ในไดเร็กทอรีนี้ (นอกพื้นที่ทำงาน):",
+		"wantsToSearch": "ModelHarbor ต้องการค้นหาไดเร็กทอรีนี้สำหรับ <code>{{regex}}</code>:",
+		"didSearch": "ModelHarbor ค้นหาไดเร็กทอรีนี้สำหรับ <code>{{regex}}</code>:",
+		"wantsToSearchOutsideWorkspace": "ModelHarbor ต้องการค้นหาไดเร็กทอรีนี้ (นอกพื้นที่ทำงาน) สำหรับ <code>{{regex}}</code>:",
+		"didSearchOutsideWorkspace": "ModelHarbor ค้นหาไดเร็กทอรีนี้ (นอกพื้นที่ทำงาน) สำหรับ <code>{{regex}}</code>:"
+	},
+	"codebaseSearch": {
+		"wantsToSearch": "ModelHarbor ต้องการค้นหาโค้ดเบสสำหรับ <code>{{query}}</code>:",
+		"wantsToSearchWithPath": "ModelHarbor ต้องการค้นหาโค้ดเบสสำหรับ <code>{{query}}</code> ใน <code>{{path}}</code>:",
+		"didSearch_one": "พบ 1 ผลลัพธ์",
+		"didSearch_other": "พบ {{count}} ผลลัพธ์",
+		"resultTooltip": "คะแนนความคล้าย: {{score}} (คลิกเพื่อเปิดไฟล์)"
+	},
+	"commandOutput": "ผลลัพธ์คำสั่ง",
+	"commandExecution": {
+		"running": "กำลังทำงาน",
+		"pid": "PID: {{pid}}",
+		"exited": "ออก ({{exitCode}})",
+		"manageCommands": "จัดการสิทธิ์คำสั่ง",
+		"commandManagementDescription": "จัดการสิทธิ์คำสั่ง: คลิก ✓ เพื่ออนุญาตการรันอัตโนมัติ ✗ เพื่อปฏิเสธการรัน แพทเทิร์นสามารถเปิด/ปิดหรือลบออกจากรายการได้ <settingsLink>ดูการตั้งค่าทั้งหมด</settingsLink>",
+		"addToAllowed": "เพิ่มไปยังรายการที่อนุญาต",
+		"removeFromAllowed": "ลบออกจากรายการที่อนุญาต",
+		"addToDenied": "เพิ่มไปยังรายการที่ปฏิเสธ",
+		"removeFromDenied": "ลบออกจากรายการที่ปฏิเสธ",
+		"abortCommand": "ยกเลิกการรันคำสั่ง",
+		"expandOutput": "ขยายผลลัพธ์",
+		"collapseOutput": "ยุบผลลัพธ์",
+		"expandManagement": "ขยายส่วนการจัดการคำสั่ง",
+		"collapseManagement": "ยุบส่วนการจัดการคำสั่ง"
+	},
+	"response": "การตอบสนอง",
+	"arguments": "อาร์กิวเมนต์",
+	"mcp": {
+		"wantsToUseTool": "ModelHarbor ต้องการใช้เครื่องมือบนเซิร์ฟเวอร์ MCP {{serverName}}:",
+		"wantsToAccessResource": "ModelHarbor ต้องการเข้าถึงทรัพยากรบนเซิร์ฟเวอร์ MCP {{serverName}}:"
+	},
+	"modes": {
+		"wantsToSwitch": "ModelHarbor ต้องการสลับไปยังโหมด {{mode}}",
+		"wantsToSwitchWithReason": "ModelHarbor ต้องการสลับไปยังโหมด {{mode}} เพราะ: {{reason}}",
+		"didSwitch": "ModelHarbor สลับไปยังโหมด {{mode}}",
+		"didSwitchWithReason": "ModelHarbor สลับไปยังโหมด {{mode}} เพราะ: {{reason}}"
+	},
+	"subtasks": {
+		"wantsToCreate": "ModelHarbor ต้องการสร้างงานย่อยใหม่ในโหมด {{mode}}:",
+		"wantsToFinish": "ModelHarbor ต้องการจบงานย่อยนี้",
+		"newTaskContent": "คำแนะนำงานย่อย",
+		"completionContent": "งานย่อยเสร็จสิ้น",
+		"resultContent": "ผลลัพธ์งานย่อย",
+		"defaultResult": "โปรดดำเนินการต่อไปยังงานถัดไป",
+		"completionInstructions": "งานย่อยเสร็จสิ้น! คุณสามารถตรวจสอบผลลัพธ์และแนะนำการแก้ไขหรือขั้นตอนถัดไป หากทุกอย่างดูดี ให้ยืนยันเพื่อส่งคืนผลลัพธ์ไปยังงานหลัก"
+	},
+	"questions": {
+		"hasQuestion": "ModelHarbor มีคำถาม:"
+	},
+	"taskCompleted": "งานเสร็จสิ้น",
+	"error": "ข้อผิดพลาด",
+	"diffError": {
+		"title": "การแก้ไขไม่สำเร็จ"
+	},
+	"troubleMessage": "ModelHarbor กำลังมีปัญหา...",
+	"powershell": {
+		"issues": "ดูเหมือนว่าคุณมีปัญหากับ Windows PowerShell โปรดดู"
+	},
+	"autoApprove": {
+		"title": "อนุมัติอัตโนมัติ:",
+		"none": "ไม่มี",
+		"description": "การอนุมัติอัตโนมัติอนุญาตให้ ModelHarbor Agent ทำการดำเนินการโดยไม่ต้องขออนุญาต เปิดใช้เฉพาะสำหรับการกระทำที่คุณเชื่อถือเต็มที่ การกำหนดค่าโดยละเอียดเพิ่มเติมมีอยู่ใน<settingsLink>การตั้งค่า</settingsLink>",
+		"selectOptionsFirst": "เลือกอย่างน้อยหนึ่งตัวเลือกด้านล่างเพื่อเปิดใช้การอนุมัติอัตโนมัติ",
+		"toggleAriaLabel": "สลับการอนุมัติอัตโนมัติ",
+		"disabledAriaLabel": "การอนุมัติอัตโนมัติปิดใช้งาน - เลือกตัวเลือกก่อน"
+	},
+	"announcement": {
+		"title": "🎉 ModelHarbor Agent {{version}} เปิดตัวแล้ว",
+		"description": "ModelHarbor Agent {{version}} นำมาซึ่งคุณสมบัติใหม่ที่ทรงพลังและการปรับปรุงที่สำคัญเพื่อเพิ่มประสิทธิภาพเวิร์กโฟลว์การพัฒนาของคุณ",
+		"whatsNew": "มีอะไรใหม่",
+		"feature1": "<bold>การจัดคิวข้อความ</bold>: จัดคิวข้อความหลายข้อความในขณะที่ ModelHarbor กำลังทำงาน ช่วยให้คุณวางแผนเวิร์กโฟลว์ของคุณต่อไปได้โดยไม่หยุดชะงัก",
+		"feature2": "<bold>คำสั่งทับที่กำหนดเอง</bold>: สร้างคำสั่งทับส่วนบุคคลเพื่อการเข้าถึงพรอมต์และเวิร์กโฟลว์ที่ใช้บ่อยได้อย่างรวดเร็ว พร้อมการจัดการ UI เต็มรูปแบบ",
+		"feature3": "<bold>เครื่องมือ Gemini ที่ปรับปรุงแล้ว</bold>: บริบท URL ใหม่และความสามารถในการค้นหาของ Google Search ช่วยให้โมเดล Gemini มีข้อมูลเว็บแบบเรียลไทม์และความสามารถในการวิจัยที่เพิ่มขึ้น",
+		"hideButton": "ซ่อนประกาศ",
+		"detailsDiscussLinks": "แวะมาเยี่ยมเยียนเราที่ www.modelharbor.com 🚀",
+		"stealthModel": {
+			"feature": "โมเดลล่องหนของ Sonic ตอนนี้คือ <bold>Grok Code Fast</bold>! โมเดลการให้เหตุผลประสิทธิภาพสูงนี้มีให้ใช้งานในชื่อ <code>grok-code-fast-1</code> ภายใต้ผู้ให้บริการ <bold>xAI (Grok)</bold>",
+			"note": "เพื่อเป็นการขอบคุณสำหรับความคิดเห็นที่เป็นประโยชน์ทั้งหมดเกี่ยวกับ Sonic, xAI กำลังขยายการเข้าถึง <code>grok-code-fast-1</code> ฟรีไปอีกหนึ่งสัปดาห์ผ่านผู้ให้บริการ <bold>ModelHarbor Agent Cloud</bold>",
+			"connectButton": "เชื่อมต่อกับ ModelHarbor Agent Cloud",
+			"selectModel": "ไปที่ <settingsLink>การตั้งค่า</settingsLink> เพื่ออัปเดตการกำหนดค่าผู้ให้บริการของคุณ"
+		}
+	},
+	"reasoning": {
+		"thinking": "กำลังคิด",
+		"seconds": "{{count}} วินาที"
+	},
+	"followUpSuggest": {
+		"copyToInput": "คัดลอกไปยังช่องป้อน (เหมือนกับ shift + คลิก)",
+		"autoSelectCountdown": "เลือกอัตโนมัติใน {{count}} วินาที",
+		"countdownDisplay": "{{count}} วินาที"
+	},
+	"browser": {
+		"rooWantsToUse": "ModelHarbor ต้องการใช้เบราว์เซอร์:",
+		"consoleLogs": "Console Logs",
+		"noNewLogs": "(ไม่มี log ใหม่)",
+		"screenshot": "ภาพหน้าจอเบราว์เซอร์",
+		"cursor": "เคอร์เซอร์",
+		"navigation": {
+			"step": "ขั้นตอน {{current}} จาก {{total}}",
+			"previous": "ก่อนหน้า",
+			"next": "ถัดไป"
+		},
+		"sessionStarted": "เซสชันเบราว์เซอร์เริ่มต้น",
+		"actions": {
+			"title": "การกระทำเบราว์เซอร์: ",
+			"launch": "เปิดเบราว์เซอร์ที่ {{url}}",
+			"click": "คลิก ({{coordinate}})",
+			"type": "พิมพ์ \"{{text}}\"",
+			"scrollDown": "เลื่อนลง",
+			"scrollUp": "เลื่อนขึ้น",
+			"close": "ปิดเบราว์เซอร์"
+		},
+		"ModelHarborWantsToUse": "ModelHarbor ต้องการใช้เบราว์เซอร์:"
+	},
+	"codeblock": {
+		"tooltips": {
+			"expand": "ขยายบล็อกโค้ด",
+			"collapse": "ยุบบล็อกโค้ด",
+			"enable_wrap": "เปิดใช้การตัดบรรทัด",
+			"disable_wrap": "ปิดการตัดบรรทัด",
+			"copy_code": "คัดลอกโค้ด"
+		}
+	},
+	"systemPromptWarning": "คำเตือน: การแทนที่ระบบพรอมต์แบบกำหนดเองทำงานอยู่ สิ่งนี้อาจทำให้ฟังก์ชันการทำงานเสียหายอย่างรุนแรงและทำให้เกิดพฤติกรรมที่คาดเดาไม่ได้",
+	"profileViolationWarning": "โปรไฟล์ปัจจุบันไม่เข้ากันกับการตั้งค่าขององค์กรของคุณ",
+	"shellIntegration": {
+		"title": "คำเตือนการรันคำสั่ง",
+		"description": "คำสั่งของคุณกำลังถูกรันโดยไม่มีการรวมเชลล์เทอร์มินัล VSCode เพื่อซ่อนคำเตือนนี้ คุณสามารถปิดการรวมเชลล์ในส่วน<strong>Terminal</strong>ของ<settingsLink>การตั้งค่า ModelHarbor Agent</settingsLink>หรือแก้ไขปัญหาการรวมเทอร์มินัล VSCode โดยใช้ลิงก์ด้านล่าง",
+		"troubleshooting": "คลิกที่นี่สำหรับเอกสารการรวมเชลล์"
+	},
+	"ask": {
+		"autoApprovedRequestLimitReached": {
+			"title": "ถึงขีดจำกัดคำขออนุมัติอัตโนมัติ",
+			"description": "ModelHarbor ถึงขีดจำกัดอนุมัติอัตโนมัติของ {{count}} คำขอ API คุณต้องการรีเซ็ตการนับและดำเนินการต่อกับงานหรือไม่?",
+			"button": "รีเซ็ตและดำเนินการต่อ"
+		},
+		"autoApprovedCostLimitReached": {
+			"title": "ถึงขีดจำกัดค่าใช้จ่ายที่อนุมัติอัตโนมัติ",
+			"description": "ModelHarbor ได้ใช้จ่ายถึงขีดจำกัดที่อนุมัติอัตโนมัติที่ ${{count}} แล้ว คุณต้องการรีเซ็ตค่าใช้จ่ายและดำเนินงานต่อหรือไม่",
+			"button": "รีเซ็ตและดำเนินการต่อ"
+		}
+	},
+	"indexingStatus": {
+		"ready": "ดัชนีพร้อม",
+		"indexing": "กำลังจัดทำดัชนี {{percentage}}%",
+		"indexed": "จัดทำดัชนีแล้ว",
+		"error": "ข้อผิดพลาดดัชนี",
+		"status": "สถานะดัชนี"
+	},
+	"versionIndicator": {
+		"ariaLabel": "เวอร์ชัน {{version}} - คลิกเพื่อดูบันทึกการปล่อย"
+	},
+	"rooCloudCTA": {
+		"title": "ModelHarbor Agent Cloud กำลังจะมาเร็ว ๆ นี้!",
+		"description": "เรียกใช้เอเจนต์ ModelHarbor ระยะไกลในคลาวด์ เข้าถึงงานของคุณได้จากทุกที่ ทำงานร่วมกับผู้อื่น และอีกมากมาย",
+		"joinWaitlist": "ลงทะเบียนเพื่อรับข้อมูลอัปเดตล่าสุด"
+	},
+	"command": {
+		"triggerDescription": "เรียกใช้คำสั่ง {{name}}"
+	},
+	"slashCommands": {
+		"tooltip": "จัดการคำสั่งทับ",
+		"title": "คำสั่งทับ",
+		"description": "สร้างคำสั่งทับที่กำหนดเองเพื่อการเข้าถึงพรอมต์และเวิร์กโฟลว์ที่ใช้บ่อยได้อย่างรวดเร็ว <DocsLink>เอกสาร</DocsLink>",
+		"builtInCommands": "คำสั่งที่มีในตัว",
+		"globalCommands": "คำสั่งส่วนกลาง",
+		"workspaceCommands": "คำสั่งพื้นที่ทำงาน",
+		"globalCommand": "คำสั่งส่วนกลาง",
+		"editCommand": "แก้ไขคำสั่ง",
+		"deleteCommand": "ลบคำสั่ง",
+		"newGlobalCommandPlaceholder": "คำสั่งส่วนกลางใหม่...",
+		"newWorkspaceCommandPlaceholder": "คำสั่งพื้นที่ทำงานใหม่...",
+		"deleteDialog": {
+			"title": "ลบคำสั่ง",
+			"description": "คุณแน่ใจหรือไม่ว่าต้องการลบคำสั่ง \"{{name}}\"? การกระทำนี้ไม่สามารถยกเลิกได้",
+			"cancel": "ยกเลิก",
+			"confirm": "ลบ"
+		}
+	},
+	"queuedMessages": {
+		"title": "ข้อความในคิว:",
+		"clickToEdit": "คลิกเพื่อแก้ไขข้อความ"
+	}
+}

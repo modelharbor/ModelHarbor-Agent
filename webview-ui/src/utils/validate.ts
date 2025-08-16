@@ -215,6 +215,8 @@ function getModelIdForProvider(apiConfiguration: ProviderSettings, provider: str
 			return apiConfiguration.huggingFaceModelId
 		case "io-intelligence":
 			return apiConfiguration.ioIntelligenceModelId
+		case "modelharbor":
+			return apiConfiguration.modelharborModelId ?? "qwen/qwen3-coder-480b-a35b-instruct"
 		case "vercel-ai-gateway":
 			return apiConfiguration.vercelAiGatewayModelId
 		default:
@@ -292,6 +294,9 @@ export function validateModelId(apiConfiguration: ProviderSettings, routerModels
 			break
 		case "io-intelligence":
 			modelId = apiConfiguration.ioIntelligenceModelId
+			break
+		case "modelharbor":
+			modelId = apiConfiguration.modelharborModelId
 			break
 		case "vercel-ai-gateway":
 			modelId = apiConfiguration.vercelAiGatewayModelId

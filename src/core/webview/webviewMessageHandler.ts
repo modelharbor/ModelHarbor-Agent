@@ -791,6 +791,7 @@ export const webviewMessageHandler = async (
 				},
 				{ key: "glama", options: { provider: "glama" } },
 				{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
+				{ key: "modelharbor", options: { provider: "modelharbor" } },
 				{ key: "vercel-ai-gateway", options: { provider: "vercel-ai-gateway" } },
 				{
 					key: "deepinfra",
@@ -832,9 +833,10 @@ export const webviewMessageHandler = async (
 
 			const fetchedRouterModels: Partial<Record<RouterName, ModelRecord>> = {
 				...routerModels,
-				// Initialize ollama and lmstudio with empty objects since they use separate handlers
+				// Initialize ollama, lmstudio, and modelharbor with empty objects
 				ollama: {},
 				lmstudio: {},
+				modelharbor: {},
 			}
 
 			results.forEach((result, index) => {
@@ -870,6 +872,9 @@ export const webviewMessageHandler = async (
 					})
 				}
 			})
+
+			// ModelHarbor embedding models are now fixed in embeddingModels.ts
+			// No need to update codebaseIndexModels dynamically from API
 
 			provider.postMessageToWebview({
 				type: "routerModels",
@@ -2287,85 +2292,6 @@ export const webviewMessageHandler = async (
 			}
 			break
 
-		case "telemetrySetting": {
-			const telemetrySetting = message.text as TelemetrySetting
-			await updateGlobalState("telemetrySetting", telemetrySetting)
-			const isOptedIn = telemetrySetting !== "disabled"
-			TelemetryService.instance.updateTelemetryState(isOptedIn)
-			await provider.postStateToWebview()
-			break
-		}
-		case "cloudButtonClicked": {
-			// Navigate to the cloud tab.
-			provider.postMessageToWebview({ type: "action", action: "cloudButtonClicked" })
-			break
-		}
-		case "rooCloudSignIn": {
-			try {
-				TelemetryService.instance.captureEvent(TelemetryEventName.AUTHENTICATION_INITIATED)
-				await CloudService.instance.login()
-			} catch (error) {
-				provider.log(`AuthService#login failed: ${error}`)
-				vscode.window.showErrorMessage("Sign in failed.")
-			}
-
-			break
-		}
-		case "rooCloudSignOut": {
-			try {
-				await CloudService.instance.logout()
-				await provider.postStateToWebview()
-				provider.postMessageToWebview({ type: "authenticatedUser", userInfo: undefined })
-			} catch (error) {
-				provider.log(`AuthService#logout failed: ${error}`)
-				vscode.window.showErrorMessage("Sign out failed.")
-			}
-
-			break
-		}
-		case "rooCloudManualUrl": {
-			try {
-				if (!message.text) {
-					vscode.window.showErrorMessage(t("common:errors.manual_url_empty"))
-					break
-				}
-
-				// Parse the callback URL to extract parameters
-				const callbackUrl = message.text.trim()
-				const uri = vscode.Uri.parse(callbackUrl)
-
-				if (!uri.query) {
-					throw new Error(t("common:errors.manual_url_no_query"))
-				}
-
-				const query = new URLSearchParams(uri.query)
-				const code = query.get("code")
-				const state = query.get("state")
-				const organizationId = query.get("organizationId")
-
-				if (!code || !state) {
-					throw new Error(t("common:errors.manual_url_missing_params"))
-				}
-
-				// Reuse the existing authentication flow
-				await CloudService.instance.handleAuthCallback(
-					code,
-					state,
-					organizationId === "null" ? null : organizationId,
-				)
-
-				await provider.postStateToWebview()
-			} catch (error) {
-				provider.log(`ManualUrl#handleAuthCallback failed: ${error}`)
-				const errorMessage = error instanceof Error ? error.message : t("common:errors.manual_url_auth_failed")
-
-				// Show error message through VS Code UI
-				vscode.window.showErrorMessage(`${t("common:errors.manual_url_auth_error")}: ${errorMessage}`)
-			}
-
-			break
-		}
-
 		case "saveCodeIndexSettingsAtomic": {
 			if (!message.codeIndexSettings) {
 				break
@@ -2419,6 +2345,12 @@ export const webviewMessageHandler = async (
 					await provider.contextProxy.storeSecret(
 						"codebaseIndexMistralApiKey",
 						settings.codebaseIndexMistralApiKey,
+					)
+				}
+				if (settings.codebaseIndexModelHarborApiKey !== undefined) {
+					await provider.contextProxy.storeSecret(
+						"codebaseIndexModelHarborApiKey",
+						settings.codebaseIndexModelHarborApiKey,
 					)
 				}
 				if (settings.codebaseIndexVercelAiGatewayApiKey !== undefined) {
@@ -2561,6 +2493,7 @@ export const webviewMessageHandler = async (
 			))
 			const hasGeminiApiKey = !!(await provider.context.secrets.get("codebaseIndexGeminiApiKey"))
 			const hasMistralApiKey = !!(await provider.context.secrets.get("codebaseIndexMistralApiKey"))
+			const hasModelHarborApiKey = !!(await provider.context.secrets.get("codebaseIndexModelHarborApiKey"))
 			const hasVercelAiGatewayApiKey = !!(await provider.context.secrets.get(
 				"codebaseIndexVercelAiGatewayApiKey",
 			))
@@ -2573,6 +2506,7 @@ export const webviewMessageHandler = async (
 					hasOpenAiCompatibleApiKey,
 					hasGeminiApiKey,
 					hasMistralApiKey,
+					hasModelHarborApiKey,
 					hasVercelAiGatewayApiKey,
 				},
 			})
