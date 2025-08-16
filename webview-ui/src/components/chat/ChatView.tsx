@@ -3,10 +3,10 @@ import { useDeepCompareEffect, useEvent } from "react-use"
 import debounce from "debounce"
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso"
 import removeMd from "remove-markdown"
-import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
+import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import useSound from "use-sound"
 import { LRUCache } from "lru-cache"
-import { Trans } from "react-i18next"
+import { useTranslation } from "react-i18next"
 
 import { useDebounceEffect } from "@src/utils/useDebounceEffect"
 import { appendImages } from "@src/utils/imageUtils"
@@ -30,10 +30,10 @@ import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { useSelectedModel } from "@src/components/ui/hooks/useSelectedModel"
 import RooHero from "@src/components/welcome/RooHero"
 import RooTips from "@src/components/welcome/RooTips"
-import { StandardTooltip, Button } from "@src/components/ui"
-import { CloudUpsellDialog } from "@src/components/cloud/CloudUpsellDialog"
+import { StandardTooltip } from "@src/components/ui"
+import { useAutoApprovalState } from "@src/hooks/useAutoApprovalState"
+import { useAutoApprovalToggles } from "@src/hooks/useAutoApprovalToggles"
 
-import TelemetryBanner from "../common/TelemetryBanner"
 import VersionIndicator from "../common/VersionIndicator"
 import HistoryPreview from "../history/HistoryPreview"
 import Announcement from "./Announcement"
@@ -46,9 +46,6 @@ import SystemPromptWarning from "./SystemPromptWarning"
 import ProfileViolationWarning from "./ProfileViolationWarning"
 import { CheckpointWarning } from "./CheckpointWarning"
 import { QueuedMessages } from "./QueuedMessages"
-import DismissibleUpsell from "../common/DismissibleUpsell"
-import { useCloudUpsell } from "@src/hooks/useCloudUpsell"
-import { Cloud } from "lucide-react"
 
 export interface ChatViewProps {
 	isHidden: boolean
@@ -90,11 +87,9 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 		alwaysAllowModeSwitch,
 		alwaysAllowUpdateTodoList,
 		customModes,
-		telemetrySetting,
 		hasSystemPromptOverride,
 		soundEnabled,
 		soundVolume,
-		cloudIsAuthenticated,
 		messageQueue = [],
 		isBrowserSessionActive,
 	} = useExtensionState()
@@ -174,15 +169,6 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 	useEffect(() => {
 		clineAskRef.current = clineAsk
 	}, [clineAsk])
-
-	const {
-		isOpen: isUpsellOpen,
-		openUpsell,
-		closeUpsell,
-		handleConnect,
-	} = useCloudUpsell({
-		autoOpenOnAuth: false,
-	})
 
 	// Keep inputValueRef in sync with inputValue state
 	useEffect(() => {
@@ -569,11 +555,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 			text = text.trim()
 
 			if (text || images.length > 0) {
-				// Queue message if:
-				// - Task is busy (sendingDisabled)
-				// - API request in progress (isStreaming)
-				// - Queue has items (preserve message order during drain)
-				if (sendingDisabled || isStreaming || messageQueue.length > 0) {
+				if (sendingDisabled) {
 					try {
 						console.log("queueMessage", text, images)
 						vscode.postMessage({ type: "queueMessage", text, images })
@@ -629,7 +611,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 				handleChatReset()
 			}
 		},
-		[handleChatReset, markFollowUpAsAnswered, sendingDisabled, isStreaming, messageQueue.length], // messagesRef and clineAskRef are stable
+		[handleChatReset, markFollowUpAsAnswered, sendingDisabled], // messagesRef and clineAskRef are stable
 	)
 
 	const handleSetChatBoxMessage = useCallback(
@@ -1368,7 +1350,6 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 		<div
 			data-testid="chat-view"
 			className={isHidden ? "hidden" : "fixed top-0 left-0 right-0 bottom-0 flex flex-col overflow-hidden"}>
-			{telemetrySetting === "unset" && <TelemetryBanner />}
 			{(showAnnouncement || showAnnouncementModal) && (
 				<Announcement
 					hideAnnouncement={() => {
@@ -1415,29 +1396,13 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 							onClick={() => setShowAnnouncementModal(true)}
 							className="absolute top-2 right-3 z-10"
 						/>
-						<div className="flex flex-col gap-4 w-full">
-							<RooHero />
-							{/* Show RooTips when authenticated or when user is new */}
-							{taskHistory.length < 6 && <RooTips />}
-							{/* Everyone should see their task history if any */}
-							{taskHistory.length > 0 && <HistoryPreview />}
+
+						<RooHero />
+
+						<div className="mb-2.5">
+							<RooTips />
 						</div>
-						{/* Logged out users should see a one-time upsell, but not for brand new users */}
-						{!cloudIsAuthenticated && taskHistory.length >= 6 && (
-							<DismissibleUpsell
-								upsellId="taskList2"
-								icon={<Cloud className="size-5 shrink-0" />}
-								onClick={() => openUpsell()}
-								dismissOnClick={false}
-								className="bg-none mt-6 border-border rounded-xl p-0 py-3 !text-base">
-								<Trans
-									i18nKey="cloud:upsell.taskList"
-									components={{
-										learnMoreLink: <VSCodeLink href="#" />,
-									}}
-								/>
-							</DismissibleUpsell>
-						)}
+						{taskHistory.length > 0 && <HistoryPreview />}
 					</div>
 				</div>
 			)}
@@ -1596,7 +1561,6 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 			)}
 
 			<div id="roo-portal" />
-			<CloudUpsellDialog open={isUpsellOpen} onOpenChange={closeUpsell} onConnect={handleConnect} />
 		</div>
 	)
 }

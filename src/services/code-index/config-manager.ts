@@ -10,15 +10,16 @@ import { getDefaultModelId, getModelDimension, getModelScoreThreshold } from "..
  * Handles loading, validating, and providing access to configuration values.
  */
 export class CodeIndexConfigManager {
-	private codebaseIndexEnabled: boolean = false
-	private embedderProvider: EmbedderProvider = "openai"
-	private modelId?: string
-	private modelDimension?: number
+	private codebaseIndexEnabled: boolean = true
+	private embedderProvider: EmbedderProvider = "modelharbor"
+	private modelId?: string = "baai/bge-m3"
+	private modelDimension?: number = 1024
 	private openAiOptions?: ApiHandlerOptions
 	private ollamaOptions?: ApiHandlerOptions
 	private openAiCompatibleOptions?: { baseUrl: string; apiKey: string }
 	private geminiOptions?: { apiKey: string }
 	private mistralOptions?: { apiKey: string }
+	private modelHarborOptions?: { apiKey: string }
 	private vercelAiGatewayOptions?: { apiKey: string }
 	private bedrockOptions?: { region: string; profile?: string }
 	private openRouterOptions?: { apiKey: string; specificProvider?: string }
@@ -74,6 +75,7 @@ export class CodeIndexConfigManager {
 		const openAiCompatibleApiKey = this.contextProxy?.getSecret("codebaseIndexOpenAiCompatibleApiKey") ?? ""
 		const geminiApiKey = this.contextProxy?.getSecret("codebaseIndexGeminiApiKey") ?? ""
 		const mistralApiKey = this.contextProxy?.getSecret("codebaseIndexMistralApiKey") ?? ""
+		const modelHarborApiKey = this.contextProxy?.getSecret("codebaseIndexModelHarborApiKey") ?? ""
 		const vercelAiGatewayApiKey = this.contextProxy?.getSecret("codebaseIndexVercelAiGatewayApiKey") ?? ""
 		const bedrockRegion = codebaseIndexConfig.codebaseIndexBedrockRegion ?? "us-east-1"
 		const bedrockProfile = codebaseIndexConfig.codebaseIndexBedrockProfile ?? ""
@@ -114,6 +116,8 @@ export class CodeIndexConfigManager {
 			this.embedderProvider = "gemini"
 		} else if (codebaseIndexEmbedderProvider === "mistral") {
 			this.embedderProvider = "mistral"
+		} else if (codebaseIndexEmbedderProvider === "modelharbor") {
+			this.embedderProvider = "modelharbor"
 		} else if (codebaseIndexEmbedderProvider === "vercel-ai-gateway") {
 			this.embedderProvider = "vercel-ai-gateway"
 		} else if ((codebaseIndexEmbedderProvider as string) === "bedrock") {
@@ -140,6 +144,7 @@ export class CodeIndexConfigManager {
 
 		this.geminiOptions = geminiApiKey ? { apiKey: geminiApiKey } : undefined
 		this.mistralOptions = mistralApiKey ? { apiKey: mistralApiKey } : undefined
+		this.modelHarborOptions = modelHarborApiKey ? { apiKey: modelHarborApiKey } : undefined
 		this.vercelAiGatewayOptions = vercelAiGatewayApiKey ? { apiKey: vercelAiGatewayApiKey } : undefined
 		this.openRouterOptions = openRouterApiKey
 			? { apiKey: openRouterApiKey, specificProvider: openRouterSpecificProvider || undefined }
@@ -165,6 +170,7 @@ export class CodeIndexConfigManager {
 			openAiCompatibleOptions?: { baseUrl: string; apiKey: string }
 			geminiOptions?: { apiKey: string }
 			mistralOptions?: { apiKey: string }
+			modelHarborOptions?: { apiKey: string }
 			vercelAiGatewayOptions?: { apiKey: string }
 			bedrockOptions?: { region: string; profile?: string }
 			openRouterOptions?: { apiKey: string }
@@ -187,6 +193,7 @@ export class CodeIndexConfigManager {
 			openAiCompatibleApiKey: this.openAiCompatibleOptions?.apiKey ?? "",
 			geminiApiKey: this.geminiOptions?.apiKey ?? "",
 			mistralApiKey: this.mistralOptions?.apiKey ?? "",
+			modelHarborApiKey: this.modelHarborOptions?.apiKey ?? "",
 			vercelAiGatewayApiKey: this.vercelAiGatewayOptions?.apiKey ?? "",
 			bedrockRegion: this.bedrockOptions?.region ?? "",
 			bedrockProfile: this.bedrockOptions?.profile ?? "",
@@ -216,6 +223,7 @@ export class CodeIndexConfigManager {
 				openAiCompatibleOptions: this.openAiCompatibleOptions,
 				geminiOptions: this.geminiOptions,
 				mistralOptions: this.mistralOptions,
+				modelHarborOptions: this.modelHarborOptions,
 				vercelAiGatewayOptions: this.vercelAiGatewayOptions,
 				bedrockOptions: this.bedrockOptions,
 				openRouterOptions: this.openRouterOptions,
@@ -253,6 +261,11 @@ export class CodeIndexConfigManager {
 			return isConfigured
 		} else if (this.embedderProvider === "mistral") {
 			const apiKey = this.mistralOptions?.apiKey
+			const qdrantUrl = this.qdrantUrl
+			const isConfigured = !!(apiKey && qdrantUrl)
+			return isConfigured
+		} else if (this.embedderProvider === "modelharbor") {
+			const apiKey = this.modelHarborOptions?.apiKey
 			const qdrantUrl = this.qdrantUrl
 			const isConfigured = !!(apiKey && qdrantUrl)
 			return isConfigured
@@ -348,6 +361,7 @@ export class CodeIndexConfigManager {
 		const currentModelDimension = this.modelDimension
 		const currentGeminiApiKey = this.geminiOptions?.apiKey ?? ""
 		const currentMistralApiKey = this.mistralOptions?.apiKey ?? ""
+		const currentModelHarborApiKey = this.modelHarborOptions?.apiKey ?? ""
 		const currentVercelAiGatewayApiKey = this.vercelAiGatewayOptions?.apiKey ?? ""
 		const currentBedrockRegion = this.bedrockOptions?.region ?? ""
 		const currentBedrockProfile = this.bedrockOptions?.profile ?? ""
@@ -376,6 +390,12 @@ export class CodeIndexConfigManager {
 		}
 
 		if (prevMistralApiKey !== currentMistralApiKey) {
+			return true
+		}
+
+		// Check ModelHarbor API key changes
+		const prevModelHarborApiKey = prev?.modelHarborApiKey ?? ""
+		if (prevModelHarborApiKey !== currentModelHarborApiKey) {
 			return true
 		}
 
@@ -453,6 +473,7 @@ export class CodeIndexConfigManager {
 			openAiCompatibleOptions: this.openAiCompatibleOptions,
 			geminiOptions: this.geminiOptions,
 			mistralOptions: this.mistralOptions,
+			modelHarborOptions: this.modelHarborOptions,
 			vercelAiGatewayOptions: this.vercelAiGatewayOptions,
 			bedrockOptions: this.bedrockOptions,
 			openRouterOptions: this.openRouterOptions,

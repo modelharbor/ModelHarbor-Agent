@@ -1,10 +1,9 @@
 import { useState, memo } from "react"
 import { Trans } from "react-i18next"
-import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 
 import { Package } from "@roo/package"
+
 import { useAppTranslation } from "@src/i18n/TranslationContext"
-import { vscode } from "@src/utils/vscode"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@src/components/ui"
 
 interface AnnouncementProps {
@@ -39,83 +38,53 @@ const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 					<DialogTitle>{t("chat:announcement.title", { version: Package.version })}</DialogTitle>
 				</DialogHeader>
 				<div>
-					{/* Regular Release Highlights */}
-					<div className="mb-4">
-						<p className="mb-3">{t("chat:announcement.release.heading")}</p>
-						<ul className="list-disc list-inside text-sm space-y-1.5">
-							<li>{t("chat:announcement.release.subtasks")}</li>
-							<li>{t("chat:announcement.release.nativeTools")}</li>
-						</ul>
+					<p className="mb-4 text-vscode-descriptionForeground">
+						{t("chat:announcement.description", { version: Package.version })}
+					</p>
+
+					<h3 className="text-sm font-semibold mb-3 text-vscode-foreground">
+						{t("chat:announcement.whatsNew")}
+					</h3>
+
+					<div className="space-y-3 mb-4">
+						<div>
+							<Trans
+								i18nKey="chat:announcement.feature1"
+								components={{
+									bold: <b />,
+								}}
+							/>
+						</div>
+
+						<div>
+							<Trans
+								i18nKey="chat:announcement.feature2"
+								components={{
+									bold: <b />,
+								}}
+							/>
+						</div>
 					</div>
 
-					<div className="mt-4 text-sm text-center">
-						<Trans
-							i18nKey="chat:announcement.socialLinks"
-							components={{
-								xLink: <XLink />,
-								discordLink: <DiscordLink />,
-								redditLink: <RedditLink />,
-							}}
-						/>
+					<div className="mt-4 text-sm text-center text-vscode-descriptionForeground">
+						{t("chat:announcement.detailsDiscussLinks")}
+					</div>
 					</div>
 
-					{/* Careers Section */}
-					<div className="mt-2 text-sm text-center">
-						<Trans
-							i18nKey="chat:announcement.careers"
-							components={{
-								careersLink: <CareersLink />,
+					<div className="mt-4">
+						<Button
+							onClick={() => {
+								setOpen(false)
+								hideAnnouncement()
 							}}
-						/>
+							className="w-full">
+							{t("chat:announcement.hideButton")}
+						</Button>
 					</div>
 				</div>
 			</DialogContent>
 		</Dialog>
 	)
 }
-
-const XLink = () => (
-	<VSCodeLink
-		href="https://x.com/roocode"
-		onClick={(e) => {
-			e.preventDefault()
-			vscode.postMessage({ type: "openExternal", url: "https://x.com/roocode" })
-		}}>
-		X
-	</VSCodeLink>
-)
-
-const DiscordLink = () => (
-	<VSCodeLink
-		href="https://discord.gg/rCQcvT7Fnt"
-		onClick={(e) => {
-			e.preventDefault()
-			vscode.postMessage({ type: "openExternal", url: "https://discord.gg/rCQcvT7Fnt" })
-		}}>
-		Discord
-	</VSCodeLink>
-)
-
-const RedditLink = () => (
-	<VSCodeLink
-		href="https://www.reddit.com/r/RooCode/"
-		onClick={(e) => {
-			e.preventDefault()
-			vscode.postMessage({ type: "openExternal", url: "https://www.reddit.com/r/RooCode/" })
-		}}>
-		r/RooCode
-	</VSCodeLink>
-)
-
-const CareersLink = ({ children }: { children?: React.ReactNode }) => (
-	<VSCodeLink
-		href="https://careers.roocode.com"
-		onClick={(e) => {
-			e.preventDefault()
-			vscode.postMessage({ type: "openExternal", url: "https://careers.roocode.com" })
-		}}>
-		{children}
-	</VSCodeLink>
-)
 
 export default memo(Announcement)

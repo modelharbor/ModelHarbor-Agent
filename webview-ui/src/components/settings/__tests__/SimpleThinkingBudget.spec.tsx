@@ -29,7 +29,7 @@ describe("SimpleThinkingBudget", () => {
 	const mockSetApiConfigurationField = vi.fn()
 
 	const baseApiConfiguration: ProviderSettings = {
-		apiProvider: "roo",
+		apiProvider: "modelharbor",
 	}
 
 	const modelWithReasoningEffort: ModelInfo = {
