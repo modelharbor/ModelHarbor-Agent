@@ -104,10 +104,9 @@ export async function writeToFileTool(
 			// Check if preventFocusDisruption experiment is enabled
 			const provider = cline.providerRef.deref()
 			const state = await provider?.getState()
-			const isPreventFocusDisruptionEnabled = experiments.isEnabled(
-				state?.experiments ?? {},
-				EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION,
-			)
+			const isPreventFocusDisruptionEnabled = state?.experiments
+				? experiments.isEnabled(state.experiments, EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION)
+				: false
 
 			if (!isPreventFocusDisruptionEnabled) {
 				// update gui message
@@ -145,7 +144,7 @@ export async function writeToFileTool(
 				// Use more specific error message for line_count that provides guidance based on the situation
 				await cline.say(
 					"error",
-					`Roo tried to use write_to_file${
+					`ModelHarbor tried to use write_to_file${
 						relPath ? ` for '${relPath.toPosix()}'` : ""
 					} but the required parameter 'line_count' was missing or truncated after ${actualLineCount} lines of content were written. Retrying...`,
 				)
@@ -166,10 +165,9 @@ export async function writeToFileTool(
 			const state = await provider?.getState()
 			const diagnosticsEnabled = state?.diagnosticsEnabled ?? true
 			const writeDelayMs = state?.writeDelayMs ?? DEFAULT_WRITE_DELAY_MS
-			const isPreventFocusDisruptionEnabled = experiments.isEnabled(
-				state?.experiments ?? {},
-				EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION,
-			)
+			const isPreventFocusDisruptionEnabled = state?.experiments
+				? experiments.isEnabled(state.experiments, EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION)
+				: false
 
 			if (isPreventFocusDisruptionEnabled) {
 				// Direct file write without diff view
