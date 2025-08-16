@@ -256,7 +256,6 @@ export type ExtensionState = Pick<
 	| "fuzzyMatchThreshold"
 	// | "experiments" // Optional in GlobalSettings, required here.
 	| "language"
-	// | "telemetrySetting" // Optional in GlobalSettings, required here.
 	// | "mcpEnabled" // Optional in GlobalSettings, required here.
 	// | "enableMcpServerCreation" // Optional in GlobalSettings, required here.
 	// | "mode" // Optional in GlobalSettings, required here.
@@ -306,7 +305,6 @@ export type ExtensionState = Pick<
 	toolRequirements?: Record<string, boolean> // Map of tool names to their requirements (e.g. {"apply_diff": true} if diffEnabled)
 
 	cwd?: string // Current working directory
-	telemetrySetting: TelemetrySetting
 	telemetryKey?: string
 	machineId?: string
 

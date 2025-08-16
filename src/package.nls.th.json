@@ -1,0 +1,23 @@
+{
+	"roo.extension.name": "ModelHarbor Agent",
+	"roo.extension.description": "ทีมนักพัฒนา AI ทั้งหมดในเครื่องมือแก้ไขของคุณ",
+	"roo.command.openClineInNewTab.title": "เริ่ม ModelHarbor Agent",
+	"roo.command.openClineInNewTab.description": "เปิดแท็บใหม่สำหรับ ModelHarbor Agent",
+	"roo.command.openClineInNewWindow.title": "เปิด ModelHarbor Agent ในหน้าต่างใหม่",
+	"roo.command.openClineInNewWindow.description": "เปิดหน้าต่างใหม่สำหรับ ModelHarbor Agent",
+	"roo.command.clearCloudHistory.title": "ล้างประวัติ ModelHarbor Cloud",
+	"roo.command.clearCloudHistory.description": "ล้างประวัติการสนทนาทั้งหมดจาก ModelHarbor Cloud",
+	"roo.command.exportCurrentTask.title": "ส่งออกงานปัจจุบัน",
+	"roo.command.exportCurrentTask.description": "ส่งออกงานปัจจุบันไปยังไฟล์ JSON",
+	"roo.command.openMcp.title": "เปิดการตั้งค่า MCP",
+	"roo.command.openMcp.description": "เปิดการตั้งค่า Model Context Protocol",
+	"roo.command.openInlineCompletion.title": "เปิดการเติมเต็มแบบอินไลน์",
+	"roo.command.openInlineCompletion.description": "เปิดหรือปิดการเติมเต็มโค้ดแบบอินไลน์ (Beta)",
+	"roo.config.title": "ModelHarbor Agent",
+	"roo.config.language.title": "ภาษา",
+	"roo.config.language.description": "เลือกภาษาสำหรับ ModelHarbor Agent",
+	"roo.config.storagePath.title": "เส้นทางการจัดเก็บข้อมูล",
+	"roo.config.storagePath.description": "เส้นทางแบบเต็มไปยังไดเรกทอรีสำหรับเก็บข้อมูล ModelHarbor Agent (ข้อมูลโปรไฟล์ ประวัติการสนทนา ฯลฯ)",
+	"roo.config.workspaceInfoEnabled.title": "เปิดใช้งานข้อมูลพื้นที่ทำงาน",
+	"roo.config.workspaceInfoEnabled.description": "รวมข้อมูลเกี่ยวกับพื้นที่ทำงาน VS Code (ชื่อ โฟลเดอร์ ไฟล์ที่เปิด ฯลฯ) ในบริบท ModelHarbor Agent"
+}

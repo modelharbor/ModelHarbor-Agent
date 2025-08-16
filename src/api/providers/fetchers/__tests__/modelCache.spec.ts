@@ -25,6 +25,7 @@ vi.mock("../requesty")
 vi.mock("../glama")
 vi.mock("../unbound")
 vi.mock("../io-intelligence")
+vi.mock("../modelharbor")
 
 // Then imports
 import type { Mock } from "vitest"
@@ -35,6 +36,7 @@ import { getRequestyModels } from "../requesty"
 import { getGlamaModels } from "../glama"
 import { getUnboundModels } from "../unbound"
 import { getIOIntelligenceModels } from "../io-intelligence"
+import { getModelHarborModels } from "../modelharbor"
 
 const mockGetLiteLLMModels = getLiteLLMModels as Mock<typeof getLiteLLMModels>
 const mockGetOpenRouterModels = getOpenRouterModels as Mock<typeof getOpenRouterModels>
@@ -42,6 +44,7 @@ const mockGetRequestyModels = getRequestyModels as Mock<typeof getRequestyModels
 const mockGetGlamaModels = getGlamaModels as Mock<typeof getGlamaModels>
 const mockGetUnboundModels = getUnboundModels as Mock<typeof getUnboundModels>
 const mockGetIOIntelligenceModels = getIOIntelligenceModels as Mock<typeof getIOIntelligenceModels>
+const mockGetModelHarborModels = getModelHarborModels as Mock<typeof getModelHarborModels>
 
 const DUMMY_REQUESTY_KEY = "requesty-key-for-testing"
 const DUMMY_UNBOUND_KEY = "unbound-key-for-testing"
@@ -169,6 +172,23 @@ describe("getModels with new GetModelsOptions", () => {
 				baseUrl: "http://localhost:4000",
 			}),
 		).rejects.toThrow("LiteLLM connection failed")
+	})
+
+	it("calls getModelHarborModels for modelharbor provider", async () => {
+		const mockModels = {
+			"modelharbor/model": {
+				maxTokens: 4096,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				description: "ModelHarbor model",
+			},
+		}
+		mockGetModelHarborModels.mockResolvedValue(mockModels)
+
+		const result = await getModels({ provider: "modelharbor" })
+
+		expect(mockGetModelHarborModels).toHaveBeenCalled()
+		expect(result).toEqual(mockModels)
 	})
 
 	it("validates exhaustive provider checking with unknown provider", async () => {

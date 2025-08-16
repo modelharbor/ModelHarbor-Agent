@@ -2,7 +2,6 @@ import type { HistoryItem } from "@roo-code/types"
 
 import { render, screen, fireEvent } from "@/utils/test-utils"
 import { vscode } from "@/utils/vscode"
-import { useExtensionState } from "@/context/ExtensionStateContext"
 
 import { TaskActions } from "../TaskActions"
 
@@ -19,35 +18,16 @@ vi.mock("@/utils/vscode", () => ({
 	},
 }))
 
-// Mock the useExtensionState hook
-vi.mock("@/context/ExtensionStateContext", () => ({
-	useExtensionState: vi.fn(),
-}))
-
 const mockPostMessage = vi.mocked(vscode.postMessage)
-const mockUseExtensionState = vi.mocked(useExtensionState)
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
 	useTranslation: () => ({
 		t: (key: string) => {
 			const translations: Record<string, string> = {
-				"chat:task.share": "Share task",
 				"chat:task.export": "Export task history",
 				"chat:task.delete": "Delete Task (Shift + Click to skip confirmation)",
-				"chat:task.shareWithOrganization": "Share with Organization",
-				"chat:task.shareWithOrganizationDescription": "Only members of your organization can access",
-				"chat:task.sharePublicly": "Share Publicly",
-				"chat:task.sharePubliclyDescription": "Anyone with the link can access",
-				"chat:task.connectToCloud": "Connect to Cloud",
-				"chat:task.connectToCloudDescription": "Sign in to Roo Code Cloud to share tasks",
-				"chat:task.sharingDisabledByOrganization": "Sharing disabled by organization",
-				"account:cloudBenefitsTitle": "Connect to Roo Code Cloud",
-				"account:cloudBenefitsSubtitle": "Sign in to Roo Code Cloud to share tasks",
-				"account:cloudBenefitHistory": "Access your task history from anywhere",
-				"account:cloudBenefitSharing": "Share tasks with your team",
-				"account:cloudBenefitMetrics": "Track usage and costs",
-				"account:connect": "Connect",
+				"history:copyPrompt": "Copy prompt",
 			}
 			return translations[key] || key
 		},
@@ -77,245 +57,9 @@ describe("TaskActions", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks()
-		mockUseExtensionState.mockReturnValue({
-			sharingEnabled: true,
-			cloudIsAuthenticated: true,
-			cloudUserInfo: {
-				organizationName: "Test Organization",
-			},
-		} as any)
 	})
 
-	describe("Share Button Visibility", () => {
-		it("renders share button when item has id", () => {
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// ShareButton now uses data-testid for reliable testing
-			const shareButton = screen.getByTestId("share-button")
-			expect(shareButton).toBeInTheDocument()
-		})
-
-		it("does not render share button when item has no id", () => {
-			render(<TaskActions item={undefined} buttonsDisabled={false} />)
-
-			// ShareButton returns null when no item ID
-			const shareButton = screen.queryByTestId("share-button")
-			expect(shareButton).toBeNull()
-		})
-
-		it("renders share button even when not authenticated", () => {
-			mockUseExtensionState.mockReturnValue({
-				sharingEnabled: false,
-				cloudIsAuthenticated: false,
-			} as any)
-
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// ShareButton should still render when not authenticated
-			const shareButton = screen.getByTestId("share-button")
-			expect(shareButton).toBeInTheDocument()
-		})
-	})
-
-	describe("Authenticated User Share Flow", () => {
-		it("shows organization and public share options when authenticated and sharing enabled", () => {
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Find share button by its test ID and click it
-			const shareButton = screen.getByTestId("share-button")
-			fireEvent.click(shareButton)
-
-			expect(screen.getByText("Share with Organization")).toBeInTheDocument()
-			expect(screen.getByText("Share Publicly")).toBeInTheDocument()
-		})
-
-		it("sends shareCurrentTask message when organization option is selected", () => {
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Find share button by its test ID and click it
-			const shareButton = screen.getByTestId("share-button")
-			fireEvent.click(shareButton)
-
-			const orgOption = screen.getByText("Share with Organization")
-			fireEvent.click(orgOption)
-
-			expect(mockPostMessage).toHaveBeenCalledWith({
-				type: "shareCurrentTask",
-				visibility: "organization",
-			})
-		})
-
-		it("sends shareCurrentTask message when public option is selected", () => {
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Find share button by its test ID and click it
-			const shareButton = screen.getByTestId("share-button")
-			fireEvent.click(shareButton)
-
-			const publicOption = screen.getByText("Share Publicly")
-			fireEvent.click(publicOption)
-
-			expect(mockPostMessage).toHaveBeenCalledWith({
-				type: "shareCurrentTask",
-				visibility: "public",
-			})
-		})
-
-		it("does not show organization option when user is not in an organization", () => {
-			mockUseExtensionState.mockReturnValue({
-				sharingEnabled: true,
-				cloudIsAuthenticated: true,
-				cloudUserInfo: {
-					// No organizationName property
-				},
-			} as any)
-
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Find share button by its test ID and click it
-			const shareButton = screen.getByTestId("share-button")
-			fireEvent.click(shareButton)
-
-			expect(screen.queryByText("Share with Organization")).not.toBeInTheDocument()
-			expect(screen.getByText("Share Publicly")).toBeInTheDocument()
-		})
-	})
-
-	describe("Unauthenticated User Login Flow", () => {
-		beforeEach(() => {
-			mockUseExtensionState.mockReturnValue({
-				sharingEnabled: false,
-				cloudIsAuthenticated: false,
-			} as any)
-		})
-
-		it("shows connect to cloud option when not authenticated", () => {
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Find share button by its test ID and click it
-			const shareButton = screen.getByTestId("share-button")
-			fireEvent.click(shareButton)
-
-			expect(screen.getByText("Connect to Roo Code Cloud")).toBeInTheDocument()
-			expect(screen.getByText("Sign in to Roo Code Cloud to share tasks")).toBeInTheDocument()
-			expect(screen.getByText("Connect")).toBeInTheDocument()
-		})
-
-		it("does not show organization and public options when not authenticated", () => {
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Find share button by its test ID and click it
-			const shareButton = screen.getByTestId("share-button")
-			fireEvent.click(shareButton)
-
-			expect(screen.queryByText("Share with Organization")).not.toBeInTheDocument()
-			expect(screen.queryByText("Share Publicly")).not.toBeInTheDocument()
-		})
-
-		it("sends rooCloudSignIn message when connect to cloud is selected", () => {
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Find share button by its test ID and click it
-			const shareButton = screen.getByTestId("share-button")
-			fireEvent.click(shareButton)
-
-			const connectOption = screen.getByText("Connect")
-			fireEvent.click(connectOption)
-
-			expect(mockPostMessage).toHaveBeenCalledWith({
-				type: "rooCloudSignIn",
-			})
-		})
-	})
-
-	describe("Mixed Authentication States", () => {
-		it("shows disabled share button when authenticated but sharing not enabled", () => {
-			mockUseExtensionState.mockReturnValue({
-				sharingEnabled: false,
-				cloudIsAuthenticated: true,
-			} as any)
-
-			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Find share button by its test ID
-			const shareButton = screen.getByTestId("share-button")
-			expect(shareButton).toBeInTheDocument()
-			expect(shareButton).toBeDisabled()
-
-			// Should not have a popover when sharing is disabled
-			fireEvent.click(shareButton!)
-			expect(screen.queryByText("Share with Organization")).not.toBeInTheDocument()
-			expect(screen.queryByText("Connect to Cloud")).not.toBeInTheDocument()
-		})
-
-		it("does not automatically open popover when user becomes authenticated from elsewhere", () => {
-			// Start with unauthenticated state
-			mockUseExtensionState.mockReturnValue({
-				sharingEnabled: false,
-				cloudIsAuthenticated: false,
-			} as any)
-
-			const { rerender } = render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Verify popover is not open initially
-			expect(screen.queryByText("Share with Organization")).not.toBeInTheDocument()
-
-			// Simulate user becoming authenticated (e.g., from AccountView)
-			mockUseExtensionState.mockReturnValue({
-				sharingEnabled: true,
-				cloudIsAuthenticated: true,
-				cloudUserInfo: {
-					organizationName: "Test Organization",
-				},
-			} as any)
-
-			rerender(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Verify popover does NOT automatically open when auth happens from elsewhere
-			expect(screen.queryByText("Share with Organization")).not.toBeInTheDocument()
-			expect(screen.queryByText("Share Publicly")).not.toBeInTheDocument()
-		})
-
-		it("automatically opens popover when user authenticates from share button", () => {
-			// Start with unauthenticated state
-			mockUseExtensionState.mockReturnValue({
-				sharingEnabled: false,
-				cloudIsAuthenticated: false,
-			} as any)
-
-			const { rerender } = render(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Click share button to open connect modal
-			const shareButton = screen.getByTestId("share-button")
-			fireEvent.click(shareButton)
-
-			// Click connect button to initiate authentication
-			const connectButton = screen.getByText("Connect")
-			fireEvent.click(connectButton)
-
-			// Verify rooCloudSignIn message was sent
-			expect(mockPostMessage).toHaveBeenCalledWith({
-				type: "rooCloudSignIn",
-			})
-
-			// Simulate user becoming authenticated after clicking connect from share button
-			mockUseExtensionState.mockReturnValue({
-				sharingEnabled: true,
-				cloudIsAuthenticated: true,
-				cloudUserInfo: {
-					organizationName: "Test Organization",
-				},
-			} as any)
-
-			rerender(<TaskActions item={mockItem} buttonsDisabled={false} />)
-
-			// Verify popover automatically opens when auth was initiated from share button
-			expect(screen.getByText("Share with Organization")).toBeInTheDocument()
-			expect(screen.getByText("Share Publicly")).toBeInTheDocument()
-		})
-	})
-
-	describe("Other Actions", () => {
+	describe("Actions", () => {
 		it("renders export button", () => {
 			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
 
@@ -332,6 +76,13 @@ describe("TaskActions", () => {
 			expect(mockPostMessage).toHaveBeenCalledWith({
 				type: "exportCurrentTask",
 			})
+		})
+
+		it("renders copy button when item has task", () => {
+			render(<TaskActions item={mockItem} buttonsDisabled={false} />)
+
+			const copyButton = screen.getByLabelText("Copy prompt")
+			expect(copyButton).toBeInTheDocument()
 		})
 
 		it("renders delete button when item has size", () => {
@@ -351,33 +102,29 @@ describe("TaskActions", () => {
 	})
 
 	describe("Button States", () => {
-		it("keeps share, export, and copy buttons enabled but disables delete button when buttonsDisabled is true", () => {
+		it("keeps export and copy buttons enabled but disables delete button when buttonsDisabled is true", () => {
 			render(<TaskActions item={mockItem} buttonsDisabled={true} />)
 
-			// Find buttons by their labels/test IDs
-			const shareButton = screen.getByTestId("share-button")
+			// Find buttons by their labels
 			const exportButton = screen.getByLabelText("Export task history")
-			const copyButton = screen.getByLabelText("history:copyPrompt")
+			const copyButton = screen.getByLabelText("Copy prompt")
 			const deleteButton = screen.getByLabelText("Delete Task (Shift + Click to skip confirmation)")
 
-			// Share, export, and copy buttons should be enabled regardless of buttonsDisabled
-			expect(shareButton).not.toBeDisabled()
+			// Export and copy buttons should be enabled regardless of buttonsDisabled
 			expect(exportButton).not.toBeDisabled()
 			expect(copyButton).not.toBeDisabled()
 			// Delete button should respect buttonsDisabled
 			expect(deleteButton).toBeDisabled()
 		})
 
-		it("share, export, and copy buttons are always enabled while delete button respects buttonsDisabled state", () => {
+		it("export and copy buttons are always enabled while delete button respects buttonsDisabled state", () => {
 			// Test with buttonsDisabled = false
 			const { rerender } = render(<TaskActions item={mockItem} buttonsDisabled={false} />)
 
-			let shareButton = screen.getByTestId("share-button")
 			let exportButton = screen.getByLabelText("Export task history")
-			let copyButton = screen.getByLabelText("history:copyPrompt")
+			let copyButton = screen.getByLabelText("Copy prompt")
 			let deleteButton = screen.getByLabelText("Delete Task (Shift + Click to skip confirmation)")
 
-			expect(shareButton).not.toBeDisabled()
 			expect(exportButton).not.toBeDisabled()
 			expect(copyButton).not.toBeDisabled()
 			expect(deleteButton).not.toBeDisabled()
@@ -385,13 +132,11 @@ describe("TaskActions", () => {
 			// Test with buttonsDisabled = true
 			rerender(<TaskActions item={mockItem} buttonsDisabled={true} />)
 
-			shareButton = screen.getByTestId("share-button")
 			exportButton = screen.getByLabelText("Export task history")
-			copyButton = screen.getByLabelText("history:copyPrompt")
+			copyButton = screen.getByLabelText("Copy prompt")
 			deleteButton = screen.getByLabelText("Delete Task (Shift + Click to skip confirmation)")
 
-			// Share, export, and copy remain enabled
-			expect(shareButton).not.toBeDisabled()
+			// Export and copy remain enabled
 			expect(exportButton).not.toBeDisabled()
 			expect(copyButton).not.toBeDisabled()
 			// Delete button is disabled

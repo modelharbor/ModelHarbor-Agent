@@ -263,12 +263,12 @@ export interface WebviewMessage {
 		// Global state settings
 		codebaseIndexEnabled: boolean
 		codebaseIndexQdrantUrl: string
-		codebaseIndexEmbedderProvider:
-			| "openai"
+		codebaseIndexEmbedderProvider: "openai"
 			| "ollama"
 			| "openai-compatible"
 			| "gemini"
 			| "mistral"
+			| "modelharbor"
 			| "vercel-ai-gateway"
 		codebaseIndexEmbedderBaseUrl?: string
 		codebaseIndexEmbedderModelId: string
@@ -283,6 +283,7 @@ export interface WebviewMessage {
 		codebaseIndexOpenAiCompatibleApiKey?: string
 		codebaseIndexGeminiApiKey?: string
 		codebaseIndexMistralApiKey?: string
+		codebaseIndexModelHarborApiKey?: string
 		codebaseIndexVercelAiGatewayApiKey?: string
 	}
 }

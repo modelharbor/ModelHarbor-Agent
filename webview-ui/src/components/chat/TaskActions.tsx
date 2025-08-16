@@ -8,7 +8,6 @@ import { useCopyToClipboard } from "@/utils/clipboard"
 
 import { DeleteTaskDialog } from "../history/DeleteTaskDialog"
 import { IconButton } from "./IconButton"
-import { ShareButton } from "./ShareButton"
 
 interface TaskActionsProps {
 	item?: HistoryItem
@@ -26,12 +25,14 @@ export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 				iconClass="codicon-desktop-download"
 				title={t("chat:task.export")}
 				onClick={() => vscode.postMessage({ type: "exportCurrentTask" })}
+				disabled={false}
 			/>
 			{item?.task && (
 				<IconButton
 					iconClass={showCopyFeedback ? "codicon-check" : "codicon-copy"}
 					title={t("history:copyPrompt")}
 					onClick={(e) => copyWithFeedback(item.task, e)}
+					disabled={false}
 				/>
 			)}
 			{!!item?.size && item.size > 0 && (
@@ -61,7 +62,6 @@ export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 					)}
 				</>
 			)}
-			<ShareButton item={item} disabled={false} showLabel={false} />
 		</div>
 	)
 }
