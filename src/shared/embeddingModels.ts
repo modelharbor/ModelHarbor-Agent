@@ -8,6 +8,7 @@ export type EmbedderProvider =
 	| "openai-compatible"
 	| "gemini"
 	| "mistral"
+	| "modelharbor"
 	| "vercel-ai-gateway"
 	| "bedrock"
 	| "openrouter" // Add other providers as needed
@@ -60,6 +61,10 @@ export const EMBEDDING_MODEL_PROFILES: EmbeddingModelProfiles = {
 	},
 	mistral: {
 		"codestral-embed-2505": { dimension: 1536, scoreThreshold: 0.4 },
+	},
+	modelharbor: {
+		"baai/bge-m3": { dimension: 1024, scoreThreshold: 0.4 },
+		"qwen/qwen3-embedding-4b": { dimension: 2560, scoreThreshold: 0.4 },
 	},
 	"vercel-ai-gateway": {
 		// OpenAI models
@@ -193,6 +198,9 @@ export function getDefaultModelId(provider: EmbedderProvider): string {
 
 		case "mistral":
 			return "codestral-embed-2505"
+
+		case "modelharbor":
+			return "baai/bge-m3"
 
 		case "vercel-ai-gateway":
 			return "openai/text-embedding-3-large"

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, useMemo } from "react"
 import { useEvent } from "react-use"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import posthog from "posthog-js"
 
 import { ExtensionMessage } from "@roo/ExtensionMessage"
 import TranslationProvider from "./i18n/TranslationContext"
@@ -14,18 +15,18 @@ import { ExtensionStateContextProvider, useExtensionState } from "./context/Exte
 import ChatView, { ChatViewRef } from "./components/chat/ChatView"
 import HistoryView from "./components/history/HistoryView"
 import SettingsView, { SettingsViewRef } from "./components/settings/SettingsView"
-import WelcomeView from "./components/welcome/WelcomeViewProvider"
+import WelcomeView from "./components/welcome/WelcomeView"
+import WelcomeViewProvider from "./components/welcome/WelcomeViewProvider"
 import { MarketplaceView } from "./components/marketplace/MarketplaceView"
 import { HumanRelayDialog } from "./components/human-relay/HumanRelayDialog"
 import { CheckpointRestoreDialog } from "./components/chat/CheckpointRestoreDialog"
 import { DeleteMessageDialog, EditMessageDialog } from "./components/chat/MessageModificationConfirmationDialog"
 import ErrorBoundary from "./components/ErrorBoundary"
-import { CloudView } from "./components/cloud/CloudView"
 import { useAddNonInteractiveClickListener } from "./components/ui/hooks/useNonInteractiveClick"
 import { TooltipProvider } from "./components/ui/tooltip"
 import { STANDARD_TOOLTIP_DELAY } from "./components/ui/standard-tooltip"
 
-type Tab = "settings" | "history" | "chat" | "marketplace" | "cloud"
+type Tab = "settings" | "history" | "chat" | "marketplace"
 
 interface HumanRelayDialogState {
 	isOpen: boolean
@@ -58,7 +59,14 @@ const tabsByMessageAction: Partial<Record<NonNullable<ExtensionMessage["action"]
 	settingsButtonClicked: "settings",
 	historyButtonClicked: "history",
 	marketplaceButtonClicked: "marketplace",
-	cloudButtonClicked: "cloud",
+	promptsButtonClicked: "settings",
+	mcpButtonClicked: "settings",
+}
+
+// Map specific actions to their settings sections
+const actionToSettingsSection: Partial<Record<NonNullable<ExtensionMessage["action"]>, string>> = {
+	promptsButtonClicked: "modes",
+	mcpButtonClicked: "mcp",
 }
 
 const App = () => {
@@ -66,16 +74,25 @@ const App = () => {
 		didHydrateState,
 		showWelcome,
 		shouldShowAnnouncement,
-		telemetrySetting,
 		telemetryKey,
 		machineId,
-		cloudUserInfo,
-		cloudIsAuthenticated,
-		cloudApiUrl,
-		cloudOrganizations,
 		renderContext,
 		mdmCompliant,
 	} = useExtensionState()
+
+	const [useProviderSignupView, setUseProviderSignupView] = useState(false)
+
+	// Check PostHog feature flag for provider signup view
+	useEffect(() => {
+		if (!didHydrateState) {
+			return
+		}
+
+		posthog.onFeatureFlags(function () {
+			// Feature flag for new provider-focused welcome view
+			setUseProviderSignupView(posthog?.getFeatureFlag("welcome-provider-signup") === "test")
+		})
+	}, [didHydrateState])
 
 	// Create a persistent state manager
 	const marketplaceStateManager = useMemo(() => new MarketplaceViewStateManager(), [])
@@ -108,11 +125,8 @@ const App = () => {
 
 	const switchTab = useCallback(
 		(newTab: Tab) => {
-			// Only check MDM compliance if mdmCompliant is explicitly false (meaning there's an MDM policy and user is non-compliant)
-			// If mdmCompliant is undefined or true, allow tab switching
-			if (mdmCompliant === false && newTab !== "cloud") {
-				// Notify the user that authentication is required by their organization
-				vscode.postMessage({ type: "showMdmAuthRequiredNotification" })
+			// Check MDM compliance before allowing tab switching
+			if (mdmCompliant === false) {
 				return
 			}
 
@@ -147,7 +161,9 @@ const App = () => {
 				} else {
 					// Handle other actions using the mapping
 					const newTab = tabsByMessageAction[message.action]
-					const section = message.values?.section as string | undefined
+					// Check for action-specific section or use provided section
+					const actionSection = actionToSettingsSection[message.action]
+					const section = actionSection || (message.values?.section as string | undefined)
 					const marketplaceTab = message.values?.marketplaceTab as string | undefined
 
 					if (newTab) {
@@ -199,9 +215,9 @@ const App = () => {
 
 	useEffect(() => {
 		if (didHydrateState) {
-			telemetryClient.updateTelemetryState(telemetrySetting, telemetryKey, machineId)
+			telemetryClient.updateTelemetryState("enabled", telemetryKey, machineId)
 		}
-	}, [telemetrySetting, telemetryKey, machineId, didHydrateState])
+	}, [telemetryKey, machineId, didHydrateState])
 
 	// Tell the extension that we are ready to receive messages.
 	useEffect(() => vscode.postMessage({ type: "webviewDidLaunch" }), [])
@@ -243,7 +259,11 @@ const App = () => {
 	// Do not conditionally load ChatView, it's expensive and there's state we
 	// don't want to lose (user input, disableInput, askResponse promise, etc.)
 	return showWelcome ? (
-		<WelcomeView />
+		useProviderSignupView ? (
+			<WelcomeViewProvider />
+		) : (
+			<WelcomeView />
+		)
 	) : (
 		<>
 			{tab === "history" && <HistoryView onDone={() => switchTab("chat")} />}
@@ -255,14 +275,6 @@ const App = () => {
 					stateManager={marketplaceStateManager}
 					onDone={() => switchTab("chat")}
 					targetTab={currentMarketplaceTab as "mcp" | "mode" | undefined}
-				/>
-			)}
-			{tab === "cloud" && (
-				<CloudView
-					userInfo={cloudUserInfo}
-					isAuthenticated={cloudIsAuthenticated}
-					cloudApiUrl={cloudApiUrl}
-					organizations={cloudOrganizations}
 				/>
 			)}
 			<ChatView

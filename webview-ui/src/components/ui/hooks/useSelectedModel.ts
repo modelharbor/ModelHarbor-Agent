@@ -53,7 +53,7 @@ function getValidatedModelId(
 }
 
 export const useSelectedModel = (apiConfiguration?: ProviderSettings) => {
-	const provider = apiConfiguration?.apiProvider || "anthropic"
+	const provider = apiConfiguration?.apiProvider || "modelharbor"
 	const openRouterModelId = provider === "openrouter" ? apiConfiguration?.openRouterModelId : undefined
 	const lmStudioModelId = provider === "lmstudio" ? apiConfiguration?.lmStudioModelId : undefined
 	const ollamaModelId = provider === "ollama" ? apiConfiguration?.ollamaModelId : undefined
@@ -163,6 +163,15 @@ function getSelectedModel({
 			const info = routerModels.unbound?.[id]
 			return { id, info }
 		}
+		case "modelharbor": {
+			const id = getValidatedModelId(
+				apiConfiguration.modelharborModelId,
+				routerModels.modelharbor,
+				defaultModelId,
+			)
+			const info = routerModels.modelharbor?.[id]
+			return { id, info }
+		}
 		case "litellm": {
 			const id = getValidatedModelId(apiConfiguration.litellmModelId, routerModels.litellm, defaultModelId)
 			const info = routerModels.litellm?.[id] ?? litellmDefaultModelInfo
@@ -186,11 +195,6 @@ function getSelectedModel({
 				supportsImages: false,
 				supportsPromptCache: false,
 			}
-			return { id, info }
-		}
-		case "chutes": {
-			const id = getValidatedModelId(apiConfiguration.apiModelId, routerModels.chutes, defaultModelId)
-			const info = routerModels.chutes?.[id]
 			return { id, info }
 		}
 		case "baseten": {
@@ -348,11 +352,6 @@ function getSelectedModel({
 				routerModels["io-intelligence"]?.[id] ?? ioIntelligenceModels[id as keyof typeof ioIntelligenceModels]
 			return { id, info }
 		}
-		case "roo": {
-			const id = getValidatedModelId(apiConfiguration.apiModelId, routerModels.roo, defaultModelId)
-			const info = routerModels.roo?.[id]
-			return { id, info }
-		}
 		case "qwen-code": {
 			const id = apiConfiguration.apiModelId ?? defaultModelId
 			const info = qwenCodeModels[id as keyof typeof qwenCodeModels]
@@ -371,7 +370,7 @@ function getSelectedModel({
 		// case "human-relay":
 		// case "fake-ai":
 		default: {
-			provider satisfies "anthropic" | "gemini-cli" | "qwen-code" | "human-relay" | "fake-ai"
+			provider satisfies "anthropic" | "modelharbor" | "gemini-cli" | "qwen-code" | "human-relay" | "fake-ai"
 			const id = apiConfiguration.apiModelId ?? defaultModelId
 			const baseInfo = anthropicModels[id as keyof typeof anthropicModels]
 

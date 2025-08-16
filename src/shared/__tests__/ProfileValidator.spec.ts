@@ -191,7 +191,6 @@ describe("ProfileValidator", () => {
 			"deepseek",
 			"xai",
 			"groq",
-			"chutes",
 			"sambanova",
 			"fireworks",
 			"featherless",

@@ -43,6 +43,7 @@ vi.mock("../openrouter")
 vi.mock("../requesty")
 vi.mock("../unbound")
 vi.mock("../io-intelligence")
+vi.mock("../modelharbor")
 
 // Mock ContextProxy with a simple static instance
 vi.mock("../../../core/config/ContextProxy", () => ({
@@ -65,12 +66,14 @@ import { getOpenRouterModels } from "../openrouter"
 import { getRequestyModels } from "../requesty"
 import { getUnboundModels } from "../unbound"
 import { getIOIntelligenceModels } from "../io-intelligence"
+import { getModelHarborModels } from "../modelharbor"
 
 const mockGetLiteLLMModels = getLiteLLMModels as Mock<typeof getLiteLLMModels>
 const mockGetOpenRouterModels = getOpenRouterModels as Mock<typeof getOpenRouterModels>
 const mockGetRequestyModels = getRequestyModels as Mock<typeof getRequestyModels>
 const mockGetUnboundModels = getUnboundModels as Mock<typeof getUnboundModels>
 const mockGetIOIntelligenceModels = getIOIntelligenceModels as Mock<typeof getIOIntelligenceModels>
+const mockGetModelHarborModels = getModelHarborModels as Mock<typeof getModelHarborModels>
 
 const DUMMY_REQUESTY_KEY = "requesty-key-for-testing"
 const DUMMY_UNBOUND_KEY = "unbound-key-for-testing"
@@ -183,6 +186,23 @@ describe("getModels with new GetModelsOptions", () => {
 		).rejects.toThrow("LiteLLM connection failed")
 	})
 
+	it("calls getModelHarborModels for modelharbor provider", async () => {
+		const mockModels = {
+			"modelharbor/model": {
+				maxTokens: 4096,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				description: "ModelHarbor model",
+			},
+		}
+		mockGetModelHarborModels.mockResolvedValue(mockModels)
+
+		const result = await getModels({ provider: "modelharbor" })
+
+		expect(mockGetModelHarborModels).toHaveBeenCalled()
+		expect(result).toEqual(mockModels)
+	})
+
 	it("validates exhaustive provider checking with unknown provider", async () => {
 		// This test ensures TypeScript catches unknown providers at compile time
 		// In practice, the discriminated union should prevent this at compile time
@@ -230,7 +250,7 @@ describe("getModelsFromCache disk fallback", () => {
 
 		mockCache.get.mockReturnValue(memoryModels)
 
-		const result = getModelsFromCache("roo")
+		const result = getModelsFromCache("modelharbor")
 
 		expect(result).toEqual(memoryModels)
 		// Disk should not be checked when memory cache hits
@@ -268,7 +288,7 @@ describe("getModelsFromCache disk fallback", () => {
 
 		const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {})
 
-		const result = getModelsFromCache("roo")
+		const result = getModelsFromCache("modelharbor")
 
 		expect(result).toBeUndefined()
 		expect(consoleErrorSpy).toHaveBeenCalled()

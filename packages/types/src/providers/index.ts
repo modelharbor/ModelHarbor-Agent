@@ -2,7 +2,6 @@ export * from "./anthropic.js"
 export * from "./baseten.js"
 export * from "./bedrock.js"
 export * from "./cerebras.js"
-export * from "./chutes.js"
 export * from "./claude-code.js"
 export * from "./deepseek.js"
 export * from "./doubao.js"
@@ -29,6 +28,7 @@ export * from "./vscode-llm.js"
 export * from "./xai.js"
 export * from "./vercel-ai-gateway.js"
 export * from "./zai.js"
+export * from "./modelharbor.js"
 export * from "./deepinfra.js"
 export * from "./minimax.js"
 
@@ -36,7 +36,6 @@ import { anthropicDefaultModelId } from "./anthropic.js"
 import { basetenDefaultModelId } from "./baseten.js"
 import { bedrockDefaultModelId } from "./bedrock.js"
 import { cerebrasDefaultModelId } from "./cerebras.js"
-import { chutesDefaultModelId } from "./chutes.js"
 import { claudeCodeDefaultModelId } from "./claude-code.js"
 import { deepSeekDefaultModelId } from "./deepseek.js"
 import { doubaoDefaultModelId } from "./doubao.js"
@@ -48,10 +47,10 @@ import { ioIntelligenceDefaultModelId } from "./io-intelligence.js"
 import { litellmDefaultModelId } from "./lite-llm.js"
 import { mistralDefaultModelId } from "./mistral.js"
 import { moonshotDefaultModelId } from "./moonshot.js"
+import { modelHarborDefaultModelId } from "./modelharbor.js"
 import { openRouterDefaultModelId } from "./openrouter.js"
 import { qwenCodeDefaultModelId } from "./qwen-code.js"
 import { requestyDefaultModelId } from "./requesty.js"
-import { rooDefaultModelId } from "./roo.js"
 import { sambaNovaDefaultModelId } from "./sambanova.js"
 import { unboundDefaultModelId } from "./unbound.js"
 import { vertexDefaultModelId } from "./vertex.js"
@@ -89,8 +88,8 @@ export function getProviderDefaultModelId(
 			return groqDefaultModelId
 		case "huggingface":
 			return "meta-llama/Llama-3.3-70B-Instruct"
-		case "chutes":
-			return chutesDefaultModelId
+		case "modelharbor":
+			return modelHarborDefaultModelId
 		case "baseten":
 			return basetenDefaultModelId
 		case "bedrock":
@@ -135,8 +134,6 @@ export function getProviderDefaultModelId(
 			return featherlessDefaultModelId
 		case "io-intelligence":
 			return ioIntelligenceDefaultModelId
-		case "roo":
-			return rooDefaultModelId
 		case "qwen-code":
 			return qwenCodeDefaultModelId
 		case "vercel-ai-gateway":
