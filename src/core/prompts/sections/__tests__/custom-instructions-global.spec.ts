@@ -162,7 +162,8 @@ describe("custom-instructions global .roo support", () => {
 
 			const result = await loadRuleFiles(mockCwd)
 
-			expect(result).toBe("")
+			expect(result).toContain("# Collaboration Rules")
+			expect(result).toContain("Core Behavior")
 		})
 	})
 

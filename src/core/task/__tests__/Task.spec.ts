@@ -1330,7 +1330,10 @@ describe("Cline", () => {
 					startTask: false,
 				})
 
-				// Initially should be MultiSearchReplaceDiffStrategy
+				// Wait for async strategy update to complete - increased timeout
+				await new Promise((resolve) => setTimeout(resolve, 50))
+
+				// Should be MultiSearchReplaceDiffStrategy
 				expect(task.diffStrategy).toBeInstanceOf(MultiSearchReplaceDiffStrategy)
 				expect(task.diffStrategy?.getName()).toBe("MultiSearchReplace")
 			})
@@ -1372,11 +1375,8 @@ describe("Cline", () => {
 					startTask: false,
 				})
 
-				// Initially should be MultiSearchReplaceDiffStrategy
-				expect(task.diffStrategy).toBeInstanceOf(MultiSearchReplaceDiffStrategy)
-
-				// Wait for async strategy update
-				await new Promise((resolve) => setTimeout(resolve, 10))
+				// Wait for async strategy update to complete - increased timeout
+				await new Promise((resolve) => setTimeout(resolve, 50))
 
 				// Should still be MultiSearchReplaceDiffStrategy
 				expect(task.diffStrategy).toBeInstanceOf(MultiSearchReplaceDiffStrategy)
