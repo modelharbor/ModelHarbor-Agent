@@ -267,6 +267,9 @@ export function validateModelId(apiConfiguration: ProviderSettings, routerModels
 		case "io-intelligence":
 			modelId = apiConfiguration.ioIntelligenceModelId
 			break
+		case "modelharbor":
+			modelId = apiConfiguration.modelharborModelId
+			break
 	}
 
 	if (!modelId) {

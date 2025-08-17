@@ -384,7 +384,7 @@ export const modelHarborModels = new Proxy({} as Record<string, ModelInfo>, {
 
 export type ModelHarborModelId = string
 
-export const modelHarborDefaultModelId: ModelHarborModelId = "anthropic/claude-sonnet-4"
+export const modelHarborDefaultModelId: ModelHarborModelId = "qwen/qwen3-coder-480b-a35b-instruct"
 
 // Initialize models cache on module load only in Node.js environment (extension host)
 // In webview/browser environments, models are fetched via message passing

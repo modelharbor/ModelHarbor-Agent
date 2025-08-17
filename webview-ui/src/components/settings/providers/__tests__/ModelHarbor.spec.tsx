@@ -7,10 +7,10 @@ import { ModelHarbor } from "../ModelHarbor"
 let routerModelsMock = {
 	data: {
 		modelharbor: {
-			"anthropic/claude-sonnet-4": {
-				maxTokens: 4096,
-				contextWindow: 200000,
-				supportsImages: true,
+			"qwen/qwen3-coder-480b-a35b-instruct": {
+				maxTokens: 65536,
+				contextWindow: 262000,
+				supportsImages: false,
 				supportsPromptCache: false,
 			},
 		},
@@ -25,11 +25,11 @@ vi.mock("@src/components/ui/hooks/useRouterModels", () => ({
 vi.mock("@src/components/ui/hooks/useSelectedModel", () => ({
 	useSelectedModel: () => ({
 		provider: "modelharbor",
-		id: "anthropic/claude-sonnet-4",
+		id: "qwen/qwen3-coder-480b-a35b-instruct",
 		info: {
-			maxTokens: 4096,
-			contextWindow: 200000,
-			supportsImages: true,
+			maxTokens: 65536,
+			contextWindow: 262000,
+			supportsImages: false,
 			supportsPromptCache: false,
 		},
 		isLoading: false,
@@ -90,7 +90,7 @@ describe("ModelHarbor integration", () => {
 
 		// Model picker button should show the fallback model as selected
 		const pickerButton = await screen.findByTestId("model-picker-button")
-		expect(pickerButton.textContent).toContain("anthropic/claude-sonnet-4")
+		expect(pickerButton.textContent).toContain("qwen/qwen3-coder-480b-a35b-instruct")
 
 		// Open the model picker dropdown
 		fireEvent.click(pickerButton)
