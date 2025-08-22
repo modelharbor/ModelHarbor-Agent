@@ -16,6 +16,7 @@ import {
 	groqModels,
 	ioIntelligenceModels,
 	mistralModels,
+	modelHarborModels,
 	moonshotModels,
 	openAiNativeModels,
 	qwenCodeModels,
@@ -539,6 +540,11 @@ export const MODELS_BY_PROVIDER: Record<
 		id: "moonshot",
 		label: "Moonshot",
 		models: Object.keys(moonshotModels),
+	},
+	modelharbor: {
+		id: "modelharbor",
+		label: "ModelHarbor",
+		models: Object.keys(modelHarborModels),
 	},
 	"openai-native": {
 		id: "openai-native",

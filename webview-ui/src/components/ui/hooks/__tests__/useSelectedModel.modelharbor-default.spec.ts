@@ -37,15 +37,16 @@ describe("useSelectedModel - ModelHarbor as default", () => {
 				litellm: {},
 				"io-intelligence": {},
 				modelharbor: {
-					"anthropic/claude-sonnet-4-code": {
-						maxTokens: 16384,
-						contextWindow: 128000,
+					"qwen/qwen3-coder-480b-a35b-instruct": {
+						maxTokens: 65536,
+						contextWindow: 262000,
 						supportsComputerUse: false,
-						supportsImages: true,
+						supportsImages: false,
 						supportsPromptCache: false,
-						inputPrice: 3.0,
-						outputPrice: 15.0,
-						description: "Anthropic Claude Sonnet 4 with advanced language understanding and generation.",
+						inputPrice: 0.6,
+						outputPrice: 1.8,
+						description:
+							"Qwen3 Coder model optimized for coding tasks with advanced reasoning capabilities.",
 					},
 				},
 			},
@@ -65,7 +66,7 @@ describe("useSelectedModel - ModelHarbor as default", () => {
 		const { result } = renderHook(() => useSelectedModel(), { wrapper })
 
 		expect(result.current.provider).toBe("modelharbor")
-		expect(result.current.id).toBe("anthropic/claude-sonnet-4-code")
+		expect(result.current.id).toBe("qwen/qwen3-coder-480b-a35b-instruct")
 		expect(result.current.info).toBeUndefined() // No configuration means fallback to undefined
 	})
 
@@ -74,16 +75,16 @@ describe("useSelectedModel - ModelHarbor as default", () => {
 		const { result } = renderHook(() => useSelectedModel({ apiProvider: "modelharbor" }), { wrapper })
 
 		expect(result.current.provider).toBe("modelharbor")
-		expect(result.current.id).toBe("anthropic/claude-sonnet-4-code")
+		expect(result.current.id).toBe("qwen/qwen3-coder-480b-a35b-instruct")
 		expect(result.current.info).toEqual({
-			maxTokens: 16384,
-			contextWindow: 128000,
-			supportsImages: true,
+			maxTokens: 65536,
+			contextWindow: 262000,
+			supportsImages: false,
 			supportsComputerUse: false,
 			supportsPromptCache: false,
-			inputPrice: 3.0,
-			outputPrice: 15.0,
-			description: "Anthropic Claude Sonnet 4 with advanced language understanding and generation.",
+			inputPrice: 0.6,
+			outputPrice: 1.8,
+			description: "Qwen3 Coder model optimized for coding tasks with advanced reasoning capabilities.",
 		})
 	})
 
@@ -93,22 +94,22 @@ describe("useSelectedModel - ModelHarbor as default", () => {
 			() =>
 				useSelectedModel({
 					apiProvider: "modelharbor",
-					modelharborModelId: "anthropic/claude-sonnet-4-code",
+					modelharborModelId: "qwen/qwen3-coder-480b-a35b-instruct",
 				}),
 			{ wrapper },
 		)
 
 		expect(result.current.provider).toBe("modelharbor")
-		expect(result.current.id).toBe("anthropic/claude-sonnet-4-code")
+		expect(result.current.id).toBe("qwen/qwen3-coder-480b-a35b-instruct")
 		expect(result.current.info).toEqual({
-			maxTokens: 16384,
-			contextWindow: 128000,
-			supportsImages: true,
+			maxTokens: 65536,
+			contextWindow: 262000,
+			supportsImages: false,
 			supportsComputerUse: false,
 			supportsPromptCache: false,
-			inputPrice: 3.0,
-			outputPrice: 15.0,
-			description: "Anthropic Claude Sonnet 4 with advanced language understanding and generation.",
+			inputPrice: 0.6,
+			outputPrice: 1.8,
+			description: "Qwen3 Coder model optimized for coding tasks with advanced reasoning capabilities.",
 		})
 	})
 })
