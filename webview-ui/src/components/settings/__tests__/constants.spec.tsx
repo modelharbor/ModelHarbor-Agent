@@ -32,7 +32,7 @@ describe("PROVIDERS constants", () => {
 
 	it("should maintain the total number of providers", () => {
 		// This test ensures we didn't accidentally remove or duplicate any providers
-		const expectedProviderCount = 28 // Update this number based on the actual count
+		const expectedProviderCount = 29 // Update this number based on the actual count
 		expect(PROVIDERS.length).toBe(expectedProviderCount)
 	})
 

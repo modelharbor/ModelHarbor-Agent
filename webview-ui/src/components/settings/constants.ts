@@ -18,6 +18,7 @@ import {
 	doubaoModels,
 	internationalZAiModels,
 	fireworksModels,
+	modelHarborModels,
 	rooModels,
 	featherlessModels,
 } from "@roo-code/types"
@@ -32,6 +33,7 @@ export const MODELS_BY_PROVIDER: Partial<Record<ProviderName, Record<string, Mod
 	moonshot: moonshotModels,
 	gemini: geminiModels,
 	mistral: mistralModels,
+	modelharbor: modelHarborModels,
 	"openai-native": openAiNativeModels,
 	vertex: vertexModels,
 	xai: xaiModels,
