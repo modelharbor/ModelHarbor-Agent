@@ -216,7 +216,7 @@ const mockPostMessage = (state: any) => {
 				taskHistory: [],
 				shouldShowAnnouncement: false,
 				allowedCommands: [],
-				alwaysAllowExecute: false,
+				alwaysAllowExecute: true,
 				ttsEnabled: false,
 				ttsSpeed: 1,
 				soundEnabled: false,
@@ -278,7 +278,7 @@ describe("SettingsView - Sound Settings", () => {
 		expect(screen.queryByTestId("tts-speed-slider")).not.toBeInTheDocument()
 	})
 
-	it("initializes with sound disabled by default", () => {
+	it("initializes with sound enabled by default", () => {
 		// Render once and get the activateTab helper
 		const { activateTab } = renderSettingsView()
 
@@ -286,10 +286,12 @@ describe("SettingsView - Sound Settings", () => {
 		activateTab("notifications")
 
 		const soundCheckbox = screen.getByTestId("sound-enabled-checkbox")
-		expect(soundCheckbox).not.toBeChecked()
+		expect(soundCheckbox).toBeChecked()
 
-		// Volume slider should not be visible when sound is disabled
-		expect(screen.queryByTestId("sound-volume-slider")).not.toBeInTheDocument()
+		// Volume slider should be visible when sound is enabled
+		const volumeSlider = screen.getByTestId("sound-volume-slider")
+		expect(volumeSlider).toBeInTheDocument()
+		expect(volumeSlider).toHaveValue("0.5")
 	})
 
 	it("toggles tts setting and sends message to VSCode", () => {
@@ -326,9 +328,10 @@ describe("SettingsView - Sound Settings", () => {
 
 		const soundCheckbox = screen.getByTestId("sound-enabled-checkbox")
 
-		// Enable sound
-		fireEvent.click(soundCheckbox)
+		// Sound should be enabled by default, so disable it
 		expect(soundCheckbox).toBeChecked()
+		fireEvent.click(soundCheckbox)
+		expect(soundCheckbox).not.toBeChecked()
 
 		// Click Save to save settings
 		const saveButton = screen.getByTestId("save-button")
@@ -337,7 +340,7 @@ describe("SettingsView - Sound Settings", () => {
 		expect(vscode.postMessage).toHaveBeenCalledWith(
 			expect.objectContaining({
 				type: "soundEnabled",
-				bool: true,
+				bool: false,
 			}),
 		)
 	})
@@ -366,11 +369,7 @@ describe("SettingsView - Sound Settings", () => {
 		// Activate the notifications tab
 		activateTab("notifications")
 
-		// Enable sound
-		const soundCheckbox = screen.getByTestId("sound-enabled-checkbox")
-		fireEvent.click(soundCheckbox)
-
-		// Volume slider should be visible
+		// Sound is enabled by default, so volume slider should be visible
 		const volumeSlider = screen.getByTestId("sound-volume-slider")
 		expect(volumeSlider).toBeInTheDocument()
 		expect(volumeSlider).toHaveValue("0.5")
@@ -409,10 +408,7 @@ describe("SettingsView - Sound Settings", () => {
 		// Activate the notifications tab
 		activateTab("notifications")
 
-		// Enable sound
-		const soundCheckbox = screen.getByTestId("sound-enabled-checkbox")
-		fireEvent.click(soundCheckbox)
-
+		// Sound is enabled by default, so volume slider should be visible
 		// Change volume
 		const volumeSlider = screen.getByTestId("sound-volume-slider")
 		fireEvent.change(volumeSlider, { target: { value: "0.75" } })
@@ -453,10 +449,18 @@ describe("SettingsView - Allowed Commands", () => {
 		// Activate the autoApprove tab
 		activateTab("autoApprove")
 
-		// Enable always allow execute
+		// Section should be visible by default (alwaysAllowExecute is true)
+		expect(screen.getByTestId("allowed-commands-heading")).toBeInTheDocument()
+		expect(screen.getByTestId("command-input")).toBeInTheDocument()
+
+		// Click toggle to hide section
 		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
 		fireEvent.click(executeCheckbox)
-		// Verify allowed commands section appears
+		expect(screen.queryByTestId("allowed-commands-heading")).not.toBeInTheDocument()
+		expect(screen.queryByTestId("command-input")).not.toBeInTheDocument()
+
+		// Click toggle again to show section
+		fireEvent.click(executeCheckbox)
 		expect(screen.getByTestId("allowed-commands-heading")).toBeInTheDocument()
 		expect(screen.getByTestId("command-input")).toBeInTheDocument()
 	})
@@ -468,11 +472,7 @@ describe("SettingsView - Allowed Commands", () => {
 		// Activate the autoApprove tab
 		activateTab("autoApprove")
 
-		// Enable always allow execute
-		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
-		fireEvent.click(executeCheckbox)
-
-		// Add a new command
+		// Add a new command (section is visible by default)
 		const input = screen.getByTestId("command-input")
 		fireEvent.change(input, { target: { value: "npm test" } })
 
@@ -496,11 +496,7 @@ describe("SettingsView - Allowed Commands", () => {
 		// Activate the autoApprove tab
 		activateTab("autoApprove")
 
-		// Enable always allow execute
-		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
-		fireEvent.click(executeCheckbox)
-
-		// Add a command
+		// Add a command (section is visible by default)
 		const input = screen.getByTestId("command-input")
 		fireEvent.change(input, { target: { value: "npm test" } })
 		const addButton = screen.getByTestId("add-command-button")
@@ -586,11 +582,7 @@ describe("SettingsView - Duplicate Commands", () => {
 		// Activate the autoApprove tab
 		activateTab("autoApprove")
 
-		// Enable always allow execute
-		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
-		fireEvent.click(executeCheckbox)
-
-		// Add a command twice
+		// Add a command twice (section is visible by default)
 		const input = screen.getByTestId("command-input")
 		const addButton = screen.getByTestId("add-command-button")
 
@@ -614,11 +606,7 @@ describe("SettingsView - Duplicate Commands", () => {
 		// Activate the autoApprove tab
 		activateTab("autoApprove")
 
-		// Enable always allow execute
-		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
-		fireEvent.click(executeCheckbox)
-
-		// Add a command
+		// Add a command (section is visible by default)
 		const input = screen.getByTestId("command-input")
 		fireEvent.change(input, { target: { value: "npm test" } })
 		const addButton = screen.getByTestId("add-command-button")
