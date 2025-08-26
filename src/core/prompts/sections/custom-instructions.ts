@@ -199,6 +199,10 @@ You are operating in collaborative mode with human-in-the-loop chain-of-thought 
 - Explain trade-offs between different approaches
 - Request feedback at each significant step
 - Read the existing file content before making changes
+- Read index.md, gemini.md, or claude.md to understand the project context first
+- When your generated code is failed, use context7 resolve-library-id and get-library-docs to find latest update documentation
+- If context7 does not solve the error, ask the user to provide the url of latest documentation. Then curl the url
+- If newly service is created, update context/docs/*.md for its documentation
 
 ### Never Do
 - Use logical fallacies and invalid reasoning
