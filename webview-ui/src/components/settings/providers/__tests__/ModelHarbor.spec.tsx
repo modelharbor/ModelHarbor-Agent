@@ -62,11 +62,7 @@ describe("ModelHarbor integration", () => {
 		await act(async () => {
 			render(
 				<QueryClientProvider client={queryClient}>
-					<ModelHarbor
-						apiConfiguration={defaultApiConfiguration}
-						setApiConfigurationField={() => {}}
-						organizationAllowList={{ allowAll: true, providers: {} }}
-					/>
+					<ModelHarbor apiConfiguration={defaultApiConfiguration} setApiConfigurationField={() => {}} />
 				</QueryClientProvider>,
 			)
 		})
@@ -78,11 +74,7 @@ describe("ModelHarbor integration", () => {
 		await act(async () => {
 			const renderResult = render(
 				<QueryClientProvider client={queryClient}>
-					<ModelHarbor
-						apiConfiguration={defaultApiConfiguration}
-						setApiConfigurationField={() => {}}
-						organizationAllowList={{ allowAll: true, providers: {} }}
-					/>
+					<ModelHarbor apiConfiguration={defaultApiConfiguration} setApiConfigurationField={() => {}} />
 				</QueryClientProvider>,
 			)
 			rerender = renderResult.rerender
@@ -119,11 +111,7 @@ describe("ModelHarbor integration", () => {
 		// Re-render to pick up new mock value
 		rerender(
 			<QueryClientProvider client={queryClient}>
-				<ModelHarbor
-					apiConfiguration={defaultApiConfiguration}
-					setApiConfigurationField={() => {}}
-					organizationAllowList={{ allowAll: true, providers: {} }}
-				/>
+				<ModelHarbor apiConfiguration={defaultApiConfiguration} setApiConfigurationField={() => {}} />
 			</QueryClientProvider>,
 		)
 

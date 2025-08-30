@@ -664,11 +664,7 @@ const ApiOptions = ({
 			)}
 
 			{selectedProvider === "modelharbor" && (
-				<ModelHarbor
-					apiConfiguration={apiConfiguration}
-					setApiConfigurationField={setApiConfigurationField}
-					organizationAllowList={organizationAllowList}
-				/>
+				<ModelHarbor apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
 			)}
 
 			{selectedProvider === "roo" && (
@@ -699,12 +695,12 @@ const ApiOptions = ({
 					selectedProvider,
 				) && (
 					<>
-					<div>
-						<label className="block font-medium mb-1">{t("settings:providers.model")}</label>
-						<Select
-							value={selectedModelId === "custom-arn" ? "custom-arn" : selectedModelId}
-							onValueChange={(value) => {
-								setApiConfigurationField("apiModelId", value)
+						<div>
+							<label className="block font-medium mb-1">{t("settings:providers.model")}</label>
+							<Select
+								value={selectedModelId === "custom-arn" ? "custom-arn" : selectedModelId}
+								onValueChange={(value) => {
+									setApiConfigurationField("apiModelId", value)
 
 									// Clear custom ARN if not using custom ARN option.
 									if (value !== "custom-arn" && selectedProvider === "bedrock") {
