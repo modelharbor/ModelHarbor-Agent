@@ -2,6 +2,8 @@
 	"greeting": "ยินดีต้อนรับสู่ ModelHarbor Agent!",
 	"task": {
 		"title": "งาน",
+		"expand": "ขยายงาน",
+		"collapse": "ย่องาน",
 		"seeMore": "ดูเพิ่มเติม",
 		"seeLess": "ดูน้อยลง",
 		"tokens": "โทเค็น",
@@ -23,9 +25,7 @@
 		"sharingDisabledByOrganization": "การแชร์ถูกปิดใช้งานโดยองค์กร",
 		"shareSuccessOrganization": "คัดลอกลิงก์องค์กรไปยังคลิปบอร์ดแล้ว",
 		"shareSuccessPublic": "คัดลอกลิงก์สาธารณะไปยังคลิปบอร์ดแล้ว",
-		"openFolder": "เปิดโฟลเดอร์แชท",
-		"expand": "ขยายงาน",
-		"collapse": "ย่องาน"
+		"openFolder": "เปิดโฟลเดอร์แชท"
 	},
 	"unpin": "ยกเลิกการปักหมุด",
 	"pin": "ปักหมุด",
@@ -183,6 +183,10 @@
 		"wantsToEditOutsideWorkspace": "ModelHarbor ต้องการแก้ไขไฟล์นี้นอกพื้นที่ทำงาน:",
 		"wantsToEditProtected": "ModelHarbor ต้องการแก้ไขไฟล์การกำหนดค่าที่ป้องกัน:",
 		"wantsToApplyBatchChanges": "ModelHarbor ต้องการนำการเปลี่ยนแปลงไปใช้กับหลายไฟล์:",
+		"wantsToGenerateImage": "ModelHarbor ต้องการสร้างรูปภาพ:",
+		"wantsToGenerateImageOutsideWorkspace": "ModelHarbor ต้องการสร้างรูปภาพนอกพื้นที่ทำงาน:",
+		"wantsToGenerateImageProtected": "ModelHarbor ต้องการสร้างรูปภาพในตำแหน่งที่ได้รับการป้องกัน:",
+		"didGenerateImage": "ModelHarbor สร้างรูปภาพ:",
 		"wantsToCreate": "ModelHarbor ต้องการสร้างไฟล์ใหม่:",
 		"wantsToSearchReplace": "ModelHarbor ต้องการค้นหาและแทนที่ในไฟล์นี้:",
 		"didSearchReplace": "ModelHarbor ทำการค้นหาและแทนที่ในไฟล์นี้:",
@@ -281,7 +285,13 @@
 		"feature2": "<bold>คำสั่งทับที่กำหนดเอง</bold>: สร้างคำสั่งทับส่วนบุคคลเพื่อการเข้าถึงพรอมต์และเวิร์กโฟลว์ที่ใช้บ่อยได้อย่างรวดเร็ว พร้อมการจัดการ UI เต็มรูปแบบ",
 		"feature3": "<bold>เครื่องมือ Gemini ที่ปรับปรุงแล้ว</bold>: บริบท URL ใหม่และความสามารถในการค้นหาของ Google Search ช่วยให้โมเดล Gemini มีข้อมูลเว็บแบบเรียลไทม์และความสามารถในการวิจัยที่เพิ่มขึ้น",
 		"hideButton": "ซ่อนประกาศ",
-		"detailsDiscussLinks": "แวะมาเยี่ยมเยียนเราที่ www.modelharbor.com 🚀"
+		"detailsDiscussLinks": "แวะมาเยี่ยมเยียนเราที่ www.modelharbor.com 🚀",
+		"stealthModel": {
+			"feature": "โมเดลล่องหนของ Sonic ตอนนี้คือ <bold>Grok Code Fast</bold>! โมเดลการให้เหตุผลประสิทธิภาพสูงนี้มีให้ใช้งานในชื่อ <code>grok-code-fast-1</code> ภายใต้ผู้ให้บริการ <bold>xAI (Grok)</bold>",
+			"note": "เพื่อเป็นการขอบคุณสำหรับความคิดเห็นที่เป็นประโยชน์ทั้งหมดเกี่ยวกับ Sonic, xAI กำลังขยายการเข้าถึง <code>grok-code-fast-1</code> ฟรีไปอีกหนึ่งสัปดาห์ผ่านผู้ให้บริการ <bold>ModelHarbor Agent Cloud</bold>",
+			"connectButton": "เชื่อมต่อกับ ModelHarbor Agent Cloud",
+			"selectModel": "ไปที่ <settingsLink>การตั้งค่า</settingsLink> เพื่ออัปเดตการกำหนดค่าผู้ให้บริการของคุณ"
+		}
 	},
 	"reasoning": {
 		"thinking": "กำลังคิด",
@@ -354,9 +364,9 @@
 		"ariaLabel": "เวอร์ชัน {{version}} - คลิกเพื่อดูบันทึกการปล่อย"
 	},
 	"rooCloudCTA": {
-		"title": "ModelHarbor Code Cloud กำลังจะมา!",
-		"description": "รันเอเจนต์ระยะไกลในคลาวด์ เข้าถึงงานของคุณจากทุกที่ ทำงานร่วมกับผู้อื่น และอื่นๆ",
-		"joinWaitlist": "เข้าร่วมรายการรอเพื่อรับการเข้าถึงล่วงหน้า"
+		"title": "ModelHarbor Agent Cloud กำลังจะมาเร็ว ๆ นี้!",
+		"description": "เรียกใช้เอเจนต์ ModelHarbor ระยะไกลในคลาวด์ เข้าถึงงานของคุณได้จากทุกที่ ทำงานร่วมกับผู้อื่น และอีกมากมาย",
+		"joinWaitlist": "ลงทะเบียนเพื่อรับข้อมูลอัปเดตล่าสุด"
 	},
 	"command": {
 		"triggerDescription": "เรียกใช้คำสั่ง {{name}}"
@@ -365,6 +375,7 @@
 		"tooltip": "จัดการคำสั่งทับ",
 		"title": "คำสั่งทับ",
 		"description": "สร้างคำสั่งทับที่กำหนดเองเพื่อการเข้าถึงพรอมต์และเวิร์กโฟลว์ที่ใช้บ่อยได้อย่างรวดเร็ว <DocsLink>เอกสาร</DocsLink>",
+		"builtInCommands": "คำสั่งที่มีในตัว",
 		"globalCommands": "คำสั่งส่วนกลาง",
 		"workspaceCommands": "คำสั่งพื้นที่ทำงาน",
 		"globalCommand": "คำสั่งส่วนกลาง",

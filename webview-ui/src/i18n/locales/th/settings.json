@@ -38,7 +38,7 @@
 	},
 	"codeIndex": {
 		"title": "การจัดทำดัชนีโค้ดเบส",
-		"description": "กำหนดค่าการตั้งค่าการจัดทำดัชนีโค้ดเบสเพื่อเปิดใช้งานการค้นหาความหมายของโปรเจกต์ของคุณ แนะนำให้ใช้ qwen/qwen3-embeddings และ baai/bge-m3 เพื่อผลลัพธ์ที่ดีที่สุดซึ่งมีให้บริการที่ผู้ให้บริการ ModelHarbor",
+		"description": "กำหนดค่าการตั้งค่าการจัดทำดัชนีโค้ดเบสเพื่อเปิดใช้งานการค้นหาความหมายของโปรเจกต์ของคุณ <0>เรียนรู้เพิ่มเติม</0>",
 		"statusTitle": "สถานะ",
 		"enableLabel": "เปิดใช้งานการจัดทำดัชนีโค้ดเบส",
 		"enableDescription": "เปิดใช้งานการจัดทำดัชนีโค้ดเพื่อปรับปรุงการค้นหาและความเข้าใจในบริบท",
@@ -55,6 +55,9 @@
 		"mistralProvider": "Mistral",
 		"mistralApiKeyLabel": "คีย์ API:",
 		"mistralApiKeyPlaceholder": "ป้อนคีย์ API ของ Mistral ของคุณ",
+		"vercelAiGatewayProvider": "Vercel AI Gateway",
+		"vercelAiGatewayApiKeyLabel": "คีย์ API",
+		"vercelAiGatewayApiKeyPlaceholder": "ป้อนคีย์ API ของ Vercel AI Gateway ของคุณ",
 		"openaiCompatibleProvider": "เข้ากันได้กับ OpenAI",
 		"modelharborProvider": "ModelHarbor",
 		"modelHarborFacebook": "ModelHarbor (Facebook)",
@@ -124,10 +127,11 @@
 			"modelDimensionRequired": "จำเป็นต้องมีมิติโมเดล",
 			"geminiApiKeyRequired": "จำเป็นต้องมีคีย์ API ของ Gemini",
 			"mistralApiKeyRequired": "จำเป็นต้องมีคีย์ API ของ Mistral",
+			"modelharborApiKeyRequired": "ต้องการคีย์ API ModelHarbor",
+			"vercelAiGatewayApiKeyRequired": "จำเป็นต้องมีคีย์ API ของ Vercel AI Gateway",
 			"ollamaBaseUrlRequired": "จำเป็นต้องมี URL พื้นฐานของ Ollama",
 			"baseUrlRequired": "จำเป็นต้องมี URL พื้นฐาน",
-			"modelDimensionMinValue": "มิติโมเดลต้องมากกว่า 0",
-			"modelharborApiKeyRequired": "ต้องการคีย์ API ModelHarbor"
+			"modelDimensionMinValue": "มิติโมเดลต้องมากกว่า 0"
 		}
 	},
 	"autoApprove": {
@@ -237,6 +241,8 @@
 		"awsCustomArnDesc": "ตรวจสอบให้แน่ใจว่าภูมิภาคใน ARN ตรงกับภูมิภาค AWS ที่คุณเลือกด้านบน",
 		"openRouterApiKey": "คีย์ API ของ OpenRouter",
 		"getOpenRouterApiKey": "รับคีย์ API ของ OpenRouter",
+		"vercelAiGatewayApiKey": "คีย์ API ของ Vercel AI Gateway",
+		"getVercelAiGatewayApiKey": "รับคีย์ API ของ Vercel AI Gateway",
 		"apiKeyStorageNotice": "คีย์ API ถูกเก็บไว้อย่างปลอดภัยใน Secret Storage ของ VSCode",
 		"glamaApiKey": "คีย์ API ของ Glama",
 		"getGlamaApiKey": "รับคีย์ API ของ Glama",
@@ -257,17 +263,28 @@
 			"error": "ไม่สามารถรีเฟรชรายการโมเดลได้ โปรดลองอีกครั้ง"
 		},
 		"getRequestyApiKey": "รับคีย์ API ของ Requesty",
+		"getRequestyBaseUrl": "URL ฐาน",
+		"requestyUseCustomBaseUrl": "ใช้ URL ฐานที่กำหนดเอง",
 		"openRouterTransformsText": "บีบอัดพรอมต์และสายข้อความให้มีขนาดบริบท (<a>OpenRouter Transforms</a>)",
 		"anthropicApiKey": "คีย์ API ของ Anthropic",
 		"getAnthropicApiKey": "รับคีย์ API ของ Anthropic",
 		"anthropicUseAuthToken": "ส่งคีย์ API ของ Anthropic เป็นส่วนหัว Authorization แทน X-Api-Key",
 		"anthropicModelharborPricing": "ราคา Claude Sonnet ที่ถูกกว่าที่ ModelHarbor",
+		"anthropic1MContextBetaLabel": "เปิดใช้งานหน้าต่างบริบท 1M (เบต้า)",
+		"anthropic1MContextBetaDescription": "ขยายหน้าต่างบริบทเป็น 1 ล้านโทเค็นสำหรับ Claude Sonnet 4",
+		"awsBedrock1MContextBetaLabel": "เปิดใช้งานหน้าต่างบริบท 1M (เบต้า)",
+		"awsBedrock1MContextBetaDescription": "ขยายหน้าต่างบริบทเป็น 1 ล้านโทเค็นสำหรับ Claude Sonnet 4",
 		"cerebrasApiKey": "คีย์ API ของ Cerebras",
 		"getCerebrasApiKey": "รับคีย์ API ของ Cerebras",
 		"chutesApiKey": "คีย์ API ของ Chutes",
 		"getChutesApiKey": "รับคีย์ API ของ Chutes",
 		"fireworksApiKey": "คีย์ API ของ Fireworks",
 		"getFireworksApiKey": "รับคีย์ API ของ Fireworks",
+		"featherlessApiKey": "คีย์ API ของ Featherless",
+		"getFeatherlessApiKey": "รับคีย์ API ของ Featherless",
+		"ioIntelligenceApiKey": "คีย์ API IO Intelligence",
+		"ioIntelligenceApiKeyPlaceholder": "ใส่คีย์ API IO Intelligence ของคุณ",
+		"getIoIntelligenceApiKey": "รับคีย์ API IO Intelligence",
 		"deepSeekApiKey": "คีย์ API ของ DeepSeek",
 		"getDeepSeekApiKey": "รับคีย์ API ของ DeepSeek",
 		"doubaoApiKey": "คีย์ API ของ Doubao",
@@ -376,6 +393,10 @@
 			"description": "ไม่จำเป็นต้องใช้คีย์ API แต่ผู้ใช้ต้องช่วยคัดลอกและวางข้อมูลไปยัง AI แชทบนเว็บ",
 			"instructions": "ระหว่างการใช้งาน กล่องโต้ตอบจะปรากฏขึ้นและข้อความปัจจุบันจะถูกคัดลอกไปยังคลิปบอร์ดโดยอัตโนมัติ คุณต้องวางสิ่งเหล่านี้ไปยังเวอร์ชันเว็บของ AI (เช่น ChatGPT หรือ Claude) จากนั้นคัดลอกการตอบกลับของ AI กลับไปยังกล่องโต้ตอบและคลิกปุ่มยืนยัน"
 		},
+		"roo": {
+			"authenticatedMessage": "ตรวจสอบสิทธิ์อย่างปลอดภัยผ่านบัญชี ModelHarbor Agent Cloud ของคุณ",
+			"connectButton": "เชื่อมต่อกับ ModelHarbor Agent Cloud"
+		},
 		"openRouter": {
 			"providerRouting": {
 				"title": "การกำหนดเส้นทางผู้ให้บริการ OpenRouter",
@@ -437,10 +458,10 @@
 		},
 		"reasoningEffort": {
 			"label": "ความพยายามในการให้เหตุผลของโมเดล",
-			"high": "สูง",
-			"medium": "ปานกลาง",
+			"minimal": "น้อยที่สุด (เร็วที่สุด)",
 			"low": "ต่ำ",
-			"minimal": "น้อยที่สุด (เร็วที่สุด)"
+			"medium": "ปานกลาง",
+			"high": "สูง"
 		},
 		"verbosity": {
 			"label": "ความละเอียดของผลลัพธ์",
@@ -456,25 +477,6 @@
 			"placeholder": "ค่าเริ่มต้น: claude",
 			"maxTokensLabel": "โทเค็นเอาต์พุตสูงสุด",
 			"maxTokensDescription": "จำนวนโทเค็นเอาต์พุตสูงสุดสำหรับการตอบกลับของ Claude Code ค่าเริ่มต้นคือ 8000"
-		},
-		"getRequestyBaseUrl": "URL ฐาน",
-		"requestyUseCustomBaseUrl": "ใช้ URL ฐานที่กำหนดเอง",
-		"anthropic1MContextBetaLabel": "เปิดใช้งานหน้าต่างบริบท 1M (เบต้า)",
-		"anthropic1MContextBetaDescription": "ขยายหน้าต่างบริบทเป็น 1 ล้านโทเค็นสำหรับ Claude Sonnet 4",
-		"awsBedrock1MContextBetaLabel": "เปิดใช้งานหน้าต่างบริบท 1M (เบต้า)",
-		"awsBedrock1MContextBetaDescription": "ขยายหน้าต่างบริบทเป็น 1 ล้านโทเค็นสำหรับ Claude Sonnet 4",
-		"ioIntelligenceApiKey": "คีย์ API IO Intelligence",
-		"ioIntelligenceApiKeyPlaceholder": "ใส่คีย์ API IO Intelligence ของคุณ",
-		"getIoIntelligenceApiKey": "รับคีย์ API IO Intelligence",
-		"reasoningEffort": {
-			"label": "ความพยายามในการให้เหตุผลของโมเดล",
-			"minimal": "น้อยที่สุด (เร็วที่สุด)",
-			"low": "ต่ำ",
-			"medium": "ปานกลาง",
-			"high": "สูง"
-		},
-		"modelInfo": {
-			"contextWindow": "หน้าต่างบริบท:"
 		}
 	},
 	"browser": {
@@ -731,6 +733,21 @@
 		"ASSISTANT_MESSAGE_PARSER": {
 			"name": "ใช้ตัวแยกวิเคราะห์ข้อความใหม่",
 			"description": "เปิดใช้งานตัวแยกวิเคราะห์ข้อความสตรีมมิ่งแบบทดลองที่ให้การปรับปรุงประสิทธิภาพอย่างมีนัยสำคัญสำหรับการตอบสนองของผู้ช่วยที่ยาวโดยการประมวลผลข้อความอย่างมีประสิทธิภาพมากขึ้น"
+		},
+		"NEW_TASK_REQUIRE_TODOS": {
+			"name": "ต้องการรายการ 'todos' สำหรับงานใหม่",
+			"description": "เมื่อเปิดใช้งาน เครื่องมือ new_task จะต้องมีพารามิเตอร์ todos ซึ่งจะช่วยให้มั่นใจได้ว่างานใหม่ทั้งหมดจะเริ่มต้นด้วยรายการวัตถุประสงค์ที่ชัดเจน เมื่อปิดใช้งาน (ค่าเริ่มต้น) พารามิเตอร์ todos จะยังคงเป็นทางเลือกเพื่อความเข้ากันได้แบบย้อนหลัง"
+		},
+		"IMAGE_GENERATION": {
+			"name": "เปิดใช้งานการสร้างภาพ AI",
+			"description": "เมื่อเปิดใช้งาน ModelHarbor สามารถสร้างภาพจากข้อความแจ้งโดยใช้โมเดลการสร้างภาพของ OpenRouter จำเป็นต้องกำหนดค่าคีย์ API ของ OpenRouter",
+			"openRouterApiKeyLabel": "คีย์ API ของ OpenRouter",
+			"openRouterApiKeyPlaceholder": "ป้อนคีย์ API ของ OpenRouter ของคุณ",
+			"getApiKeyText": "รับคีย์ API ของคุณจาก",
+			"modelSelectionLabel": "โมเดลการสร้างภาพ",
+			"modelSelectionDescription": "เลือกโมเดลที่จะใช้สำหรับการสร้างภาพ",
+			"warningMissingKey": "⚠️ จำเป็นต้องมีคีย์ API ของ OpenRouter สำหรับการสร้างภาพ โปรดกำหนดค่าด้านบน",
+			"successConfigured": "✓ การสร้างภาพได้รับการกำหนดค่าและพร้อมใช้งานแล้ว"
 		}
 	},
 	"promptCaching": {
@@ -749,6 +766,7 @@
 		"noComputerUse": "ไม่รองรับการใช้งานคอมพิวเตอร์",
 		"supportsPromptCache": "รองรับการแคชพรอมต์",
 		"noPromptCache": "ไม่รองรับการแคชพรอมต์",
+		"contextWindow": "หน้าต่างบริบท:",
 		"maxOutput": "เอาต์พุตสูงสุด",
 		"inputPrice": "ราคาอินพุต",
 		"outputPrice": "ราคาเอาต์พุต",
@@ -763,8 +781,7 @@
 			"freeRequests": "* ฟรีสูงสุด {{count}} คำขอต่อนาที หลังจากนั้น การเรียกเก็บเงินจะขึ้นอยู่กับขนาดของพรอมต์",
 			"pricingDetails": "สำหรับข้อมูลเพิ่มเติม โปรดดูรายละเอียดราคา",
 			"billingEstimate": "* การเรียกเก็บเงินเป็นเพียงการประมาณการ - ต้นทุนที่แน่นอนขึ้นอยู่กับขนาดของพรอมต์"
-		},
-		"contextWindow": "หน้าต่างบริบท:"
+		}
 	},
 	"modelPicker": {
 		"automaticFetch": "ส่วนขยายจะดึงรายการโมเดลล่าสุดที่มีอยู่ใน <serviceLink>{{serviceName}}</serviceLink> โดยอัตโนมัติ",
@@ -803,7 +820,8 @@
 		"modelAvailability": "ID โมเดล ({{modelId}}) ที่คุณระบุไม่พร้อมใช้งาน โปรดเลือกโมเดลอื่น",
 		"providerNotAllowed": "ผู้ให้บริการ '{{provider}}' ไม่ได้รับอนุญาตจากองค์กรของคุณ",
 		"modelNotAllowed": "โมเดล '{{model}}' ไม่ได้รับอนุญาตสำหรับผู้ให้บริการ '{{provider}}' จากองค์กรของคุณ",
-		"profileInvalid": "โปรไฟล์นี้มีผู้ให้บริการหรือโมเดลที่ไม่ได้รับอนุญาตจากองค์กรของคุณ"
+		"profileInvalid": "โปรไฟล์นี้มีผู้ให้บริการหรือโมเดลที่ไม่ได้รับอนุญาตจากองค์กรของคุณ",
+		"qwenCodeOauthPath": "คุณต้องระบุเส้นทางข้อมูลรับรอง OAuth ที่ถูกต้อง"
 	},
 	"placeholders": {
 		"apiKey": "ป้อนคีย์ API...",
