@@ -116,7 +116,6 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 		historyPreviewCollapsed, // Added historyPreviewCollapsed
 		soundEnabled,
 		soundVolume,
-		cloudIsAuthenticated,
 		messageQueue = [],
 	} = useExtensionState()
 
