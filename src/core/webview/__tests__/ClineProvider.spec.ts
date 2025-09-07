@@ -2706,6 +2706,7 @@ describe("ClineProvider - Router Models", () => {
 				litellm: mockModels,
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModels,
 				"vercel-ai-gateway": mockModels,
 			},
 		})
@@ -2732,11 +2733,13 @@ describe("ClineProvider - Router Models", () => {
 		const { getModels } = await import("../../../api/providers/fetchers/modelCache")
 
 		// Mock some providers to succeed and others to fail
+		// Order: openrouter, requesty, glama, unbound, modelharbor, vercel-ai-gateway, deepinfra, litellm
 		vi.mocked(getModels)
 			.mockResolvedValueOnce(mockModels) // openrouter success
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty fail
 			.mockResolvedValueOnce(mockModels) // glama success
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound fail
+			.mockResolvedValueOnce(mockModels) // modelharbor success
 			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway success
 			.mockResolvedValueOnce(mockModels) // deepinfra success
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm fail
@@ -2755,6 +2758,7 @@ describe("ClineProvider - Router Models", () => {
 				ollama: {},
 				lmstudio: {},
 				litellm: {},
+				modelharbor: mockModels,
 				"vercel-ai-gateway": mockModels,
 			},
 		})
@@ -2867,6 +2871,7 @@ describe("ClineProvider - Router Models", () => {
 				litellm: {},
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModels,
 				"vercel-ai-gateway": mockModels,
 			},
 		})

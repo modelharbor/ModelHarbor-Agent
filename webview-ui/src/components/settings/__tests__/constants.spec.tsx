@@ -32,7 +32,7 @@ describe("PROVIDERS constants", () => {
 
 	it("should maintain the total number of providers", () => {
 		// This test ensures we didn't accidentally remove or duplicate any providers
-		const expectedProviderCount = 31 // Update this number based on the actual count
+		const expectedProviderCount = 32 // Update this number based on the actual count (includes new DeepInfra provider)
 		expect(PROVIDERS.length).toBe(expectedProviderCount)
 	})
 
