@@ -244,31 +244,32 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		// Mock getModels to return different models for different providers
 		// The order should match the modelFetchPromises array in webviewMessageHandler.ts
 		mockGetModels
-			.mockResolvedValueOnce(mockModels) // openrouter
-			.mockResolvedValueOnce(mockModels) // requesty
-			.mockResolvedValueOnce(mockModels) // glama
-			.mockResolvedValueOnce(mockModels) // unbound
+			.mockResolvedValueOnce(mockModels) // openrouter - position 1
+			.mockResolvedValueOnce(mockModels) // requesty - position 2
+			.mockResolvedValueOnce(mockModels) // glama - position 3
+			.mockResolvedValueOnce(mockModels) // unbound - position 4
 			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor - position 5
 			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway - position 6
-			.mockResolvedValueOnce(mockModels) // litellm - position 7 (if present)
+			.mockResolvedValueOnce(mockModels) // deepinfra - position 7
+			.mockResolvedValueOnce(mockModels) // litellm - position 8 (if present)
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
 		})
 
 		// Verify getModels was called for each provider
-		expect(mockGetModels).toHaveBeenCalledWith({ provider: "deepinfra" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "openrouter" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "requesty", apiKey: "requesty-key" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "glama" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "unbound", apiKey: "unbound-key" })
+		expect(mockGetModels).toHaveBeenCalledWith({ provider: "modelharbor" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "vercel-ai-gateway" })
+		expect(mockGetModels).toHaveBeenCalledWith({ provider: "deepinfra" })
 		expect(mockGetModels).toHaveBeenCalledWith({
 			provider: "litellm",
 			apiKey: "litellm-key",
 			baseUrl: "http://localhost:4000",
 		})
-		expect(mockGetModels).toHaveBeenCalledWith({ provider: "modelharbor" })
 
 		// Verify response was sent with correct ModelHarbor models
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
@@ -332,6 +333,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockResolvedValueOnce(mockModels) // unbound
 			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
 			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway
+			.mockResolvedValueOnce(mockModels) // deepinfra
 			.mockResolvedValueOnce({}) // litellm (empty because no config)
 
 		await webviewMessageHandler(mockClineProvider, {
@@ -394,6 +396,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockResolvedValueOnce(mockModels) // unbound
 			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
 			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway
+			.mockResolvedValueOnce(mockModels) // deepinfra
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
@@ -460,7 +463,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
 			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
 			.mockRejectedValueOnce(new Error("Vercel AI Gateway error")) // vercel-ai-gateway
-			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway
 			.mockResolvedValueOnce(mockModels) // deepinfra
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm
 
@@ -604,6 +606,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			.mockResolvedValueOnce({}) // unbound
 			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
 			.mockResolvedValueOnce({}) // vercel-ai-gateway
+			.mockResolvedValueOnce({}) // deepinfra
 			.mockResolvedValueOnce(mockModels) // litellm
 
 		await webviewMessageHandler(mockClineProvider, {
