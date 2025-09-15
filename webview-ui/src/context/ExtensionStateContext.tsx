@@ -100,6 +100,9 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setEnableMcpServerCreation: (value: boolean) => void
 	remoteControlEnabled: boolean
 	setRemoteControlEnabled: (value: boolean) => void
+	taskSyncEnabled: boolean
+	setTaskSyncEnabled: (value: boolean) => void
+	featureRoomoteControlEnabled: boolean
 	alwaysApproveResubmit?: boolean
 	setAlwaysApproveResubmit: (value: boolean) => void
 	requestDelaySeconds: number
@@ -259,6 +262,8 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		maxDiagnosticMessages: 50,
 		openRouterImageApiKey: "",
 		openRouterImageGenerationSelectedModel: "",
+		taskSyncEnabled: false,
+		featureRoomoteControlEnabled: false,
 	})
 
 	const [didHydrateState, setDidHydrateState] = useState(false)
@@ -468,6 +473,7 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		setEnableMcpServerCreation: (value) =>
 			setState((prevState) => ({ ...prevState, enableMcpServerCreation: value })),
 		setRemoteControlEnabled: (value) => setState((prevState) => ({ ...prevState, remoteControlEnabled: value })),
+		setTaskSyncEnabled: (value) => setState((prevState) => ({ ...prevState, taskSyncEnabled: value })),
 		setAlwaysApproveResubmit: (value) => setState((prevState) => ({ ...prevState, alwaysApproveResubmit: value })),
 		setRequestDelaySeconds: (value) => setState((prevState) => ({ ...prevState, requestDelaySeconds: value })),
 		setCurrentApiConfigName: (value) => setState((prevState) => ({ ...prevState, currentApiConfigName: value })),
