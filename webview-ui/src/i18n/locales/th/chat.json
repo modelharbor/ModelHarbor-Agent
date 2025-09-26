@@ -283,15 +283,8 @@
 		"whatsNew": "มีอะไรใหม่",
 		"feature1": "<bold>การจัดคิวข้อความ</bold>: จัดคิวข้อความหลายข้อความในขณะที่ ModelHarbor กำลังทำงาน ช่วยให้คุณวางแผนเวิร์กโฟลว์ของคุณต่อไปได้โดยไม่หยุดชะงัก",
 		"feature2": "<bold>คำสั่งทับที่กำหนดเอง</bold>: สร้างคำสั่งทับส่วนบุคคลเพื่อการเข้าถึงพรอมต์และเวิร์กโฟลว์ที่ใช้บ่อยได้อย่างรวดเร็ว พร้อมการจัดการ UI เต็มรูปแบบ",
-		"feature3": "<bold>เครื่องมือ Gemini ที่ปรับปรุงแล้ว</bold>: บริบท URL ใหม่และความสามารถในการค้นหาของ Google Search ช่วยให้โมเดล Gemini มีข้อมูลเว็บแบบเรียลไทม์และความสามารถในการวิจัยที่เพิ่มขึ้น",
 		"hideButton": "ซ่อนประกาศ",
-		"detailsDiscussLinks": "แวะมาเยี่ยมเยียนเราที่ www.modelharbor.com 🚀",
-		"stealthModel": {
-			"feature": "โมเดลล่องหนของ Sonic ตอนนี้คือ <bold>Grok Code Fast</bold>! โมเดลการให้เหตุผลประสิทธิภาพสูงนี้มีให้ใช้งานในชื่อ <code>grok-code-fast-1</code> ภายใต้ผู้ให้บริการ <bold>xAI (Grok)</bold>",
-			"note": "เพื่อเป็นการขอบคุณสำหรับความคิดเห็นที่เป็นประโยชน์ทั้งหมดเกี่ยวกับ Sonic, xAI กำลังขยายการเข้าถึง <code>grok-code-fast-1</code> ฟรีไปอีกหนึ่งสัปดาห์ผ่านผู้ให้บริการ <bold>ModelHarbor Agent Cloud</bold>",
-			"connectButton": "เชื่อมต่อกับ ModelHarbor Agent Cloud",
-			"selectModel": "ไปที่ <settingsLink>การตั้งค่า</settingsLink> เพื่ออัปเดตการกำหนดค่าผู้ให้บริการของคุณ"
-		}
+		"detailsDiscussLinks": "แวะมาเยี่ยมเยียนเราที่ www.modelharbor.com 🚀"
 	},
 	"reasoning": {
 		"thinking": "กำลังคิด",
@@ -375,6 +368,7 @@
 		"tooltip": "จัดการคำสั่งทับ",
 		"title": "คำสั่งทับ",
 		"description": "สร้างคำสั่งทับที่กำหนดเองเพื่อการเข้าถึงพรอมต์และเวิร์กโฟลว์ที่ใช้บ่อยได้อย่างรวดเร็ว <DocsLink>เอกสาร</DocsLink>",
+		"manageCommands": "จัดการคำสั่งทับในการตั้งค่า",
 		"builtInCommands": "คำสั่งที่มีในตัว",
 		"globalCommands": "คำสั่งส่วนกลาง",
 		"workspaceCommands": "คำสั่งพื้นที่ทำงาน",
@@ -390,8 +384,18 @@
 			"confirm": "ลบ"
 		}
 	},
+	"slashCommand": {
+		"wantsToRun": "ModelHarbor ต้องการรันคำสั่งทับ",
+		"didRun": "ModelHarbor รันคำสั่งทับ"
+	},
 	"queuedMessages": {
-		"title": "ข้อความในคิว:",
+		"title": "ข้อความในคิว",
 		"clickToEdit": "คลิกเพื่อแก้ไขข้อความ"
+	},
+	"contextMenu": {
+		"noResults": "ไม่พบผลลัพธ์",
+		"problems": "ปัญหา",
+		"terminal": "เทอร์มินัล",
+		"url": "วางลิงก์เพื่อดึงเนื้อหา"
 	}
 }

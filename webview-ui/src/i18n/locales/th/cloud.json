@@ -1,0 +1,31 @@
+{
+	"title": "คลาวด์",
+	"profilePicture": "รูปโปรไฟล์",
+	"logOut": "ออกจากระบบ",
+	"testApiAuthentication": "ทดสอบการยืนยันตัวตน API",
+	"signIn": "เชื่อมต่อกับ ModelHarbor Agent Cloud",
+	"connect": "เริ่มต้นใช้งาน",
+	"cloudBenefitsTitle": "ลอง ModelHarbor Agent Cloud",
+	"cloudBenefitWalkaway": "ติดตามและควบคุมงานจากทุกที่ (รวมถึงโทรศัพท์ของคุณ)",
+	"cloudBenefitSharing": "แชร์งานกับผู้อื่น",
+	"cloudBenefitHistory": "เข้าถึงประวัติงานของคุณจากทุกที่",
+	"cloudBenefitMetrics": "ดูการใช้โทเค็นของคุณแบบรวม",
+	"visitCloudWebsite": "เยี่ยมชม ModelHarbor Agent Cloud",
+	"taskSync": "ซิงค์งาน",
+	"taskSyncDescription": "ซิงค์งานของคุณเพื่อดูและแชร์บน ModelHarbor Agent Cloud",
+	"remoteControl": "การควบคุม ModelHarbor จากระยะไกล",
+	"remoteControlDescription": "อนุญาตให้ควบคุมงานจาก ModelHarbor Agent Cloud",
+	"remoteControlRequiresTaskSync": "ต้องเปิดใช้งานซิงค์งานเพื่อใช้การควบคุมจากระยะไกล",
+	"taskSyncManagedByOrganization": "การซิงค์งานถูกจัดการโดยองค์กรของคุณ",
+	"usageMetricsAlwaysReported": "ข้อมูลการใช้โมเดลจะถูกรายงานเสมอเมื่อเข้าสู่ระบบ",
+	"cloudUrlPillLabel": "URL ของ ModelHarbor Agent Cloud",
+	"authWaiting": "รอการยืนยันตัวตนจากเบราว์เซอร์...",
+	"havingTrouble": "มีปัญหาหรือไม่?",
+	"pasteCallbackUrl": "คัดลอก URL เปลี่ยนเส้นทางจากเบราว์เซอร์ของคุณและวางที่นี่:",
+	"startOver": "เริ่มใหม่",
+	"upsell": {
+		"autoApprovePowerUser": "ให้ ModelHarbor มีอิสระบ้างหรือไม่? ควบคุมได้จากทุกที่ด้วย ModelHarbor Agent Cloud <learnMoreLink>เรียนรู้เพิ่มเติม</learnMoreLink>",
+		"longRunningTask": "อาจใช้เวลาสักพัก ดำเนินการต่อจากทุกที่ด้วย Cloud",
+		"taskList": "ModelHarbor Agent Cloud มาแล้ว: ติดตามและควบคุมงานของคุณจากทุกที่ <learnMoreLink>เรียนรู้เพิ่มเติม</learnMoreLink>"
+	}
+}
