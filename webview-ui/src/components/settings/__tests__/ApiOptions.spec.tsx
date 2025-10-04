@@ -622,7 +622,7 @@ describe("ApiOptions", () => {
 				(call) => call[0] === "modelharborModelId",
 			)
 			expect(modelharborModelIdCalls.length).toBeGreaterThan(0)
-			expect(modelharborModelIdCalls[0][1]).toBe("qwen/qwen3-coder-480b-a35b-instruct") // Default model
+			expect(modelharborModelIdCalls[0][1]).toBe("glm-4.6") // Default model
 		})
 	})
 })

@@ -368,7 +368,7 @@ describe("useSelectedModel", () => {
 			const { result } = renderHook(() => useSelectedModel(), { wrapper })
 
 			expect(result.current.provider).toBe("modelharbor")
-			expect(result.current.id).toBe("qwen/qwen3-coder-480b-a35b-instruct")
+			expect(result.current.id).toBe("glm-4.6")
 			expect(result.current.info).toBeUndefined()
 		})
 	})
