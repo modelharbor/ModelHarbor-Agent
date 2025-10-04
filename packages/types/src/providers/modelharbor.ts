@@ -270,14 +270,14 @@ const fallbackModelHarborModels = {
 		outputPrice: 15.0,
 		description: "Anthropic Claude Sonnet 4 with advanced language understanding and generation.",
 	},
-	"deepseek/deepseek-r1-0528": {
-		maxTokens: 8192,
-		contextWindow: 163840,
+	"glm-4.6": {
+		maxTokens: 128000,
+		contextWindow: 212720,
 		supportsImages: false,
 		supportsPromptCache: false,
 		inputPrice: 1.0,
 		outputPrice: 5.0,
-		description: "DeepSeek R1 model with reasoning capabilities and multimodal support.",
+		description: "GLM 4.6 model with strong general-purpose capabilities and large context window.",
 	},
 	"deepseek/deepseek-v3-0324": {
 		maxTokens: 8192,
@@ -384,7 +384,7 @@ export const modelHarborModels = new Proxy({} as Record<string, ModelInfo>, {
 
 export type ModelHarborModelId = string
 
-export const modelHarborDefaultModelId: ModelHarborModelId = "qwen/qwen3-coder-480b-a35b-instruct"
+export const modelHarborDefaultModelId: ModelHarborModelId = "glm-4.6"
 
 // Initialize models cache on module load only in Node.js environment (extension host)
 // In webview/browser environments, models are fetched via message passing
