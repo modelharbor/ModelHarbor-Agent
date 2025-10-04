@@ -37,6 +37,16 @@ describe("useSelectedModel - ModelHarbor as default", () => {
 				litellm: {},
 				"io-intelligence": {},
 				modelharbor: {
+					"glm-4.6": {
+						maxTokens: 128000,
+						contextWindow: 212720,
+						supportsComputerUse: false,
+						supportsImages: false,
+						supportsPromptCache: false,
+						inputPrice: 1.0,
+						outputPrice: 5.0,
+						description: "GLM 4.6 model with strong general-purpose capabilities and large context window.",
+					},
 					"qwen/qwen3-coder-480b-a35b-instruct": {
 						maxTokens: 65536,
 						contextWindow: 262000,
@@ -66,7 +76,7 @@ describe("useSelectedModel - ModelHarbor as default", () => {
 		const { result } = renderHook(() => useSelectedModel(), { wrapper })
 
 		expect(result.current.provider).toBe("modelharbor")
-		expect(result.current.id).toBe("qwen/qwen3-coder-480b-a35b-instruct")
+		expect(result.current.id).toBe("glm-4.6")
 		expect(result.current.info).toBeUndefined() // No configuration means fallback to undefined
 	})
 
@@ -75,16 +85,16 @@ describe("useSelectedModel - ModelHarbor as default", () => {
 		const { result } = renderHook(() => useSelectedModel({ apiProvider: "modelharbor" }), { wrapper })
 
 		expect(result.current.provider).toBe("modelharbor")
-		expect(result.current.id).toBe("qwen/qwen3-coder-480b-a35b-instruct")
+		expect(result.current.id).toBe("glm-4.6")
 		expect(result.current.info).toEqual({
-			maxTokens: 65536,
-			contextWindow: 262000,
+			maxTokens: 128000,
+			contextWindow: 212720,
 			supportsImages: false,
 			supportsComputerUse: false,
 			supportsPromptCache: false,
-			inputPrice: 0.6,
-			outputPrice: 1.8,
-			description: "Qwen3 Coder model optimized for coding tasks with advanced reasoning capabilities.",
+			inputPrice: 1.0,
+			outputPrice: 5.0,
+			description: "GLM 4.6 model with strong general-purpose capabilities and large context window.",
 		})
 	})
 
