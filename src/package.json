@@ -174,7 +174,7 @@
 				"category": "%configuration.title%"
 			},
 			{
-				"command": "roo-cline.toggleAutoApprove",
+				"command": "modelharbor-agent.toggleAutoApprove",
 				"title": "%command.toggleAutoApprove.title%",
 				"category": "%configuration.title%"
 			}
@@ -297,7 +297,7 @@
 		},
 		"keybindings": [
 			{
-				"command": "roo-cline.addToContext",
+				"command": "modelharbor-agent.addToContext",
 				"key": "cmd+y",
 				"mac": "cmd+y",
 				"win": "ctrl+y",
@@ -305,7 +305,7 @@
 				"when": "editorTextFocus && editorHasSelection"
 			},
 			{
-				"command": "roo-cline.toggleAutoApprove",
+				"command": "modelharbor-agent.toggleAutoApprove",
 				"key": "cmd+alt+a",
 				"mac": "cmd+alt+a",
 				"win": "ctrl+alt+a",
