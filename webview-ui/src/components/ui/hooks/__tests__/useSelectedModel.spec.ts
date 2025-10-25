@@ -250,16 +250,6 @@ describe("useSelectedModel", () => {
 					openrouter: {
 						"qwen/qwen3-coder-480b-a35b-instruct": {
 							// Default model
-<<<<<<< HEAD
-							maxTokens: 8192,
-							contextWindow: 200_000,
-							supportsImages: true,
-							supportsPromptCache: true,
-							inputPrice: 3.0,
-							outputPrice: 15.0,
-							cacheWritesPrice: 3.75,
-							cacheReadsPrice: 0.3,
-=======
 							maxTokens: 65536,
 							contextWindow: 262000,
 							supportsImages: false,
@@ -267,7 +257,6 @@ describe("useSelectedModel", () => {
 							supportsPromptCache: false,
 							inputPrice: 0.6,
 							outputPrice: 1.8,
->>>>>>> 198cdcccf (Add ModelHarbor)
 						},
 					},
 					requesty: {},

@@ -489,7 +489,6 @@ export const webviewMessageHandler = async (
 					),
 				)
 
-
 			provider.isViewLaunched = true
 			break
 		case "newTask":
@@ -717,6 +716,7 @@ export const webviewMessageHandler = async (
 				ollama: {},
 				lmstudio: {},
 				modelharbor: {},
+				roo: {},
 			}
 
 			const safeGetModels = async (options: GetModelsOptions): Promise<ModelRecord> => {
@@ -754,16 +754,7 @@ export const webviewMessageHandler = async (
 						baseUrl: apiConfiguration.deepInfraBaseUrl,
 					},
 				},
-				{
-					key: "roo",
-					options: {
-						provider: "roo",
-						baseUrl: process.env.ROO_CODE_PROVIDER_URL ?? "https://api.roocode.com/proxy",
-						apiKey: CloudService.hasInstance()
-							? CloudService.instance.authService?.getSessionToken()
-							: undefined,
-					},
-				},
+				// Roo provider removed - CloudService not available
 			]
 
 			// Add IO Intelligence if API key is provided.
@@ -1146,28 +1137,12 @@ export const webviewMessageHandler = async (
 			await provider.postStateToWebview()
 			break
 		case "remoteControlEnabled":
-			try {
-				await CloudService.instance.updateUserSettings({ extensionBridgeEnabled: message.bool ?? false })
-			} catch (error) {
-				provider.log(
-					`CloudService#updateUserSettings failed: ${error instanceof Error ? error.message : String(error)}`,
-				)
-			}
+			// CloudService removed - skip this functionality
+			provider.log("remoteControlEnabled: CloudService not available")
 			break
 		case "taskSyncEnabled":
-			const enabled = message.bool ?? false
-			const updatedSettings: Partial<UserSettingsConfig> = {
-				taskSyncEnabled: enabled,
-			}
-			// If disabling task sync, also disable remote control
-			if (!enabled) {
-				updatedSettings.extensionBridgeEnabled = false
-			}
-			try {
-				await CloudService.instance.updateUserSettings(updatedSettings)
-			} catch (error) {
-				provider.log(`Failed to update cloud settings for task sync: ${error}`)
-			}
+			// CloudService removed - skip this functionality
+			provider.log("taskSyncEnabled: CloudService not available")
 			break
 		case "refreshAllMcpServers": {
 			const mcpHub = provider.getMcpHub()
@@ -1457,8 +1432,7 @@ export const webviewMessageHandler = async (
 					hasOpenedModeSelector: currentState.hasOpenedModeSelector ?? false,
 				}
 				provider.postMessageToWebview({ type: "state", state: stateWithPrompts })
-
-				}
+			}
 			break
 		case "deleteMessage": {
 			if (!provider.getCurrentTask()) {
@@ -1943,30 +1917,7 @@ export const webviewMessageHandler = async (
 				await updateGlobalState("mode", message.modeConfig.slug)
 				await provider.postStateToWebview()
 
-				// Track telemetry for custom mode creation or update
-				if (TelemetryService.hasInstance()) {
-					if (isNewMode) {
-						// This is a new custom mode
-						TelemetryService.instance.captureCustomModeCreated(
-							message.modeConfig.slug,
-							message.modeConfig.name,
-						)
-					} else {
-						// Determine which setting was changed by comparing objects
-						const existingMode = existingModes.find((mode) => mode.slug === message.modeConfig?.slug)
-						const changedSettings = existingMode
-							? Object.keys(message.modeConfig).filter(
-									(key) =>
-										JSON.stringify((existingMode as Record<string, unknown>)[key]) !==
-										JSON.stringify((message.modeConfig as Record<string, unknown>)[key]),
-								)
-							: []
-
-						if (changedSettings.length > 0) {
-							TelemetryService.instance.captureModeSettingChanged(changedSettings[0])
-						}
-					}
-				}
+				// TelemetryService removed - skip telemetry tracking
 			}
 			break
 		case "deleteCustomMode":
@@ -2658,10 +2609,7 @@ export const webviewMessageHandler = async (
 
 		case "switchTab": {
 			if (message.tab) {
-				// Capture tab shown event for all switchTab messages (which are user-initiated)
-				if (TelemetryService.hasInstance()) {
-					TelemetryService.instance.captureTabShown(message.tab)
-				}
+				// TelemetryService removed - skip telemetry tracking
 
 				await provider.postMessageToWebview({
 					type: "action",

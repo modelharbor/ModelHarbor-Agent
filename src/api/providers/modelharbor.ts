@@ -8,19 +8,24 @@ import {
 import * as vscode from "vscode"
 import OpenAI from "openai"
 import type { Anthropic } from "@anthropic-ai/sdk"
-import type { ApiHandlerCreateMessageMetadata } from "../index"
-import { ApiStream } from "../transform/stream"
+import type { ApiHandlerCreateMessageMetadata, SingleCompletionHandler } from "../index"
+import { ApiStream, ApiStreamUsageChunk } from "../transform/stream"
 import { convertToOpenAiMessages } from "../transform/openai-format"
+import { calculateApiCostOpenAI } from "../../shared/cost"
 
 import type { ApiHandlerOptions } from "../../shared/api"
 
 import { BaseOpenAiCompatibleProvider } from "./base-openai-compatible-provider"
 import { MODELHARBOR_HEADERS } from "./constants"
+import { unescapeHtmlEntities } from "../../utils/text-normalization"
 
 // Create ModelHarbor-specific output channel
 let modelHarborOutputChannel: vscode.OutputChannel | null = null
 
-export class ModelHarborHandler extends BaseOpenAiCompatibleProvider<ModelHarborModelId> {
+export class ModelHarborHandler
+	extends BaseOpenAiCompatibleProvider<ModelHarborModelId>
+	implements SingleCompletionHandler
+{
 	private modelsCache: Record<string, any> | null = null
 
 	constructor(options: ApiHandlerOptions) {
@@ -49,6 +54,12 @@ export class ModelHarborHandler extends BaseOpenAiCompatibleProvider<ModelHarbor
 
 		// Initialize models cache
 		this.initializeModels()
+	}
+
+	private isGpt5(modelId: string): boolean {
+		// Match gpt-5, gpt5, and variants like gpt-5o, gpt-5-turbo, gpt5-preview, gpt-5.1
+		// Avoid matching gpt-50, gpt-500, etc.
+		return /\bgpt-?5(?!\d)/i.test(modelId)
 	}
 
 	private async initializeModels() {
@@ -90,6 +101,11 @@ export class ModelHarborHandler extends BaseOpenAiCompatibleProvider<ModelHarbor
 			console.error("Failed to refresh ModelHarbor models:", error)
 		}
 	}
+
+	protected supportsTemperature(modelId: string): boolean {
+		return !modelId.startsWith("openai/o3-mini")
+	}
+
 	// Add prompt caching support for models that support it
 	override async *createMessage(
 		systemPrompt: string,
@@ -172,34 +188,195 @@ export class ModelHarborHandler extends BaseOpenAiCompatibleProvider<ModelHarbor
 		// Required by some providers; others default to max tokens allowed
 		let maxTokens: number | undefined = info.maxTokens ?? undefined
 
-		const params: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
+		// Check if this is a GPT-5 model that requires max_completion_tokens instead of max_tokens
+		const isGPT5Model = this.isGpt5(modelId)
+
+		const requestOptions: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
 			model: modelId,
-			max_tokens: maxTokens,
 			messages: [systemMessage, ...enhancedMessages],
 			stream: true,
-			stream_options: { include_usage: true },
+			stream_options: {
+				include_usage: true,
+			},
 		}
 
-		const stream = await this.client.chat.completions.create(params)
+		// GPT-5 models require max_completion_tokens instead of the deprecated max_tokens parameter
+		if (isGPT5Model && maxTokens) {
+			requestOptions.max_completion_tokens = maxTokens
+		} else if (maxTokens) {
+			requestOptions.max_tokens = maxTokens
+		}
 
-		for await (const chunk of stream) {
-			const delta = chunk.choices[0]?.delta
+		if (this.supportsTemperature(modelId)) {
+			requestOptions.temperature = temperature
+		}
 
-			if (delta?.content) {
-				yield {
-					type: "text",
-					text: delta.content,
+		try {
+			const stream = await this.client.chat.completions.create(requestOptions)
+
+			for await (const chunk of stream) {
+				const delta = chunk.choices[0]?.delta
+				const usage = chunk.usage as ModelHarborUsage
+
+				if (delta?.content) {
+					// DEBUG: Log raw delta content to diagnose encoding issues
+					if (modelHarborOutputChannel) {
+						modelHarborOutputChannel.appendLine(`🔍 DEBUG: Raw delta content: "${delta.content}"`)
+						modelHarborOutputChannel.appendLine(`🔍 DEBUG: Content length: ${delta.content.length}`)
+						modelHarborOutputChannel.appendLine(
+							`🔍 DEBUG: Contains HTML entities: ${/[&<>"']/.test(delta.content)}`,
+						)
+
+						// Check for common HTML entities
+						const htmlEntities = [
+							"&lt;",
+							"&gt;",
+							"&amp;",
+							"&quot;",
+							"&#39;",
+							"&apos;",
+							"&#91;",
+							"&#93;",
+							"&lsqb;",
+							"&rsqb;",
+						]
+						const foundEntities = htmlEntities.filter(
+							(entity) => delta.content && delta.content.includes(entity),
+						)
+						if (foundEntities.length > 0) {
+							modelHarborOutputChannel.appendLine(
+								`🔍 DEBUG: Found HTML entities: ${foundEntities.join(", ")}`,
+							)
+						}
+					}
+
+					yield { type: "text", text: delta.content }
+				}
+
+				if (usage) {
+					// Extract cache-related information if available
+					// ModelHarbor may use different field names for cache tokens
+					const cacheWriteTokens =
+						usage.cache_creation_input_tokens || (usage as any).prompt_cache_miss_tokens || 0
+					const cacheReadTokens =
+						usage.prompt_tokens_details?.cached_tokens ||
+						(usage as any).cache_read_input_tokens ||
+						(usage as any).prompt_cache_hit_tokens ||
+						0
+
+					const usageData: ApiStreamUsageChunk = {
+						type: "usage",
+						inputTokens: usage.prompt_tokens || 0,
+						outputTokens: usage.completion_tokens || 0,
+					}
+
+					// Only include cache tokens if they exist
+					if (cacheWriteTokens > 0) {
+						usageData.cacheWriteTokens = cacheWriteTokens
+					}
+					if (cacheReadTokens > 0) {
+						usageData.cacheReadTokens = cacheReadTokens
+					}
+
+					// Calculate cost
+					const totalCost = calculateApiCostOpenAI(
+						info,
+						usageData.inputTokens,
+						usageData.outputTokens,
+						cacheWriteTokens,
+						cacheReadTokens,
+					)
+
+					// Only include totalCost if it's greater than 0
+					if (totalCost > 0) {
+						usageData.totalCost = totalCost
+					}
+
+					yield usageData
 				}
 			}
-
-			if (chunk.usage) {
-				yield {
-					type: "usage",
-					inputTokens: chunk.usage.prompt_tokens || 0,
-					outputTokens: chunk.usage.completion_tokens || 0,
-					cacheReadTokens: chunk.usage.prompt_tokens_details?.cached_tokens,
-				}
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new Error(`ModelHarbor streaming error: ${error.message}`)
 			}
+			throw error
 		}
 	}
+
+	override async completePrompt(prompt: string): Promise<string> {
+		const { id: modelId, info } = this.getModel()
+
+		// Check if this is a GPT-5 model that requires max_completion_tokens instead of max_tokens
+		const isGPT5Model = this.isGpt5(modelId)
+
+		try {
+			const requestOptions: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming = {
+				model: modelId,
+				messages: [{ role: "user", content: prompt }],
+			}
+
+			if (this.supportsTemperature(modelId)) {
+				requestOptions.temperature = this.options.modelTemperature ?? this.defaultTemperature
+			}
+
+			// GPT-5 models require max_completion_tokens instead of the deprecated max_tokens parameter
+			if (isGPT5Model && info.maxTokens) {
+				requestOptions.max_completion_tokens = info.maxTokens
+			} else if (info.maxTokens) {
+				requestOptions.max_tokens = info.maxTokens
+			}
+
+			const response = await this.client.chat.completions.create(requestOptions)
+			const content = response.choices[0]?.message.content || ""
+
+			// DEBUG: Log response content to diagnose encoding issues
+			if (modelHarborOutputChannel && content) {
+				modelHarborOutputChannel.appendLine(`🔍 DEBUG: Non-streaming response content: "${content}"`)
+				modelHarborOutputChannel.appendLine(`🔍 DEBUG: Content length: ${content.length}`)
+				modelHarborOutputChannel.appendLine(`🔍 DEBUG: Contains HTML entities: ${/[&<>"']/.test(content)}`)
+
+				// Check for common HTML entities
+				const htmlEntities = [
+					"&lt;",
+					"&gt;",
+					"&amp;",
+					"&quot;",
+					"&#39;",
+					"&apos;",
+					"&#91;",
+					"&#93;",
+					"&lsqb;",
+					"&rsqb;",
+				]
+				const foundEntities = htmlEntities.filter((entity) => content.includes(entity))
+				if (foundEntities.length > 0) {
+					modelHarborOutputChannel.appendLine(
+						`🔍 DEBUG: Found HTML entities in non-streaming: ${foundEntities.join(", ")}`,
+					)
+				}
+			}
+
+			// FIX: Apply HTML entity unescaping for ModelHarbor (non-Claude model)
+			// This matches the behavior in individual tools like writeToFileTool and executeCommandTool
+			const unescapedContent = unescapeHtmlEntities(content)
+
+			// DEBUG: Log unescaped content for comparison
+			if (modelHarborOutputChannel && unescapedContent !== content) {
+				modelHarborOutputChannel.appendLine(`🔧 DEBUG: Non-streaming unescaped content: "${unescapedContent}"`)
+				modelHarborOutputChannel.appendLine(`🔧 DEBUG: Non-streaming content was modified by unescaping`)
+			}
+
+			return unescapedContent
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new Error(`ModelHarbor completion error: ${error.message}`)
+			}
+			throw error
+		}
+	}
+}
+
+// ModelHarbor usage may include an extra field for Anthropic use cases.
+interface ModelHarborUsage extends OpenAI.CompletionUsage {
+	cache_creation_input_tokens?: number
 }

@@ -19,12 +19,7 @@ import {
 	doubaoModels,
 	internationalZAiModels,
 	fireworksModels,
-<<<<<<< HEAD
-=======
 	modelHarborModels,
-	rooModels,
-	modelharborModels,
->>>>>>> 198cdcccf (Add ModelHarbor)
 	featherlessModels,
 } from "@roo-code/types"
 
