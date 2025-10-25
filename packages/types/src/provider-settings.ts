@@ -50,7 +50,6 @@ export const dynamicProviders = [
 	"unbound",
 	"glama",
 	"modelharbor",
-	"roo",
 ] as const
 
 export type DynamicProvider = (typeof dynamicProviders)[number]

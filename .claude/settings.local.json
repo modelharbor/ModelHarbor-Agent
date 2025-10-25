@@ -1,0 +1,13 @@
+{
+	"permissions": {
+		"allow": [
+			"Bash(git add packages/types/src/model.ts packages/types/src/provider-settings.ts src/api/providers/modelharbor.ts src/core/webview/__tests__/ClineProvider.spec.ts src/core/webview/__tests__/webviewMessageHandler.spec.ts src/core/webview/webviewMessageHandler.ts webview-ui/src/components/chat/Announcement.tsx webview-ui/src/components/settings/constants.ts webview-ui/src/components/ui/hooks/__tests__/useSelectedModel.spec.ts webview-ui/src/i18n/locales/en/chat.json)",
+			"Bash(git commit -m \"$(cat <<''EOF''\nAdd ModelHarbor provider integration\n\n- Add ModelHarbor provider API implementation\n- Update model types and provider settings for ModelHarbor\n- Add corresponding test files and update UI components\n- Update announcement and settings constants\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+			"Bash(git push origin version3.29.0)",
+			"Bash(git add src/core/webview/webviewMessageHandler.ts)",
+			"Bash(git commit --amend --no-edit)"
+		],
+		"deny": [],
+		"ask": []
+	}
+}

@@ -4,13 +4,12 @@ import OpenAI from "openai"
 import { AuthState, rooDefaultModelId, type ModelInfo } from "@roo-code/types"
 import { CloudService } from "@roo-code/cloud"
 
-import type { ApiHandlerOptions, ModelRecord } from "../../shared/api"
+import type { ApiHandlerOptions } from "../../shared/api"
 import { ApiStream } from "../transform/stream"
 
 import type { ApiHandlerCreateMessageMetadata } from "../index"
 import { DEFAULT_HEADERS } from "./constants"
 import { BaseOpenAiCompatibleProvider } from "./base-openai-compatible-provider"
-import { getModels, flushModels, getModelsFromCache } from "../providers/fetchers/modelCache"
 
 // Extend OpenAI's CompletionUsage to include Roo specific fields
 interface RooUsage extends OpenAI.CompletionUsage {
@@ -20,7 +19,6 @@ interface RooUsage extends OpenAI.CompletionUsage {
 
 export class RooHandler extends BaseOpenAiCompatibleProvider<string> {
 	private authStateListener?: (state: { state: AuthState }) => void
-	private fetcherBaseURL: string
 
 	constructor(options: ApiHandlerOptions) {
 		let sessionToken: string | undefined = undefined
@@ -48,12 +46,6 @@ export class RooHandler extends BaseOpenAiCompatibleProvider<string> {
 			defaultTemperature: 0.7,
 		})
 
-		// Load dynamic models asynchronously - strip /v1 from baseURL for fetcher
-		this.fetcherBaseURL = baseURL.endsWith("/v1") ? baseURL.slice(0, -3) : baseURL
-		this.loadDynamicModels(this.fetcherBaseURL, sessionToken).catch((error) => {
-			console.error("[RooHandler] Failed to load dynamic models:", error)
-		})
-
 		if (CloudService.hasInstance()) {
 			const cloudService = CloudService.instance
 
@@ -65,25 +57,11 @@ export class RooHandler extends BaseOpenAiCompatibleProvider<string> {
 						apiKey: newToken ?? "unauthenticated",
 						defaultHeaders: DEFAULT_HEADERS,
 					})
-
-					// Flush cache and reload models with the new auth token
-					flushModels("roo")
-						.then(() => {
-							return this.loadDynamicModels(this.fetcherBaseURL, newToken)
-						})
-						.catch((error) => {
-							console.error("[RooHandler] Failed to reload models after auth:", error)
-						})
 				} else if (state.state === "logged-out") {
 					this.client = new OpenAI({
 						baseURL: this.baseURL,
 						apiKey: "unauthenticated",
 						defaultHeaders: DEFAULT_HEADERS,
-					})
-
-					// Flush cache when logged out
-					flushModels("roo").catch((error) => {
-						console.error("[RooHandler] Failed to flush models on logout:", error)
 					})
 				}
 			}
@@ -143,31 +121,10 @@ export class RooHandler extends BaseOpenAiCompatibleProvider<string> {
 		}
 	}
 
-	private async loadDynamicModels(baseURL: string, apiKey?: string): Promise<void> {
-		try {
-			// Fetch models and cache them in the shared cache
-			await getModels({
-				provider: "roo",
-				baseUrl: baseURL,
-				apiKey,
-			})
-		} catch (error) {
-			console.error("[RooHandler] Error loading dynamic models:", error)
-		}
-	}
-
 	override getModel() {
 		const modelId = this.options.apiModelId || rooDefaultModelId
 
-		// Get models from shared cache
-		const models = getModelsFromCache("roo") || {}
-		const modelInfo = models[modelId]
-
-		if (modelInfo) {
-			return { id: modelId, info: modelInfo }
-		}
-
-		// Return the requested model ID even if not found, with fallback info.
+		// Return static model info for roo provider
 		return {
 			id: modelId,
 			info: {
