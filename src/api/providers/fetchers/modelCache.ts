@@ -25,7 +25,6 @@ import { getIOIntelligenceModels } from "./io-intelligence"
 import { getModelHarborModels } from "./modelharbor"
 import { getDeepInfraModels } from "./deepinfra"
 import { getHuggingFaceModels } from "./huggingface"
-import { getRooModels } from "./roo"
 
 const memoryCache = new NodeCache({ stdTTL: 5 * 60, checkperiod: 5 * 60 })
 
@@ -104,13 +103,6 @@ export const getModels = async (options: GetModelsOptions): Promise<ModelRecord>
 			case "huggingface":
 				models = await getHuggingFaceModels()
 				break
-			case "roo": {
-				// Roo Code Cloud provider requires baseUrl and optional apiKey
-				const rooBaseUrl =
-					options.baseUrl ?? process.env.ROO_CODE_PROVIDER_URL ?? "https://api.roocode.com/proxy"
-				models = await getRooModels(rooBaseUrl, options.apiKey)
-				break
-			}
 			default: {
 				// Ensures router is exhaustively checked if RouterName is a strict union.
 				const exhaustiveCheck: never = provider
