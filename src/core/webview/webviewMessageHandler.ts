@@ -716,6 +716,7 @@ export const webviewMessageHandler = async (
 				ollama: {},
 				lmstudio: {},
 				modelharbor: {},
+				roo: {},
 			}
 
 			const safeGetModels = async (options: GetModelsOptions): Promise<ModelRecord> => {

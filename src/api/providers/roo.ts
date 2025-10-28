@@ -143,6 +143,7 @@ export class RooHandler extends BaseOpenAiCompatibleProvider<string> {
 				supportsPromptCache: true,
 				inputPrice: 0,
 				outputPrice: 0,
+				isFree: true,
 			},
 		}
 	}
