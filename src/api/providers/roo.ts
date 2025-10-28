@@ -50,16 +50,6 @@ export class RooHandler extends BaseOpenAiCompatibleProvider<string> {
 			const cloudService = CloudService.instance
 
 			this.authStateListener = (state: { state: AuthState }) => {
-<<<<<<< HEAD
-				// Update OpenAI client with current auth token
-				// Note: Model cache flush/reload is handled by extension.ts authStateChangedHandler
-				const newToken = cloudService.authService?.getSessionToken()
-				this.client = new OpenAI({
-					baseURL: this.baseURL,
-					apiKey: newToken ?? "unauthenticated",
-					defaultHeaders: DEFAULT_HEADERS,
-				})
-=======
 				if (state.state === "active-session") {
 					const newToken = cloudService.authService?.getSessionToken()
 					this.client = new OpenAI({
@@ -74,7 +64,6 @@ export class RooHandler extends BaseOpenAiCompatibleProvider<string> {
 						defaultHeaders: DEFAULT_HEADERS,
 					})
 				}
->>>>>>> 6623a0ac3 (Add ModelHarbor provider integration)
 			}
 
 			cloudService.on("auth-state-changed", this.authStateListener)
