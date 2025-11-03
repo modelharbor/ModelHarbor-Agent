@@ -35,7 +35,7 @@ import {
 	fireworksDefaultModelId,
 	featherlessDefaultModelId,
 	ioIntelligenceDefaultModelId,
-	rooDefaultModelId as _rooDefaultModelId,
+	// rooDefaultModelId as _rooDefaultModelId,
 	vercelAiGatewayDefaultModelId,
 	deepInfraDefaultModelId,
 	minimaxDefaultModelId,
@@ -107,7 +107,7 @@ import { inputEventTransform, noTransform } from "./transforms"
 import { ModelInfoView } from "./ModelInfoView"
 import { ApiErrorMessage } from "./ApiErrorMessage"
 import { ThinkingBudget } from "./ThinkingBudget"
-import { SimpleThinkingBudget as _SimpleThinkingBudget } from "./SimpleThinkingBudget"
+// import { SimpleThinkingBudget as _SimpleThinkingBudget } from "./SimpleThinkingBudget"
 import { Verbosity } from "./Verbosity"
 import { DiffSettingsControl } from "./DiffSettingsControl"
 import { TodoListSettingsControl } from "./TodoListSettingsControl"
@@ -139,7 +139,7 @@ const ApiOptions = ({
 	setErrorMessage,
 }: ApiOptionsProps) => {
 	const { t } = useAppTranslation()
-	const { organizationAllowList, cloudIsAuthenticated: _cloudIsAuthenticated } = useExtensionState()
+	const { organizationAllowList } = useExtensionState()
 
 	const [customHeaders, setCustomHeaders] = useState<[string, string][]>(() => {
 		const headers = apiConfiguration?.openAiHeaders || {}
