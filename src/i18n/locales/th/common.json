@@ -167,18 +167,18 @@
 	},
 	"storage": {
 		"prompt_custom_path": "ป้อนเส้นทางที่เก็บประวัติการสนทนาที่กำหนดเอง เว้นว่างไว้เพื่อใช้ตำแหน่งเริ่มต้น",
-		"path_placeholder": "D:\\ModelHarborAgentStorage",
-		"enter_absolute_path": "โปรดป้อนเส้นทางแบบเต็ม (เช่น D:\\ModelHarborAgentStorage หรือ /home/user/storage)",
+		"path_placeholder": "D:\\ModelHarborCodeStorage",
+		"enter_absolute_path": "โปรดป้อนเส้นทางแบบเต็ม (เช่น D:\\ModelHarborCodeStorage หรือ /home/user/storage)",
 		"enter_valid_path": "โปรดป้อนเส้นทางที่ถูกต้อง"
 	},
 	"input": {
-		"task_prompt": "ModelHarbor Agent ควรทำอะไร",
+		"task_prompt": "ModelHarbor ควรทำอะไร",
 		"task_placeholder": "พิมพ์งานของคุณที่นี่"
 	},
 	"customModes": {
 		"errors": {
-			"yamlParseError": "YAML ไม่ถูกต้องในไฟล์ .roomodes ที่บรรทัด {{line}} โปรดตรวจสอบ:\n• การเยื้องที่เหมาะสม (ใช้ช่องว่าง ไม่ใช่แท็บ)\n• เครื่องหมายคำพูดและวงเล็บที่ตรงกัน\n• ไวยากรณ์ YAML ที่ถูกต้อง",
-			"schemaValidationError": "รูปแบบโหมดที่กำหนดเองไม่ถูกต้องใน .roomodes:\n{{issues}}",
+			"yamlParseError": "YAML ไม่ถูกต้องในไฟล์ .ModelHarbormodes ที่บรรทัด {{line}} โปรดตรวจสอบ:\n• การเยื้องที่เหมาะสม (ใช้ช่องว่าง ไม่ใช่แท็บ)\n• เครื่องหมายคำพูดและวงเล็บที่ตรงกัน\n• ไวยากรณ์ YAML ที่ถูกต้อง",
+			"schemaValidationError": "รูปแบบโหมดที่กำหนดเองไม่ถูกต้องใน .ModelHarbormodes:\n{{issues}}",
 			"invalidFormat": "รูปแบบโหมดที่กำหนดเองไม่ถูกต้อง โปรดตรวจสอบว่าการตั้งค่าของคุณเป็นไปตามรูปแบบ YAML ที่ถูกต้อง",
 			"updateFailed": "ไม่สามารถอัปเดตโหมดที่กำหนดเองได้: {{error}}",
 			"deleteFailed": "ไม่สามารถลบโหมดที่กำหนดเองได้: {{error}}",
