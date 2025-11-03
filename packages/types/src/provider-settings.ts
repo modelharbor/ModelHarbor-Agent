@@ -136,7 +136,6 @@ export const providerNames = [
 	"minimax",
 	"openai-native",
 	"qwen-code",
-	"roo",
 	"sambanova",
 	"vertex",
 	"xai",
@@ -419,10 +418,6 @@ const qwenCodeSchema = apiModelIdProviderModelSchema.extend({
 	qwenCodeOauthPath: z.string().optional(),
 })
 
-const rooSchema = apiModelIdProviderModelSchema.extend({
-	// No additional fields needed - uses cloud authentication.
-})
-
 const vercelAiGatewaySchema = baseProviderSettingsSchema.extend({
 	vercelAiGatewayApiKey: z.string().optional(),
 	vercelAiGatewayModelId: z.string().optional(),
@@ -469,7 +464,6 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	ioIntelligenceSchema.merge(z.object({ apiProvider: z.literal("io-intelligence") })),
 	modelharborSchema.merge(z.object({ apiProvider: z.literal("modelharbor") })),
 	qwenCodeSchema.merge(z.object({ apiProvider: z.literal("qwen-code") })),
-	rooSchema.merge(z.object({ apiProvider: z.literal("roo") })),
 	vercelAiGatewaySchema.merge(z.object({ apiProvider: z.literal("vercel-ai-gateway") })),
 	defaultSchema,
 ])
@@ -512,7 +506,6 @@ export const providerSettingsSchema = z.object({
 	...ioIntelligenceSchema.shape,
 	...modelharborSchema.shape,
 	...qwenCodeSchema.shape,
-	...rooSchema.shape,
 	...vercelAiGatewaySchema.shape,
 	...codebaseIndexProviderSchema.shape,
 })
@@ -600,7 +593,6 @@ export const modelIdKeysByProvider: Record<TypicalProvider, ModelIdKey> = {
 	featherless: "apiModelId",
 	"io-intelligence": "ioIntelligenceModelId",
 	modelharbor: "modelharborModelId",
-	roo: "apiModelId",
 	"vercel-ai-gateway": "vercelAiGatewayModelId",
 }
 
@@ -621,12 +613,7 @@ export const getApiProtocol = (provider: ProviderName | undefined, modelId?: str
 	}
 
 	// Vercel AI Gateway uses anthropic protocol for anthropic models.
-	if (
-		provider &&
-		["vercel-ai-gateway", "roo"].includes(provider) &&
-		modelId &&
-		modelId.toLowerCase().startsWith("anthropic/")
-	) {
+	if (provider && provider === "vercel-ai-gateway" && modelId && modelId.toLowerCase().startsWith("anthropic/")) {
 		return "anthropic"
 	}
 
@@ -715,7 +702,6 @@ export const MODELS_BY_PROVIDER: Record<
 		models: Object.keys(openAiNativeModels),
 	},
 	"qwen-code": { id: "qwen-code", label: "Qwen Code", models: Object.keys(qwenCodeModels) },
-	roo: { id: "roo", label: "Roo Code Cloud", models: [] },
 	sambanova: {
 		id: "sambanova",
 		label: "SambaNova",

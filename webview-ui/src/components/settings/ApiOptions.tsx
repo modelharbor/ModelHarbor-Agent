@@ -35,7 +35,7 @@ import {
 	fireworksDefaultModelId,
 	featherlessDefaultModelId,
 	ioIntelligenceDefaultModelId,
-	rooDefaultModelId,
+	rooDefaultModelId as _rooDefaultModelId,
 	vercelAiGatewayDefaultModelId,
 	deepInfraDefaultModelId,
 	minimaxDefaultModelId,
@@ -88,7 +88,7 @@ import {
 	OpenRouter,
 	QwenCode,
 	Requesty,
-	Roo,
+	Roo as _Roo,
 	SambaNova,
 	Unbound,
 	Vertex,
@@ -107,7 +107,7 @@ import { inputEventTransform, noTransform } from "./transforms"
 import { ModelInfoView } from "./ModelInfoView"
 import { ApiErrorMessage } from "./ApiErrorMessage"
 import { ThinkingBudget } from "./ThinkingBudget"
-import { SimpleThinkingBudget } from "./SimpleThinkingBudget"
+import { SimpleThinkingBudget as _SimpleThinkingBudget } from "./SimpleThinkingBudget"
 import { Verbosity } from "./Verbosity"
 import { DiffSettingsControl } from "./DiffSettingsControl"
 import { TodoListSettingsControl } from "./TodoListSettingsControl"
@@ -139,7 +139,7 @@ const ApiOptions = ({
 	setErrorMessage,
 }: ApiOptionsProps) => {
 	const { t } = useAppTranslation()
-	const { organizationAllowList, cloudIsAuthenticated } = useExtensionState()
+	const { organizationAllowList, cloudIsAuthenticated: _cloudIsAuthenticated } = useExtensionState()
 
 	const [customHeaders, setCustomHeaders] = useState<[string, string][]>(() => {
 		const headers = apiConfiguration?.openAiHeaders || {}
@@ -259,11 +259,7 @@ const ApiOptions = ({
 				vscode.postMessage({ type: "requestLmStudioModels" })
 			} else if (selectedProvider === "vscode-lm") {
 				vscode.postMessage({ type: "requestVsCodeLmModels" })
-			} else if (
-				selectedProvider === "litellm" ||
-				selectedProvider === "deepinfra" ||
-				selectedProvider === "roo"
-			) {
+			} else if (selectedProvider === "litellm" || selectedProvider === "deepinfra") {
 				vscode.postMessage({ type: "requestRouterModels" })
 			}
 		},
@@ -389,7 +385,6 @@ const ApiOptions = ({
 				featherless: { field: "apiModelId", default: featherlessDefaultModelId },
 				"io-intelligence": { field: "ioIntelligenceModelId", default: ioIntelligenceDefaultModelId },
 				modelharbor: { field: "modelharborModelId", default: modelHarborDefaultModelId },
-				roo: { field: "apiModelId", default: rooDefaultModelId },
 				"vercel-ai-gateway": { field: "vercelAiGatewayModelId", default: vercelAiGatewayDefaultModelId },
 				openai: { field: "openAiModelId" },
 				ollama: { field: "ollamaModelId" },
@@ -711,17 +706,6 @@ const ApiOptions = ({
 				<ModelHarbor apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
 			)}
 
-			{selectedProvider === "roo" && (
-				<Roo
-					apiConfiguration={apiConfiguration}
-					setApiConfigurationField={setApiConfigurationField}
-					routerModels={routerModels}
-					cloudIsAuthenticated={cloudIsAuthenticated}
-					organizationAllowList={organizationAllowList}
-					modelValidationError={modelValidationError}
-				/>
-			)}
-
 			{selectedProvider === "featherless" && (
 				<Featherless apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
 			)}
@@ -790,21 +774,12 @@ const ApiOptions = ({
 					</>
 				)}
 
-			{selectedProvider === "roo" ? (
-				<SimpleThinkingBudget
-					key={`${selectedProvider}-${selectedModelId}`}
-					apiConfiguration={apiConfiguration}
-					setApiConfigurationField={setApiConfigurationField}
-					modelInfo={selectedModelInfo}
-				/>
-			) : (
-				<ThinkingBudget
-					key={`${selectedProvider}-${selectedModelId}`}
-					apiConfiguration={apiConfiguration}
-					setApiConfigurationField={setApiConfigurationField}
-					modelInfo={selectedModelInfo}
-				/>
-			)}
+			<ThinkingBudget
+				key={`${selectedProvider}-${selectedModelId}`}
+				apiConfiguration={apiConfiguration}
+				setApiConfigurationField={setApiConfigurationField}
+				modelInfo={selectedModelInfo}
+			/>
 
 			{/* Gate Verbosity UI by capability flag */}
 			{selectedModelInfo?.supportsVerbosity && (

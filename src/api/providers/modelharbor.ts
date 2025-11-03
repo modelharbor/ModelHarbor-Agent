@@ -279,7 +279,7 @@ export class ModelHarborHandler
 					}
 
 					// Calculate cost
-					const totalCost = calculateApiCostOpenAI(
+					const costResult = calculateApiCostOpenAI(
 						info,
 						usageData.inputTokens,
 						usageData.outputTokens,
@@ -288,8 +288,8 @@ export class ModelHarborHandler
 					)
 
 					// Only include totalCost if it's greater than 0
-					if (totalCost > 0) {
-						usageData.totalCost = totalCost
+					if (costResult.totalCost > 0) {
+						usageData.totalCost = costResult.totalCost
 					}
 
 					yield usageData

@@ -52,7 +52,7 @@ import {
 	featherlessDefaultModelId,
 	ioIntelligenceDefaultModelId,
 	ioIntelligenceModels,
-	rooDefaultModelId,
+	// rooDefaultModelId as _rooDefaultModelId,
 	qwenCodeDefaultModelId,
 	qwenCodeModels,
 	vercelAiGatewayDefaultModelId,
@@ -339,12 +339,6 @@ function getSelectedModel({
 		case "modelharbor": {
 			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
 			const info = routerModels.modelharbor?.[id]
-			return { id, info }
-		}
-		case "roo": {
-			// Roo is a dynamic provider - models are loaded from API
-			const id = apiConfiguration.apiModelId ?? rooDefaultModelId
-			const info = undefined
 			return { id, info }
 		}
 		case "qwen-code": {
