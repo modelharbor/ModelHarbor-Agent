@@ -344,7 +344,7 @@ function getSelectedModel({
 		case "roo": {
 			// Roo is a dynamic provider - models are loaded from API
 			const id = apiConfiguration.apiModelId ?? rooDefaultModelId
-			const info = routerModels.roo[id]
+			const info = undefined
 			return { id, info }
 		}
 		case "qwen-code": {

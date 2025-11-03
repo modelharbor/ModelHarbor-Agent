@@ -81,16 +81,6 @@ const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 							{t("chat:announcement.hideButton")}
 						</Button>
 					</div>
-
-					{/* Careers Section */}
-					<div className="mt-2 text-sm text-center">
-						<Trans
-							i18nKey="chat:announcement.careers"
-							components={{
-								careersLink: <CareersLink />,
-							}}
-						/>
-					</div>
 				</div>
 			</DialogContent>
 		</Dialog>

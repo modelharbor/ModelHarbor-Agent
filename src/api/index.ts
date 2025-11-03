@@ -37,7 +37,6 @@ import {
 	ZAiHandler,
 	FireworksHandler,
 	ModelHarborHandler,
-	RooHandler,
 	FeatherlessHandler,
 	VercelAiGatewayHandler,
 	DeepInfraHandler,
@@ -161,10 +160,6 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new IOIntelligenceHandler(options)
 		case "modelharbor":
 			return new ModelHarborHandler(options)
-		case "roo":
-			// Never throw exceptions from provider constructors
-			// The provider-proxy server will handle authentication and return appropriate error codes
-			return new RooHandler(options)
 		case "featherless":
 			return new FeatherlessHandler(options)
 		case "vercel-ai-gateway":
