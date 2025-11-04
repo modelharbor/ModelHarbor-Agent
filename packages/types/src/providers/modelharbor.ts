@@ -84,6 +84,23 @@ interface ApiResponse {
 	data: ModelInfoResponse[]
 }
 
+// Determine if a model supports images based on its name
+function inferImageSupport(modelName: string): boolean {
+	// Models known to support vision/images
+	const visionModelPatterns = [
+		/claude.*(?:sonnet|opus|haiku)/i, // Anthropic Claude vision models
+		/gpt-[45]/i, // OpenAI GPT-4 and GPT-5
+		/gemini/i, // Google Gemini
+		/vision/i, // Any model with "vision" in name
+		/imagen/i, // Google Imagen
+		/vl-/i, // Vision-Language models (like qwen/qwen3-vl)
+		/multimodal/i, // Multimodal models
+		/gpt4v/i, // GPT-4 Vision
+	]
+
+	return visionModelPatterns.some((pattern) => pattern.test(modelName))
+}
+
 // Transform API response to ModelInfo
 function transformModelInfo(apiModel: ModelInfoResponse): ModelInfo {
 	const { model_info } = apiModel
@@ -95,10 +112,17 @@ function transformModelInfo(apiModel: ModelInfoResponse): ModelInfo {
 		? model_info.cache_read_input_token_cost * 1000000
 		: 0
 
+	// Determine if model supports images using API field or inference
+	const supportsImages =
+		Boolean(model_info.supports_vision) ||
+		Boolean(model_info.supports_embedding_image_input) ||
+		inferImageSupport(apiModel.model_name) ||
+		false
+
 	return {
 		maxTokens: model_info.max_output_tokens || model_info.max_tokens || 8192,
 		contextWindow: model_info.max_input_tokens || 40960,
-		supportsImages: model_info.supports_vision || model_info.supports_embedding_image_input || false,
+		supportsImages,
 		supportsComputerUse: model_info.supports_computer_use || false,
 		supportsPromptCache: model_info.supports_prompt_caching || false,
 		supportsReasoningBudget: apiModel.litellm_params.thinking?.type === "enabled" || false,
@@ -178,6 +202,8 @@ async function fetchModelHarborModels(): Promise<Record<string, ModelInfo>> {
 		logToChannel("✅ Successfully parsed response", {
 			dataLength: data.data.length,
 			sampleModels: data.data.slice(0, 3).map((m) => m.model_name),
+			// DIAGNOSTIC: Log the full API response for the first model
+			firstModelRaw: data.data.length > 0 ? data.data[0] : undefined,
 		})
 
 		console.log(`Successfully fetched ${data.data.length} model entries from API`)
@@ -188,8 +214,13 @@ async function fetchModelHarborModels(): Promise<Record<string, ModelInfo>> {
 		for (const apiModel of data.data) {
 			// Only process if we haven't seen this model name before (handle duplicates)
 			if (!models[apiModel.model_name]) {
-				models[apiModel.model_name] = transformModelInfo(apiModel)
+				const modelInfo = transformModelInfo(apiModel)
+				models[apiModel.model_name] = modelInfo
 				processedCount++
+				// DIAGNOSTIC: Log the transformed ModelInfo for the first model
+				if (processedCount === 1) {
+					logToChannel("🔍 Transformed ModelInfo for first model", { modelInfo })
+				}
 			}
 		}
 

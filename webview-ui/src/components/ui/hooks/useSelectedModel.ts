@@ -159,7 +159,7 @@ function getSelectedModel({
 	switch (provider) {
 		case "openrouter": {
 			const id = apiConfiguration.openRouterModelId ?? openRouterDefaultModelId
-			let info = routerModels.openrouter[id]
+			let info = routerModels.openrouter?.[id]
 			const specificProvider = apiConfiguration.openRouterSpecificProvider
 
 			if (specificProvider && openRouterModelProviders[specificProvider]) {
@@ -175,22 +175,22 @@ function getSelectedModel({
 		}
 		case "requesty": {
 			const id = apiConfiguration.requestyModelId ?? requestyDefaultModelId
-			const info = routerModels.requesty[id]
+			const info = routerModels.requesty?.[id]
 			return { id, info }
 		}
 		case "glama": {
 			const id = apiConfiguration.glamaModelId ?? glamaDefaultModelId
-			const info = routerModels.glama[id]
+			const info = routerModels.glama?.[id]
 			return { id, info }
 		}
 		case "unbound": {
 			const id = apiConfiguration.unboundModelId ?? unboundDefaultModelId
-			const info = routerModels.unbound[id]
+			const info = routerModels.unbound?.[id]
 			return { id, info }
 		}
 		case "litellm": {
 			const id = apiConfiguration.litellmModelId ?? litellmDefaultModelId
-			const info = routerModels.litellm[id]
+			const info = routerModels.litellm?.[id]
 			return { id, info }
 		}
 		case "xai": {
@@ -362,6 +362,22 @@ function getSelectedModel({
 		case "modelharbor": {
 			const id = apiConfiguration.modelharborModelId ?? modelHarborDefaultModelId
 			const info = routerModels.modelharbor?.[id]
+
+			// Fallback: if router models haven't loaded yet, infer image support from model name
+			if (!info) {
+				// Create a basic fallback info with inferred image support
+				const inferredSupportsImages = /claude|gpt-[45]|gemini|vision|imagen|vl-|omni/i.test(id)
+				return {
+					id,
+					info: {
+						maxTokens: 16384,
+						contextWindow: 128000,
+						supportsImages: inferredSupportsImages,
+						supportsPromptCache: false,
+					},
+				}
+			}
+
 			return { id, info }
 		}
 		case "qwen-code": {

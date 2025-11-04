@@ -57,6 +57,24 @@ function roundPrice(price: number): number {
 	return Math.round(price * 1000000) / 1000000
 }
 
+// Determine if a model supports images based on its name (fallback when API fields are missing)
+function inferImageSupport(modelName: string): boolean {
+	// Models known to support vision/images
+	const visionModelPatterns = [
+		/claude.*(?:sonnet|opus|haiku)/i, // Anthropic Claude vision models
+		/gpt-[45]/i, // OpenAI GPT-4 and GPT-5
+		/gemini/i, // Google Gemini
+		/vision/i, // Any model with "vision" in name
+		/imagen/i, // Google Imagen
+		/vl-/i, // Vision-Language models (like qwen/qwen3-vl)
+		/multimodal/i, // Multimodal models
+		/gpt4v/i, // GPT-4 Vision
+		/omni/i, // Omni models (multimodal)
+	]
+
+	return visionModelPatterns.some((pattern) => pattern.test(modelName))
+}
+
 export async function getModelHarborModels(): Promise<Record<string, ModelInfo>> {
 	try {
 		// Added timeout to prevent indefinite hanging
@@ -105,7 +123,10 @@ export async function getModelHarborModels(): Promise<Record<string, ModelInfo>>
 							maxTokens: model_info.max_output_tokens || model_info.max_tokens || 8192,
 							contextWindow: model_info.max_input_tokens || 40960,
 							supportsImages:
-								model_info.supports_vision || model_info.supports_embedding_image_input || false,
+								model_info.supports_vision ||
+								model_info.supports_embedding_image_input ||
+								inferImageSupport(apiModel.model_name) ||
+								false,
 							supportsComputerUse: model_info.supports_computer_use || false,
 							supportsPromptCache: model_info.supports_prompt_caching || false,
 							supportsReasoningBudget: apiModel.litellm_params.thinking?.type === "enabled" || false,
