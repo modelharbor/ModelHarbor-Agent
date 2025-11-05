@@ -3,7 +3,9 @@
 
 set -e
 pnpm lint
-pnpm rebuild
+pnpm clean
+pnpm build
+pnpm run check-types
 pnpm vsix
 # Find the latest .vsix file by version
 LATEST_VSIX=$(ls bin/modelharbor-agent-*.vsix 2>/dev/null | sort -V | tail -n 1)
