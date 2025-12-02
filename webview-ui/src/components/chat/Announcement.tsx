@@ -4,7 +4,7 @@ import { Trans } from "react-i18next"
 import { Package } from "@roo/package"
 
 import { useAppTranslation } from "@src/i18n/TranslationContext"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@src/components/ui"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, Button } from "@src/components/ui"
 
 interface AnnouncementProps {
 	hideAnnouncement: () => void
@@ -68,7 +68,6 @@ const Announcement = ({ hideAnnouncement }: AnnouncementProps) => {
 
 					<div className="mt-4 text-sm text-center text-vscode-descriptionForeground">
 						{t("chat:announcement.detailsDiscussLinks")}
-					</div>
 					</div>
 
 					<div className="mt-4">

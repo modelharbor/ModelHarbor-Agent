@@ -372,7 +372,6 @@ const huggingFaceSchema = baseProviderSettingsSchema.extend({
 	huggingFaceInferenceProvider: z.string().optional(),
 })
 
-
 const litellmSchema = baseProviderSettingsSchema.extend({
 	litellmBaseUrl: z.string().optional(),
 	litellmApiKey: z.string().optional(),
@@ -413,6 +412,7 @@ const ioIntelligenceSchema = apiModelIdProviderModelSchema.extend({
 const modelharborSchema = baseProviderSettingsSchema.extend({
 	modelharborApiKey: z.string().optional(),
 	modelharborModelId: z.string().optional(),
+	modelharborUsePromptCache: z.boolean().optional(),
 })
 
 const qwenCodeSchema = apiModelIdProviderModelSchema.extend({

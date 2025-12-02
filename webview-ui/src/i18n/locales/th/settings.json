@@ -408,8 +408,8 @@
 			"instructions": "ระหว่างการใช้งาน กล่องโต้ตอบจะปรากฏขึ้นและข้อความปัจจุบันจะถูกคัดลอกไปยังคลิปบอร์ดโดยอัตโนมัติ คุณต้องวางสิ่งเหล่านี้ไปยัง AI เวอร์ชันเว็บ (เช่น ChatGPT หรือ Claude) จากนั้นคัดลอกคำตอบของ AI กลับไปยังกล่องโต้ตอบและคลิกปุ่มยืนยัน"
 		},
 		"roo": {
-			"authenticatedMessage": "รับรองความถูกต้องอย่างปลอดภัยผ่านบัญชี ModelHarbor Agent Cloud ของคุณ",
-			"connectButton": "เชื่อมต่อกับ ModelHarbor Agent Cloud"
+			"authenticatedMessage": "รับรองความถูกต้องอย่างปลอดภัยผ่านบัญชี ModelHarbor Cloud ของคุณ",
+			"connectButton": "เชื่อมต่อกับ ModelHarbor Cloud"
 		},
 		"openRouter": {
 			"providerRouting": {

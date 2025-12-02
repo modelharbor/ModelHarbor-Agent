@@ -122,9 +122,11 @@ export class ModelHarborHandler
 		let enhancedMessages: OpenAI.Chat.ChatCompletionMessageParam[]
 
 		// Check if prompt caching should be used:
-		// 1. Model must support prompt caching
-		// 2. Model name must not contain "-code" (disable caching for code models)
-		const shouldUsePromptCache = info.supportsPromptCache && !modelId.includes("-code")
+		// 1. User must have enabled it via modelharborUsePromptCache setting
+		// 2. Model must support prompt caching
+		// 3. Model name must not contain "-code" (disable caching for code models)
+		const shouldUsePromptCache =
+			this.options.modelharborUsePromptCache && info.supportsPromptCache && !modelId.includes("-code")
 
 		if (shouldUsePromptCache) {
 			// Create system message with cache control in the proper format

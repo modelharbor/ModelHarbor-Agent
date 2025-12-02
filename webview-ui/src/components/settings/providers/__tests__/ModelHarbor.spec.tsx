@@ -48,6 +48,14 @@ vi.mock("@src/i18n/TranslationContext", () => ({
 	}),
 }))
 
+vi.mock("@src/context/ExtensionStateContext", () => ({
+	useExtensionState: () => ({
+		get routerModels() {
+			return routerModelsMock.data
+		},
+	}),
+}))
+
 describe("ModelHarbor integration", () => {
 	const queryClient = new QueryClient()
 

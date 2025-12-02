@@ -229,9 +229,5 @@
 	"docsLink": {
 		"label": "เอกสาร",
 		"url": "https://docs.roocode.com"
-	},
-	"errors": {
-		"wait_checkpoint_long_time": "รอ {{timeout}} วินาทีสำหรับการเริ่มต้น checkpoint หากคุณไม่ต้องการฟีเจอร์ checkpoint โปรดปิดใน <settingsLink>การตั้งค่า checkpoint</settingsLink>",
-		"init_checkpoint_fail_long_time": "การเริ่มต้น checkpoint ใช้เวลามากกว่า {{timeout}} วินาที จึงจะปิดใช้งาน checkpoint สำหรับงานนี้ คุณสามารถปิดใช้งาน checkpoint หรือขยายเวลาการรอใน <settingsLink>การตั้งค่า checkpoint</settingsLink>"
 	}
 }
