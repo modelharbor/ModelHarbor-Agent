@@ -75,9 +75,8 @@ const App = () => {
 	const [useProviderSignupView, setUseProviderSignupView] = useState(false)
 
 	// Check PostHog feature flag for provider signup view
-	// Wait for telemetry to be initialized before checking feature flags
 	useEffect(() => {
-		if (!didHydrateState || telemetrySetting === "disabled") {
+		if (!didHydrateState) {
 			return
 		}
 
@@ -85,7 +84,7 @@ const App = () => {
 			// Feature flag for new provider-focused welcome view
 			setUseProviderSignupView(posthog?.getFeatureFlag("welcome-provider-signup") === "test")
 		})
-	}, [didHydrateState, telemetrySetting])
+	}, [didHydrateState])
 
 	// Create a persistent state manager
 	const marketplaceStateManager = useMemo(() => new MarketplaceViewStateManager(), [])

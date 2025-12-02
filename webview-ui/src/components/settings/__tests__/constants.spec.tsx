@@ -32,7 +32,8 @@ describe("PROVIDERS constants", () => {
 
 	it("should maintain the total number of providers", () => {
 		// This test ensures we didn't accidentally remove or duplicate any providers
-		const expectedProviderCount = 33 // Update this number based on the actual count (includes DeepInfra, removed Roo)
+		// ModelHarbor + 34 other providers (after removing roo and chutes) = 35
+		const expectedProviderCount = 35
 		expect(PROVIDERS.length).toBe(expectedProviderCount)
 	})
 

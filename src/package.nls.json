@@ -1,4 +1,4 @@
-  {
+{
 	"extension.displayName": "ModelHarbor Agent",
 	"extension.description": "A whole dev team of AI agents in your editor.",
 	"views.contextMenu.label": "ModelHarbor Agent",
@@ -7,6 +7,8 @@
 	"views.sidebar.name": "ModelHarbor Agent",
 	"command.newTask.title": "New Task",
 	"command.history.title": "Task History",
+	"command.mcpServers.title": "MCP Servers",
+	"command.prompts.title": "Prompts",
 	"command.marketplace.title": "Marketplace",
 	"command.openInEditor.title": "Open in Editor",
 	"command.cloud.title": "Cloud",

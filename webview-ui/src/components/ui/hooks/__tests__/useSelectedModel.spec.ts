@@ -106,7 +106,9 @@ describe("useSelectedModel", () => {
 
 			mockUseRouterModels.mockReturnValue({
 				data: {
-					openrouter: {},
+					openrouter: {
+						"test-model": {}, // Include the model in router models so it passes validation
+					},
 					requesty: {},
 					glama: {},
 					unbound: {},
@@ -248,15 +250,15 @@ describe("useSelectedModel", () => {
 			mockUseRouterModels.mockReturnValue({
 				data: {
 					openrouter: {
-						"qwen/qwen3-coder-480b-a35b-instruct": {
-							// Default model
-							maxTokens: 65536,
-							contextWindow: 262000,
-							supportsImages: false,
-							supportsComputerUse: false,
-							supportsPromptCache: false,
-							inputPrice: 0.6,
-							outputPrice: 1.8,
+						"anthropic/claude-sonnet-4.5": {
+							// Default OpenRouter model
+							maxTokens: 8192,
+							contextWindow: 200000,
+							supportsImages: true,
+							supportsComputerUse: true,
+							supportsPromptCache: true,
+							inputPrice: 3,
+							outputPrice: 15,
 						},
 					},
 					requesty: {},
@@ -284,8 +286,9 @@ describe("useSelectedModel", () => {
 			const wrapper = createWrapper()
 			const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper })
 
-			expect(result.current.id).toBe("non-existent-model")
-			expect(result.current.info).toBeUndefined()
+			// When the configured model doesn't exist in router models, falls back to default
+			expect(result.current.id).toBe("anthropic/claude-sonnet-4.5") // OpenRouter default model
+			expect(result.current.info).toBeDefined() // Default model has info
 		})
 	})
 
@@ -443,7 +446,7 @@ describe("useSelectedModel", () => {
 			const { result } = renderHook(() => useSelectedModel(apiConfiguration), { wrapper })
 
 			expect(result.current.provider).toBe("claude-code")
-			expect(result.current.id).toBe("claude-sonnet-4-20250514") // Default model
+			expect(result.current.id).toBe("claude-sonnet-4-5") // Default model
 			expect(result.current.info).toBeDefined()
 			expect(result.current.info?.supportsImages).toBe(false)
 		})

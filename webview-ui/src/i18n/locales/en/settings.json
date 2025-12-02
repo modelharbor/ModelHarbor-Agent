@@ -35,7 +35,7 @@
 		"ui": "UI",
 		"experimental": "Experimental",
 		"language": "Language",
-		"about": "About Roo Code"
+		"about": "About ModelHarbor Agent"
 	},
 	"about": {
 		"bugReport": {
@@ -53,7 +53,7 @@
 		"contact": {
 			"label": "Need to talk to us? Write"
 		},
-		"community": "Want tips or to just hang out with other Roo Code users? Join <redditLink>reddit.com/r/RooCode</redditLink> or <discordLink>discord.gg/roocode</discordLink>",
+		"community": "Want tips or to just hang out with other ModelHarbor Agent users? Join <redditLink>reddit.com/r/ModelHarbor</redditLink> or <discordLink>discord.gg/modelharbor</discordLink>",
 		"contactAndCommunity": "Contact & Community",
 		"manageSettings": "Manage Settings"
 	},
@@ -67,7 +67,7 @@
 		}
 	},
 	"prompts": {
-		"description": "Configure support prompts that are used for quick actions like enhancing prompts, explaining code, and fixing issues. These prompts help Roo provide better assistance for common development tasks."
+		"description": "Configure support prompts that are used for quick actions like enhancing prompts, explaining code, and fixing issues. These prompts help ModelHarbor provide better assistance for common development tasks."
 	},
 	"codeIndex": {
 		"title": "Codebase Indexing",
@@ -183,10 +183,10 @@
 		"enabled": "Auto-Approve Enabled",
 		"readOnly": {
 			"label": "Read",
-			"description": "When enabled, Roo will automatically view directory contents and read files without requiring you to click the Approve button.",
+			"description": "When enabled, ModelHarbor will automatically view directory contents and read files without requiring you to click the Approve button.",
 			"outsideWorkspace": {
 				"label": "Include files outside workspace",
-				"description": "Allow Roo to read files outside the current workspace without requiring approval."
+				"description": "Allow ModelHarbor to read files outside the current workspace without requiring approval."
 			}
 		},
 		"write": {
@@ -195,11 +195,11 @@
 			"delayLabel": "Delay after writes to allow diagnostics to detect potential problems",
 			"outsideWorkspace": {
 				"label": "Include files outside workspace",
-				"description": "Allow Roo to create and edit files outside the current workspace without requiring approval."
+				"description": "Allow ModelHarbor to create and edit files outside the current workspace without requiring approval."
 			},
 			"protected": {
 				"label": "Include protected files",
-				"description": "Allow Roo to create and edit protected files (like .rooignore and .roo/ configuration files) without requiring approval."
+				"description": "Allow ModelHarbor to create and edit protected files (like .rooignore and .roo/ configuration files) without requiring approval."
 			}
 		},
 		"browser": {
@@ -337,6 +337,9 @@
 		"moonshotApiKey": "Moonshot API Key",
 		"getMoonshotApiKey": "Get Moonshot API Key",
 		"moonshotBaseUrl": "Moonshot Entrypoint",
+		"modelharborApiKey": "ModelHarbor API Key",
+		"getModelHarborApiKey": "Get ModelHarbor API Key",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"minimaxApiKey": "MiniMax API Key",
 		"getMiniMaxApiKey": "Get MiniMax API Key",
 		"minimaxBaseUrl": "MiniMax Entrypoint",
@@ -423,7 +426,7 @@
 			"draftModelDesc": "Draft model must be from the same model family for speculative decoding to work correctly.",
 			"selectDraftModel": "Select Draft Model",
 			"noModelsFound": "No draft models found. Please ensure LM Studio is running with Server Mode enabled.",
-			"description": "LM Studio allows you to run models locally on your computer. For instructions on how to get started, see their <a>quickstart guide</a>. You will also need to start LM Studio's <b>local server</b> feature to use it with this extension. <span>Note:</span> Roo Code uses complex prompts and works best with Claude models. Less capable models may not work as expected."
+			"description": "LM Studio allows you to run models locally on your computer. For instructions on how to get started, see their <a>quickstart guide</a>. You will also need to start LM Studio's <b>local server</b> feature to use it with this extension. <span>Note:</span> ModelHarbor Agent uses complex prompts and works best with Claude models. Less capable models may not work as expected."
 		},
 		"ollama": {
 			"baseUrl": "Base URL (optional)",
@@ -433,7 +436,7 @@
 			"numCtx": "Context Window Size (num_ctx)",
 			"numCtxHelp": "Override the model's default context window size. Leave empty to use the model's Modelfile configuration. Minimum value is 128.",
 			"description": "Ollama allows you to run models locally on your computer. For instructions on how to get started, see their quickstart guide.",
-			"warning": "Note: Roo Code uses complex prompts and works best with Claude models. Less capable models may not work as expected."
+			"warning": "Note: ModelHarbor Agent uses complex prompts and works best with Claude models. Less capable models may not work as expected."
 		},
 		"unboundApiKey": "Unbound API Key",
 		"getUnboundApiKey": "Get Unbound API Key",
@@ -444,8 +447,8 @@
 			"instructions": "During use, a dialog box will pop up and the current message will be copied to the clipboard automatically. You need to paste these to web versions of AI (such as ChatGPT or Claude), then copy the AI's reply back to the dialog box and click the confirm button."
 		},
 		"roo": {
-			"authenticatedMessage": "Securely authenticated through your Roo Code Cloud account.",
-			"connectButton": "Connect to Roo Code Cloud"
+			"authenticatedMessage": "Securely authenticated through your ModelHarbor Cloud account.",
+			"connectButton": "Connect to ModelHarbor Cloud"
 		},
 		"openRouter": {
 			"providerRouting": {
@@ -455,7 +458,7 @@
 			}
 		},
 		"customModel": {
-			"capabilities": "Configure the capabilities and pricing for your custom OpenAI-compatible model. Be careful when specifying the model capabilities, as they can affect how Roo Code performs.",
+			"capabilities": "Configure the capabilities and pricing for your custom OpenAI-compatible model. Be careful when specifying the model capabilities, as they can affect how ModelHarbor Agent performs.",
 			"maxTokens": {
 				"label": "Max Output Tokens",
 				"description": "Maximum number of tokens the model can generate in a response. (Specify -1 to allow the server to set the max tokens.)"
@@ -533,7 +536,7 @@
 	"browser": {
 		"enable": {
 			"label": "Enable browser tool",
-			"description": "When enabled, Roo can use a browser to interact with websites when using models that support computer use. <0>Learn more</0>"
+			"description": "When enabled, ModelHarbor can use a browser to interact with websites when using models that support computer use. <0>Learn more</0>"
 		},
 		"viewport": {
 			"label": "Viewport size",
@@ -565,18 +568,18 @@
 		},
 		"enable": {
 			"label": "Enable automatic checkpoints",
-			"description": "When enabled, Roo will automatically create checkpoints during task execution, making it easy to review changes or revert to earlier states. <0>Learn more</0>"
+			"description": "When enabled, ModelHarbor will automatically create checkpoints during task execution, making it easy to review changes or revert to earlier states. <0>Learn more</0>"
 		}
 	},
 	"notifications": {
 		"sound": {
 			"label": "Enable sound effects",
-			"description": "When enabled, Roo will play sound effects for notifications and events.",
+			"description": "When enabled, ModelHarbor will play sound effects for notifications and events.",
 			"volumeLabel": "Volume"
 		},
 		"tts": {
 			"label": "Enable text-to-speech",
-			"description": "When enabled, Roo will read aloud its responses using text-to-speech.",
+			"description": "When enabled, ModelHarbor will read aloud its responses using text-to-speech.",
 			"speedLabel": "Speed"
 		}
 	},
@@ -584,7 +587,7 @@
 		"description": "Control what information is included in the AI's context window, affecting token usage and response quality",
 		"autoCondenseContextPercent": {
 			"label": "Threshold to trigger intelligent context condensing",
-			"description": "When the context window reaches this threshold, Roo will automatically condense it."
+			"description": "When the context window reaches this threshold, ModelHarbor will automatically condense it."
 		},
 		"condensingApiConfiguration": {
 			"label": "API Configuration for Context Condensing",
@@ -600,7 +603,7 @@
 		},
 		"autoCondenseContext": {
 			"name": "Automatically trigger intelligent context condensing",
-			"description": "When enabled, Roo will automatically condense the context when the threshold is reached. When disabled, you can still manually trigger context condensing."
+			"description": "When enabled, ModelHarbor will automatically condense the context when the threshold is reached. When disabled, you can still manually trigger context condensing."
 		},
 		"openTabs": {
 			"label": "Open tabs context limit",
@@ -620,7 +623,7 @@
 		},
 		"maxReadFile": {
 			"label": "File read auto-truncate threshold",
-			"description": "Roo reads this number of lines when the model omits start/end values. If this number is less than the file's total, Roo generates a line number index of code definitions. Special cases: -1 instructs Roo to read the entire file (without indexing), and 0 instructs it to read no lines and provides line indexes only for minimal context. Lower values minimize initial context usage, enabling precise subsequent line-range reads. Explicit start/end requests are not limited by this setting.",
+			"description": "ModelHarbor reads this number of lines when the model omits start/end values. If this number is less than the file's total, ModelHarbor generates a line number index of code definitions. Special cases: -1 instructs ModelHarbor to read the entire file (without indexing), and 0 instructs it to read no lines and provides line indexes only for minimal context. Lower values minimize initial context usage, enabling precise subsequent line-range reads. Explicit start/end requests are not limited by this setting.",
 			"lines": "lines",
 			"always_full_read": "Always read entire file"
 		},
@@ -744,7 +747,7 @@
 	"advanced": {
 		"diff": {
 			"label": "Enable editing through diffs",
-			"description": "When enabled, Roo will be able to edit files more quickly and will automatically reject truncated full-file writes",
+			"description": "When enabled, ModelHarbor will be able to edit files more quickly and will automatically reject truncated full-file writes",
 			"strategy": {
 				"label": "Diff strategy",
 				"options": {
@@ -765,7 +768,7 @@
 		},
 		"todoList": {
 			"label": "Enable todo list tool",
-			"description": "When enabled, Roo can create and manage todo lists to track task progress. This helps organize complex tasks into manageable steps."
+			"description": "When enabled, ModelHarbor can create and manage todo lists to track task progress. This helps organize complex tasks into manageable steps."
 		}
 	},
 	"experimental": {
@@ -779,15 +782,15 @@
 		},
 		"POWER_STEERING": {
 			"name": "Use experimental \"power steering\" mode",
-			"description": "When enabled, Roo will remind the model about the details of its current mode definition more frequently. This will lead to stronger adherence to role definitions and custom instructions, but will use more tokens per message."
+			"description": "When enabled, ModelHarbor will remind the model about the details of its current mode definition more frequently. This will lead to stronger adherence to role definitions and custom instructions, but will use more tokens per message."
 		},
 		"CONCURRENT_FILE_READS": {
 			"name": "Enable concurrent file reads",
-			"description": "When enabled, Roo can read multiple files in a single request. When disabled, Roo must read files one at a time. Disabling this can help when working with less capable models or when you want more control over file access."
+			"description": "When enabled, ModelHarbor can read multiple files in a single request. When disabled, ModelHarbor must read files one at a time. Disabling this can help when working with less capable models or when you want more control over file access."
 		},
 		"MULTI_SEARCH_AND_REPLACE": {
 			"name": "Use experimental multi block diff tool",
-			"description": "When enabled, Roo will use multi block diff tool. This will try to update multiple code blocks in the file in one request."
+			"description": "When enabled, ModelHarbor will use multi block diff tool. This will try to update multiple code blocks in the file in one request."
 		},
 		"MARKETPLACE": {
 			"name": "Enable Marketplace",
@@ -795,11 +798,11 @@
 		},
 		"MULTI_FILE_APPLY_DIFF": {
 			"name": "Enable concurrent file edits",
-			"description": "When enabled, Roo can edit multiple files in a single request. When disabled, Roo must edit files one at a time. Disabling this can help when working with less capable models or when you want more control over file modifications."
+			"description": "When enabled, ModelHarbor can edit multiple files in a single request. When disabled, ModelHarbor must edit files one at a time. Disabling this can help when working with less capable models or when you want more control over file modifications."
 		},
 		"PREVENT_FOCUS_DISRUPTION": {
 			"name": "Background editing",
-			"description": "Prevent editor focus disruption when enabled. File edits happen in the background without opening diff views or stealing focus. You can continue working uninterrupted while Roo makes changes. Files can be opened without focus to capture diagnostics or kept closed entirely."
+			"description": "Prevent editor focus disruption when enabled. File edits happen in the background without opening diff views or stealing focus. You can continue working uninterrupted while ModelHarbor makes changes. Files can be opened without focus to capture diagnostics or kept closed entirely."
 		},
 		"ASSISTANT_MESSAGE_PARSER": {
 			"name": "Use new message parser",
@@ -811,7 +814,7 @@
 		},
 		"IMAGE_GENERATION": {
 			"name": "Enable AI image generation",
-			"description": "When enabled, Roo can generate images from text prompts using image generation models.",
+			"description": "When enabled, ModelHarbor can generate images from text prompts using image generation models.",
 			"providerLabel": "Provider",
 			"providerDescription": "Select which provider to use for image generation.",
 			"openRouterApiKeyLabel": "OpenRouter API Key",
@@ -824,7 +827,7 @@
 		},
 		"RUN_SLASH_COMMAND": {
 			"name": "Enable model-initiated slash commands",
-			"description": "When enabled, Roo can run your slash commands to execute workflows."
+			"description": "When enabled, ModelHarbor can run your slash commands to execute workflows."
 		},
 		"MULTIPLE_NATIVE_TOOL_CALLS": {
 			"name": "Parallel tool calls",
@@ -833,7 +836,7 @@
 	},
 	"promptCaching": {
 		"label": "Disable prompt caching",
-		"description": "When checked, Roo will not use prompt caching for this model."
+		"description": "When checked, ModelHarbor will not use prompt caching for this model."
 	},
 	"temperature": {
 		"useCustom": "Use custom temperature",
@@ -863,7 +866,7 @@
 		}
 	},
 	"modelPicker": {
-		"automaticFetch": "The extension automatically fetches the latest list of models available on <serviceLink>{{serviceName}}</serviceLink>. If you're unsure which model to choose, Roo Code works best with <defaultModelLink>{{defaultModelId}}</defaultModelLink>. You can also try searching \"free\" for no-cost options currently available.",
+		"automaticFetch": "The extension automatically fetches the latest list of models available on <serviceLink>{{serviceName}}</serviceLink>. If you're unsure which model to choose, ModelHarbor Agent works best with <defaultModelLink>{{defaultModelId}}</defaultModelLink>. You can also try searching \"free\" for no-cost options currently available.",
 		"label": "Model",
 		"searchPlaceholder": "Search",
 		"noMatchFound": "No match found",
@@ -873,7 +876,7 @@
 	"footer": {
 		"telemetry": {
 			"label": "Allow anonymous error and usage reporting",
-			"description": "Help improve Roo Code by sending anonymous usage data and error reports. This telemetry does not collect code, prompts or personal information. See our <privacyLink>privacy policy</privacyLink> for more details."
+			"description": "Help improve ModelHarbor Agent by sending anonymous usage data and error reports. This telemetry does not collect code, prompts or personal information. See our <privacyLink>privacy policy</privacyLink> for more details."
 		},
 		"settings": {
 			"import": "Import",

@@ -733,6 +733,11 @@ export const webviewMessageHandler = async (
 		case "requestRouterModels":
 			const { apiConfiguration } = await provider.getState()
 
+			// Flush litellm cache if credentials are provided via message.values (e.g., Refresh Models button)
+			if (message?.values?.litellmApiKey && message?.values?.litellmBaseUrl) {
+				await flushModels("litellm", true)
+			}
+
 			// Check if a specific provider is requested
 			const requestedProvider = message?.values?.provider
 
@@ -1810,7 +1815,7 @@ export const webviewMessageHandler = async (
 					await updateGlobalState("mode", message.modeConfig.slug)
 					await provider.postStateToWebview()
 
-				// TelemetryService removed - skip telemetry tracking
+					// TelemetryService removed - skip telemetry tracking
 				} catch (error) {
 					// Error already shown to user by updateCustomMode
 					// Just prevent unhandled rejection and skip state updates

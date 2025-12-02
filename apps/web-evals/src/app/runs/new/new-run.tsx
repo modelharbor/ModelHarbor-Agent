@@ -16,7 +16,6 @@ import {
 	getModelId,
 	type ProviderSettings,
 	type GlobalSettings,
-	type ReasoningEffort,
 } from "@roo-code/types"
 
 import { createRun } from "@/actions/runs"
@@ -38,7 +37,6 @@ import {
 import { cn } from "@/lib/utils"
 
 import { useOpenRouterModels } from "@/hooks/use-open-router-models"
-import { useRooCodeCloudModels } from "@/hooks/use-roo-code-cloud-models"
 
 import {
 	Button,
@@ -49,7 +47,6 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-	Input,
 	Textarea,
 	Tabs,
 	TabsList,
@@ -66,11 +63,6 @@ import {
 	PopoverTrigger,
 	Slider,
 	Label,
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
@@ -87,11 +79,10 @@ type ImportedSettings = {
 export function NewRun() {
 	const router = useRouter()
 
-	const [provider, setModelSource] = useState<"roo" | "openrouter" | "other">("other")
+	const [provider, setModelSource] = useState<"openrouter" | "other">("other")
 	const [modelPopoverOpen, setModelPopoverOpen] = useState(false)
 	const [useNativeToolProtocol, setUseNativeToolProtocol] = useState(true)
 	const [useMultipleNativeToolCalls, setUseMultipleNativeToolCalls] = useState(false)
-	const [reasoningEffort, setReasoningEffort] = useState<ReasoningEffort | "">("")
 	const [commandExecutionTimeout, setCommandExecutionTimeout] = useState(20)
 	const [terminalShellIntegrationTimeout, setTerminalShellIntegrationTimeout] = useState(30) // seconds
 
@@ -101,11 +92,10 @@ export function NewRun() {
 	const [configPopoverOpen, setConfigPopoverOpen] = useState(false)
 
 	const openRouter = useOpenRouterModels()
-	const rooCodeCloud = useRooCodeCloudModels()
-	const models = provider === "openrouter" ? openRouter.data : rooCodeCloud.data
-	const searchValue = provider === "openrouter" ? openRouter.searchValue : rooCodeCloud.searchValue
-	const setSearchValue = provider === "openrouter" ? openRouter.setSearchValue : rooCodeCloud.setSearchValue
-	const onFilter = provider === "openrouter" ? openRouter.onFilter : rooCodeCloud.onFilter
+	const models = openRouter.data
+	const searchValue = openRouter.searchValue
+	const setSearchValue = openRouter.setSearchValue
+	const onFilter = openRouter.onFilter
 
 	const exercises = useQuery({ queryKey: ["getExercises"], queryFn: () => getExercises() })
 
@@ -123,7 +113,6 @@ export function NewRun() {
 			concurrency: CONCURRENCY_DEFAULT,
 			timeout: TIMEOUT_DEFAULT,
 			iterations: ITERATIONS_DEFAULT,
-			jobToken: "",
 		},
 	})
 
@@ -253,12 +242,6 @@ export function NewRun() {
 	const onSubmit = useCallback(
 		async (values: CreateRun) => {
 			try {
-				// Validate jobToken for Roo Code Cloud provider
-				if (provider === "roo" && !values.jobToken?.trim()) {
-					toast.error("Roo Code Cloud Token is required")
-					return
-				}
-
 				// Build experiments settings
 				const experimentsSettings = useMultipleNativeToolCalls
 					? { experiments: { multipleNativeToolCalls: true } }
@@ -273,22 +256,6 @@ export function NewRun() {
 						commandExecutionTimeout,
 						terminalShellIntegrationTimeout: terminalShellIntegrationTimeout * 1000, // Convert to ms
 						...experimentsSettings,
-					}
-				} else if (provider === "roo") {
-					values.settings = {
-						...(values.settings || {}),
-						apiProvider: "roo",
-						apiModelId: model,
-						toolProtocol: useNativeToolProtocol ? "native" : "xml",
-						commandExecutionTimeout,
-						terminalShellIntegrationTimeout: terminalShellIntegrationTimeout * 1000, // Convert to ms
-						...experimentsSettings,
-						...(reasoningEffort
-							? {
-									enableReasoningEffort: true,
-									reasoningEffort: reasoningEffort as ReasoningEffort,
-								}
-							: {}),
 					}
 				} else if (provider === "other" && values.settings) {
 					// For imported settings, merge in experiments and tool protocol
@@ -313,7 +280,6 @@ export function NewRun() {
 			router,
 			useNativeToolProtocol,
 			useMultipleNativeToolCalls,
-			reasoningEffort,
 			commandExecutionTimeout,
 			terminalShellIntegrationTimeout,
 		],
@@ -402,10 +368,9 @@ export function NewRun() {
 							<FormItem>
 								<Tabs
 									value={provider}
-									onValueChange={(value) => setModelSource(value as "roo" | "openrouter" | "other")}>
+									onValueChange={(value) => setModelSource(value as "openrouter" | "other")}>
 									<TabsList className="mb-2">
 										<TabsTrigger value="other">Import</TabsTrigger>
-										<TabsTrigger value="roo">Roo Code Cloud</TabsTrigger>
 										<TabsTrigger value="openrouter">OpenRouter</TabsTrigger>
 									</TabsList>
 								</Tabs>
@@ -598,34 +563,6 @@ export function NewRun() {
 													</label>
 												</div>
 											</div>
-
-											{provider === "roo" && (
-												<div className="space-y-2 pt-2 border-t border-border">
-													<Label className="text-sm font-medium text-muted-foreground">
-														Reasoning Effort
-													</Label>
-													<Select
-														value={reasoningEffort || "none"}
-														onValueChange={(value) =>
-															setReasoningEffort(
-																value === "none" ? "" : (value as ReasoningEffort),
-															)
-														}>
-														<SelectTrigger className="w-full">
-															<SelectValue placeholder="None (default)" />
-														</SelectTrigger>
-														<SelectContent>
-															<SelectItem value="none">None (default)</SelectItem>
-															<SelectItem value="low">Low</SelectItem>
-															<SelectItem value="medium">Medium</SelectItem>
-															<SelectItem value="high">High</SelectItem>
-														</SelectContent>
-													</Select>
-													<p className="text-xs text-muted-foreground pl-1">
-														When set, enableReasoningEffort will be automatically enabled
-													</p>
-												</div>
-											)}
 										</div>
 									</>
 								)}
@@ -634,39 +571,6 @@ export function NewRun() {
 							</FormItem>
 						)}
 					/>
-
-					{provider === "roo" && (
-						<FormField
-							control={form.control}
-							name="jobToken"
-							render={({ field }) => (
-								<FormItem>
-									<div className="flex items-center gap-1">
-										<FormLabel>Roo Code Cloud Token</FormLabel>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Info className="size-4 text-muted-foreground cursor-help" />
-											</TooltipTrigger>
-											<TooltipContent side="right" className="max-w-xs">
-												<p>
-													If you have access to the Roo Code Cloud repository and the
-													decryption key for the .env.* files, generate a token with:
-												</p>
-												<code className="text-xs block mt-1">
-													pnpm --filter @roo-code-cloud/auth production:create-auth-token
-													[email] [org] [ttl]
-												</code>
-											</TooltipContent>
-										</Tooltip>
-									</div>
-									<FormControl>
-										<Input type="password" placeholder="Required" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					)}
 
 					<FormField
 						control={form.control}
