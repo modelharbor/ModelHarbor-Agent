@@ -29,6 +29,7 @@ import { getIOIntelligenceModels } from "./io-intelligence"
 import { getModelHarborModels } from "./modelharbor"
 import { getDeepInfraModels } from "./deepinfra"
 import { getHuggingFaceModels } from "./huggingface"
+import { clearModelHarborCache } from "@roo-code/types"
 
 const memoryCache = new NodeCache({ stdTTL: 5 * 60, checkperiod: 5 * 60 })
 
@@ -103,7 +104,7 @@ async function fetchModelsFromProvider(options: GetModelsOptions): Promise<Model
 			models = await getHuggingFaceModels()
 			break
 		case "modelharbor":
-			models = await getModelHarborModels()
+			models = await getModelHarborModels(options.apiKey)
 			break
 		default: {
 			// Ensures router is exhaustively checked if RouterName is a strict union.
@@ -268,6 +269,11 @@ export async function initializeModelCacheRefresh(): Promise<void> {
  * @param refresh - If true, immediately fetch fresh data from API
  */
 export const flushModels = async (router: RouterName, refresh: boolean = false): Promise<void> => {
+	// Clear ModelHarbor's internal cache in the types package
+	if (router === "modelharbor") {
+		clearModelHarborCache()
+	}
+
 	if (refresh) {
 		// Don't delete memory cache - let refreshModels atomically replace it
 		// This prevents a race condition where getModels() might be called
