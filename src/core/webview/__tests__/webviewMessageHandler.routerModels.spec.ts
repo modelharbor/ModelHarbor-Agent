@@ -221,4 +221,66 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 			baseUrl: "http://stored:4000",
 		})
 	})
+
+	it("flushes modelharbor cache when modelharborApiKey is provided via message values", async () => {
+		mockProvider.getState.mockResolvedValue({
+			apiConfiguration: {
+				modelharborApiKey: "stored-api-key",
+			},
+		})
+
+		await webviewMessageHandler(
+			mockProvider as any,
+			{
+				type: "requestRouterModels",
+				values: {
+					provider: "modelharbor",
+					modelharborApiKey: "new-api-key",
+				},
+			} as any,
+		)
+
+		// flushModels should have been called for modelharbor with refresh=true
+		const modelharborFlushCalls = flushModelsMock.mock.calls.filter((c: any[]) => c[0] === "modelharbor")
+		expect(modelharborFlushCalls.length).toBe(1)
+		expect(modelharborFlushCalls[0]).toEqual(["modelharbor", true])
+
+		// getModels should have been called with the new API key from message values
+		const modelharborCalls = getModelsMock.mock.calls.filter((c: any[]) => c[0]?.provider === "modelharbor")
+		expect(modelharborCalls.length).toBe(1)
+		expect(modelharborCalls[0][0]).toEqual({
+			provider: "modelharbor",
+			apiKey: "new-api-key",
+		})
+	})
+
+	it("does not flush modelharbor cache when modelharborApiKey is not provided via message values", async () => {
+		mockProvider.getState.mockResolvedValue({
+			apiConfiguration: {
+				modelharborApiKey: "stored-api-key",
+			},
+		})
+
+		await webviewMessageHandler(
+			mockProvider as any,
+			{
+				type: "requestRouterModels",
+				values: {
+					provider: "modelharbor",
+				},
+			} as any,
+		)
+
+		// flushModels should NOT have been called for modelharbor
+		const modelharborFlushCalls = flushModelsMock.mock.calls.filter((c: any[]) => c[0] === "modelharbor")
+		expect(modelharborFlushCalls.length).toBe(0)
+
+		// getModels should still have been called with stored credentials
+		const modelharborCalls = getModelsMock.mock.calls.filter((c: any[]) => c[0]?.provider === "modelharbor")
+		expect(modelharborCalls.length).toBe(1)
+		expect(modelharborCalls[0][0]).toEqual({
+			provider: "modelharbor",
+			apiKey: "stored-api-key",
+		})
+	})
 })

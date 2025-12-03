@@ -261,8 +261,7 @@ const renderSettingsView = () => {
 	return { onDone, activateTab }
 }
 
-// Skip: Tests fail in ModelHarbor fork - needs investigation
-describe.skip("SettingsView - Sound Settings", () => {
+describe("SettingsView - Sound Settings", () => {
 	beforeEach(() => {
 		vi.clearAllMocks()
 	})
@@ -462,41 +461,30 @@ describe("SettingsView - Allowed Commands", () => {
 	})
 
 	it("shows allowed commands section when alwaysAllowExecute is enabled", () => {
-		const onDone = vi.fn()
-		const queryClient = new QueryClient()
+		// Render once and get the activateTab helper
+		const { activateTab } = renderSettingsView()
 
-		// Render with alwaysAllowExecute already enabled
-		render(
-			<ExtensionStateContextProvider>
-				<QueryClientProvider client={queryClient}>
-					<SettingsView onDone={onDone} targetSection="autoApprove" />
-				</QueryClientProvider>
-			</ExtensionStateContextProvider>,
-		)
+		// Activate the autoApprove tab
+		activateTab("autoApprove")
 
-		// Hydrate with alwaysAllowExecute: true
-		mockPostMessage({ alwaysAllowExecute: true })
-
+		// Enable always allow execute
+		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
+		fireEvent.click(executeCheckbox)
 		// Verify allowed commands section appears
 		expect(screen.getByTestId("allowed-commands-heading")).toBeInTheDocument()
 		expect(screen.getByTestId("command-input")).toBeInTheDocument()
 	})
 
 	it("adds new command to the list", () => {
-		const onDone = vi.fn()
-		const queryClient = new QueryClient()
+		// Render once and get the activateTab helper
+		const { activateTab } = renderSettingsView()
 
-		// Render with alwaysAllowExecute already enabled
-		render(
-			<ExtensionStateContextProvider>
-				<QueryClientProvider client={queryClient}>
-					<SettingsView onDone={onDone} targetSection="autoApprove" />
-				</QueryClientProvider>
-			</ExtensionStateContextProvider>,
-		)
+		// Activate the autoApprove tab
+		activateTab("autoApprove")
 
-		// Hydrate with alwaysAllowExecute: true
-		mockPostMessage({ alwaysAllowExecute: true })
+		// Enable always allow execute
+		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
+		fireEvent.click(executeCheckbox)
 
 		// Add a new command
 		const input = screen.getByTestId("command-input")
@@ -518,20 +506,15 @@ describe("SettingsView - Allowed Commands", () => {
 	})
 
 	it("removes command from the list", () => {
-		const onDone = vi.fn()
-		const queryClient = new QueryClient()
+		// Render once and get the activateTab helper
+		const { activateTab } = renderSettingsView()
 
-		// Render with alwaysAllowExecute already enabled
-		render(
-			<ExtensionStateContextProvider>
-				<QueryClientProvider client={queryClient}>
-					<SettingsView onDone={onDone} targetSection="autoApprove" />
-				</QueryClientProvider>
-			</ExtensionStateContextProvider>,
-		)
+		// Activate the autoApprove tab
+		activateTab("autoApprove")
 
-		// Hydrate with alwaysAllowExecute: true
-		mockPostMessage({ alwaysAllowExecute: true })
+		// Enable always allow execute
+		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
+		fireEvent.click(executeCheckbox)
 
 		// Add a command
 		const input = screen.getByTestId("command-input")
@@ -615,20 +598,15 @@ describe("SettingsView - Duplicate Commands", () => {
 	})
 
 	it("prevents duplicate commands", () => {
-		const onDone = vi.fn()
-		const queryClient = new QueryClient()
+		// Render once and get the activateTab helper
+		const { activateTab } = renderSettingsView()
 
-		// Render with alwaysAllowExecute already enabled
-		render(
-			<ExtensionStateContextProvider>
-				<QueryClientProvider client={queryClient}>
-					<SettingsView onDone={onDone} targetSection="autoApprove" />
-				</QueryClientProvider>
-			</ExtensionStateContextProvider>,
-		)
+		// Activate the autoApprove tab
+		activateTab("autoApprove")
 
-		// Hydrate with alwaysAllowExecute: true
-		mockPostMessage({ alwaysAllowExecute: true })
+		// Enable always allow execute
+		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
+		fireEvent.click(executeCheckbox)
 
 		// Add a command twice
 		const input = screen.getByTestId("command-input")
@@ -648,20 +626,15 @@ describe("SettingsView - Duplicate Commands", () => {
 	})
 
 	it("saves allowed commands when clicking Save", () => {
-		const onDone = vi.fn()
-		const queryClient = new QueryClient()
+		// Render once and get the activateTab helper
+		const { activateTab } = renderSettingsView()
 
-		// Render with alwaysAllowExecute already enabled
-		render(
-			<ExtensionStateContextProvider>
-				<QueryClientProvider client={queryClient}>
-					<SettingsView onDone={onDone} targetSection="autoApprove" />
-				</QueryClientProvider>
-			</ExtensionStateContextProvider>,
-		)
+		// Activate the autoApprove tab
+		activateTab("autoApprove")
 
-		// Hydrate with alwaysAllowExecute: true
-		mockPostMessage({ alwaysAllowExecute: true })
+		// Enable always allow execute
+		const executeCheckbox = screen.getByTestId("always-allow-execute-toggle")
+		fireEvent.click(executeCheckbox)
 
 		// Add a command
 		const input = screen.getByTestId("command-input")

@@ -738,6 +738,11 @@ export const webviewMessageHandler = async (
 				await flushModels("litellm", true)
 			}
 
+			// Flush modelharbor cache if API key is provided via message.values (e.g., Refresh Models button)
+			if (message?.values?.modelharborApiKey) {
+				await flushModels("modelharbor", true)
+			}
+
 			// Check if a specific provider is requested
 			const requestedProvider = message?.values?.provider
 
@@ -800,9 +805,15 @@ export const webviewMessageHandler = async (
 							options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey },
 						})
 						break
-					case "modelharbor":
-						modelFetchPromises.push({ key: "modelharbor", options: { provider: "modelharbor" } })
+					case "modelharbor": {
+						const modelharborApiKey =
+							message?.values?.modelharborApiKey || apiConfiguration.modelharborApiKey
+						modelFetchPromises.push({
+							key: "modelharbor",
+							options: { provider: "modelharbor", apiKey: modelharborApiKey },
+						})
 						break
+					}
 					case "vercel-ai-gateway":
 						modelFetchPromises.push({
 							key: "vercel-ai-gateway",
@@ -853,7 +864,13 @@ export const webviewMessageHandler = async (
 					},
 					{ key: "glama", options: { provider: "glama" } },
 					{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
-					{ key: "modelharbor", options: { provider: "modelharbor" } },
+					{
+						key: "modelharbor",
+						options: {
+							provider: "modelharbor",
+							apiKey: message?.values?.modelharborApiKey || apiConfiguration.modelharborApiKey,
+						},
+					},
 					{ key: "vercel-ai-gateway", options: { provider: "vercel-ai-gateway" } },
 					{
 						key: "deepinfra",

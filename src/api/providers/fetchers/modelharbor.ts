@@ -75,18 +75,25 @@ function inferImageSupport(modelName: string): boolean {
 	return visionModelPatterns.some((pattern) => pattern.test(modelName))
 }
 
-export async function getModelHarborModels(): Promise<Record<string, ModelInfo>> {
+export async function getModelHarborModels(apiKey?: string): Promise<Record<string, ModelInfo>> {
 	try {
 		// Added timeout to prevent indefinite hanging
 		const controller = new AbortController()
 		const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
 
+		const headers: Record<string, string> = {
+			"Content-Type": "application/json",
+			"User-Agent": "ModelHarbor-Agent/1.0",
+		}
+
+		// Add Authorization header if API key is provided
+		if (apiKey) {
+			headers["Authorization"] = `Bearer ${apiKey}`
+		}
+
 		const response = await fetch("https://api.modelharbor.com/v1/model/info", {
 			signal: controller.signal,
-			headers: {
-				"Content-Type": "application/json",
-				"User-Agent": "ModelHarbor-Agent/1.0",
-			},
+			headers,
 		})
 
 		clearTimeout(timeoutId)

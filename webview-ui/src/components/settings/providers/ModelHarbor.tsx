@@ -1,8 +1,9 @@
 import { useCallback, useState, useEffect, useRef } from "react"
 import { VSCodeTextField, VSCodeLink, VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import type { ProviderSettings } from "@roo-code/types"
-import { modelHarborDefaultModelId } from "@roo-code/types"
+import { modelHarborDefaultModelId, modelHarborModels } from "@roo-code/types"
 
 import { ExtensionMessage } from "@roo/ExtensionMessage"
 import { RouterName } from "@roo/api"
@@ -23,9 +24,29 @@ export interface ModelHarborProps {
 export const ModelHarbor = ({ apiConfiguration, setApiConfigurationField }: ModelHarborProps) => {
 	const { t } = useAppTranslation()
 	const { routerModels } = useExtensionState()
+	const queryClient = useQueryClient()
 	const [refreshStatus, setRefreshStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
 	const [refreshError, setRefreshError] = useState<string | undefined>()
 	const modelharborErrorJustReceived = useRef(false)
+	const hasRequestedModels = useRef(false)
+
+	// Request models on mount if not already loaded
+	useEffect(() => {
+		const key = apiConfiguration.modelharborApiKey
+
+		// Only request if we have an API key and haven't requested yet and don't have models
+		if (
+			key &&
+			!hasRequestedModels.current &&
+			(!routerModels?.modelharbor || Object.keys(routerModels.modelharbor).length === 0)
+		) {
+			hasRequestedModels.current = true
+			vscode.postMessage({
+				type: "requestRouterModels",
+				values: { provider: "modelharbor", modelharborApiKey: key },
+			})
+		}
+	}, [apiConfiguration.modelharborApiKey, routerModels])
 
 	useEffect(() => {
 		const handleMessage = (event: MessageEvent<ExtensionMessage>) => {
@@ -38,6 +59,11 @@ export const ModelHarbor = ({ apiConfiguration, setApiConfigurationField }: Mode
 					setRefreshError(message.error)
 				}
 			} else if (message.type === "routerModels") {
+				// Update react-query cache with the new router models
+				if (message.routerModels?.modelharbor) {
+					queryClient.setQueryData(["routerModels", "modelharbor"], message.routerModels)
+				}
+
 				// If we were loading and no specific error for modelharbor was just received, mark as success.
 				// The ModelPicker will show available models or "no models found".
 				if (refreshStatus === "loading") {
@@ -53,7 +79,7 @@ export const ModelHarbor = ({ apiConfiguration, setApiConfigurationField }: Mode
 		return () => {
 			window.removeEventListener("message", handleMessage)
 		}
-	}, [refreshStatus, refreshError, setRefreshStatus, setRefreshError])
+	}, [refreshStatus, refreshError, setRefreshStatus, setRefreshError, queryClient])
 
 	const handleInputChange = useCallback(
 		<K extends keyof ProviderSettings, E>(
@@ -79,7 +105,7 @@ export const ModelHarbor = ({ apiConfiguration, setApiConfigurationField }: Mode
 			return
 		}
 
-		vscode.postMessage({ type: "requestRouterModels", values: { modelharborApiKey: key } })
+		vscode.postMessage({ type: "requestRouterModels", values: { provider: "modelharbor", modelharborApiKey: key } })
 	}, [apiConfiguration, setRefreshStatus, setRefreshError, t])
 
 	return (
@@ -133,7 +159,11 @@ export const ModelHarbor = ({ apiConfiguration, setApiConfigurationField }: Mode
 			<ModelPicker
 				apiConfiguration={apiConfiguration}
 				defaultModelId={modelHarborDefaultModelId}
-				models={routerModels?.modelharbor ?? {}}
+				models={
+					routerModels?.modelharbor && Object.keys(routerModels.modelharbor).length > 0
+						? routerModels.modelharbor
+						: modelHarborModels
+				}
 				modelIdKey="modelharborModelId"
 				serviceName="ModelHarbor"
 				serviceUrl="https://www.modelharbor.com"
