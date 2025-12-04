@@ -3,7 +3,8 @@
 	"displayName": "%extension.displayName%",
 	"description": "%extension.description%",
 	"publisher": "ModelHarbor",
-	"version": "3.35.5",	"galleryBanner": {
+	"version": "3.35.3",
+	"galleryBanner": {
 		"color": "#617A91",
 		"theme": "dark"
 	},

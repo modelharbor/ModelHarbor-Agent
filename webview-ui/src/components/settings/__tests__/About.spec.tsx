@@ -48,44 +48,23 @@ describe("About", () => {
 		expect(screen.getByText(/Version: 1\.0\.0/)).toBeInTheDocument()
 	})
 
-	it("renders the bug report section with label and link text", () => {
+	it("renders the contact and community section", () => {
 		render(
 			<TranslationProvider>
 				<About />
 			</TranslationProvider>,
 		)
-		expect(screen.getByText("settings:about.bugReport.label")).toBeInTheDocument()
-		expect(screen.getByText("settings:about.bugReport.link")).toBeInTheDocument()
+		expect(screen.getByText("settings:about.contactAndCommunity")).toBeInTheDocument()
+		expect(screen.getByText("www.modelharbor.com")).toBeInTheDocument()
 	})
 
-	it("renders the feature request section with label and link text", () => {
+	it("renders the manage settings section", () => {
 		render(
 			<TranslationProvider>
 				<About />
 			</TranslationProvider>,
 		)
-		expect(screen.getByText("settings:about.featureRequest.label")).toBeInTheDocument()
-		expect(screen.getByText("settings:about.featureRequest.link")).toBeInTheDocument()
-	})
-
-	it("renders the security issue section with label and link text", () => {
-		render(
-			<TranslationProvider>
-				<About />
-			</TranslationProvider>,
-		)
-		expect(screen.getByText("settings:about.securityIssue.label")).toBeInTheDocument()
-		expect(screen.getByText("settings:about.securityIssue.link")).toBeInTheDocument()
-	})
-
-	it("renders the contact section with label and email", () => {
-		render(
-			<TranslationProvider>
-				<About />
-			</TranslationProvider>,
-		)
-		expect(screen.getByText("settings:about.contact.label")).toBeInTheDocument()
-		expect(screen.getByText("support@roocode.com")).toBeInTheDocument()
+		expect(screen.getByText("settings:about.manageSettings")).toBeInTheDocument()
 	})
 
 	it("renders export, import, and reset buttons", () => {
