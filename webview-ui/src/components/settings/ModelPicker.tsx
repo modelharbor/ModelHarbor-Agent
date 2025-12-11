@@ -81,6 +81,10 @@ export const ModelPicker = ({
 
 	const { id: selectedModelId, info: selectedModelInfo } = useSelectedModel(apiConfiguration)
 
+	// Use the actual configured model ID for display, not the validated/default one
+	// This prevents the UI from showing the default model while models are loading
+	const displayedModelId = apiConfiguration[modelIdKey] || selectedModelId
+
 	const modelIds = useMemo(() => {
 		const filteredModels = filterModels(models, apiConfiguration.apiProvider, organizationAllowList)
 
@@ -156,9 +160,8 @@ export const ModelPicker = ({
 			if (!currentModelId) {
 				setApiConfigurationField(modelIdKey, defaultModelId, false) // false = automatic initialization
 			}
+			isInitialized.current = true
 		}
-
-		isInitialized.current = true
 	}, [setApiConfigurationField, modelIdKey, defaultModelId, apiConfiguration])
 
 	// Cleanup timeouts on unmount to prevent test flakiness
@@ -188,7 +191,7 @@ export const ModelPicker = ({
 							aria-expanded={open}
 							className="w-full justify-between"
 							data-testid="model-picker-button">
-							<div className="truncate">{selectedModelId ?? t("settings:common.select")}</div>
+							<div className="truncate">{displayedModelId ?? t("settings:common.select")}</div>
 							<ChevronsUpDown className="opacity-50" />
 						</Button>
 					</PopoverTrigger>
@@ -233,7 +236,7 @@ export const ModelPicker = ({
 											<Check
 												className={cn(
 													"size-4 p-0.5 ml-auto",
-													model === selectedModelId ? "opacity-100" : "opacity-0",
+													model === displayedModelId ? "opacity-100" : "opacity-0",
 												)}
 											/>
 										</CommandItem>

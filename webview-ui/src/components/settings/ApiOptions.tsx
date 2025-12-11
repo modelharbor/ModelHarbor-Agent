@@ -190,6 +190,7 @@ const ApiOptions = ({
 		provider: selectedProvider,
 		id: selectedModelId,
 		info: selectedModelInfo,
+		isLoading: isModelLoading,
 	} = useSelectedModel(apiConfiguration)
 
 	const { data: routerModels, refetch: refetchRouterModels } = useRouterModels()
@@ -207,13 +208,14 @@ const ApiOptions = ({
 	)
 
 	// Update `apiModelId` whenever `selectedModelId` changes.
+	// Do not sync when models are still loading to prevent overwriting user selections with default fallbacks
 	useEffect(() => {
-		if (selectedModelId && apiConfiguration.apiModelId !== selectedModelId) {
+		if (selectedModelId && apiConfiguration.apiModelId !== selectedModelId && !isModelLoading) {
 			// Pass false as third parameter to indicate this is not a user action
 			// This is an internal sync, not a user-initiated change
 			setApiConfigurationField("apiModelId", selectedModelId, false)
 		}
-	}, [selectedModelId, setApiConfigurationField, apiConfiguration.apiModelId])
+	}, [selectedModelId, setApiConfigurationField, apiConfiguration.apiModelId, isModelLoading])
 
 	// Debounced refresh model updates, only executed 250ms after the user
 	// stops typing.

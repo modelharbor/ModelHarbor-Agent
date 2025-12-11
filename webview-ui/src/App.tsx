@@ -26,7 +26,7 @@ import { useAddNonInteractiveClickListener } from "./components/ui/hooks/useNonI
 import { TooltipProvider } from "./components/ui/tooltip"
 import { STANDARD_TOOLTIP_DELAY } from "./components/ui/standard-tooltip"
 
-type Tab = "settings" | "history" | "mcp" | "modes" | "chat" | "marketplace"
+type Tab = "settings" | "history" | "chat" | "marketplace"
 
 interface HumanRelayDialogState {
 	isOpen: boolean
@@ -59,6 +59,14 @@ const tabsByMessageAction: Partial<Record<NonNullable<ExtensionMessage["action"]
 	settingsButtonClicked: "settings",
 	historyButtonClicked: "history",
 	marketplaceButtonClicked: "marketplace",
+	promptsButtonClicked: "settings",
+	mcpButtonClicked: "settings",
+}
+
+// Map specific actions to their settings sections
+const actionToSettingsSection: Partial<Record<NonNullable<ExtensionMessage["action"]>, string>> = {
+	promptsButtonClicked: "modes",
+	mcpButtonClicked: "mcp",
 }
 
 const App = () => {
@@ -153,7 +161,9 @@ const App = () => {
 				} else {
 					// Handle other actions using the mapping
 					const newTab = tabsByMessageAction[message.action]
-					const section = message.values?.section as string | undefined
+					// Check for action-specific section or use provided section
+					const actionSection = actionToSettingsSection[message.action]
+					const section = actionSection || (message.values?.section as string | undefined)
 					const marketplaceTab = message.values?.marketplaceTab as string | undefined
 
 					if (newTab) {

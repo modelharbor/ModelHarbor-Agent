@@ -136,6 +136,24 @@ const getCommandsMap = ({ context, outputChannel, provider }: RegisterCommandOpt
 		if (!visibleProvider) return
 		visibleProvider.postMessageToWebview({ type: "action", action: "marketplaceButtonClicked" })
 	},
+	promptsButtonClicked: () => {
+		const visibleProvider = getVisibleProviderOrLog(outputChannel)
+		if (!visibleProvider) return
+		TelemetryService.instance.captureTitleButtonClicked("prompts")
+		visibleProvider.postMessageToWebview({
+			type: "action",
+			action: "promptsButtonClicked",
+		})
+	},
+	mcpButtonClicked: () => {
+		const visibleProvider = getVisibleProviderOrLog(outputChannel)
+		if (!visibleProvider) return
+		TelemetryService.instance.captureTitleButtonClicked("mcp")
+		visibleProvider.postMessageToWebview({
+			type: "action",
+			action: "mcpButtonClicked",
+		})
+	},
 	showHumanRelayDialog: (params: { requestId: string; promptText: string }) => {
 		const panel = getPanel()
 
