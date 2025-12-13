@@ -4,6 +4,7 @@ import {
 	getModelHarborModels,
 	setModelHarborOutputChannel,
 	type ModelHarborModelId,
+	TOOL_PROTOCOL,
 } from "@roo-code/types"
 import * as vscode from "vscode"
 import OpenAI from "openai"
@@ -193,6 +194,14 @@ export class ModelHarborHandler
 		// Check if this is a GPT-5 model that requires max_completion_tokens instead of max_tokens
 		const isGPT5Model = this.isGpt5(modelId)
 
+		// Check if model supports native tools and tools are provided with native protocol
+		const supportsNativeTools = info.supportsNativeTools ?? false
+		const useNativeTools =
+			supportsNativeTools &&
+			metadata?.tools &&
+			metadata.tools.length > 0 &&
+			metadata?.toolProtocol === TOOL_PROTOCOL.NATIVE
+
 		const requestOptions: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
 			model: modelId,
 			messages: [systemMessage, ...enhancedMessages],
@@ -200,6 +209,9 @@ export class ModelHarborHandler
 			stream_options: {
 				include_usage: true,
 			},
+			...(useNativeTools && { tools: this.convertToolsForOpenAI(metadata.tools) }),
+			...(useNativeTools && metadata.tool_choice && { tool_choice: metadata.tool_choice }),
+			...(useNativeTools && { parallel_tool_calls: metadata?.parallelToolCalls ?? false }),
 		}
 
 		// GPT-5 models require max_completion_tokens instead of the deprecated max_tokens parameter
@@ -221,38 +233,20 @@ export class ModelHarborHandler
 				const usage = chunk.usage as ModelHarborUsage
 
 				if (delta?.content) {
-					// DEBUG: Log raw delta content to diagnose encoding issues
-					if (modelHarborOutputChannel) {
-						modelHarborOutputChannel.appendLine(`🔍 DEBUG: Raw delta content: "${delta.content}"`)
-						modelHarborOutputChannel.appendLine(`🔍 DEBUG: Content length: ${delta.content.length}`)
-						modelHarborOutputChannel.appendLine(
-							`🔍 DEBUG: Contains HTML entities: ${/[&<>"']/.test(delta.content)}`,
-						)
+					yield { type: "text", text: delta.content }
+				}
 
-						// Check for common HTML entities
-						const htmlEntities = [
-							"&lt;",
-							"&gt;",
-							"&amp;",
-							"&quot;",
-							"&#39;",
-							"&apos;",
-							"&#91;",
-							"&#93;",
-							"&lsqb;",
-							"&rsqb;",
-						]
-						const foundEntities = htmlEntities.filter(
-							(entity) => delta.content && delta.content.includes(entity),
-						)
-						if (foundEntities.length > 0) {
-							modelHarborOutputChannel.appendLine(
-								`🔍 DEBUG: Found HTML entities: ${foundEntities.join(", ")}`,
-							)
+				// Handle tool calls in stream - emit partial chunks for NativeToolCallParser
+				if (delta?.tool_calls) {
+					for (const toolCall of delta.tool_calls) {
+						yield {
+							type: "tool_call_partial",
+							index: toolCall.index,
+							id: toolCall.id,
+							name: toolCall.function?.name,
+							arguments: toolCall.function?.arguments,
 						}
 					}
-
-					yield { type: "text", text: delta.content }
 				}
 
 				if (usage) {

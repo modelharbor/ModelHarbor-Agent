@@ -790,9 +790,6 @@ export const webviewMessageHandler = async (
 							},
 						})
 						break
-					case "glama":
-						modelFetchPromises.push({ key: "glama", options: { provider: "glama" } })
-						break
 					case "unbound":
 						modelFetchPromises.push({
 							key: "unbound",
@@ -856,7 +853,6 @@ export const webviewMessageHandler = async (
 							baseUrl: apiConfiguration.requestyBaseUrl,
 						},
 					},
-					{ key: "glama", options: { provider: "glama" } },
 					{ key: "unbound", options: { provider: "unbound", apiKey: apiConfiguration.unboundApiKey } },
 					{
 						key: "modelharbor",

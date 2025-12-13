@@ -2,14 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import { ModelHarborHandler } from "../modelharbor"
 import { modelHarborDefaultModelId } from "@roo-code/types"
 
-// Mock the vscode module
-vi.mock("vscode", () => ({
-	window: {
-		createOutputChannel: vi.fn(() => ({
-			appendLine: vi.fn(),
-		})),
-	},
-}))
+// vscode is mocked globally via vitest.config.ts -> src/__mocks__/vscode.js
 
 // Mock the getModelHarborModels function
 vi.mock("@roo-code/types", async () => {

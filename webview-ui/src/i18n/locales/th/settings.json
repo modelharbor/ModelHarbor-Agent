@@ -256,8 +256,6 @@
 		"vercelAiGatewayApiKey": "คีย์ API ของ Vercel AI Gateway",
 		"getVercelAiGatewayApiKey": "รับคีย์ API ของ Vercel AI Gateway",
 		"apiKeyStorageNotice": "คีย์ API ถูกเก็บไว้อย่างปลอดภัยใน Secret Storage ของ VSCode",
-		"glamaApiKey": "คีย์ API ของ Glama",
-		"getGlamaApiKey": "รับคีย์ API ของ Glama",
 		"useCustomBaseUrl": "ใช้ URL พื้นฐานที่กำหนดเอง",
 		"useReasoning": "เปิดใช้งานการให้เหตุผล",
 		"useHostHeader": "ใช้ส่วนหัวโฮสต์ที่กำหนดเอง",

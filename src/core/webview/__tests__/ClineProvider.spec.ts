@@ -2745,7 +2745,7 @@ describe("ClineProvider - Router Models", () => {
 		const { getModels } = await import("../../../api/providers/fetchers/modelCache")
 
 		// Mock some providers to succeed and others to fail
-		// Order: openrouter, requesty, glama, unbound, modelharbor, vercel-ai-gateway, deepinfra, litellm
+		// Order: openrouter, requesty, unbound, modelharbor, vercel-ai-gateway, deepinfra, litellm
 		vi.mocked(getModels)
 			.mockResolvedValueOnce(mockModels) // openrouter success
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty fail

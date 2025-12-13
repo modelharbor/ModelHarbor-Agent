@@ -17,6 +17,12 @@
 		"modelNotEmbeddingCapable": "โมเดล Ollama ไม่สามารถฝังได้: {{modelId}}",
 		"hostNotFound": "ไม่พบโฮสต์ Ollama: {{baseUrl}}"
 	},
+	"bedrock": {
+		"invalidResponseFormat": "รูปแบบการตอบกลับจาก Amazon Bedrock ไม่ถูกต้อง",
+		"invalidCredentials": "ข้อมูลประจำตัว AWS ไม่ถูกต้อง กรุณาตรวจสอบการกำหนดค่า AWS ของคุณ",
+		"accessDenied": "ถูกปฏิเสธการเข้าถึงบริการ Amazon Bedrock กรุณาตรวจสอบสิทธิ์ IAM ของคุณ",
+		"modelNotFound": "ไม่พบโมเดล {{model}} ใน Amazon Bedrock"
+	},
 	"scanner": {
 		"unknownErrorProcessingFile": "เกิดข้อผิดพลาดที่ไม่รู้จักในการประมวลผลไฟล์ {{filePath}}",
 		"unknownErrorDeletingPoints": "เกิดข้อผิดพลาดที่ไม่รู้จักในการลบจุดสำหรับ {{filePath}}",
@@ -47,13 +53,15 @@
 		"openAiCompatibleConfigMissing": "ไม่มีการกำหนดค่าที่เข้ากันได้กับ OpenAI สำหรับการสร้าง embedder",
 		"geminiConfigMissing": "ไม่มีการกำหนดค่า Gemini สำหรับการสร้าง embedder",
 		"mistralConfigMissing": "ไม่มีการกำหนดค่า Mistral สำหรับการสร้าง embedder",
+		"openRouterConfigMissing": "ไม่มีการกำหนดค่า OpenRouter สำหรับการสร้าง embedder",
+		"modelHarborConfigMissing": "ไม่มีการกำหนดค่า ModelHarbor สำหรับการสร้าง embedder",
+		"vercelAiGatewayConfigMissing": "ไม่มีการกำหนดค่า Vercel AI Gateway สำหรับการสร้าง embedder",
+		"bedrockConfigMissing": "ไม่มีการกำหนดค่า Amazon Bedrock สำหรับการสร้าง embedder",
 		"invalidEmbedderType": "ประเภท embedder ที่กำหนดค่าไม่ถูกต้อง: {{embedderProvider}}",
 		"vectorDimensionNotDeterminedOpenAiCompatible": "ไม่สามารถกำหนดมิติเวกเตอร์สำหรับโมเดล '{{modelId}}' กับผู้ให้บริการ '{{provider}}' ได้ โปรดตรวจสอบให้แน่ใจว่า 'มิติการฝัง' ถูกตั้งค่าอย่างถูกต้องในการตั้งค่าผู้ให้บริการที่เข้ากันได้กับ OpenAI",
 		"vectorDimensionNotDetermined": "ไม่สามารถกำหนดมิติเวกเตอร์สำหรับโมเดล '{{modelId}}' กับผู้ให้บริการ '{{provider}}' ได้ ตรวจสอบโปรไฟล์โมเดลหรือการกำหนดค่า",
 		"qdrantUrlMissing": "ไม่มี URL ของ Qdrant สำหรับการสร้างที่เก็บเวกเตอร์",
-		"codeIndexingNotConfigured": "ไม่สามารถสร้างบริการได้: การจัดทำดัชนีโค้ดไม่ได้กำหนดค่าอย่างถูกต้อง",
-		"modelHarborConfigMissing": "การกำหนดค่า ModelHarbor หายไปสำหรับการสร้าง embedder",
-		"vercelAiGatewayConfigMissing": "การกำหนดค่า Vercel AI Gateway หายไปสำหรับการสร้าง embedder"
+		"codeIndexingNotConfigured": "ไม่สามารถสร้างบริการได้: การจัดทำดัชนีโค้ดไม่ได้กำหนดค่าอย่างถูกต้อง"
 	},
 	"orchestrator": {
 		"indexingFailedNoBlocks": "การจัดทำดัชนีล้มเหลว: ไม่มีบล็อกโค้ดใดที่จัดทำดัชนีได้สำเร็จ ซึ่งโดยปกติจะบ่งชี้ถึงปัญหาการกำหนดค่า embedder",

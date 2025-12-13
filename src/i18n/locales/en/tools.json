@@ -6,12 +6,8 @@
 		"imageTooLarge": "Image file is too large ({{size}} MB). The maximum allowed size is {{max}} MB.",
 		"imageWithSize": "Image file ({{size}} KB)"
 	},
-<<<<<<< HEAD
-	"toolRepetitionLimitReached": "Roo appears to be stuck in a loop, attempting the same action ({{toolName}}) repeatedly. This might indicate a problem with its current strategy. Consider rephrasing the task, providing more specific instructions, or guiding it towards a different approach.",
-	"unknownToolError": "Roo tried to use an unknown tool: \"{{toolName}}\". Retrying...",
-=======
 	"toolRepetitionLimitReached": "ModelHarbor appears to be stuck in a loop, attempting the same action ({{toolName}}) repeatedly. This might indicate a problem with its current strategy. Consider rephrasing the task, providing more specific instructions, or guiding it towards a different approach.",
->>>>>>> 859bff030 (Add ModelHarbor)
+	"unknownToolError": "ModelHarbor tried to use an unknown tool: \"{{toolName}}\". Retrying...",
 	"codebaseSearch": {
 		"approval": "Searching for '{{query}}' in codebase..."
 	},
@@ -27,9 +23,6 @@
 		"noImageGenerated": "No image was generated in the response",
 		"invalidImageData": "Invalid image data in response",
 		"invalidImageFormat": "Invalid image format received",
-		"unknownError": "Unknown error occurred",
-		"roo": {
-			"authRequired": "Roo Code Cloud authentication is required for image generation. Please sign in to Roo Code Cloud."
-		}
+		"unknownError": "Unknown error occurred"
 	}
 }

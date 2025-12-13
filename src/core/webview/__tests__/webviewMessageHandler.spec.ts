@@ -247,12 +247,11 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		mockGetModels
 			.mockResolvedValueOnce(mockModels) // openrouter - position 1
 			.mockResolvedValueOnce(mockModels) // requesty - position 2
-			.mockResolvedValueOnce(mockModels) // glama - position 3
-			.mockResolvedValueOnce(mockModels) // unbound - position 4
-			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor - position 5
-			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway - position 6
-			.mockResolvedValueOnce(mockModels) // deepinfra - position 7
-			.mockResolvedValueOnce(mockModels) // litellm - position 8 (if present)
+			.mockResolvedValueOnce(mockModels) // unbound - position 3
+			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor - position 4
+			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway - position 5
+			.mockResolvedValueOnce(mockModels) // deepinfra - position 6
+			.mockResolvedValueOnce(mockModels) // litellm - position 7 (if present)
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
@@ -331,7 +330,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		mockGetModels
 			.mockResolvedValueOnce(mockModels) // openrouter
 			.mockResolvedValueOnce(mockModels) // requesty
-			.mockResolvedValueOnce(mockModels) // glama
 			.mockResolvedValueOnce(mockModels) // unbound
 			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
 			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway
@@ -393,7 +391,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		mockGetModels
 			.mockResolvedValueOnce(mockModels) // openrouter
 			.mockResolvedValueOnce(mockModels) // requesty
-			.mockResolvedValueOnce(mockModels) // glama
 			.mockResolvedValueOnce(mockModels) // unbound
 			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
 			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway
@@ -478,7 +475,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 				deepinfra: mockModels,
 				openrouter: mockModels,
 				requesty: {},
-				glama: mockModels,
 				unbound: {},
 				litellm: {},
 				ollama: {},
@@ -611,7 +607,6 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		mockGetModels
 			.mockResolvedValueOnce({}) // openrouter
 			.mockResolvedValueOnce({}) // requesty
-			.mockResolvedValueOnce({}) // glama
 			.mockResolvedValueOnce({}) // unbound
 			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
 			.mockResolvedValueOnce({}) // vercel-ai-gateway

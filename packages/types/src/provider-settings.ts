@@ -49,7 +49,6 @@ export const dynamicProviders = [
 	"io-intelligence",
 	"requesty",
 	"unbound",
-	"glama",
 	"modelharbor",
 ] as const
 

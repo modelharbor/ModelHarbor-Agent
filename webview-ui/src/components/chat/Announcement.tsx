@@ -1,4 +1,4 @@
-import { memo, type ReactNode, useState } from "react"
+import { memo, useState } from "react"
 import { Trans } from "react-i18next"
 
 import { Package } from "@roo/package"

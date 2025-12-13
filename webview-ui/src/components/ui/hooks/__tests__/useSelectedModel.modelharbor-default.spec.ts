@@ -32,7 +32,6 @@ describe("useSelectedModel - ModelHarbor as default", () => {
 			data: {
 				openrouter: {},
 				requesty: {},
-				glama: {},
 				unbound: {},
 				litellm: {},
 				"io-intelligence": {},

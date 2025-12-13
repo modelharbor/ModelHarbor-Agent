@@ -604,7 +604,7 @@ export function NewRun() {
 												<div key={selection.id} className="flex items-center gap-2">
 													<Popover
 														open={selection.popoverOpen}
-														onValueChange={(open) => toggleModelPopover(selection.id, open)}>
+														onOpenChange={(open) => toggleModelPopover(selection.id, open)}>
 														<PopoverTrigger asChild>
 															<Button
 																variant="input"
