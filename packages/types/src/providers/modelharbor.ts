@@ -119,6 +119,12 @@ function transformModelInfo(apiModel: ModelInfoResponse): ModelInfo {
 		inferImageSupport(apiModel.model_name) ||
 		false
 
+	// Determine tool support and protocol based on API or model name
+	const supportsNativeTools = model_info.supports_function_calling || false
+
+	// For haiku-4.5 models, use native protocol; otherwise use xml
+	const defaultToolProtocol = apiModel.model_name.includes("haiku-4.5") ? ("native" as const) : ("xml" as const)
+
 	return {
 		maxTokens: model_info.max_output_tokens || model_info.max_tokens || 8192,
 		contextWindow: model_info.max_input_tokens || 40960,
@@ -128,6 +134,8 @@ function transformModelInfo(apiModel: ModelInfoResponse): ModelInfo {
 		supportsReasoningBudget: apiModel.litellm_params.thinking?.type === "enabled" || false,
 		requiredReasoningBudget: false,
 		supportsReasoningEffort: model_info.supports_reasoning || false,
+		supportsNativeTools,
+		defaultToolProtocol,
 		inputPrice,
 		outputPrice,
 		cacheReadsPrice,

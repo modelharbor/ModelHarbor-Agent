@@ -101,7 +101,7 @@
 	"about": "ModelHarbor is a whole AI dev team in your editor",
 	"docs": "Check our <DocsLink>docs</DocsLink> to get started",
 	"onboarding": "What would you like to do?",
-	"ModelHarborTips": {
+	"rooTips": {
 		"customizableModes": {
 			"title": "Customizable modes that don't swerve",
 			"description": "Specialized personas that stay on-task and deliver."
@@ -254,7 +254,7 @@
 	"response": "Response",
 	"arguments": "Arguments",
 	"text": {
-		"ModelHarborSaid": "ModelHarbor said"
+		"rooSaid": "ModelHarbor said"
 	},
 	"feedback": {
 		"youSaid": "You said"
@@ -350,7 +350,7 @@
 	},
 	"browser": {
 		"session": "Browser Session",
-		"ModelHarborWantsToUse": "ModelHarbor wants to use the browser",
+		"rooWantsToUse": "ModelHarbor wants to use the browser",
 		"consoleLogs": "Console Logs",
 		"noNewLogs": "(No new logs)",
 		"screenshot": "Browser screenshot",

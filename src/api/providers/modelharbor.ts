@@ -195,12 +195,14 @@ export class ModelHarborHandler
 		const isGPT5Model = this.isGpt5(modelId)
 
 		// Check if model supports native tools and tools are provided with native protocol
+		// Similar to Bedrock: use native tools when supported and toolProtocol is not explicitly "xml"
 		const supportsNativeTools = info.supportsNativeTools ?? false
 		const useNativeTools =
 			supportsNativeTools &&
 			metadata?.tools &&
 			metadata.tools.length > 0 &&
-			metadata?.toolProtocol === TOOL_PROTOCOL.NATIVE
+			metadata?.toolProtocol !== "xml" &&
+			metadata?.tool_choice !== "none"
 
 		const requestOptions: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
 			model: modelId,
