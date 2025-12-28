@@ -232,6 +232,8 @@ export type ExtensionState = Pick<
 	| "alwaysAllowExecute"
 	| "alwaysAllowUpdateTodoList"
 	| "followupAutoApproveTimeoutMs"
+	| "superYoloMode"
+	| "superYoloStuckTimeoutMs"
 	| "allowedCommands"
 	| "deniedCommands"
 	| "allowedMaxRequests"

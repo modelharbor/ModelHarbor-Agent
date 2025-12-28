@@ -186,6 +186,11 @@
 		"optional": "optional"
 	},
 	"autoApprove": {
+		"superYoloMode": {
+			"label": "🚀 Super YOLO Mode",
+			"description": "DANGER: Auto-approves ALL commands (including dangerous ones) and auto-continues if stuck for 5 minutes. Use with extreme caution!",
+			"warning": "⚠️ This will bypass ALL safety checks for command execution and automatically continue stuck tasks."
+		},
 		"description": "Run these actions without asking for permission. Only enable for actions you fully trust and if you understand the security risks.",
 		"toggleShortcut": "You can configure a keyboard shortcut for this setting <SettingsLink>in your IDE preferences</SettingsLink>.",
 		"enabled": "Auto-Approve Enabled",

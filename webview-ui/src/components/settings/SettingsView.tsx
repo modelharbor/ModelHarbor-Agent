@@ -201,6 +201,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 		alwaysAllowFollowupQuestions,
 		alwaysAllowUpdateTodoList,
 		followupAutoApproveTimeoutMs,
+		superYoloMode,
 		includeDiagnosticMessages,
 		maxDiagnosticMessages,
 		includeTaskHistoryInEnhance,
@@ -718,6 +719,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 							allowedMaxRequests={allowedMaxRequests ?? undefined}
 							allowedMaxCost={allowedMaxCost ?? undefined}
 							deniedCommands={deniedCommands}
+							superYoloMode={superYoloMode}
 							setCachedStateField={setCachedStateField}
 						/>
 					)}

@@ -276,6 +276,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	private askResponseImages?: string[]
 	public lastMessageTs?: number
 	private autoApprovalTimeoutRef?: NodeJS.Timeout
+	private superYoloStuckTimeoutRef?: NodeJS.Timeout
 
 	// Tool Use
 	consecutiveMistakeCount: number = 0
@@ -1092,6 +1093,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 							this.interactiveAsk = message
 							this.emit(RooCodeEventName.TaskInteractive, this.taskId)
 							provider?.postMessageToWebview({ type: "interactionRequired" })
+							// Start Super YOLO stuck timer when task becomes interactive
+							this.startSuperYoloStuckTimer(type)
 						}
 					}, statusMutationTimeout),
 				)
@@ -1103,6 +1106,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						if (message) {
 							this.resumableAsk = message
 							this.emit(RooCodeEventName.TaskResumable, this.taskId)
+							// Start Super YOLO stuck timer when task becomes resumable
+							this.startSuperYoloStuckTimer(type)
 						}
 					}, statusMutationTimeout),
 				)
@@ -1114,6 +1119,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						if (message) {
 							this.idleAsk = message
 							this.emit(RooCodeEventName.TaskIdle, this.taskId)
+							// Start Super YOLO stuck timer when task becomes idle
+							this.startSuperYoloStuckTimer(type)
 						}
 					}, statusMutationTimeout),
 				)
@@ -1215,6 +1222,61 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		if (this.autoApprovalTimeoutRef) {
 			clearTimeout(this.autoApprovalTimeoutRef)
 			this.autoApprovalTimeoutRef = undefined
+		}
+		// Also cancel Super YOLO stuck timer when user interacts
+		this.cancelSuperYoloStuckTimer()
+	}
+
+	/**
+	 * Start the Super YOLO stuck detection timer.
+	 * When Super YOLO mode is enabled and task is stuck waiting for user input,
+	 * this timer will auto-continue the task after the configured timeout.
+	 */
+	private async startSuperYoloStuckTimer(askType: ClineAsk): Promise<void> {
+		// Cancel any existing timer first
+		this.cancelSuperYoloStuckTimer()
+
+		const provider = this.providerRef.deref()
+		const state = provider ? await provider.getState() : undefined
+
+		// Only start timer if Super YOLO mode is enabled and auto-approval is enabled
+		if (!state?.autoApprovalEnabled || !state?.superYoloMode) {
+			return
+		}
+
+		// Get the timeout from settings (default: 5 minutes = 300000ms)
+		const stuckTimeoutMs = state.superYoloStuckTimeoutMs ?? 300000
+
+		console.log(
+			`[Task#${this.taskId}] Super YOLO stuck timer started for ask type: ${askType}, timeout: ${stuckTimeoutMs}ms`,
+		)
+
+		this.superYoloStuckTimeoutRef = setTimeout(async () => {
+			console.log(`[Task#${this.taskId}] Super YOLO stuck timer fired for ask type: ${askType}`)
+
+			// Determine how to auto-continue based on the ask type
+			if (askType === "command_output" || askType === "tool") {
+				// For terminal/tool operations, continue the process
+				this.handleTerminalOperation("continue")
+			} else if (askType === "followup") {
+				// For followup questions, try to use the first suggestion or just approve
+				this.handleWebviewAskResponse("yesButtonClicked")
+			} else {
+				// For other ask types, approve to continue
+				this.handleWebviewAskResponse("yesButtonClicked")
+			}
+
+			this.superYoloStuckTimeoutRef = undefined
+		}, stuckTimeoutMs)
+	}
+
+	/**
+	 * Cancel any pending Super YOLO stuck detection timer.
+	 */
+	private cancelSuperYoloStuckTimer(): void {
+		if (this.superYoloStuckTimeoutRef) {
+			clearTimeout(this.superYoloStuckTimeoutRef)
+			this.superYoloStuckTimeoutRef = undefined
 		}
 	}
 
@@ -1887,6 +1949,13 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			this.cancelCurrentRequest()
 		} catch (error) {
 			console.error("Error cancelling current request:", error)
+		}
+
+		// Cancel any pending auto-approval and stuck timers
+		try {
+			this.cancelAutoApprovalTimeout()
+		} catch (error) {
+			console.error("Error cancelling auto-approval timeout:", error)
 		}
 
 		// Remove provider profile change listener

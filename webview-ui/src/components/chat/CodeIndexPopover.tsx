@@ -403,6 +403,14 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 							? SECRET_PLACEHOLDER
 							: ""
 					}
+					if (
+						!prev.codebaseIndexModelHarborApiKey ||
+						prev.codebaseIndexModelHarborApiKey === SECRET_PLACEHOLDER
+					) {
+						updated.codebaseIndexModelHarborApiKey = secretStatus.hasModelHarborApiKey
+							? SECRET_PLACEHOLDER
+							: ""
+					}
 
 					return updated
 				}
@@ -477,7 +485,8 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 					key === "codebaseIndexGeminiApiKey" ||
 					key === "codebaseIndexMistralApiKey" ||
 					key === "codebaseIndexVercelAiGatewayApiKey" ||
-					key === "codebaseIndexOpenRouterApiKey"
+					key === "codebaseIndexOpenRouterApiKey" ||
+					key === "codebaseIndexModelHarborApiKey"
 				) {
 					dataToValidate[key] = "placeholder-valid"
 				}

@@ -44,6 +44,13 @@ export const MAX_CHECKPOINT_TIMEOUT_SECONDS = 60
 export const DEFAULT_CHECKPOINT_TIMEOUT_SECONDS = 15
 
 /**
+ * Default Super YOLO Mode stuck timeout in milliseconds (5 minutes).
+ * When Super YOLO mode is enabled and task is waiting for user input for this duration,
+ * it will automatically continue.
+ */
+export const DEFAULT_SUPER_YOLO_STUCK_TIMEOUT_MS = 300_000
+
+/**
  * GlobalSettings
  */
 
@@ -87,6 +94,8 @@ export const globalSettingsSchema = z.object({
 	commandExecutionTimeout: z.number().optional(),
 	commandTimeoutAllowlist: z.array(z.string()).optional(),
 	preventCompletionWithOpenTodos: z.boolean().optional(),
+	superYoloMode: z.boolean().optional(),
+	superYoloStuckTimeoutMs: z.number().optional(),
 	allowedMaxRequests: z.number().nullish(),
 	allowedMaxCost: z.number().nullish(),
 	autoCondenseContext: z.boolean().optional(),
@@ -318,6 +327,8 @@ export const EVALS_SETTINGS: RooCodeSettings = {
 	commandExecutionTimeout: 20,
 	commandTimeoutAllowlist: [],
 	preventCompletionWithOpenTodos: false,
+	superYoloMode: false,
+	superYoloStuckTimeoutMs: DEFAULT_SUPER_YOLO_STUCK_TIMEOUT_MS,
 
 	browserToolEnabled: false,
 	browserViewportSize: "900x600",
