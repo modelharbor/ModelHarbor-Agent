@@ -177,11 +177,8 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 			} as any,
 		)
 
-		// flushModels should have been called for litellm with refresh=true and credentials
-		expect(flushModelsMock).toHaveBeenCalledWith(
-			{ provider: "litellm", apiKey: "test-api-key", baseUrl: "http://localhost:4000" },
-			true,
-		)
+		// flushModels should have been called for litellm with router name and refresh=true
+		expect(flushModelsMock).toHaveBeenCalledWith("litellm", true)
 
 		// getModels should have been called with the provided credentials
 		const litellmCalls = getModelsMock.mock.calls.filter((c: any[]) => c[0]?.provider === "litellm")
@@ -209,8 +206,11 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 			} as any,
 		)
 
-		// flushModels should NOT have been called for litellm
-		const litellmFlushCalls = flushModelsMock.mock.calls.filter((c: any[]) => c[0] === "litellm")
+		// flushModels should NOT have been called for litellm (no message.values credentials)
+		// Note: We check if "litellm" was passed as the first argument
+		const litellmFlushCalls = flushModelsMock.mock.calls.filter(
+			(c: any[]) => c[0] === "litellm" || c[0]?.provider === "litellm",
+		)
 		expect(litellmFlushCalls.length).toBe(0)
 
 		// getModels should still have been called with stored credentials

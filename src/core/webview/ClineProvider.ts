@@ -59,6 +59,7 @@ import { ShadowCheckpointService } from "../../services/checkpoints/ShadowCheckp
 import { CodeIndexManager } from "../../services/code-index/manager"
 import type { IndexProgressUpdate } from "../../services/code-index/interfaces/manager"
 import { MdmService } from "../../services/mdm/MdmService"
+import { SkillsManager } from "../../services/skills/SkillsManager"
 
 import { fileExistsAtPath } from "../../utils/fs"
 import { setTtsEnabled, setTtsSpeed } from "../../utils/tts"
@@ -2135,6 +2136,10 @@ export class ClineProvider
 
 	public getMcpHub(): McpHub | undefined {
 		return this.mcpHub
+	}
+
+	public getSkillsManager(): SkillsManager | undefined {
+		return new SkillsManager(this)
 	}
 
 	/**

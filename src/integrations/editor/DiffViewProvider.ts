@@ -327,7 +327,7 @@ export class DiffViewProvider {
 		}
 
 		// Check which protocol we're using - use the task's locked protocol for consistency
-		const toolProtocol = resolveToolProtocol(task.apiConfiguration, task.api.getModel().info, task.taskToolProtocol)
+		const toolProtocol = resolveToolProtocol(task.apiConfiguration, task.api.getModel().info)
 		const useNative = isNativeProtocol(toolProtocol)
 
 		// Build notices array

@@ -283,6 +283,9 @@ export type ExtensionState = Pick<
 	| "includeCurrentCost"
 	| "maxGitStatusFiles"
 	| "requestDelaySeconds"
+	| "alwaysApproveResubmit"
+	| "alwaysAllowUpdateTodoList"
+	| "openRouterUseMiddleOutTransform"
 > & {
 	version: string
 	clineMessages: ClineMessage[]

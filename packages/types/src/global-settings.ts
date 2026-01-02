@@ -202,6 +202,9 @@ export const globalSettingsSchema = z.object({
 	hasOpenedModeSelector: z.boolean().optional(),
 	lastModeExportPath: z.string().optional(),
 	lastModeImportPath: z.string().optional(),
+	alwaysApproveResubmit: z.boolean().optional(),
+	alwaysAllowUpdateTodoList: z.boolean().optional(),
+	openRouterUseMiddleOutTransform: z.boolean().optional(),
 })
 
 export type GlobalSettings = z.infer<typeof globalSettingsSchema>

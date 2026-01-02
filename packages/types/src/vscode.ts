@@ -48,6 +48,12 @@ export const commandIds = [
 	"acceptInput",
 	"focusPanel",
 	"toggleAutoApprove",
+
+	// Human Relay commands
+	"showHumanRelayDialog",
+	"handleHumanRelayResponse",
+	"registerHumanRelayCallback",
+	"unregisterHumanRelayCallback",
 ] as const
 
 export type CommandId = (typeof commandIds)[number]

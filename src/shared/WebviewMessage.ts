@@ -164,6 +164,12 @@ export interface WebviewMessage {
 		| "openDebugUiHistory"
 		| "downloadErrorDiagnostics"
 		| "language"
+		| "humanRelayResponse"
+		| "humanRelayCancel"
+		| "requestClaudeCodeRateLimits"
+		| "refreshCustomTools"
+		| "claudeCodeSignIn"
+		| "claudeCodeSignOut"
 	text?: string
 	editedMessageContent?: string
 	tab?: "settings" | "history" | "mcp" | "modes" | "chat" | "marketplace"

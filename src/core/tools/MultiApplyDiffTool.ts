@@ -62,7 +62,7 @@ export async function applyDiffTool(
 ) {
 	// Check if native protocol is enabled - if so, always use single-file class-based tool
 	// Use the task's locked protocol for consistency throughout the task lifetime
-	const toolProtocol = resolveToolProtocol(cline.apiConfiguration, cline.api.getModel().info, cline.taskToolProtocol)
+	const toolProtocol = resolveToolProtocol(cline.apiConfiguration, cline.api.getModel().info)
 	if (isNativeProtocol(toolProtocol)) {
 		return applyDiffToolClass.handle(cline, block as ToolUse<"apply_diff">, {
 			askApproval,
@@ -734,11 +734,7 @@ ${errorDetails ? `\nTechnical details:\n${errorDetails}\n` : ""}
 		}
 
 		// Check protocol for notice formatting - reuse the task's locked protocol
-		const noticeProtocol = resolveToolProtocol(
-			cline.apiConfiguration,
-			cline.api.getModel().info,
-			cline.taskToolProtocol,
-		)
+		const noticeProtocol = resolveToolProtocol(cline.apiConfiguration, cline.api.getModel().info)
 		const singleBlockNotice =
 			totalSearchBlocks === 1
 				? isNativeProtocol(noticeProtocol)

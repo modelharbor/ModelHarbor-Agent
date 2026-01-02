@@ -241,7 +241,7 @@ export async function getEnvironmentDetails(cline: Task, includeFileDetails: boo
 	// even if user settings have changed. Fall back to resolving fresh if
 	// the task hasn't been fully initialized yet (shouldn't happen in practice).
 	const modelInfo = cline.api.getModel().info
-	const toolProtocol = resolveToolProtocol(state?.apiConfiguration ?? {}, modelInfo, cline.taskToolProtocol)
+	const toolProtocol = resolveToolProtocol(state?.apiConfiguration ?? {}, modelInfo)
 
 	details += `\n\n# Current Mode\n`
 	details += `<slug>${currentMode}</slug>\n`

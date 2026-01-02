@@ -1,0 +1,67 @@
+
+> roo-code@ lint /Users/utarn/projects/ModelHarbor/Patched
+> turbo lint --log-order grouped --output-logs new-only
+
+turbo 2.5.6
+
+ WARNING  Unable to calculate transitive closures: Workspace 'packages/core' not found in lockfile.
+• Packages in scope: @roo-code/build, @roo-code/config-eslint, @roo-code/config-typescript, @roo-code/core, @roo-code/evals, @roo-code/ipc, @roo-code/types, @roo-code/vscode-e2e, @roo-code/vscode-nightly, @roo-code/vscode-webview, @roo-code/web-evals, @roo-code/web-roo-code, modelharbor-agent
+• Running lint in 13 packages
+• Remote caching disabled
+@roo-code/ipc:lint: cache miss, executing 9a58ec4c067a0ab6
+@roo-code/ipc:lint: 
+@roo-code/ipc:lint: > @roo-code/ipc@0.0.0 lint /Users/utarn/projects/ModelHarbor/Patched/packages/ipc
+@roo-code/ipc:lint: > eslint src --ext=ts --max-warnings=0
+@roo-code/ipc:lint: 
+@roo-code/build:lint: cache miss, executing acaf8b9a1066958f
+@roo-code/build:lint: 
+@roo-code/build:lint: > @roo-code/build@ lint /Users/utarn/projects/ModelHarbor/Patched/packages/build
+@roo-code/build:lint: > eslint src --ext=ts --max-warnings=0
+@roo-code/build:lint: 
+@roo-code/core:lint: cache miss, executing 8dd11b38a82a7948
+@roo-code/core:lint: 
+@roo-code/core:lint: > @roo-code/core@0.0.0 lint /Users/utarn/projects/ModelHarbor/Patched/packages/core
+@roo-code/core:lint: > eslint src --ext=ts --max-warnings=0
+@roo-code/core:lint: 
+@roo-code/evals:lint: cache miss, executing 4dcf2660390bc5db
+@roo-code/evals:lint: 
+@roo-code/evals:lint: > @roo-code/evals@0.0.0 lint /Users/utarn/projects/ModelHarbor/Patched/packages/evals
+@roo-code/evals:lint: > eslint src --ext=ts --max-warnings=0
+@roo-code/evals:lint: 
+@roo-code/vscode-e2e:lint: cache miss, executing f0dc232e470ea4d6
+@roo-code/vscode-e2e:lint: 
+@roo-code/vscode-e2e:lint: > @roo-code/vscode-e2e@ lint /Users/utarn/projects/ModelHarbor/Patched/apps/vscode-e2e
+@roo-code/vscode-e2e:lint: > eslint src --ext=ts --max-warnings=0
+@roo-code/vscode-e2e:lint: 
+@roo-code/types:lint: cache miss, executing 42652d8abaca690c
+@roo-code/types:lint: 
+@roo-code/types:lint: > @roo-code/types@0.0.0 lint /Users/utarn/projects/ModelHarbor/Patched/packages/types
+@roo-code/types:lint: > eslint src --ext=ts --max-warnings=0
+@roo-code/types:lint: 
+@roo-code/web-evals:lint: cache miss, executing e1a59295992683d9
+@roo-code/web-evals:lint: 
+@roo-code/web-evals:lint: > @roo-code/web-evals@0.0.0 lint /Users/utarn/projects/ModelHarbor/Patched/apps/web-evals
+@roo-code/web-evals:lint: > next lint --max-warnings 0
+@roo-code/web-evals:lint: 
+@roo-code/web-evals:lint: ✔ No ESLint warnings or errors
+@roo-code/web-roo-code:lint: cache miss, executing 2bf857637edc914a
+@roo-code/web-roo-code:lint: 
+@roo-code/web-roo-code:lint: > @roo-code/web-roo-code@0.0.0 lint /Users/utarn/projects/ModelHarbor/Patched/apps/web-roo-code
+@roo-code/web-roo-code:lint: > next lint --max-warnings 0
+@roo-code/web-roo-code:lint: 
+@roo-code/web-roo-code:lint: ✔ No ESLint warnings or errors
+@roo-code/vscode-webview:lint: cache miss, executing 32622aa58ef7e312
+@roo-code/vscode-webview:lint: 
+@roo-code/vscode-webview:lint: > @roo-code/vscode-webview@ lint /Users/utarn/projects/ModelHarbor/Patched/webview-ui
+@roo-code/vscode-webview:lint: > eslint src --ext=ts,tsx --max-warnings=0
+@roo-code/vscode-webview:lint: 
+modelharbor-agent:lint: cache miss, executing d223dbe096331d0e
+modelharbor-agent:lint: 
+modelharbor-agent:lint: > modelharbor-agent@3.38.2 lint /Users/utarn/projects/ModelHarbor/Patched/src
+modelharbor-agent:lint: > eslint . --ext=ts --max-warnings=0
+modelharbor-agent:lint: 
+
+ Tasks:    10 successful, 10 total
+Cached:    0 cached, 10 total
+  Time:    7.532s 
+

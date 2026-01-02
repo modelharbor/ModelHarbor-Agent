@@ -112,7 +112,7 @@ export class ReadFileTool extends BaseTool<"read_file"> {
 		const fileEntries = params.files
 		const modelInfo = task.api.getModel().info
 		// Use the task's locked protocol for consistent output formatting throughout the task
-		const protocol = resolveToolProtocol(task.apiConfiguration, modelInfo, task.taskToolProtocol)
+		const protocol = resolveToolProtocol(task.apiConfiguration, modelInfo)
 		const useNative = isNativeProtocol(protocol)
 
 		if (!fileEntries || fileEntries.length === 0) {

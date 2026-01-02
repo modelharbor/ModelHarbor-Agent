@@ -2259,7 +2259,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				maxReadFileLine = -1,
 			} = (await this.providerRef.deref()?.getState()) ?? {}
 
-			const parsedUserContent = await processUserContentMentions({
+			const { content: parsedUserContent } = await processUserContentMentions({
 				userContent: currentUserContent,
 				cwd: this.cwd,
 				urlContentFetcher: this.urlContentFetcher,
@@ -2278,7 +2278,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			// where the old user message content may already contain environment details from the previous session.
 			// We check for both opening and closing tags to ensure we're matching complete environment detail blocks,
 			// not just mentions of the tag in regular content.
-			const contentWithoutEnvDetails = parsedUserContent.filter((block) => {
+			const contentWithoutEnvDetails = parsedUserContent.filter((block: Anthropic.Messages.ContentBlockParam) => {
 				if (block.type === "text" && typeof block.text === "string") {
 					// Check if this text block is a complete environment_details block
 					// by verifying it starts with the opening tag and ends with the closing tag

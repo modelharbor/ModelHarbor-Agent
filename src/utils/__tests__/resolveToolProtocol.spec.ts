@@ -17,7 +17,7 @@ describe("resolveToolProtocol", () => {
 	 */
 
 	describe("Locked Protocol (Precedence Level 0 - Highest Priority)", () => {
-		it("should return lockedProtocol when provided", () => {
+		it("should return lockedProtocol when provided as native", () => {
 			const settings: ProviderSettings = {
 				toolProtocol: "xml", // Ignored
 				apiProvider: "openai-native",
@@ -27,7 +27,17 @@ describe("resolveToolProtocol", () => {
 			expect(result).toBe(TOOL_PROTOCOL.NATIVE)
 		})
 
-		it("should override model default when profile setting is present", () => {
+		it("should return lockedProtocol when provided as xml", () => {
+			const settings: ProviderSettings = {
+				toolProtocol: "native", // Ignored
+				apiProvider: "openai-native",
+			}
+			// lockedProtocol overrides everything
+			const result = resolveToolProtocol(settings, undefined, "xml")
+			expect(result).toBe(TOOL_PROTOCOL.XML)
+		})
+
+		it("should ignore profile setting and return native when no lockedProtocol", () => {
 			const settings: ProviderSettings = {
 				toolProtocol: "xml",
 				apiProvider: "openai-native",
@@ -40,10 +50,10 @@ describe("resolveToolProtocol", () => {
 				supportsNativeTools: true,
 			}
 			const result = resolveToolProtocol(settings, modelInfo)
-			expect(result).toBe(TOOL_PROTOCOL.XML) // Profile setting wins
+			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native now (XML deprecated)
 		})
 
-		it("should override model capability when profile setting is present", () => {
+		it("should ignore model capability and return native when no lockedProtocol", () => {
 			const settings: ProviderSettings = {
 				toolProtocol: "xml",
 				apiProvider: "openai-native",
@@ -55,12 +65,12 @@ describe("resolveToolProtocol", () => {
 				supportsNativeTools: true,
 			}
 			const result = resolveToolProtocol(settings, modelInfo)
-			expect(result).toBe(TOOL_PROTOCOL.XML) // Profile setting wins
+			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native now (XML deprecated)
 		})
 	})
 
-	describe("Precedence Level 2: Model Default", () => {
-		it("should use model defaultToolProtocol when no profile setting", () => {
+	describe("Native Protocol Always Used (XML Deprecated)", () => {
+		it("should always return native regardless of model defaultToolProtocol", () => {
 			const settings: ProviderSettings = {
 				apiProvider: "modelharbor",
 			}
@@ -72,10 +82,10 @@ describe("resolveToolProtocol", () => {
 				supportsNativeTools: true, // Model must support native tools
 			}
 			const result = resolveToolProtocol(settings, modelInfo)
-			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Model default wins when experiment is disabled
+			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native
 		})
 
-		it("should override model capability when model default is present", () => {
+		it("should return native even when model default is xml", () => {
 			const settings: ProviderSettings = {
 				apiProvider: "modelharbor",
 			}
@@ -87,12 +97,12 @@ describe("resolveToolProtocol", () => {
 				supportsNativeTools: true,
 			}
 			const result = resolveToolProtocol(settings, modelInfo)
-			expect(result).toBe(TOOL_PROTOCOL.XML) // Model default wins over capability
+			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native (XML deprecated)
 		})
 	})
 
-	describe("Support Validation", () => {
-		it("should fall back to XML when model doesn't support native", () => {
+	describe("Locked Protocol Support", () => {
+		it("should honor lockedProtocol xml for backward compatibility", () => {
 			const settings: ProviderSettings = {
 				toolProtocol: "native", // Ignored
 				apiProvider: "anthropic",
@@ -102,7 +112,7 @@ describe("resolveToolProtocol", () => {
 			expect(result).toBe(TOOL_PROTOCOL.XML)
 		})
 
-		it("should fall through to Native when lockedProtocol is undefined", () => {
+		it("should return native when lockedProtocol is undefined", () => {
 			const settings: ProviderSettings = {
 				toolProtocol: "xml", // Ignored
 				apiProvider: "anthropic",
@@ -119,15 +129,15 @@ describe("resolveToolProtocol", () => {
 				apiProvider: "anthropic",
 			}
 			const result = resolveToolProtocol(settings, undefined)
-			expect(result).toBe(TOOL_PROTOCOL.XML) // XML fallback
+			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native for new tasks
 		})
 	})
 
 	describe("Complete Precedence Chain", () => {
-		it("should respect full precedence: Profile > Model Default > XML Fallback", () => {
+		it("should always return native regardless of profile or model settings", () => {
 			// Set up a scenario with all levels defined
 			const settings: ProviderSettings = {
-				toolProtocol: "native", // Level 1: User profile setting
+				toolProtocol: "native", // Level 1: User profile setting - ignored
 				apiProvider: "modelharbor",
 			}
 
@@ -135,12 +145,12 @@ describe("resolveToolProtocol", () => {
 				maxTokens: 4096,
 				contextWindow: 128000,
 				supportsPromptCache: false,
-				defaultToolProtocol: "xml", // Level 2: Model default
+				defaultToolProtocol: "xml", // Level 2: Model default - ignored
 				supportsNativeTools: true, // Support check
 			}
 
 			const result = resolveToolProtocol(settings, modelInfo)
-			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Profile setting wins
+			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native
 		})
 
 		it("should use native even when user preference is XML (user prefs ignored)", () => {
@@ -176,7 +186,7 @@ describe("resolveToolProtocol", () => {
 			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native now
 		})
 
-		it("should fall back to XML when model doesn't support native", () => {
+		it("should return native even when model doesn't support native (implementation ignores modelInfo)", () => {
 			const settings: ProviderSettings = {
 				apiProvider: "modelharbor",
 			}
@@ -184,10 +194,10 @@ describe("resolveToolProtocol", () => {
 				maxTokens: 4096,
 				contextWindow: 128000,
 				supportsPromptCache: false,
-				supportsNativeTools: false, // Model doesn't support native
+				supportsNativeTools: false, // Model doesn't support native - ignored
 			}
 			const result = resolveToolProtocol(settings, modelInfo)
-			expect(result).toBe(TOOL_PROTOCOL.XML) // Falls back to XML due to lack of support
+			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native (modelInfo is ignored)
 		})
 	})
 
@@ -240,7 +250,7 @@ describe("resolveToolProtocol", () => {
 			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Native is always used
 		})
 
-		it("should return native regardless of user preference", () => {
+		it("should return native regardless of user preference and model support", () => {
 			const settings: ProviderSettings = {
 				toolProtocol: "native", // User preference - ignored but happens to match
 				apiProvider: "anthropic",
@@ -249,13 +259,13 @@ describe("resolveToolProtocol", () => {
 				maxTokens: 4096,
 				contextWindow: 128000,
 				supportsPromptCache: false,
-				supportsNativeTools: false, // Model doesn't support native
+				supportsNativeTools: false, // Model doesn't support native - ignored
 			}
 			const result = resolveToolProtocol(settings, modelInfo)
-			expect(result).toBe(TOOL_PROTOCOL.XML) // Falls back to XML due to lack of support
+			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native (modelInfo is ignored)
 		})
 
-		it("should use model default when available", () => {
+		it("should return native regardless of model default", () => {
 			const settings: ProviderSettings = {
 				apiProvider: "modelharbor",
 			}
@@ -267,7 +277,7 @@ describe("resolveToolProtocol", () => {
 				supportsNativeTools: true,
 			}
 			const result = resolveToolProtocol(settings, modelInfo)
-			expect(result).toBe(TOOL_PROTOCOL.XML) // Model default wins
+			expect(result).toBe(TOOL_PROTOCOL.NATIVE) // Always native (XML deprecated)
 		})
 	})
 })

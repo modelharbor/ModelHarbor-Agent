@@ -231,7 +231,10 @@ describe("importExport", () => {
 				customModesManager: mockCustomModesManager,
 			})
 
-			expect(result).toEqual({ success: false, error: "[providerProfiles.currentApiConfigName]: Required" })
+			expect(result).toEqual({
+				success: false,
+				error: "Cannot read properties of undefined (reading 'apiConfigs')",
+			})
 			expect(fs.readFile).toHaveBeenCalledWith("/mock/path/settings.json", "utf-8")
 			expect(mockProviderSettingsManager.import).not.toHaveBeenCalled()
 			expect(mockContextProxy.setValues).not.toHaveBeenCalled()

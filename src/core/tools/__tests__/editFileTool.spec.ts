@@ -112,7 +112,9 @@ describe("editFileTool", () => {
 				getState: vi.fn().mockResolvedValue({
 					diagnosticsEnabled: true,
 					writeDelayMs: 1000,
-					experiments: {},
+					experiments: {
+						preventFocusDisruption: false,
+					},
 				}),
 			}),
 		}

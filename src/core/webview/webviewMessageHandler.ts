@@ -6,13 +6,7 @@ import { getRooDirectoriesForCwd } from "../../services/roo-config/index.js"
 import pWaitFor from "p-wait-for"
 import * as vscode from "vscode"
 
-import {
-	type Language,
-	type GlobalState,
-	type ClineMessage,
-	RooCodeSettings,
-	ExperimentId,
-} from "@roo-code/types"
+import { type Language, type GlobalState, type ClineMessage, RooCodeSettings, ExperimentId } from "@roo-code/types"
 
 import { type ApiMessage } from "../task-persistence/apiMessages"
 import { saveTaskMessages } from "../task-persistence"
@@ -723,7 +717,7 @@ export const webviewMessageHandler = async (
 			const routerNameFlush: RouterName = toRouterName(message.text)
 			// Note: flushRouterModels is a generic flush without credentials
 			// For providers that need credentials, use their specific handlers
-			await flushModels({ provider: routerNameFlush } as GetModelsOptions, true)
+			await flushModels(routerNameFlush, true)
 			break
 		case "requestRouterModels":
 			const { apiConfiguration } = await provider.getState()
@@ -900,9 +894,9 @@ export const webviewMessageHandler = async (
 			}
 
 			// If refresh flag is set and we have a specific provider, flush its cache first
-			if (shouldRefresh && providerFilter && modelFetchPromises.length > 0) {
+			if (shouldRefresh && requestedProvider && modelFetchPromises.length > 0) {
 				const targetCandidate = modelFetchPromises[0]
-				await flushModels(targetCandidate.options, true)
+				await flushModels(targetCandidate.key, true)
 			}
 
 			const results = await Promise.allSettled(
@@ -958,7 +952,7 @@ export const webviewMessageHandler = async (
 					apiKey: ollamaApiConfig.ollamaApiKey,
 				}
 				// Flush cache and refresh to ensure fresh models.
-				await flushModels(ollamaOptions, true)
+				await flushModels("ollama", true)
 
 				const ollamaModels = await getModels(ollamaOptions)
 
@@ -980,7 +974,7 @@ export const webviewMessageHandler = async (
 					baseUrl: lmStudioApiConfig.lmStudioBaseUrl,
 				}
 				// Flush cache and refresh to ensure fresh models.
-				await flushModels(lmStudioOptions, true)
+				await flushModels("lmstudio", true)
 
 				const lmStudioModels = await getModels(lmStudioOptions)
 

@@ -1,0 +1,165 @@
+
+> roo-code@ check-types /Users/utarn/projects/ModelHarbor/Patched
+> turbo check-types --log-order grouped --output-logs new-only
+
+turbo 2.5.6
+
+ WARNING  Unable to calculate transitive closures: Workspace 'packages/core' not found in lockfile.
+• Packages in scope: @roo-code/build, @roo-code/config-eslint, @roo-code/config-typescript, @roo-code/core, @roo-code/evals, @roo-code/ipc, @roo-code/types, @roo-code/vscode-e2e, @roo-code/vscode-nightly, @roo-code/vscode-webview, @roo-code/web-evals, @roo-code/web-roo-code, modelharbor-agent
+• Running check-types in 13 packages
+• Remote caching disabled
+@roo-code/build:check-types: cache miss, executing c00417c68824f9ae
+@roo-code/build:check-types: 
+@roo-code/build:check-types: > @roo-code/build@ check-types /Users/utarn/projects/ModelHarbor/Patched/packages/build
+@roo-code/build:check-types: > tsc --noEmit
+@roo-code/build:check-types: 
+@roo-code/ipc:check-types: cache miss, executing 577a4624f9f8249d
+@roo-code/ipc:check-types: 
+@roo-code/ipc:check-types: > @roo-code/ipc@0.0.0 check-types /Users/utarn/projects/ModelHarbor/Patched/packages/ipc
+@roo-code/ipc:check-types: > tsc --noEmit
+@roo-code/ipc:check-types: 
+@roo-code/vscode-e2e:check-types: cache miss, executing 0982fdb226f7b3c4
+@roo-code/vscode-e2e:check-types: 
+@roo-code/vscode-e2e:check-types: > @roo-code/vscode-e2e@ check-types /Users/utarn/projects/ModelHarbor/Patched/apps/vscode-e2e
+@roo-code/vscode-e2e:check-types: > tsc -p tsconfig.esm.json --noEmit
+@roo-code/vscode-e2e:check-types: 
+@roo-code/types:check-types: cache miss, executing 071ffc6a8bd08d07
+@roo-code/types:check-types: 
+@roo-code/types:check-types: > @roo-code/types@0.0.0 check-types /Users/utarn/projects/ModelHarbor/Patched/packages/types
+@roo-code/types:check-types: > tsc --noEmit
+@roo-code/types:check-types: 
+@roo-code/core:check-types: cache miss, executing 0a9c8da3c4c5c0f9
+@roo-code/core:check-types: 
+@roo-code/core:check-types: > @roo-code/core@0.0.0 check-types /Users/utarn/projects/ModelHarbor/Patched/packages/core
+@roo-code/core:check-types: > tsc --noEmit
+@roo-code/core:check-types: 
+@roo-code/web-roo-code:check-types: cache miss, executing 99df60405e51559a
+@roo-code/web-roo-code:check-types: 
+@roo-code/web-roo-code:check-types: > @roo-code/web-roo-code@0.0.0 check-types /Users/utarn/projects/ModelHarbor/Patched/apps/web-roo-code
+@roo-code/web-roo-code:check-types: > tsc --noEmit
+@roo-code/web-roo-code:check-types: 
+@roo-code/evals:check-types: cache miss, executing fbd1ad62557dc847
+@roo-code/evals:check-types: 
+@roo-code/evals:check-types: > @roo-code/evals@0.0.0 check-types /Users/utarn/projects/ModelHarbor/Patched/packages/evals
+@roo-code/evals:check-types: > tsc --noEmit
+@roo-code/evals:check-types: 
+modelharbor-agent:check-types: cache miss, executing 2051bfb0f689807e
+modelharbor-agent:check-types: 
+modelharbor-agent:check-types: > modelharbor-agent@3.38.2 check-types /Users/utarn/projects/ModelHarbor/Patched/src
+modelharbor-agent:check-types: > tsc --noEmit
+modelharbor-agent:check-types: 
+modelharbor-agent:check-types: activate/registerCommands.ts(134,2): error TS2353: Object literal may only specify known properties, and 'showHumanRelayDialog' does not exist in type 'Record<"newTask" | "activationCompleted" | "plusButtonClicked" | "historyButtonClicked" | "marketplaceButtonClicked" | "popoutButtonClicked" | "settingsButtonClicked" | "promptsButtonClicked" | ... 7 more ... | "toggleAutoApprove", any>'.
+modelharbor-agent:check-types: api/providers/anthropic.ts(15,34): error TS2307: Cannot find module '@roo-code/telemetry' or its corresponding type declarations.
+modelharbor-agent:check-types: api/providers/bedrock.ts(35,34): error TS2307: Cannot find module '@roo-code/telemetry' or its corresponding type declarations.
+modelharbor-agent:check-types: api/providers/fetchers/lmstudio.ts(22,21): error TS2345: Argument of type '{ provider: string; baseUrl: string; }' is not assignable to parameter of type 'RouterName'.
+modelharbor-agent:check-types: api/providers/gemini.ts(19,34): error TS2307: Cannot find module '@roo-code/telemetry' or its corresponding type declarations.
+modelharbor-agent:check-types: api/providers/mistral.ts(12,34): error TS2307: Cannot find module '@roo-code/telemetry' or its corresponding type declarations.
+modelharbor-agent:check-types: api/providers/openai-native.ts(16,34): error TS2307: Cannot find module '@roo-code/telemetry' or its corresponding type declarations.
+modelharbor-agent:check-types: api/providers/xai.ts(5,34): error TS2307: Cannot find module '@roo-code/telemetry' or its corresponding type declarations.
+modelharbor-agent:check-types: core/assistant-message/__tests__/presentAssistantMessage-custom-tool.spec.ts(29,34): error TS2307: Cannot find module '@roo-code/telemetry' or its corresponding type declarations.
+modelharbor-agent:check-types: core/assistant-message/__tests__/presentAssistantMessage-custom-tool.spec.ts(30,36): error TS2307: Cannot find module '@roo-code/core' or its corresponding type declarations.
+modelharbor-agent:check-types: core/assistant-message/NativeToolCallParser.ts(4,36): error TS2307: Cannot find module '@roo-code/core' or its corresponding type declarations.
+modelharbor-agent:check-types: core/assistant-message/presentAssistantMessage.ts(1043,57): error TS2304: Cannot find name 'customToolRegistry'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(17,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(40,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(63,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(86,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(108,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(135,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(164,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(187,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(213,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(241,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/auto-approval/__tests__/super-yolo-mode.spec.ts(267,6): error TS2353: Object literal may only specify known properties, and 'alwaysApproveResubmit' does not exist in type 'Pick<ExtensionState, AutoApprovalState | AutoApprovalStateOptions>'.
+modelharbor-agent:check-types: core/environment/getEnvironmentDetails.ts(244,91): error TS2339: Property 'taskToolProtocol' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/prompts/system.ts(12,47): error TS2307: Cannot find module '@roo-code/core' or its corresponding type declarations.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(8,34): error TS2307: Cannot find module '@roo-code/telemetry' or its corresponding type declarations.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(221,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(233,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(240,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(252,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(253,9): error TS2339: Property 'consecutiveNoToolUseCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(261,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(262,16): error TS2339: Property 'consecutiveNoToolUseCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(275,16): error TS2339: Property 'consecutiveNoToolUseCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(291,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(292,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(293,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(296,13): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(315,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(316,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(317,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(320,13): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(339,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(340,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(341,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(344,13): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(363,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(370,10): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(373,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(385,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(392,10): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(395,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(411,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(413,13): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(432,16): error TS2339: Property 'consecutiveNoToolUseCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(433,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(436,9): error TS2339: Property 'consecutiveNoToolUseCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(437,16): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(439,9): error TS2339: Property 'consecutiveNoAssistantMessagesCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/__tests__/grace-retry-errors.spec.ts(440,16): error TS2339: Property 'consecutiveNoToolUseCount' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/task/build-tools.ts(6,50): error TS2307: Cannot find module '@roo-code/core' or its corresponding type declarations.
+modelharbor-agent:check-types: core/task/Task.ts(2281,55): error TS2339: Property 'filter' does not exist on type 'ProcessUserContentMentionsResult'.
+modelharbor-agent:check-types: core/task/Task.ts(2281,63): error TS7006: Parameter 'block' implicitly has an 'any' type.
+modelharbor-agent:check-types: core/task/Task.ts(2967,69): error TS2339: Property 'alwaysApproveResubmit' does not exist on type 'Omit<ExtensionState, "version" | "hasOpenedModeSelector" | "clineMessages" | "renderContext" | "shouldShowAnnouncement" | "hasSystemPromptOverride">'.
+modelharbor-agent:check-types: core/task/Task.ts(3222,47): error TS2339: Property 'alwaysApproveResubmit' does not exist on type 'Omit<ExtensionState, "version" | "hasOpenedModeSelector" | "clineMessages" | "renderContext" | "shouldShowAnnouncement" | "hasSystemPromptOverride">'.
+modelharbor-agent:check-types: core/task/Task.ts(3552,4): error TS2339: Property 'alwaysApproveResubmit' does not exist on type 'Omit<ExtensionState, "version" | "hasOpenedModeSelector" | "clineMessages" | "renderContext" | "shouldShowAnnouncement" | "hasSystemPromptOverride"> | {}'.
+modelharbor-agent:check-types: core/tools/MultiApplyDiffTool.ts(65,100): error TS2339: Property 'taskToolProtocol' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/tools/MultiApplyDiffTool.ts(740,10): error TS2339: Property 'taskToolProtocol' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/tools/ReadFileTool.ts(115,79): error TS2339: Property 'taskToolProtocol' does not exist on type 'Task'.
+modelharbor-agent:check-types: core/tools/validateToolUse.ts(3,36): error TS2307: Cannot find module '@roo-code/core' or its corresponding type declarations.
+modelharbor-agent:check-types: core/webview/__tests__/ClineProvider.spec.ts(838,16): error TS2339: Property 'alwaysApproveResubmit' does not exist on type 'Omit<ExtensionState, "version" | "hasOpenedModeSelector" | "clineMessages" | "renderContext" | "shouldShowAnnouncement" | "hasSystemPromptOverride">'.
+modelharbor-agent:check-types: core/webview/ClineProvider.ts(1673,4): error TS2339: Property 'alwaysAllowUpdateTodoList' does not exist on type 'Omit<ExtensionState, "version" | "hasOpenedModeSelector" | "clineMessages" | "renderContext" | "shouldShowAnnouncement" | "hasSystemPromptOverride">'.
+modelharbor-agent:check-types: core/webview/ClineProvider.ts(1705,4): error TS2339: Property 'alwaysApproveResubmit' does not exist on type 'Omit<ExtensionState, "version" | "hasOpenedModeSelector" | "clineMessages" | "renderContext" | "shouldShowAnnouncement" | "hasSystemPromptOverride">'.
+modelharbor-agent:check-types: core/webview/ClineProvider.ts(1748,4): error TS2339: Property 'openRouterUseMiddleOutTransform' does not exist on type 'Omit<ExtensionState, "version" | "hasOpenedModeSelector" | "clineMessages" | "renderContext" | "shouldShowAnnouncement" | "hasSystemPromptOverride">'.
+modelharbor-agent:check-types: core/webview/ClineProvider.ts(1774,4): error TS2353: Object literal may only specify known properties, and 'alwaysAllowUpdateTodoList' does not exist in type 'ExtensionState'.
+modelharbor-agent:check-types: core/webview/ClineProvider.ts(1940,4): error TS2353: Object literal may only specify known properties, and 'alwaysAllowUpdateTodoList' does not exist in type 'Omit<ExtensionState, "version" | "hasOpenedModeSelector" | "clineMessages" | "renderContext" | "shouldShowAnnouncement" | "hasSystemPromptOverride">'.
+modelharbor-agent:check-types: core/webview/ClineProvider.ts(1940,43): error TS2339: Property 'alwaysAllowUpdateTodoList' does not exist on type 'RooCodeSettings'.
+modelharbor-agent:check-types: core/webview/ClineProvider.ts(1983,39): error TS2339: Property 'alwaysApproveResubmit' does not exist on type 'RooCodeSettings'.
+modelharbor-agent:check-types: core/webview/ClineProvider.ts(1999,49): error TS2339: Property 'openRouterUseMiddleOutTransform' does not exist on type 'RooCodeSettings'.
+modelharbor-agent:check-types: core/webview/generateSystemPrompt.ts(104,12): error TS2339: Property 'getSkillsManager' does not exist on type 'ClineProvider'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(726,22): error TS2345: Argument of type 'GetModelsOptions' is not assignable to parameter of type 'RouterName'.
+modelharbor-agent:check-types:   Type '{ provider: "openrouter"; } & CommonFetchParams' is not assignable to type 'RouterName'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(903,25): error TS2304: Cannot find name 'providerFilter'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(905,23): error TS2345: Argument of type 'GetModelsOptions' is not assignable to parameter of type 'RouterName'.
+modelharbor-agent:check-types:   Type '{ provider: "openrouter"; } & CommonFetchParams' is not assignable to type 'RouterName'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(961,23): error TS2345: Argument of type '{ provider: "ollama"; baseUrl: string | undefined; apiKey: string | undefined; }' is not assignable to parameter of type 'RouterName'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(983,23): error TS2345: Argument of type '{ provider: "lmstudio"; baseUrl: string | undefined; }' is not assignable to parameter of type 'RouterName'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(2096,8): error TS2678: Type '"humanRelayResponse"' is not comparable to type '"codebaseIndexEnabled" | "mode" | "customInstructions" | "newTask" | "marketplaceButtonClicked" | "importSettings" | "currentApiConfigName" | "autoApprovalEnabled" | "allowedCommands" | ... 127 more ... | "downloadErrorDiagnostics"'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(2098,47): error TS2345: Argument of type '"handleHumanRelayResponse"' is not assignable to parameter of type '"newTask" | "activationCompleted" | "plusButtonClicked" | "historyButtonClicked" | "marketplaceButtonClicked" | "popoutButtonClicked" | "settingsButtonClicked" | "promptsButtonClicked" | ... 7 more ... | "toggleAutoApprove"'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(2106,8): error TS2678: Type '"humanRelayCancel"' is not comparable to type '"codebaseIndexEnabled" | "mode" | "customInstructions" | "newTask" | "marketplaceButtonClicked" | "importSettings" | "currentApiConfigName" | "autoApprovalEnabled" | "allowedCommands" | ... 127 more ... | "downloadErrorDiagnostics"'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(2108,47): error TS2345: Argument of type '"handleHumanRelayResponse"' is not assignable to parameter of type '"newTask" | "activationCompleted" | "plusButtonClicked" | "historyButtonClicked" | "marketplaceButtonClicked" | "popoutButtonClicked" | "settingsButtonClicked" | "promptsButtonClicked" | ... 7 more ... | "toggleAutoApprove"'.
+modelharbor-agent:check-types: core/webview/webviewMessageHandler.ts(2806,8): error TS2678: Type '"requestClaudeCodeRateLimits"' is not comparable to type '"codebaseIndexEnabled" | "mode" | "customInstructions" | "newTask" | "marketplaceButtonClicked" | "importSettings" | "currentApiConfigName" | "autoApprovalEnabled" | "allowedCommands" | ... 127 more ... | "downloadErrorDiagnostics"'.
+modelharbor-agent:check-types: extension.ts(15,36): error TS2307: Cannot find module '@roo-code/core' or its corresponding type declarations.
+modelharbor-agent:check-types: integrations/editor/DiffViewProvider.ts(330,98): error TS2339: Property 'taskToolProtocol' does not exist on type 'Task'.
+modelharbor-agent:check-types:  ELIFECYCLE  Command failed with exit code 2.
+modelharbor-agent:check-types: ERROR: command finished with error: command (/Users/utarn/projects/ModelHarbor/Patched/src) /Users/utarn/.nvm/versions/node/v20.19.2/bin/pnpm run check-types exited (2)
+@roo-code/vscode-webview:check-types: cache miss, executing 10132fee683a935b
+@roo-code/vscode-webview:check-types: 
+@roo-code/vscode-webview:check-types: > @roo-code/vscode-webview@ check-types /Users/utarn/projects/ModelHarbor/Patched/webview-ui
+@roo-code/vscode-webview:check-types: > tsc
+@roo-code/vscode-webview:check-types: 
+@roo-code/web-evals:check-types: cache miss, executing 75a21c9faba42aa6
+@roo-code/web-evals:check-types: 
+@roo-code/web-evals:check-types: > @roo-code/web-evals@0.0.0 check-types /Users/utarn/projects/ModelHarbor/Patched/apps/web-evals
+@roo-code/web-evals:check-types: > tsc -b
+@roo-code/web-evals:check-types: 
+modelharbor-agent#check-types: command (/Users/utarn/projects/ModelHarbor/Patched/src) /Users/utarn/.nvm/versions/node/v20.19.2/bin/pnpm run check-types exited (2)
+
+ Tasks:    7 successful, 10 total
+Cached:    0 cached, 10 total
+  Time:    16.527s 
+Failed:    modelharbor-agent#check-types
+
+ ERROR  run failed: command  exited (2)
+ ELIFECYCLE  Command failed with exit code 2.
