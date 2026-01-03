@@ -69,12 +69,7 @@ export class ModelHarborHandler
 	 */
 	private supportsNativeToolsByModelName(modelId: string): boolean {
 		const lowerModelId = modelId.toLowerCase()
-		return (
-			lowerModelId.includes("anthropic") ||
-			lowerModelId.includes("qwen") ||
-			lowerModelId.includes("glm") ||
-			lowerModelId.includes("gpt")
-		)
+		return lowerModelId.includes("haiku")
 	}
 
 	private async initializeModels() {
@@ -213,7 +208,10 @@ export class ModelHarborHandler
 		// Must contain one of: anthropic, qwen, glm, gpt
 		// We explicitly set native tool protocol for these models regardless of metadata.toolProtocol
 		const useNativeTools =
-			this.supportsNativeToolsByModelName(modelId) && metadata?.tools && metadata.tools.length > 0
+			this.supportsNativeToolsByModelName(modelId) &&
+			metadata?.tools &&
+			metadata.tools.length > 0 &&
+			metadata?.toolProtocol === TOOL_PROTOCOL.NATIVE
 
 		const requestOptions: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
 			model: modelId,
