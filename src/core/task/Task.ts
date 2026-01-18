@@ -527,22 +527,12 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			this._taskApiConfigName = historyItem.apiConfigName
 			this.taskModeReady = Promise.resolve()
 			this.taskApiConfigReady = Promise.resolve()
-
-			// For history items, use the persisted tool protocol if available.
-			// If not available (old tasks), it will be detected in resumeTaskFromHistory.
-			this._taskToolProtocol = historyItem.toolProtocol
 		} else {
 			// For new tasks, don't set the mode/apiConfigName yet - wait for async initialization.
 			this._taskMode = undefined
 			this._taskApiConfigName = undefined
 			this.taskModeReady = this.initializeTaskMode(provider)
 			this.taskApiConfigReady = this.initializeTaskApiConfigName(provider)
-
-			// For new tasks, resolve and lock the tool protocol immediately.
-			// This ensures the task will continue using this protocol even if
-			// user settings change.
-			const modelInfo = this.api.getModel().info
-			this._taskToolProtocol = resolveToolProtocol(this.apiConfiguration, modelInfo)
 		}
 
 		// Initialize the assistant message parser only for XML protocol.
@@ -951,7 +941,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 			// Store reasoning: plain text (most providers) or encrypted (OpenAI Native)
 			// Skip if reasoning_details already contains the reasoning (to avoid duplication)
-<<<<<<< HEAD
 			if (isAnthropicProtocol && reasoning && thoughtSignature && !reasoningDetails) {
 				// Anthropic provider with extended thinking: Store as proper `thinking` block
 				// This format passes through anthropic-filter.ts and is properly round-tripped
@@ -974,9 +963,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				}
 			} else if (reasoning && !reasoningDetails) {
 				// Other providers (non-Anthropic): Store as generic reasoning block
-=======
-			if (reasoning && !reasoningDetails) {
->>>>>>> 8576680f3 (Add ModelHarbor provider integration)
 				const reasoningBlock = {
 					type: "reasoning",
 					text: reasoning,
@@ -4052,19 +4038,15 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			suppressPreviousResponseId: this.skipPrevResponseIdOnce,
 			// Include tools and tool protocol when using native protocol and model supports it
 			...(shouldIncludeTools
-<<<<<<< HEAD
 				? {
 						tools: allTools,
 						tool_choice: "auto",
-						toolProtocol: taskProtocol,
+						toolProtocol: toolProtocol,
 						parallelToolCalls: parallelToolCallsEnabled,
 						// When mode restricts tools, provide allowedFunctionNames so providers
 						// like Gemini can see all tools in history but only call allowed ones
 						...(allowedFunctionNames ? { allowedFunctionNames } : {}),
 					}
-=======
-				? { tools: allTools, tool_choice: "auto", toolProtocol, parallelToolCalls: parallelToolCallsEnabled }
->>>>>>> 8576680f3 (Add ModelHarbor provider integration)
 				: {}),
 		}
 

@@ -1,206 +1,212 @@
 {
-	"extension": {
-		"name": "ModelHarbor Agent",
-		"description": "ทีมนักพัฒนา AI ทั้งหมดในเครื่องมือแก้ไขของคุณ"
+	"answers": {
+		"keep": "เก็บ",
+		"no": "ไม่",
+		"remove": "ลบ",
+		"yes": "ใช่"
 	},
-	"number_format": {
-		"thousand_suffix": "พัน",
-		"million_suffix": "ล้าน",
-		"billion_suffix": "พันล้าน"
+	"buttons": {
+		"edit": "แก้ไข",
+		"learn_more": "เรียนรู้เพิ่มเติม",
+		"save": "บันทึก"
 	},
-	"welcome": "ยินดีต้อนรับ {{name}}! คุณมี {{count}} การแจ้งเตือน",
-	"items": {
-		"zero": "ไม่มีรายการ",
-		"one": "หนึ่งรายการ",
-		"other": "{{count}} รายการ"
+	"commands": {
+		"preventCompletionWithOpenTodos": {
+			"description": "ป้องกันการทำงานให้เสร็จสิ้นเมื่อมีรายการสิ่งที่ต้องทำที่ยังไม่เสร็จในรายการสิ่งที่ต้องทำ"
+		}
 	},
 	"confirmation": {
-		"reset_state": "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตสถานะและที่เก็บข้อมูลลับทั้งหมดในส่วนขยายนี้ การกระทำนี้ไม่สามารถยกเลิกได้",
 		"delete_config_profile": "คุณแน่ใจหรือไม่ว่าต้องการลบโปรไฟล์การกำหนดค่านี้",
-		"delete_custom_mode_with_rules": "คุณแน่ใจหรือไม่ว่าต้องการลบโหมด {scope} นี้?\n\nการดำเนินการนี้จะลบโฟลเดอร์กฎที่เกี่ยวข้องที่:\n{rulesFolderPath}"
+		"delete_custom_mode_with_rules": "คุณแน่ใจหรือไม่ว่าต้องการลบโหมด {scope} นี้?\n\nการดำเนินการนี้จะลบโฟลเดอร์กฎที่เกี่ยวข้องที่:\n{rulesFolderPath}",
+		"reset_state": "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตสถานะและที่เก็บข้อมูลลับทั้งหมดในส่วนขยายนี้ การกระทำนี้ไม่สามารถยกเลิกได้"
+	},
+	"customModes": {
+		"errors": {
+			"deleteFailed": "ไม่สามารถลบโหมดที่กำหนดเองได้: {{error}}",
+			"invalidFormat": "รูปแบบโหมดที่กำหนดเองไม่ถูกต้อง โปรดตรวจสอบว่าการตั้งค่าของคุณเป็นไปตามรูปแบบ YAML ที่ถูกต้อง",
+			"modeNotFound": "ข้อผิดพลาดในการเขียน: ไม่พบโหมด",
+			"noWorkspaceForProject": "ไม่พบโฟลเดอร์พื้นที่ทำงานสำหรับโหมดเฉพาะโปรเจกต์",
+			"resetFailed": "ไม่สามารถรีเซ็ตโหมดที่กำหนดเองได้: {{error}}",
+			"rulesCleanupFailed": "ลบโหมดเรียบร้อยแล้ว แต่ไม่สามารถลบโฟลเดอร์กฎที่ {{rulesFolderPath}} ได้ คุณอาจต้องลบด้วยตนเอง",
+			"schemaValidationError": "รูปแบบโหมดที่กำหนดเองไม่ถูกต้องใน .ModelHarbormodes:\n{{issues}}",
+			"updateFailed": "ไม่สามารถอัปเดตโหมดที่กำหนดเองได้: {{error}}",
+			"yamlParseError": "YAML ไม่ถูกต้องในไฟล์ .ModelHarbormodes ที่บรรทัด {{line}} โปรดตรวจสอบ:\n• การเยื้องที่เหมาะสม (ใช้ช่องว่าง ไม่ใช่แท็บ)\n• เครื่องหมายคำพูดและวงเล็บที่ตรงกัน\n• ไวยากรณ์ YAML ที่ถูกต้อง"
+		},
+		"scope": {
+			"global": "ส่วนกลาง",
+			"project": "โปรเจกต์"
+		}
+	},
+	"docsLink": {
+		"label": "เอกสาร",
+		"url": "https://docs.roocode.com"
 	},
 	"errors": {
-		"invalid_data_uri": "รูปแบบ URI ข้อมูลไม่ถูกต้อง",
-		"error_copying_image": "เกิดข้อผิดพลาดในการคัดลอกรูปภาพ: {{errorMessage}}",
-		"error_opening_image": "เกิดข้อผิดพลาดในการเปิดรูปภาพ: {{error}}",
-		"error_saving_image": "เกิดข้อผิดพลาดในการบันทึกรูปภาพ: {{errorMessage}}",
-		"could_not_open_file": "ไม่สามารถเปิดไฟล์ได้: {{errorMessage}}",
-		"could_not_open_file_generic": "ไม่สามารถเปิดไฟล์ได้!",
-		"checkpoint_timeout": "หมดเวลาเมื่อพยายามกู้คืนจุดตรวจสอบ",
-		"checkpoint_failed": "ไม่สามารถกู้คืนจุดตรวจสอบได้",
-		"git_not_installed": "จำเป็นต้องใช้ Git สำหรับคุณสมบัติจุดตรวจสอบ โปรดติดตั้ง Git เพื่อเปิดใช้งานจุดตรวจสอบ",
-		"checkpoint_no_first": "ไม่มีจุดตรวจสอบแรกที่จะเปรียบเทียบ",
-		"checkpoint_no_previous": "ไม่มีจุดตรวจสอบก่อนหน้าที่จะเปรียบเทียบ",
-		"checkpoint_no_changes": "ไม่พบการเปลี่ยนแปลง",
-		"checkpoint_diff_with_next": "การเปลี่ยนแปลงที่เปรียบเทียบกับจุดตรวจสอบถัดไป",
-		"checkpoint_diff_since_first": "การเปลี่ยนแปลงตั้งแต่จุดตรวจสอบแรก",
-		"checkpoint_diff_to_current": "การเปลี่ยนแปลงไปยังพื้นที่ทำงานปัจจุบัน",
-		"nested_git_repos_warning": "จุดตรวจสอบถูกปิดใช้งานเนื่องจากตรวจพบที่เก็บข้อมูล Git ที่ซ้อนกันที่: {{path}} เพื่อใช้จุดตรวจสอบ โปรดลบหรือย้ายที่เก็บข้อมูล Git ที่ซ้อนกันนี้",
-		"no_workspace": "โปรดเปิดโฟลเดอร์โปรเจกต์ก่อน",
-		"update_support_prompt": "ไม่สามารถอัปเดตพรอมต์การสนับสนุนได้",
-		"reset_support_prompt": "ไม่สามารถรีเซ็ตพรอมต์การสนับสนุนได้",
-		"enhance_prompt": "ไม่สามารถปรับปรุงพรอมต์ได้",
-		"get_system_prompt": "ไม่สามารถรับพรอมต์ของระบบได้",
-		"search_commits": "ไม่สามารถค้นหาคอมมิตได้",
-		"save_api_config": "ไม่สามารถบันทึกการกำหนดค่า API ได้",
-		"create_api_config": "ไม่สามารถสร้างการกำหนดค่า API ได้",
-		"rename_api_config": "ไม่สามารถเปลี่ยนชื่อการกำหนดค่า API ได้",
-		"load_api_config": "ไม่สามารถโหลดการกำหนดค่า API ได้",
-		"delete_api_config": "ไม่สามารถลบการกำหนดค่า API ได้",
-		"list_api_config": "ไม่สามารถรับรายการการกำหนดค่า API ได้",
-		"update_server_timeout": "ไม่สามารถอัปเดตการหมดเวลาของเซิร์ฟเวอร์ได้",
-		"hmr_not_running": "เซิร์ฟเวอร์การพัฒนาในเครื่องไม่ได้ทำงาน HMR จะไม่ทำงาน โปรดรัน 'npm run dev' ก่อนเปิดส่วนขยายเพื่อเปิดใช้งาน HMR",
-		"retrieve_current_mode": "ข้อผิดพลาด: ไม่สามารถดึงโหมดปัจจุบันจากสถานะได้",
-		"failed_delete_repo": "ไม่สามารถลบที่เก็บข้อมูลเงาหรือสาขาที่เกี่ยวข้องได้: {{error}}",
-		"failed_remove_directory": "ไม่สามารถลบไดเรกทอรีงานได้: {{error}}",
-		"custom_storage_path_unusable": "เส้นทางที่เก็บข้อมูลที่กำหนดเอง \"{{path}}\" ไม่สามารถใช้งานได้ จะใช้เส้นทางเริ่มต้น",
-		"cannot_access_path": "ไม่สามารถเข้าถึงเส้นทาง {{path}} ได้: {{error}}",
-		"settings_import_failed": "การนำเข้าการตั้งค่าล้มเหลว: {{error}}",
-		"mistake_limit_guidance": "นี่อาจบ่งชี้ถึงความล้มเหลวในกระบวนการคิดของโมเดลหรือไม่สามารถใช้เครื่องมือได้อย่างถูกต้อง ซึ่งสามารถบรรเทาได้ด้วยคำแนะนำจากผู้ใช้ (เช่น \"ลองแบ่งงานออกเป็นขั้นตอนย่อยๆ\")",
-		"violated_organization_allowlist": "ไม่สามารถดำเนินงานได้: โปรไฟล์ปัจจุบันไม่เข้ากันได้กับการตั้งค่าองค์กรของคุณ",
-		"condense_failed": "ไม่สามารถย่อบริบทได้",
-		"condense_not_enough_messages": "มีข้อความไม่เพียงพอที่จะย่อบริบท",
-		"condensed_recently": "บริบทถูกย่อเมื่อเร็วๆ นี้ กำลังข้ามความพยายามนี้",
-		"condense_handler_invalid": "ตัวจัดการ API สำหรับการย่อบริบทไม่ถูกต้อง",
-		"condense_context_grew": "ขนาดบริบทเพิ่มขึ้นระหว่างการย่อ กำลังข้ามความพยายามนี้",
-		"url_timeout": "เว็บไซต์ใช้เวลาโหลดนานเกินไป (หมดเวลา) ซึ่งอาจเกิดจากการเชื่อมต่อที่ช้า เว็บไซต์ที่หนัก หรือเว็บไซต์ไม่สามารถใช้งานได้ชั่วคราว คุณสามารถลองอีกครั้งในภายหลังหรือตรวจสอบว่า URL ถูกต้องหรือไม่",
-		"url_not_found": "ไม่พบที่อยู่เว็บไซต์ โปรดตรวจสอบว่า URL ถูกต้องหรือไม่แล้วลองอีกครั้ง",
-		"no_internet": "ไม่มีการเชื่อมต่ออินเทอร์เน็ต โปรดตรวจสอบการเชื่อมต่อเครือข่ายของคุณแล้วลองอีกครั้ง",
-		"url_forbidden": "ห้ามเข้าถึงเว็บไซต์นี้ ไซต์อาจบล็อกการเข้าถึงอัตโนมัติหรือต้องการการรับรองความถูกต้อง",
-		"url_page_not_found": "ไม่พบหน้าเว็บ โปรดตรวจสอบว่า URL ถูกต้องหรือไม่",
-		"url_request_aborted": "คำขอดึงข้อมูล URL ถูกยกเลิก อาจเกิดขึ้นได้หากเว็บไซต์บล็อกการเข้าถึงอัตโนมัติ ต้องการการยืนยันตัวตน หรือมีปัญหาเครือข่าย กรุณาลองอีกครั้งหรือตรวจสอบว่า URL สามารถเข้าถึงได้ในเบราว์เซอร์ปกติ",
-		"url_fetch_failed": "ไม่สามารถดึงเนื้อหา URL ได้: {{error}}",
-		"url_fetch_error_with_url": "เกิดข้อผิดพลาดในการดึงเนื้อหาสำหรับ {{url}}: {{error}}",
-		"command_timeout": "การดำเนินการคำสั่งหมดเวลาหลังจาก {{seconds}} วินาที",
-		"share_task_failed": "ไม่สามารถแชร์งานได้ โปรดลองอีกครั้ง",
-		"share_no_active_task": "ไม่มีงานที่ใช้งานอยู่ที่จะแชร์",
-		"share_auth_required": "ต้องการการรับรองความถูกต้อง โปรดลงชื่อเข้าใช้เพื่อแชร์งาน",
-		"share_not_enabled": "การแชร์งานไม่ได้เปิดใช้งานสำหรับองค์กรนี้",
-		"share_task_not_found": "ไม่พบงานหรือการเข้าถึงถูกปฏิเสธ",
-		"mode_import_failed": "ไม่สามารถนำเข้าโหมดได้: {{error}}",
-		"delete_rules_folder_failed": "ลบโฟลเดอร์กฎล้มเหลว: {{rulesFolderPath}} ข้อผิดพลาด: {{error}}",
-		"command_not_found": "ไม่พบคำสั่ง '{{name}}'",
-		"open_command_file": "ไม่สามารถเปิดไฟล์คำสั่งได้",
-		"delete_command": "ไม่สามารถลบคำสั่งได้",
-		"no_workspace_for_project_command": "ไม่พบโฟลเดอร์พื้นที่ทำงานสำหรับคำสั่งโปรเจกต์",
-		"command_already_exists": "คำสั่ง \"{{commandName}}\" มีอยู่แล้ว",
-		"create_command_failed": "ไม่สามารถสร้างคำสั่งได้",
-		"command_template_content": "---\ndescription: \"คำอธิบายโดยย่อว่าคำสั่งนี้ทำอะไร\"\n---\n\nนี่คือคำสั่งทับใหม่ แก้ไขไฟล์นี้เพื่อปรับแต่งการทำงานของคำสั่ง",
-		"claudeCode": {
-			"processExited": "กระบวนการ Claude Code ออกด้วยรหัส {{exitCode}}",
-			"errorOutput": "ผลลัพธ์ข้อผิดพลาด: {{output}}",
-			"processExitedWithError": "กระบวนการ Claude Code ออกด้วยรหัส {{exitCode}} ผลลัพธ์ข้อผิดพลาด: {{output}}",
-			"stoppedWithReason": "Claude Code หยุดทำงานด้วยเหตุผล: {{reason}}",
-			"apiKeyModelPlanMismatch": "คีย์ API และแผนการสมัครสมาชิกอนุญาตให้ใช้โมเดลที่แตกต่างกัน ตรวจสอบให้แน่ใจว่าโมเดลที่เลือกอยู่ในแผนของคุณ",
-			"notFound": "ไม่พบไฟล์ปฏิบัติการ Claude Code '{{claudePath}}'\n\nโปรดติดตั้ง Claude Code CLI:\n1. เยี่ยมชม {{installationUrl}} เพื่อดาวน์โหลด Claude Code\n2. ทำตามคำแนะนำในการติดตั้งสำหรับระบบปฏิบัติการของคุณ\n3. ตรวจสอบให้แน่ใจว่าคำสั่ง 'claude' พร้อมใช้งานใน PATH ของคุณ\n4. หรือกำหนดค่าเส้นทางแบบกำหนดเองในการตั้งค่า ModelHarbor ภายใต้ 'Claude Code Path'\n\nข้อผิดพลาดดั้งเดิม: {{originalError}}"
-		},
-		"gemini": {
-			"generate_stream": "ข้อผิดพลาดสตรีมบริบทการสร้าง Gemini: {{error}}",
-			"generate_complete_prompt": "ข้อผิดพลาดการเติมเต็ม Gemini: {{error}}",
-			"sources": "แหล่งที่มา:",
-			"thinking_complete_no_output": "(การคิดเสร็จสมบูรณ์ แต่ไม่มีเอาต์พุตถูกสร้างขึ้น)",
-			"thinking_complete_truncated": "(การคิดเสร็จสมบูรณ์ แต่เอาต์พุตถูกตัดทอนเนื่องจากขีดจำกัดโทเค็น)",
-			"thinking_complete_safety": "(การคิดเสร็จสมบูรณ์ แต่เอาต์พุตถูกบล็อกเนื่องจากการตั้งค่าความปลอดภัย)",
-			"thinking_complete_recitation": "(การคิดเสร็จสมบูรณ์ แต่เอาต์พุตถูกบล็อกเนื่องจากการตรวจสอบการท่อง)"
-		},
-		"cerebras": {
-			"authenticationFailed": "การยืนยันตัวตน Cerebras API ล้มเหลว กรุณาตรวจสอบว่าคีย์ API ของคุณถูกต้องและไม่หมดอายุ",
-			"accessForbidden": "การเข้าถึง Cerebras API ถูกห้าม คีย์ API ของคุณอาจไม่มีสิทธิ์เข้าถึงโมเดลหรือคุณสมบัติที่ร้องขอ",
-			"rateLimitExceeded": "เกินขีดจำกัดอัตรา Cerebras API กรุณารอก่อนทำคำขออีกครั้ง",
-			"serverError": "ข้อผิดพลาดเซิร์ฟเวอร์ Cerebras API ({{status}}) กรุณาลองอีกครั้งภายหลัง",
-			"genericError": "ข้อผิดพลาด Cerebras API ({{status}}): {{message}}",
-			"noResponseBody": "ข้อผิดพลาด Cerebras API: ไม่มีเนื้อหาการตอบกลับ",
-			"completionError": "ข้อผิดพลาดการทำงานสมบูรณ์ Cerebras: {{error}}"
-		},
-		"message": {
-			"no_active_task_to_delete": "ไม่มีงานที่ใช้งานอยู่ที่จะลบข้อความจาก",
-			"invalid_timestamp_for_deletion": "การประทับเวลาข้อความไม่ถูกต้องสำหรับการลบ",
-			"cannot_delete_missing_timestamp": "ไม่สามารถลบข้อความได้: ไม่มีประทับเวลา",
-			"cannot_delete_invalid_timestamp": "ไม่สามารถลบข้อความได้: ประทับเวลาไม่ถูกต้อง",
-			"message_not_found": "ไม่พบข้อความที่มีประทับเวลา {{messageTs}}",
-			"error_deleting_message": "ข้อผิดพลาดในการลบข้อความ: {{error}}",
-			"error_editing_message": "ข้อผิดพลาดในการแก้ไขข้อความ: {{error}}"
-		},
 		"ModelHarbor": {
 			"authenticationRequired": "ผู้ให้บริการ ModelHarbor ต้องการการรับรองความถูกต้องบนคลาวด์ โปรดลงชื่อเข้าใช้ ModelHarbor Agent Cloud"
 		},
 		"api": {
+			"apiRequestFailed": "API request failed ({{status}})",
 			"invalidKeyInvalidChars": "คีย์ API มีอักขระที่ไม่ถูกต้อง"
 		},
-		"manual_url_empty": "โปรดป้อน URL การเรียกกลับที่ถูกต้อง",
-		"manual_url_no_query": "URL การเรียกกลับไม่ถูกต้อง: ไม่มีพารามิเตอร์การค้นหา",
-		"manual_url_missing_params": "URL การเรียกกลับไม่ถูกต้อง: ไม่มีพารามิเตอร์ที่จำเป็น (code และ state)",
+		"cannot_access_path": "ไม่สามารถเข้าถึงเส้นทาง {{path}} ได้: {{error}}",
+		"cerebras": {
+			"accessForbidden": "การเข้าถึง Cerebras API ถูกห้าม คีย์ API ของคุณอาจไม่มีสิทธิ์เข้าถึงโมเดลหรือคุณสมบัติที่ร้องขอ",
+			"authenticationFailed": "การยืนยันตัวตน Cerebras API ล้มเหลว กรุณาตรวจสอบว่าคีย์ API ของคุณถูกต้องและไม่หมดอายุ",
+			"completionError": "ข้อผิดพลาดการทำงานสมบูรณ์ Cerebras: {{error}}",
+			"genericError": "ข้อผิดพลาด Cerebras API ({{status}}): {{message}}",
+			"noResponseBody": "ข้อผิดพลาด Cerebras API: ไม่มีเนื้อหาการตอบกลับ",
+			"rateLimitExceeded": "เกินขีดจำกัดอัตรา Cerebras API กรุณารอก่อนทำคำขออีกครั้ง",
+			"serverError": "ข้อผิดพลาดเซิร์ฟเวอร์ Cerebras API ({{status}}) กรุณาลองอีกครั้งภายหลัง"
+		},
+		"checkpoint_diff_since_first": "การเปลี่ยนแปลงตั้งแต่จุดตรวจสอบแรก",
+		"checkpoint_diff_to_current": "การเปลี่ยนแปลงไปยังพื้นที่ทำงานปัจจุบัน",
+		"checkpoint_diff_with_next": "การเปลี่ยนแปลงที่เปรียบเทียบกับจุดตรวจสอบถัดไป",
+		"checkpoint_failed": "ไม่สามารถกู้คืนจุดตรวจสอบได้",
+		"checkpoint_no_changes": "ไม่พบการเปลี่ยนแปลง",
+		"checkpoint_no_first": "ไม่มีจุดตรวจสอบแรกที่จะเปรียบเทียบ",
+		"checkpoint_no_previous": "ไม่มีจุดตรวจสอบก่อนหน้าที่จะเปรียบเทียบ",
+		"checkpoint_timeout": "หมดเวลาเมื่อพยายามกู้คืนจุดตรวจสอบ",
+		"claudeCode": {
+			"apiKeyModelPlanMismatch": "คีย์ API และแผนการสมัครสมาชิกอนุญาตให้ใช้โมเดลที่แตกต่างกัน ตรวจสอบให้แน่ใจว่าโมเดลที่เลือกอยู่ในแผนของคุณ",
+			"errorOutput": "ผลลัพธ์ข้อผิดพลาด: {{output}}",
+			"notFound": "ไม่พบไฟล์ปฏิบัติการ Claude Code '{{claudePath}}'\n\nโปรดติดตั้ง Claude Code CLI:\n1. เยี่ยมชม {{installationUrl}} เพื่อดาวน์โหลด Claude Code\n2. ทำตามคำแนะนำในการติดตั้งสำหรับระบบปฏิบัติการของคุณ\n3. ตรวจสอบให้แน่ใจว่าคำสั่ง 'claude' พร้อมใช้งานใน PATH ของคุณ\n4. หรือกำหนดค่าเส้นทางแบบกำหนดเองในการตั้งค่า ModelHarbor ภายใต้ 'Claude Code Path'\n\nข้อผิดพลาดดั้งเดิม: {{originalError}}",
+			"processExited": "กระบวนการ Claude Code ออกด้วยรหัส {{exitCode}}",
+			"processExitedWithError": "กระบวนการ Claude Code ออกด้วยรหัส {{exitCode}} ผลลัพธ์ข้อผิดพลาด: {{output}}",
+			"stoppedWithReason": "Claude Code หยุดทำงานด้วยเหตุผล: {{reason}}"
+		},
+		"command_already_exists": "คำสั่ง \"{{commandName}}\" มีอยู่แล้ว",
+		"command_not_found": "ไม่พบคำสั่ง '{{name}}'",
+		"command_template_content": "---\ndescription: \"คำอธิบายโดยย่อว่าคำสั่งนี้ทำอะไร\"\n---\n\nนี่คือคำสั่งทับใหม่ แก้ไขไฟล์นี้เพื่อปรับแต่งการทำงานของคำสั่ง",
+		"command_timeout": "การดำเนินการคำสั่งหมดเวลาหลังจาก {{seconds}} วินาที",
+		"condense_context_grew": "ขนาดบริบทเพิ่มขึ้นระหว่างการย่อ กำลังข้ามความพยายามนี้",
+		"condense_failed": "ไม่สามารถย่อบริบทได้",
+		"condense_handler_invalid": "ตัวจัดการ API สำหรับการย่อบริบทไม่ถูกต้อง",
+		"condense_not_enough_messages": "มีข้อความไม่เพียงพอที่จะย่อบริบท",
+		"condensed_recently": "บริบทถูกย่อเมื่อเร็วๆ นี้ กำลังข้ามความพยายามนี้",
+		"could_not_open_file": "ไม่สามารถเปิดไฟล์ได้: {{errorMessage}}",
+		"could_not_open_file_generic": "ไม่สามารถเปิดไฟล์ได้!",
+		"create_api_config": "ไม่สามารถสร้างการกำหนดค่า API ได้",
+		"create_command_failed": "ไม่สามารถสร้างคำสั่งได้",
+		"custom_storage_path_unusable": "เส้นทางที่เก็บข้อมูลที่กำหนดเอง \"{{path}}\" ไม่สามารถใช้งานได้ จะใช้เส้นทางเริ่มต้น",
+		"delete_api_config": "ไม่สามารถลบการกำหนดค่า API ได้",
+		"delete_command": "ไม่สามารถลบคำสั่งได้",
+		"delete_rules_folder_failed": "ลบโฟลเดอร์กฎล้มเหลว: {{rulesFolderPath}} ข้อผิดพลาด: {{error}}",
+		"enhance_prompt": "ไม่สามารถปรับปรุงพรอมต์ได้",
+		"error_copying_image": "เกิดข้อผิดพลาดในการคัดลอกรูปภาพ: {{errorMessage}}",
+		"error_opening_image": "เกิดข้อผิดพลาดในการเปิดรูปภาพ: {{error}}",
+		"error_saving_image": "เกิดข้อผิดพลาดในการบันทึกรูปภาพ: {{errorMessage}}",
+		"failed_delete_repo": "ไม่สามารถลบที่เก็บข้อมูลเงาหรือสาขาที่เกี่ยวข้องได้: {{error}}",
+		"failed_remove_directory": "ไม่สามารถลบไดเรกทอรีงานได้: {{error}}",
+		"gemini": {
+			"generate_complete_prompt": "ข้อผิดพลาดการเติมเต็ม Gemini: {{error}}",
+			"generate_stream": "ข้อผิดพลาดสตรีมบริบทการสร้าง Gemini: {{error}}",
+			"sources": "แหล่งที่มา:",
+			"thinking_complete_no_output": "(การคิดเสร็จสมบูรณ์ แต่ไม่มีเอาต์พุตถูกสร้างขึ้น)",
+			"thinking_complete_recitation": "(การคิดเสร็จสมบูรณ์ แต่เอาต์พุตถูกบล็อกเนื่องจากการตรวจสอบการท่อง)",
+			"thinking_complete_safety": "(การคิดเสร็จสมบูรณ์ แต่เอาต์พุตถูกบล็อกเนื่องจากการตั้งค่าความปลอดภัย)",
+			"thinking_complete_truncated": "(การคิดเสร็จสมบูรณ์ แต่เอาต์พุตถูกตัดทอนเนื่องจากขีดจำกัดโทเค็น)"
+		},
+		"get_system_prompt": "ไม่สามารถรับพรอมต์ของระบบได้",
+		"git_not_installed": "จำเป็นต้องใช้ Git สำหรับคุณสมบัติจุดตรวจสอบ โปรดติดตั้ง Git เพื่อเปิดใช้งานจุดตรวจสอบ",
+		"hmr_not_running": "เซิร์ฟเวอร์การพัฒนาในเครื่องไม่ได้ทำงาน HMR จะไม่ทำงาน โปรดรัน 'npm run dev' ก่อนเปิดส่วนขยายเพื่อเปิดใช้งาน HMR",
+		"invalid_data_uri": "รูปแบบ URI ข้อมูลไม่ถูกต้อง",
+		"list_api_config": "ไม่สามารถรับรายการการกำหนดค่า API ได้",
+		"load_api_config": "ไม่สามารถโหลดการกำหนดค่า API ได้",
+		"manual_url_auth_error": "การรับรองความถูกต้องล้มเหลว",
 		"manual_url_auth_failed": "การรับรองความถูกต้อง URL ด้วยตนเองล้มเหลว",
-		"manual_url_auth_error": "การรับรองความถูกต้องล้มเหลว"
+		"manual_url_empty": "โปรดป้อน URL การเรียกกลับที่ถูกต้อง",
+		"manual_url_missing_params": "URL การเรียกกลับไม่ถูกต้อง: ไม่มีพารามิเตอร์ที่จำเป็น (code และ state)",
+		"manual_url_no_query": "URL การเรียกกลับไม่ถูกต้อง: ไม่มีพารามิเตอร์การค้นหา",
+		"message": {
+			"cannot_delete_invalid_timestamp": "ไม่สามารถลบข้อความได้: ประทับเวลาไม่ถูกต้อง",
+			"cannot_delete_missing_timestamp": "ไม่สามารถลบข้อความได้: ไม่มีประทับเวลา",
+			"error_deleting_message": "ข้อผิดพลาดในการลบข้อความ: {{error}}",
+			"error_editing_message": "ข้อผิดพลาดในการแก้ไขข้อความ: {{error}}",
+			"invalid_timestamp_for_deletion": "การประทับเวลาข้อความไม่ถูกต้องสำหรับการลบ",
+			"message_not_found": "ไม่พบข้อความที่มีประทับเวลา {{messageTs}}",
+			"no_active_task_to_delete": "ไม่มีงานที่ใช้งานอยู่ที่จะลบข้อความจาก"
+		},
+		"mistake_limit_guidance": "นี่อาจบ่งชี้ถึงความล้มเหลวในกระบวนการคิดของโมเดลหรือไม่สามารถใช้เครื่องมือได้อย่างถูกต้อง ซึ่งสามารถบรรเทาได้ด้วยคำแนะนำจากผู้ใช้ (เช่น \"ลองแบ่งงานออกเป็นขั้นตอนย่อยๆ\")",
+		"mode_import_failed": "ไม่สามารถนำเข้าโหมดได้: {{error}}",
+		"nested_git_repos_warning": "จุดตรวจสอบถูกปิดใช้งานเนื่องจากตรวจพบที่เก็บข้อมูล Git ที่ซ้อนกันที่: {{path}} เพื่อใช้จุดตรวจสอบ โปรดลบหรือย้ายที่เก็บข้อมูล Git ที่ซ้อนกันนี้",
+		"no_internet": "ไม่มีการเชื่อมต่ออินเทอร์เน็ต โปรดตรวจสอบการเชื่อมต่อเครือข่ายของคุณแล้วลองอีกครั้ง",
+		"no_workspace": "โปรดเปิดโฟลเดอร์โปรเจกต์ก่อน",
+		"no_workspace_for_project_command": "ไม่พบโฟลเดอร์พื้นที่ทำงานสำหรับคำสั่งโปรเจกต์",
+		"openAiCodex": {
+			"accessDenied": "Access denied. Your ChatGPT subscription may not include Codex access.",
+			"apiError": "Codex API error: {{message}}",
+			"authenticationFailed": "Authentication failed. Please re-authenticate with OpenAI Codex.",
+			"completionError": "OpenAI Codex completion error: {{message}}",
+			"connectionFailed": "Failed to connect to Codex API: {{message}}",
+			"endpointNotFound": "Codex API endpoint not found.",
+			"genericError": "Codex API error ({{status}})",
+			"invalidRequest": "Invalid request to Codex API. Please check your input parameters.",
+			"noResponseBody": "Codex API error: No response body",
+			"notAuthenticated": "Not authenticated with OpenAI Codex. Please sign in using the OpenAI Codex OAuth flow.",
+			"rateLimitExceeded": "Rate limit exceeded. Please try again later.",
+			"responseFailed": "Response failed: {{message}}",
+			"serviceError": "OpenAI Codex service error. Please try again later.",
+			"streamProcessingError": "Error processing response stream: {{message}}",
+			"unexpectedConnectionError": "Unexpected error connecting to Codex API",
+			"unexpectedStreamError": "Unexpected error processing response stream"
+		},
+		"open_command_file": "ไม่สามารถเปิดไฟล์คำสั่งได้",
+		"rename_api_config": "ไม่สามารถเปลี่ยนชื่อการกำหนดค่า API ได้",
+		"reset_support_prompt": "ไม่สามารถรีเซ็ตพรอมต์การสนับสนุนได้",
+		"retrieve_current_mode": "ข้อผิดพลาด: ไม่สามารถดึงโหมดปัจจุบันจากสถานะได้",
+		"save_api_config": "ไม่สามารถบันทึกการกำหนดค่า API ได้",
+		"search_commits": "ไม่สามารถค้นหาคอมมิตได้",
+		"settings_import_failed": "การนำเข้าการตั้งค่าล้มเหลว: {{error}}",
+		"share_auth_required": "ต้องการการรับรองความถูกต้อง โปรดลงชื่อเข้าใช้เพื่อแชร์งาน",
+		"share_no_active_task": "ไม่มีงานที่ใช้งานอยู่ที่จะแชร์",
+		"share_not_enabled": "การแชร์งานไม่ได้เปิดใช้งานสำหรับองค์กรนี้",
+		"share_task_failed": "ไม่สามารถแชร์งานได้ โปรดลองอีกครั้ง",
+		"share_task_not_found": "ไม่พบงานหรือการเข้าถึงถูกปฏิเสธ",
+		"update_server_timeout": "ไม่สามารถอัปเดตการหมดเวลาของเซิร์ฟเวอร์ได้",
+		"update_support_prompt": "ไม่สามารถอัปเดตพรอมต์การสนับสนุนได้",
+		"url_fetch_error_with_url": "เกิดข้อผิดพลาดในการดึงเนื้อหาสำหรับ {{url}}: {{error}}",
+		"url_fetch_failed": "ไม่สามารถดึงเนื้อหา URL ได้: {{error}}",
+		"url_forbidden": "ห้ามเข้าถึงเว็บไซต์นี้ ไซต์อาจบล็อกการเข้าถึงอัตโนมัติหรือต้องการการรับรองความถูกต้อง",
+		"url_not_found": "ไม่พบที่อยู่เว็บไซต์ โปรดตรวจสอบว่า URL ถูกต้องหรือไม่แล้วลองอีกครั้ง",
+		"url_page_not_found": "ไม่พบหน้าเว็บ โปรดตรวจสอบว่า URL ถูกต้องหรือไม่",
+		"url_request_aborted": "คำขอดึงข้อมูล URL ถูกยกเลิก อาจเกิดขึ้นได้หากเว็บไซต์บล็อกการเข้าถึงอัตโนมัติ ต้องการการยืนยันตัวตน หรือมีปัญหาเครือข่าย กรุณาลองอีกครั้งหรือตรวจสอบว่า URL สามารถเข้าถึงได้ในเบราว์เซอร์ปกติ",
+		"url_timeout": "เว็บไซต์ใช้เวลาโหลดนานเกินไป (หมดเวลา) ซึ่งอาจเกิดจากการเชื่อมต่อที่ช้า เว็บไซต์ที่หนัก หรือเว็บไซต์ไม่สามารถใช้งานได้ชั่วคราว คุณสามารถลองอีกครั้งในภายหลังหรือตรวจสอบว่า URL ถูกต้องหรือไม่",
+		"violated_organization_allowlist": "ไม่สามารถดำเนินงานได้: โปรไฟล์ปัจจุบันไม่เข้ากันได้กับการตั้งค่าองค์กรของคุณ"
 	},
-	"interruption": {
-		"responseInterruptedByUser": "การตอบกลับถูกขัดจังหวะโดยผู้ใช้",
-		"responseInterruptedByApiError": "การตอบกลับถูกขัดจังหวะโดยข้อผิดพลาด API"
-	},
-	"warnings": {
-		"no_terminal_content": "ไม่ได้เลือกเนื้อหาเทอร์มินัล",
-		"missing_task_files": "ไฟล์ของงานนี้หายไป คุณต้องการลบออกจากรายการงานหรือไม่",
-		"auto_import_failed": "ไม่สามารถนำเข้าการตั้งค่า ModelHarbor Agent โดยอัตโนมัติได้: {{error}}"
+	"extension": {
+		"description": "ทีมนักพัฒนา AI ทั้งหมดในเครื่องมือแก้ไขของคุณ",
+		"name": "ModelHarbor Agent"
 	},
 	"info": {
-		"no_changes": "ไม่พบการเปลี่ยนแปลง",
+		"auto_import_success": "นำเข้าการตั้งค่า ModelHarbor Agent โดยอัตโนมัติจาก {{filename}} เรียบร้อยแล้ว",
 		"clipboard_copy": "คัดลอกพรอมต์ของระบบไปยังคลิปบอร์ดเรียบร้อยแล้ว",
-		"history_cleanup": "ล้างงาน {{count}} ที่มีไฟล์หายไปจากประวัติเรียบร้อยแล้ว",
 		"custom_storage_path_set": "ตั้งค่าเส้นทางที่เก็บข้อมูลที่กำหนดเอง: {{path}}",
 		"default_storage_path": "เปลี่ยนกลับไปใช้เส้นทางที่เก็บข้อมูลเริ่มต้น",
-		"settings_imported": "นำเข้าการตั้งค่าเรียบร้อยแล้ว",
-		"auto_import_success": "นำเข้าการตั้งค่า ModelHarbor Agent โดยอัตโนมัติจาก {{filename}} เรียบร้อยแล้ว",
-		"share_link_copied": "คัดลอกลิงก์แชร์ไปยังคลิปบอร์ดแล้ว",
-		"organization_share_link_copied": "คัดลอกลิงก์แชร์ขององค์กรไปยังคลิปบอร์ดแล้ว!",
-		"public_share_link_copied": "คัดลอกลิงก์แชร์สาธารณะไปยังคลิปบอร์ดแล้ว!",
+		"history_cleanup": "ล้างงาน {{count}} ที่มีไฟล์หายไปจากประวัติเรียบร้อยแล้ว",
 		"image_copied_to_clipboard": "คัดลอก URI ข้อมูลรูปภาพไปยังคลิปบอร์ดแล้ว",
 		"image_saved": "บันทึกรูปภาพไปที่ {{path}} แล้ว",
 		"mode_exported": "ส่งออกโหมด '{{mode}}' เรียบร้อยแล้ว",
-		"mode_imported": "นำเข้าโหมดเรียบร้อยแล้ว"
-	},
-	"answers": {
-		"yes": "ใช่",
-		"no": "ไม่",
-		"remove": "ลบ",
-		"keep": "เก็บ"
-	},
-	"buttons": {
-		"save": "บันทึก",
-		"edit": "แก้ไข",
-		"learn_more": "เรียนรู้เพิ่มเติม"
-	},
-	"tasks": {
-		"canceled": "ข้อผิดพลาดของงาน: ถูกหยุดและยกเลิกโดยผู้ใช้",
-		"deleted": "ความล้มเหลวของงาน: ถูกหยุดและลบโดยผู้ใช้",
-		"incomplete": "งาน #{{taskNumber}} (ไม่สมบูรณ์)",
-		"no_messages": "งาน #{{taskNumber}} (ไม่มีข้อความ)"
-	},
-	"storage": {
-		"prompt_custom_path": "ป้อนเส้นทางที่เก็บประวัติการสนทนาที่กำหนดเอง เว้นว่างไว้เพื่อใช้ตำแหน่งเริ่มต้น",
-		"path_placeholder": "D:\\ModelHarborAgentStorage",
-		"enter_absolute_path": "โปรดป้อนเส้นทางแบบเต็ม (เช่น D:\\ModelHarborAgentStorage หรือ /home/user/storage)",
-		"enter_valid_path": "โปรดป้อนเส้นทางที่ถูกต้อง"
+		"mode_imported": "นำเข้าโหมดเรียบร้อยแล้ว",
+		"no_changes": "ไม่พบการเปลี่ยนแปลง",
+		"organization_share_link_copied": "คัดลอกลิงก์แชร์ขององค์กรไปยังคลิปบอร์ดแล้ว!",
+		"public_share_link_copied": "คัดลอกลิงก์แชร์สาธารณะไปยังคลิปบอร์ดแล้ว!",
+		"settings_imported": "นำเข้าการตั้งค่าเรียบร้อยแล้ว",
+		"share_link_copied": "คัดลอกลิงก์แชร์ไปยังคลิปบอร์ดแล้ว"
 	},
 	"input": {
-		"task_prompt": "ModelHarbor Agent ควรทำอะไร",
-		"task_placeholder": "พิมพ์งานของคุณที่นี่"
+		"task_placeholder": "พิมพ์งานของคุณที่นี่",
+		"task_prompt": "ModelHarbor Agent ควรทำอะไร"
 	},
-	"customModes": {
-		"errors": {
-			"yamlParseError": "YAML ไม่ถูกต้องในไฟล์ .ModelHarbormodes ที่บรรทัด {{line}} โปรดตรวจสอบ:\n• การเยื้องที่เหมาะสม (ใช้ช่องว่าง ไม่ใช่แท็บ)\n• เครื่องหมายคำพูดและวงเล็บที่ตรงกัน\n• ไวยากรณ์ YAML ที่ถูกต้อง",
-			"schemaValidationError": "รูปแบบโหมดที่กำหนดเองไม่ถูกต้องใน .ModelHarbormodes:\n{{issues}}",
-			"invalidFormat": "รูปแบบโหมดที่กำหนดเองไม่ถูกต้อง โปรดตรวจสอบว่าการตั้งค่าของคุณเป็นไปตามรูปแบบ YAML ที่ถูกต้อง",
-			"updateFailed": "ไม่สามารถอัปเดตโหมดที่กำหนดเองได้: {{error}}",
-			"deleteFailed": "ไม่สามารถลบโหมดที่กำหนดเองได้: {{error}}",
-			"resetFailed": "ไม่สามารถรีเซ็ตโหมดที่กำหนดเองได้: {{error}}",
-			"modeNotFound": "ข้อผิดพลาดในการเขียน: ไม่พบโหมด",
-			"noWorkspaceForProject": "ไม่พบโฟลเดอร์พื้นที่ทำงานสำหรับโหมดเฉพาะโปรเจกต์",
-			"rulesCleanupFailed": "ลบโหมดเรียบร้อยแล้ว แต่ไม่สามารถลบโฟลเดอร์กฎที่ {{rulesFolderPath}} ได้ คุณอาจต้องลบด้วยตนเอง"
-		},
-		"scope": {
-			"project": "โปรเจกต์",
-			"global": "ส่วนกลาง"
-		}
+	"interruption": {
+		"responseInterruptedByApiError": "การตอบกลับถูกขัดจังหวะโดยข้อผิดพลาด API",
+		"responseInterruptedByUser": "การตอบกลับถูกขัดจังหวะโดยผู้ใช้",
+		"streamTerminatedByProvider": "Provider ended the request"
+	},
+	"items": {
+		"one": "หนึ่งรายการ",
+		"other": "{{count}} รายการ",
+		"zero": "ไม่มีรายการ"
 	},
 	"marketplace": {
 		"mode": {
@@ -217,21 +223,35 @@
 			"organization_requires_auth": "องค์กรของคุณต้องการการรับรองความถูกต้อง"
 		}
 	},
+	"number_format": {
+		"billion_suffix": "พันล้าน",
+		"million_suffix": "ล้าน",
+		"thousand_suffix": "พัน"
+	},
 	"prompts": {
 		"deleteMode": {
-			"title": "ลบโหมดที่กำหนดเอง",
+			"confirm": "ลบ",
 			"description": "คุณแน่ใจหรือไม่ว่าต้องการลบโหมด {{scope}} นี้? การดำเนินการนี้จะลบโฟลเดอร์กฎที่เกี่ยวข้องที่: {{rulesFolderPath}}",
 			"descriptionNoRules": "คุณแน่ใจหรือไม่ว่าต้องการลบโหมดที่กำหนดเองนี้",
-			"confirm": "ลบ"
+			"title": "ลบโหมดที่กำหนดเอง"
 		}
 	},
-	"commands": {
-		"preventCompletionWithOpenTodos": {
-			"description": "ป้องกันการทำงานให้เสร็จสิ้นเมื่อมีรายการสิ่งที่ต้องทำที่ยังไม่เสร็จในรายการสิ่งที่ต้องทำ"
-		}
+	"storage": {
+		"enter_absolute_path": "โปรดป้อนเส้นทางแบบเต็ม (เช่น D:\\ModelHarborAgentStorage หรือ /home/user/storage)",
+		"enter_valid_path": "โปรดป้อนเส้นทางที่ถูกต้อง",
+		"path_placeholder": "D:\\ModelHarborAgentStorage",
+		"prompt_custom_path": "ป้อนเส้นทางที่เก็บประวัติการสนทนาที่กำหนดเอง เว้นว่างไว้เพื่อใช้ตำแหน่งเริ่มต้น"
 	},
-	"docsLink": {
-		"label": "เอกสาร",
-		"url": "https://docs.roocode.com"
-	}
+	"tasks": {
+		"canceled": "ข้อผิดพลาดของงาน: ถูกหยุดและยกเลิกโดยผู้ใช้",
+		"deleted": "ความล้มเหลวของงาน: ถูกหยุดและลบโดยผู้ใช้",
+		"incomplete": "งาน #{{taskNumber}} (ไม่สมบูรณ์)",
+		"no_messages": "งาน #{{taskNumber}} (ไม่มีข้อความ)"
+	},
+	"warnings": {
+		"auto_import_failed": "ไม่สามารถนำเข้าการตั้งค่า ModelHarbor Agent โดยอัตโนมัติได้: {{error}}",
+		"missing_task_files": "ไฟล์ของงานนี้หายไป คุณต้องการลบออกจากรายการงานหรือไม่",
+		"no_terminal_content": "ไม่ได้เลือกเนื้อหาเทอร์มินัล"
+	},
+	"welcome": "ยินดีต้อนรับ {{name}}! คุณมี {{count}} การแจ้งเตือน"
 }

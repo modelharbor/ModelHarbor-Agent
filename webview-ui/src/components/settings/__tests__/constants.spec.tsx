@@ -6,6 +6,7 @@ describe("PROVIDERS constants", () => {
 		expect(PROVIDERS[0]).toEqual({
 			value: "modelharbor",
 			label: "ModelHarbor",
+			proxy: false,
 		})
 	})
 
@@ -32,8 +33,8 @@ describe("PROVIDERS constants", () => {
 
 	it("should maintain the total number of providers", () => {
 		// This test ensures we didn't accidentally remove or duplicate any providers
-		// ModelHarbor + 33 other providers (after removing roo, chutes, and glama) = 34
-		const expectedProviderCount = 34
+		// ModelHarbor + 35 other providers = 36
+		const expectedProviderCount = 36
 		expect(PROVIDERS.length).toBe(expectedProviderCount)
 	})
 

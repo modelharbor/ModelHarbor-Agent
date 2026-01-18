@@ -2,11 +2,8 @@ import { useCallback, useState, useEffect, useRef } from "react"
 import { VSCodeTextField, VSCodeLink, VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react"
 import { useQueryClient } from "@tanstack/react-query"
 
-import type { ProviderSettings } from "@roo-code/types"
+import type { ProviderSettings, ExtensionMessage } from "@roo-code/types"
 import { modelHarborDefaultModelId, modelHarborModels } from "@roo-code/types"
-
-import { ExtensionMessage } from "@roo/ExtensionMessage"
-import { RouterName } from "@roo/api"
 
 import { vscode } from "@src/utils/vscode"
 import { useExtensionState } from "@src/context/ExtensionStateContext"
@@ -52,7 +49,7 @@ export const ModelHarbor = ({ apiConfiguration, setApiConfigurationField }: Mode
 		const handleMessage = (event: MessageEvent<ExtensionMessage>) => {
 			const message = event.data
 			if (message.type === "singleRouterModelFetchResponse" && !message.success) {
-				const providerName = message.values?.provider as RouterName
+				const providerName = message.values?.provider as string
 				if (providerName === "modelharbor") {
 					modelharborErrorJustReceived.current = true
 					setRefreshStatus("error")

@@ -12,6 +12,8 @@ import {
 	type ClineMessage,
 	type WebviewMessage,
 	type EditQueuedMessagePayload,
+	type ModelRecord,
+	type RouterModels,
 	RooCodeSettings,
 	ExperimentId,
 	checkoutDiffPayloadSchema,
@@ -27,7 +29,7 @@ import { handleCheckpointRestoreOperation } from "./checkpointRestoreHandler"
 import { generateErrorDiagnostics } from "./diagnosticsHandler"
 import { changeLanguage, t } from "../../i18n"
 import { Package } from "../../shared/package"
-import { type RouterName, type ModelRecord, type RouterModels, toRouterName } from "../../shared/api"
+import { type RouterName, toRouterName } from "../../shared/api"
 import { MessageEnhancer } from "./messageEnhancer"
 
 import { checkExistKey } from "../../shared/checkExistApiConfig"

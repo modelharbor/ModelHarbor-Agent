@@ -1,65 +1,65 @@
 {
-	"title": "MCP Servers",
-	"done": "เสร็จสิ้น",
-	"marketplace": "MCP Marketplace",
+	"deleteDialog": {
+		"cancel": "ยกเลิก",
+		"delete": "ลบ",
+		"description": "คุณแน่ใจหรือไม่ว่าต้องการลบ MCP server \"{{serverName}}\"? การกระทำนี้ไม่สามารถยกเลิกได้",
+		"title": "ลบ MCP Server"
+	},
 	"description": "<0>Model Context Protocol</0> ช่วยให้สามารถสื่อสารกับ MCP servers ที่รันอยู่ในเครื่องซึ่งให้เครื่องมือและทรัพยากรเพิ่มเติมเพื่อขยายความสามารถของ ModelHarbor คุณสามารถใช้ <1>servers ที่ชุมชนสร้าง</1> หรือขอให้ ModelHarbor สร้างเครื่องมือใหม่เฉพาะสำหรับขั้นตอนการทำงานของคุณ (เช่น \"เพิ่มเครื่องมือที่ดึงเอกสาร npm ล่าสุด\")",
-	"instructions": "คำแนะนำ",
-	"enableToggle": {
-		"title": "เปิดใช้งาน MCP Servers",
-		"description": "เปิดเพื่อให้ ModelHarbor ใช้เครื่องมือจาก MCP servers ที่เชื่อมต่อ ทำให้ ModelHarbor มีความสามารถมากขึ้น หากคุณไม่มีแผนจะใช้เครื่องมือเพิ่มเติมเหล่านี้ ปิดเพื่อช่วยลดต้นทุน API token"
-	},
-	"enableServerCreation": {
-		"title": "เปิดใช้งานการสร้าง MCP Server",
-		"description": "เปิดใช้งานเพื่อให้ ModelHarbor ช่วยคุณสร้าง MCP servers แบบกำหนดเอง<1>ใหม่</1> <0>เรียนรู้เกี่ยวกับการสร้าง server</0>",
-		"hint": "คำแนะนำ: เพื่อลดต้นทุน API token ปิดการตั้งค่านี้เมื่อคุณไม่ได้ขอให้ ModelHarbor สร้าง MCP server ใหม่อย่างจริงจัง"
-	},
+	"done": "เสร็จสิ้น",
 	"editGlobalMCP": "แก้ไข MCP ส่วนกลาง",
 	"editProjectMCP": "แก้ไข MCP โปรเจ็กต์",
-	"refreshMCP": "รีเฟรช MCP Servers",
-	"learnMoreEditingSettings": "เรียนรู้เพิ่มเติมเกี่ยวกับการแก้ไขไฟล์การตั้งค่า MCP",
-	"tool": {
-		"alwaysAllow": "อนุญาตเสมอ",
-		"parameters": "พารามิเตอร์",
-		"noDescription": "ไม่มีคำอธิบาย",
-		"togglePromptInclusion": "สลับการรวมในพรอมต์"
-	},
-	"tabs": {
-		"tools": "เครื่องมือ",
-		"resources": "ทรัพยากร",
-		"errors": "ข้อผิดพลาด"
-	},
 	"emptyState": {
-		"noTools": "ไม่พบเครื่องมือ",
+		"noLogs": "No logs yet",
 		"noResources": "ไม่พบทรัพยากร",
-		"noErrors": "ไม่พบข้อผิดพลาด"
+		"noTools": "ไม่พบเครื่องมือ"
 	},
+	"enableServerCreation": {
+		"description": "เปิดใช้งานเพื่อให้ ModelHarbor ช่วยคุณสร้าง MCP servers แบบกำหนดเอง<1>ใหม่</1> <0>เรียนรู้เกี่ยวกับการสร้าง server</0>",
+		"hint": "คำแนะนำ: เพื่อลดต้นทุน API token ปิดการตั้งค่านี้เมื่อคุณไม่ได้ขอให้ ModelHarbor สร้าง MCP server ใหม่อย่างจริงจัง",
+		"title": "เปิดใช้งานการสร้าง MCP Server"
+	},
+	"enableToggle": {
+		"description": "เปิดเพื่อให้ ModelHarbor ใช้เครื่องมือจาก MCP servers ที่เชื่อมต่อ ทำให้ ModelHarbor มีความสามารถมากขึ้น หากคุณไม่มีแผนจะใช้เครื่องมือเพิ่มเติมเหล่านี้ ปิดเพื่อช่วยลดต้นทุน API token",
+		"title": "เปิดใช้งาน MCP Servers"
+	},
+	"execution": {
+		"completed": "เสร็จสิ้น",
+		"error": "ข้อผิดพลาด",
+		"running": "กำลังรัน"
+	},
+	"instructions": "คำแนะนำ",
+	"learnMoreEditingSettings": "เรียนรู้เพิ่มเติมเกี่ยวกับการแก้ไขไฟล์การตั้งค่า MCP",
+	"marketplace": "MCP Marketplace",
 	"networkTimeout": {
-		"label": "Network Timeout",
 		"description": "เวลาสูงสุดที่จะรอการตอบสนองจากเซิร์ฟเวอร์",
+		"label": "Network Timeout",
 		"options": {
-			"15seconds": "15 วินาที",
-			"30seconds": "30 วินาที",
-			"1minute": "1 นาที",
-			"5minutes": "5 นาที",
 			"10minutes": "10 นาที",
 			"15minutes": "15 นาที",
+			"15seconds": "15 วินาที",
+			"1minute": "1 นาที",
 			"30minutes": "30 นาที",
+			"30seconds": "30 วินาที",
+			"5minutes": "5 นาที",
 			"60minutes": "60 นาที"
 		}
 	},
-	"deleteDialog": {
-		"title": "ลบ MCP Server",
-		"description": "คุณแน่ใจหรือไม่ว่าต้องการลบ MCP server \"{{serverName}}\"? การกระทำนี้ไม่สามารถยกเลิกได้",
-		"cancel": "ยกเลิก",
-		"delete": "ลบ"
-	},
+	"refreshMCP": "รีเฟรช MCP Servers",
 	"serverStatus": {
-		"retrying": "กำลังลองใหม่...",
-		"retryConnection": "ลองเชื่อมต่อใหม่"
+		"retryConnection": "ลองเชื่อมต่อใหม่",
+		"retrying": "กำลังลองใหม่..."
 	},
-	"execution": {
-		"running": "กำลังรัน",
-		"completed": "เสร็จสิ้น",
-		"error": "ข้อผิดพลาด"
+	"tabs": {
+		"logs": "Logs",
+		"resources": "ทรัพยากร",
+		"tools": "เครื่องมือ"
+	},
+	"title": "MCP Servers",
+	"tool": {
+		"alwaysAllow": "อนุญาตเสมอ",
+		"noDescription": "ไม่มีคำอธิบาย",
+		"parameters": "พารามิเตอร์",
+		"togglePromptInclusion": "สลับการรวมในพรอมต์"
 	}
 }

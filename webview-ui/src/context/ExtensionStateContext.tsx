@@ -16,6 +16,8 @@ import {
 	DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
 } from "@roo-code/types"
 
+import { type OrganizationAllowList, ORGANIZATION_ALLOW_ALL } from "@roo/ProfileValidator"
+
 import { findLastIndex } from "@roo/array"
 
 import { checkExistKey } from "@roo/checkExistApiConfig"
@@ -32,6 +34,7 @@ export interface ExtensionStateContextType extends ExtensionState {
 	showWelcome: boolean
 	theme: any
 	mcpServers: McpServer[]
+	organizationAllowList: OrganizationAllowList
 	hasSystemPromptOverride?: boolean
 	currentCheckpoint?: string
 	currentTaskTodos?: TodoItem[] // Initial todos for the current task
@@ -279,6 +282,7 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 	const [includeTaskHistoryInEnhance, setIncludeTaskHistoryInEnhance] = useState(true)
 	const [includeCurrentTime, setIncludeCurrentTime] = useState(true)
 	const [includeCurrentCost, setIncludeCurrentCost] = useState(true)
+	const [organizationAllowList] = useState<OrganizationAllowList>(ORGANIZATION_ALLOW_ALL)
 
 	const setListApiConfigMeta = useCallback(
 		(value: ProviderSettingsEntry[]) => setState((prevState) => ({ ...prevState, listApiConfigMeta: value })),
@@ -425,6 +429,7 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		showWelcome,
 		theme,
 		mcpServers,
+		organizationAllowList,
 		currentCheckpoint,
 		filePaths,
 		openedTabs,

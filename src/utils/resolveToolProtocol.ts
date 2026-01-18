@@ -65,7 +65,7 @@ export function resolveToolProtocol(
 	}
 
 	// 2. Special case for ModelHarbor and LiteLLM: use XML protocol for models that don't support native tools
-	if (providerSettings.apiProvider === "modelharbor" || providerSettings.apiProvider === "litellm") {
+	if (providerSettings?.apiProvider === "modelharbor" || providerSettings?.apiProvider === "litellm") {
 		const apiHandlerOptions = providerSettings as ApiHandlerOptions
 
 		// Get the model ID - check both possible field names for each provider

@@ -1,99 +1,114 @@
 {
+	"answers": {
+		"cancel": "ยกเลิก",
+		"keep": "เก็บไว้",
+		"no": "ไม่",
+		"remove": "ลบ",
+		"yes": "ใช่"
+	},
+	"confirmation": {
+		"deleteMessage": "ลบข้อความ",
+		"deleteOnly": "ไม่, ลบข้อความเท่านั้น",
+		"deleteQuestionWithCheckpoint": "การลบข้อความนี้จะลบข้อความที่มาทีหลังทั้งหมดในการสนทนา คุณต้องการยกเลิกการเปลี่ยนแปลงทั้งหมดกลับไปยังจุดตรวจสอบนี้ด้วยหรือไม่",
+		"deleteWarning": "การลบข้อความนี้จะลบข้อความที่ตามมาทั้งหมดในการสนทนา คุณต้องการดำเนินการต่อหรือไม่",
+		"dontShowAgain": "ไม่ต้องแสดงอีก",
+		"editMessage": "แก้ไขข้อความ",
+		"editOnly": "ไม่, แก้ไขข้อความเท่านั้น",
+		"editQuestionWithCheckpoint": "การแก้ไขข้อความนี้จะลบข้อความที่มาทีหลังทั้งหมดในการสนทนา คุณต้องการยกเลิกการเปลี่ยนแปลงทั้งหมดกลับไปยังจุดตรวจสอบนี้ด้วยหรือไม่",
+		"editWarning": "การแก้ไขข้อความนี้จะลบข้อความที่ตามมาทั้งหมดในการสนทนา คุณต้องการดำเนินการต่อหรือไม่",
+		"proceed": "ดำเนินการต่อ",
+		"restoreToCheckpoint": "ใช่, กู้คืนจุดตรวจสอบ"
+	},
+	"costs": {
+		"own": "Own",
+		"subtasks": "Subtasks"
+	},
 	"errorBoundary": {
-		"title": "เกิดข้อผิดพลาดบางอย่าง",
-		"reportText": "โปรดช่วยเราปรับปรุงโดยการรายงานข้อผิดพลาดนี้ที่",
-		"githubText": "หน้า GitHub Issues ของเรา",
+		"componentStack": "สแต็กคอมโพเนนต์:",
 		"copyInstructions": "คัดลอกและวางข้อความแสดงข้อผิดพลาดต่อไปนี้เพื่อรวมไว้เป็นส่วนหนึ่งของการส่งของคุณ:",
 		"errorStack": "สแต็กข้อผิดพลาด:",
-		"componentStack": "สแต็กคอมโพเนนต์:"
+		"githubText": "หน้า GitHub Issues ของเรา",
+		"reportText": "โปรดช่วยเราปรับปรุงโดยการรายงานข้อผิดพลาดนี้ที่",
+		"title": "เกิดข้อผิดพลาดบางอย่าง"
 	},
-	"answers": {
-		"yes": "ใช่",
-		"no": "ไม่",
-		"cancel": "ยกเลิก",
-		"remove": "ลบ",
-		"keep": "เก็บไว้"
-	},
-	"number_format": {
-		"thousand_suffix": "พัน",
-		"million_suffix": "ล้าน",
-		"billion_suffix": "พันล้าน"
-	},
-	"ui": {
-		"search_placeholder": "ค้นหา...",
-		"no_results": "ไม่พบผลลัพธ์"
-	},
-	"mermaid": {
-		"loading": "กำลังสร้างไดอะแกรม mermaid...",
-		"render_error": "ไม่สามารถแสดงไดอะแกรมได้",
-		"buttons": {
-			"zoom": "ซูม",
-			"zoomIn": "ซูมเข้า",
-			"zoomOut": "ซูมออก",
-			"copy": "คัดลอก",
-			"save": "บันทึกรูปภาพ",
-			"viewCode": "ดูโค้ด",
-			"viewDiagram": "ดูไดอะแกรม",
-			"close": "ปิด"
-		},
-		"modal": {
-			"codeTitle": "โค้ด Mermaid"
-		},
-		"tabs": {
-			"diagram": "ไดอะแกรม",
-			"code": "โค้ด"
-		},
-		"feedback": {
-			"imageCopied": "คัดลอกรูปภาพไปยังคลิปบอร์ดแล้ว",
-			"copyError": "เกิดข้อผิดพลาดในการคัดลอกรูปภาพ"
-		}
-	},
-	"image": {
-		"tabs": {
-			"view": "รูปภาพ"
-		},
-		"noData": "ไม่มีข้อมูลรูปภาพ"
+	"errors": {
+		"attempt_completion_tool_failed": "Cannot execute attempt_completion because a previous tool call failed in this turn. Please address the tool failure before attempting completion.",
+		"init_checkpoint_fail_long_time": "Checkpoint initialization has taken more than {{timeout}} seconds, so checkpoints are disabled for this task. You can disable checkpoints or extend the waiting time in <settingsLink>the checkpoint settings</settingsLink>.",
+		"wait_checkpoint_long_time": "Waited {{timeout}} seconds for checkpoint initialization. If you don't need the checkpoint feature, please turn it off in <settingsLink>the checkpoint settings</settingsLink>."
 	},
 	"file": {
 		"errors": {
-			"invalidDataUri": "รูปแบบ URI ข้อมูลไม่ถูกต้อง",
 			"copyingImage": "เกิดข้อผิดพลาดในการคัดลอกรูปภาพ: {{error}}",
-			"openingImage": "เกิดข้อผิดพลาดในการเปิดรูปภาพ: {{error}}",
-			"pathNotExists": "ไม่พบเส้นทาง: {{path}}",
 			"couldNotOpen": "ไม่สามารถเปิดไฟล์ได้: {{error}}",
-			"couldNotOpenGeneric": "ไม่สามารถเปิดไฟล์ได้!"
+			"couldNotOpenGeneric": "ไม่สามารถเปิดไฟล์ได้!",
+			"invalidDataUri": "รูปแบบ URI ข้อมูลไม่ถูกต้อง",
+			"openingImage": "เกิดข้อผิดพลาดในการเปิดรูปภาพ: {{error}}",
+			"pathNotExists": "ไม่พบเส้นทาง: {{path}}"
 		},
 		"success": {
 			"imageDataUriCopied": "คัดลอก URI ข้อมูลรูปภาพไปยังคลิปบอร์ดแล้ว"
 		}
 	},
-	"confirmation": {
-		"deleteMessage": "ลบข้อความ",
-		"deleteWarning": "การลบข้อความนี้จะลบข้อความที่ตามมาทั้งหมดในการสนทนา คุณต้องการดำเนินการต่อหรือไม่",
-		"editMessage": "แก้ไขข้อความ",
-		"editWarning": "การแก้ไขข้อความนี้จะลบข้อความที่ตามมาทั้งหมดในการสนทนา คุณต้องการดำเนินการต่อหรือไม่",
-		"editQuestionWithCheckpoint": "การแก้ไขข้อความนี้จะลบข้อความที่มาทีหลังทั้งหมดในการสนทนา คุณต้องการยกเลิกการเปลี่ยนแปลงทั้งหมดกลับไปยังจุดตรวจสอบนี้ด้วยหรือไม่",
-		"deleteQuestionWithCheckpoint": "การลบข้อความนี้จะลบข้อความที่มาทีหลังทั้งหมดในการสนทนา คุณต้องการยกเลิกการเปลี่ยนแปลงทั้งหมดกลับไปยังจุดตรวจสอบนี้ด้วยหรือไม่",
-		"editOnly": "ไม่, แก้ไขข้อความเท่านั้น",
-		"deleteOnly": "ไม่, ลบข้อความเท่านั้น",
-		"restoreToCheckpoint": "ใช่, กู้คืนจุดตรวจสอบ",
-		"proceed": "ดำเนินการต่อ",
-		"dontShowAgain": "ไม่ต้องแสดงอีก"
+	"image": {
+		"noData": "ไม่มีข้อมูลรูปภาพ",
+		"tabs": {
+			"view": "รูปภาพ"
+		}
+	},
+	"mermaid": {
+		"buttons": {
+			"close": "ปิด",
+			"copy": "คัดลอก",
+			"save": "บันทึกรูปภาพ",
+			"viewCode": "ดูโค้ด",
+			"viewDiagram": "ดูไดอะแกรม",
+			"zoom": "ซูม",
+			"zoomIn": "ซูมเข้า",
+			"zoomOut": "ซูมออก"
+		},
+		"feedback": {
+			"copyError": "เกิดข้อผิดพลาดในการคัดลอกรูปภาพ",
+			"imageCopied": "คัดลอกรูปภาพไปยังคลิปบอร์ดแล้ว"
+		},
+		"loading": "กำลังสร้างไดอะแกรม mermaid...",
+		"modal": {
+			"codeTitle": "โค้ด Mermaid"
+		},
+		"render_error": "ไม่สามารถแสดงไดอะแกรมได้",
+		"tabs": {
+			"code": "โค้ด",
+			"diagram": "ไดอะแกรม"
+		}
+	},
+	"number_format": {
+		"billion_suffix": "พันล้าน",
+		"million_suffix": "ล้าน",
+		"thousand_suffix": "พัน"
+	},
+	"tasks": {
+		"awaiting_child": "Awaiting child task {{childId}}",
+		"delegated": "Delegated to subtask",
+		"delegated_to": "Delegated to task {{childId}}",
+		"delegation_completed": "Subtask completed, resuming parent"
 	},
 	"time_ago": {
-		"just_now": "เมื่อสักครู่",
-		"seconds_ago": "{{count}} วินาทีที่แล้ว",
-		"minute_ago": "1 นาทีที่แล้ว",
-		"minutes_ago": "{{count}} นาทีที่แล้ว",
-		"hour_ago": "1 ชั่วโมงที่แล้ว",
-		"hours_ago": "{{count}} ชั่วโมงที่แล้ว",
 		"day_ago": "1 วันที่แล้ว",
 		"days_ago": "{{count}} วันที่แล้ว",
-		"week_ago": "1 สัปดาห์ที่แล้ว",
-		"weeks_ago": "{{count}} สัปดาห์ที่แล้ว",
+		"hour_ago": "1 ชั่วโมงที่แล้ว",
+		"hours_ago": "{{count}} ชั่วโมงที่แล้ว",
+		"just_now": "เมื่อสักครู่",
+		"minute_ago": "1 นาทีที่แล้ว",
+		"minutes_ago": "{{count}} นาทีที่แล้ว",
 		"month_ago": "1 เดือนที่แล้ว",
 		"months_ago": "{{count}} เดือนที่แล้ว",
+		"seconds_ago": "{{count}} วินาทีที่แล้ว",
+		"week_ago": "1 สัปดาห์ที่แล้ว",
+		"weeks_ago": "{{count}} สัปดาห์ที่แล้ว",
 		"year_ago": "1 ปีที่แล้ว",
 		"years_ago": "{{count}} ปีที่แล้ว"
+	},
+	"ui": {
+		"no_results": "ไม่พบผลลัพธ์",
+		"search_placeholder": "ค้นหา..."
 	}
 }

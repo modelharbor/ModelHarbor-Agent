@@ -1000,7 +1000,7 @@ describe("ClineProvider", () => {
 		const messageHandler = (mockWebviewView.webview.onDidReceiveMessage as any).mock.calls[0][0]
 
 		// Default value should be false
-		expect((await provider.getState()).showRooIgnoredFiles).toBe(true)
+		expect((await provider.getState()).showRooIgnoredFiles).toBe(false)
 
 		// Test showRooIgnoredFiles with true
 		await messageHandler({ type: "updateSettings", updatedSettings: { showRooIgnoredFiles: true } })

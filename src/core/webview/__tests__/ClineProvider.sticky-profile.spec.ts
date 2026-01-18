@@ -1,7 +1,6 @@
 // npx vitest run core/webview/__tests__/ClineProvider.sticky-profile.spec.ts
 
 import * as vscode from "vscode"
-import { TelemetryService } from "@roo-code/telemetry"
 import { ClineProvider } from "../ClineProvider"
 import { ContextProxy } from "../../config/ContextProxy"
 import type { HistoryItem } from "@roo-code/types"
@@ -171,19 +170,19 @@ vi.mock("fs/promises", () => ({
 	rmdir: vi.fn().mockResolvedValue(undefined),
 }))
 
-vi.mock("@roo-code/telemetry", () => ({
-	TelemetryService: {
-		hasInstance: vi.fn().mockReturnValue(true),
-		createInstance: vi.fn(),
-		get instance() {
-			return {
-				trackEvent: vi.fn(),
-				trackError: vi.fn(),
-				setProvider: vi.fn(),
-				captureModeSwitch: vi.fn(),
-			}
-		},
+const mockTelemetryService = {
+	hasInstance: vi.fn().mockReturnValue(true),
+	createInstance: vi.fn(),
+	instance: {
+		trackEvent: vi.fn(),
+		trackError: vi.fn(),
+		setProvider: vi.fn(),
+		captureModeSwitch: vi.fn(),
 	},
+}
+
+vi.mock("@roo-code/telemetry", () => ({
+	TelemetryService: mockTelemetryService,
 }))
 
 describe("ClineProvider - Sticky Provider Profile", () => {
@@ -197,8 +196,8 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 		vi.clearAllMocks()
 		taskIdCounter = 0
 
-		if (!TelemetryService.hasInstance()) {
-			TelemetryService.createInstance([])
+		if (!mockTelemetryService.hasInstance()) {
+			mockTelemetryService.createInstance([])
 		}
 
 		const globalState: Record<string, string | undefined> = {

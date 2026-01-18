@@ -142,9 +142,9 @@ export function NewRun() {
 			concurrency: CONCURRENCY_DEFAULT,
 			timeout: TIMEOUT_DEFAULT,
 			iterations: ITERATIONS_DEFAULT,
-				executionMethod: "vscode",
-			},
-		})
+			executionMethod: "vscode",
+		},
+	})
 
 	const {
 		register,
@@ -156,27 +156,6 @@ export function NewRun() {
 	} = form
 
 	const [suite, settings] = watch(["suite", "settings", "concurrency"])
-
-	const selectedModelIds = useMemo(
-		() => modelSelections.map((s) => s.model).filter((m) => m.length > 0),
-		[modelSelections],
-	)
-
-	const applyModelIds = useCallback(
-		(modelIds: string[]) => {
-			const unique = Array.from(new Set(modelIds.map((m) => m.trim()).filter((m) => m.length > 0)))
-
-			if (unique.length === 0) {
-				setModelSelections([{ id: crypto.randomUUID(), model: "", popoverOpen: false }])
-				setValue("model", "")
-				return
-			}
-
-			setModelSelections(unique.map((model) => ({ id: crypto.randomUUID(), model, popoverOpen: false })))
-			setValue("model", unique[0] ?? "")
-		},
-		[setValue],
-	)
 
 	// Ensure the `exercises` field is registered so RHF always includes it in submit values.
 	useEffect(() => {

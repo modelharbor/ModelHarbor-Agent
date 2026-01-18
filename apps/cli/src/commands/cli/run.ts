@@ -74,7 +74,7 @@ export async function run(workspaceArg: string, options: FlagOptions) {
 					try {
 						const client = createClient({ url: SDK_BASE_URL, authToken: token })
 						const me = await client.auth.me.query()
-						provider = "roo"
+						provider = "modelharbor"
 						apiKey = token
 						user = me?.type === "user" ? me.user : null
 					} catch {

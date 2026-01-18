@@ -3,7 +3,7 @@ import { useEvent } from "react-use"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import posthog from "posthog-js"
 
-import { type ExtensionMessage, TelemetryEventName } from "@roo-code/types"
+import { type ExtensionMessage } from "@roo-code/types"
 
 import TranslationProvider from "./i18n/TranslationContext"
 import { MarketplaceViewStateManager } from "./components/marketplace/MarketplaceViewStateManager"

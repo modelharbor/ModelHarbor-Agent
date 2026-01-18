@@ -1,10 +1,13 @@
-import { render, screen, fireEvent } from "@/utils/test-utils"
+import { render, screen, fireEvent, act } from "@/utils/test-utils"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { vscode } from "@/utils/vscode"
 import { ExtensionStateContextProvider } from "@/context/ExtensionStateContext"
 
 import SettingsView from "../SettingsView"
+
+// Helper to flush all pending promises and microtasks
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 vi.mock("@src/utils/vscode", () => ({ vscode: { postMessage: vi.fn() } }))
 
@@ -125,8 +128,8 @@ vi.mock("@/components/ui", () => ({
 	Slider: ({ value, onValueChange, "data-testid": dataTestId }: any) => (
 		<input
 			type="range"
-			value={value[0]}
-			onChange={(e) => onValueChange([parseFloat(e.target.value)])}
+			value={value?.[0] ?? 0}
+			onChange={(e) => onValueChange?.([parseFloat(e.target.value)])}
 			data-testid={dataTestId}
 		/>
 	),
@@ -200,27 +203,31 @@ vi.mock("@/components/ui", () => ({
 }))
 
 // Mock window.postMessage to trigger state hydration
-const mockPostMessage = (state: any) => {
-	window.postMessage(
-		{
-			type: "state",
-			state: {
-				version: "1.0.0",
-				clineMessages: [],
-				taskHistory: [],
-				shouldShowAnnouncement: false,
-				allowedCommands: [],
-				alwaysAllowExecute: false,
-				ttsEnabled: false,
-				ttsSpeed: 1,
-				soundEnabled: false,
-				soundVolume: 0.5,
-				superYoloMode: false,
-				...state,
+const mockPostMessage = async (state: any) => {
+	await act(async () => {
+		window.postMessage(
+			{
+				type: "state",
+				state: {
+					version: "1.0.0",
+					clineMessages: [],
+					taskHistory: [],
+					shouldShowAnnouncement: false,
+					allowedCommands: [],
+					alwaysAllowExecute: false,
+					ttsEnabled: false,
+					ttsSpeed: 1,
+					soundEnabled: false,
+					soundVolume: 0.5,
+					superYoloMode: false,
+					...state,
+				},
 			},
-		},
-		"*",
-	)
+			"*",
+		)
+		// Wait for the message to be processed
+		await flushPromises()
+	})
 }
 
 describe("SettingsView - Super YOLO Mode", () => {
@@ -241,7 +248,7 @@ describe("SettingsView - Super YOLO Mode", () => {
 		)
 
 		// Hydrate initial state
-		mockPostMessage({})
+		await mockPostMessage({})
 
 		// Look for Super YOLO Mode checkbox
 		const superYoloCheckbox = screen.queryByTestId("super-yolo-mode-checkbox")
@@ -261,8 +268,9 @@ describe("SettingsView - Super YOLO Mode", () => {
 		)
 
 		// Hydrate initial state with superYoloMode disabled
-		mockPostMessage({ superYoloMode: false })
+		await mockPostMessage({ superYoloMode: false })
 
+		// Check the checkbox is not checked
 		const superYoloCheckbox = screen.getByTestId("super-yolo-mode-checkbox")
 		expect(superYoloCheckbox).not.toBeChecked()
 	})
@@ -280,7 +288,7 @@ describe("SettingsView - Super YOLO Mode", () => {
 		)
 
 		// Hydrate initial state
-		mockPostMessage({ superYoloMode: false })
+		await mockPostMessage({ superYoloMode: false })
 
 		const superYoloCheckbox = screen.getByTestId("super-yolo-mode-checkbox")
 
@@ -316,7 +324,7 @@ describe("SettingsView - Super YOLO Mode", () => {
 		)
 
 		// Hydrate initial state with superYoloMode disabled
-		mockPostMessage({ superYoloMode: false })
+		await mockPostMessage({ superYoloMode: false })
 
 		const superYoloCheckbox = screen.getByTestId("super-yolo-mode-checkbox")
 

@@ -1,36 +1,58 @@
 {
+	"chooseProvider": "เพื่อทำความมหัศจรรย์ ModelHarbor ต้องการ API key",
 	"greeting": "ยินดีต้อนรับสู่ ModelHarbor Agent!",
+	"importSettings": "นำเข้าการตั้งค่า",
 	"introduction": "ด้วยโหมดในตัวและแบบขยายได้หลากหลาย ModelHarbor Agent ช่วยให้คุณวางแผน ออกแบบสถาปัตยกรรม เขียนโค้ด แก้ไขข้อบกพร่อง และเพิ่มประสิทธิภาพการทำงานได้อย่างที่ไม่เคยมีมาก่อน",
+	"landing": {
+		"accountMention": "To get started, create your ModelHarbor Cloud account. Get powerful models, web control, analytics, support and more.",
+		"getStarted": "Create ModelHarbor Account",
+		"greeting": "Welcome to ModelHarbor Agent!",
+		"introduction": "With a range of built-in and extensible Modes, ModelHarbor Agent lets you plan, architect, code, debug and boost your productivity like never before.",
+		"noAccount": "or use without an account"
+	},
+	"languageSelector": {},
 	"notice": "ในการเริ่มต้น extension นี้ต้องการผู้ให้บริการ API",
-	"start": "ไปกันเลย!",
+	"providerSignup": {
+		"backToRoo": "Go with the ModelHarbor Cloud Provider.",
+		"chooseProvider": "ModelHarbor needs an LLM provider to work. Choose one to get started, you can add more later.",
+		"finish": "Finish",
+		"getStarted": "Get started",
+		"goBack": "Back",
+		"heading": "Choose your provider",
+		"learnMore": "Learn more",
+		"noApiKeys": "Don't want to deal with keys? Go with the ModelHarbor Cloud Provider.",
+		"rooCloudDescription": "The simplest way to use ModelHarbor. A curated mix of free and paid models at a low cost",
+		"rooCloudProvider": "ModelHarbor Cloud Provider",
+		"useAnotherProvider": "3rd-party Provider",
+		"useAnotherProviderDescription": "Enter an API key and get going."
+	},
 	"routers": {
+		"openrouter": {
+			"description": "อินเทอร์เฟซแบบรวมสำหรับ LLMs"
+		},
 		"requesty": {
 			"description": "LLM router ที่ปรับแต่งมาแล้ว",
 			"incentive": "เครดิตฟรี $1"
-		},
-		"openrouter": {
-			"description": "อินเทอร์เฟซแบบรวมสำหรับ LLMs"
 		},
 		"roo": {
 			"description": "โมเดลฟรีที่ดีที่สุดเพื่อเริ่มต้น",
 			"incentive": "ลอง ModelHarbor ฟรี"
 		}
 	},
-	"chooseProvider": "เพื่อทำความมหัศจรรย์ ModelHarbor ต้องการ API key",
-	"startRouter": "เราแนะนำให้ใช้ LLM Router:",
+	"start": "ไปกันเลย!",
 	"startCustom": "หรือคุณสามารถนำ API key ของผู้ให้บริการของคุณมา:",
-	"modelHarbor": "คุณสามารถรับ API key ได้จาก ModelHarbor.com",
-	"modelHarborFacebook": "ติดตาม ModelHarbor บน Facebook",
+	"startRouter": "เราแนะนำให้ใช้ LLM Router:",
 	"telemetry": {
-		"title": "ช่วยปรับปรุง ModelHarbor Agent",
-		"anonymousTelemetry": "ส่งข้อมูลข้อผิดพลาดและการใช้งานแบบไม่ระบุตัวตนเพื่อช่วยเราแก้ไขจุดบกพร่องและปรับปรุง extension ไม่มีโค้ด พรอมต์ หรือข้อมูลส่วนบุคคลถูกส่งไปเลย",
-		"changeSettings": "คุณสามารถเปลี่ยนแปลงได้เสมอที่ด้านล่างของ <settingsLink>การตั้งค่า</settingsLink>",
-		"settings": "การตั้งค่า",
-		"allow": "อนุญาต",
-		"deny": "ปฏิเสธ"
+		"helpImprove": "Help Improve ModelHarbor Agent",
+		"helpImproveMessage": "ModelHarbor Agent collects error and usage data to help us fix bugs and improve the extension. This telemetry does not collect code, prompts or personal information. You can turn this off in <settingsLink>settings</settingsLink>."
 	},
-	"importSettings": "นำเข้าการตั้งค่า",
-	"languageSelector": {
-		"label": "ภาษา"
+	"waitingForCloud": {
+		"description": "We'll take you to your browser to sign up for ModelHarbor Cloud. We'll then bring you back here to finish.",
+		"goBack": "Go back",
+		"havingTrouble": "If you've completed sign up but are having trouble, <clickHere>click here</clickHere>.",
+		"heading": "Taking you to ModelHarbor Cloud...",
+		"invalidURL": "That doesn't look like a valid callback URL. Please copy what ModelHarbor Cloud is showing in your browser.",
+		"noPrompt": "If you don't get prompted to open a URL, <clickHere>click here</clickHere>.",
+		"pasteUrl": "Paste the callback URL shown in your browser:"
 	}
 }

@@ -1,4 +1,5 @@
-import type { ProviderSettings, OrganizationAllowList, RouterModels } from "@roo-code/types"
+import type { ProviderSettings, RouterModels } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 // Mock i18next to return translation keys with interpolated values
 vi.mock("i18next", () => ({

@@ -10,9 +10,7 @@ import {
 	openAiCodexModels,
 	type ReasoningEffort,
 	type ReasoningEffortExtended,
-	ApiProviderError,
 } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { Package } from "../../shared/package"
 import type { ApiHandlerOptions } from "../../shared/api"
@@ -570,10 +568,6 @@ export class OpenAiCodexHandler extends BaseProvider implements SingleCompletion
 
 			yield* this.handleStreamResponse(response.body, model)
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : String(error)
-			const apiError = new ApiProviderError(errorMessage, this.providerName, model.id, "createMessage")
-			TelemetryService.instance.captureException(apiError)
-
 			if (error instanceof Error) {
 				if (error.message.includes("Codex API")) {
 					throw error
@@ -818,10 +812,6 @@ export class OpenAiCodexHandler extends BaseProvider implements SingleCompletion
 				}
 			}
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : String(error)
-			const apiError = new ApiProviderError(errorMessage, this.providerName, model.id, "createMessage")
-			TelemetryService.instance.captureException(apiError)
-
 			if (error instanceof Error) {
 				throw new Error(t("common:errors.openAiCodex.streamProcessingError", { message: error.message }))
 			}
@@ -1102,11 +1092,6 @@ export class OpenAiCodexHandler extends BaseProvider implements SingleCompletion
 
 			return ""
 		} catch (error) {
-			const errorModel = this.getModel()
-			const errorMessage = error instanceof Error ? error.message : String(error)
-			const apiError = new ApiProviderError(errorMessage, this.providerName, errorModel.id, "completePrompt")
-			TelemetryService.instance.captureException(apiError)
-
 			if (error instanceof Error) {
 				throw new Error(t("common:errors.openAiCodex.completionError", { message: error.message }))
 			}
