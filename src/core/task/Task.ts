@@ -1441,6 +1441,11 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// Cancel any existing timer first
 		this.cancelSuperYoloStuckTimer()
 
+		// Don't start stuck timer for completion results - task is done
+		if (askType === "completion_result" || askType === "resume_completed_task" || askType === "resume_task") {
+			return
+		}
+
 		const provider = this.providerRef.deref()
 		const state = provider ? await provider.getState() : undefined
 

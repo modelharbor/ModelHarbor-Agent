@@ -3,10 +3,7 @@
 	"extends": ["//"],
 	"tasks": {
 		"build": {
-			"outputs": ["../src/webview-ui/**"]
-		},
-		"build:nightly": {
-			"outputs": ["../apps/vscode-nightly/build/webview-ui/**"]
+			"inputs": ["$TURBO_DEFAULT$", "../src/package.json"]
 		}
 	}
 }
