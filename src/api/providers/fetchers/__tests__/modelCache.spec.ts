@@ -56,11 +56,42 @@ vi.mock("../../../core/config/ContextProxy", () => ({
 	},
 }))
 
+// Mock vercel-ai-gateway, ollama, lmstudio, deepinfra, huggingface
+vi.mock("../vercel-ai-gateway")
+vi.mock("../ollama")
+vi.mock("../lmstudio")
+vi.mock("../deepinfra")
+vi.mock("../huggingface")
+
+// Mock safeWriteJson to prevent actual file writes
+vi.mock("../../../../utils/safeWriteJson", () => ({
+	safeWriteJson: vi.fn().mockResolvedValue(undefined),
+}))
+
+// Mock storage utilities
+vi.mock("../../../../utils/storage", () => ({
+	getCacheDirectoryPath: vi.fn().mockResolvedValue("/mock/storage/path/cache"),
+}))
+
+// Mock file utilities
+vi.mock("../../../../utils/fs", () => ({
+	fileExistsAtPath: vi.fn().mockResolvedValue(false),
+}))
+
+// Mock clearModelHarborCache
+vi.mock("@roo-code/types", async () => {
+	const actual = await vi.importActual("@roo-code/types")
+	return {
+		...actual,
+		clearModelHarborCache: vi.fn(),
+	}
+})
+
 // Then imports
 import type { Mock } from "vitest"
 import * as fsSync from "fs"
 import NodeCache from "node-cache"
-import { getModels, getModelsFromCache } from "../modelCache"
+import { getModels, getModelsFromCache, flushModels } from "../modelCache"
 import { getLiteLLMModels } from "../litellm"
 import { getOpenRouterModels } from "../openrouter"
 import { getRequestyModels } from "../requesty"
@@ -455,6 +486,73 @@ describe("empty cache protection", () => {
 			// Should return empty but NOT cache it
 			expect(result).toEqual({})
 			expect(mockSet).not.toHaveBeenCalled()
+		})
+
+		it("forwards options to refreshModels when refresh=true", async () => {
+			const mockModels = {
+				"litellm/model": {
+					maxTokens: 4096,
+					contextWindow: 200000,
+					supportsPromptCache: false,
+					description: "LiteLLM model",
+				},
+			}
+
+			mockGetLiteLLMModels.mockResolvedValue(mockModels)
+			mockGet.mockReturnValue(undefined)
+
+			const { flushModels } = await import("../modelCache")
+			await flushModels("litellm", true, {
+				apiKey: "test-key",
+				baseUrl: "http://localhost:4000",
+			})
+
+			// Wait for the async refresh to complete
+			await new Promise((resolve) => setTimeout(resolve, 100))
+
+			// Verify getLiteLLMModels was called with the forwarded options
+			expect(mockGetLiteLLMModels).toHaveBeenCalledWith("test-key", "http://localhost:4000")
+		})
+
+		it("works without options (backward compatible)", async () => {
+			const mockModels = {
+				"openrouter/model": {
+					maxTokens: 8192,
+					contextWindow: 128000,
+					supportsPromptCache: false,
+					description: "OpenRouter model",
+				},
+			}
+
+			mockGetOpenRouterModels.mockResolvedValue(mockModels)
+			mockGet.mockReturnValue(undefined)
+
+			const { flushModels } = await import("../modelCache")
+			// Should not throw when called without options
+			await flushModels("openrouter", true)
+
+			// Wait for the async refresh to complete
+			await new Promise((resolve) => setTimeout(resolve, 100))
+
+			expect(mockGetOpenRouterModels).toHaveBeenCalled()
+		})
+
+		it("deletes memory cache when refresh=false", async () => {
+			const { flushModels } = await import("../modelCache")
+			await flushModels("openrouter", false)
+
+			expect(mockCache.del).toHaveBeenCalledWith("openrouter")
+		})
+
+		it("does not delete memory cache when refresh=true", async () => {
+			mockGetOpenRouterModels.mockResolvedValue({})
+			mockGet.mockReturnValue(undefined)
+
+			const { flushModels } = await import("../modelCache")
+			await flushModels("openrouter", true)
+
+			// Should NOT call del when refresh=true (to prevent cache gap)
+			expect(mockCache.del).not.toHaveBeenCalled()
 		})
 
 		it("reuses in-flight request for concurrent calls to same provider", async () => {

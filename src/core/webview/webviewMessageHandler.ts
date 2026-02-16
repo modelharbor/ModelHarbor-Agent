@@ -784,12 +784,17 @@ export const webviewMessageHandler = async (
 
 			// Flush litellm cache if credentials are provided via message.values (e.g., Refresh Models button)
 			if (message?.values?.litellmApiKey && message?.values?.litellmBaseUrl) {
-				await flushModels("litellm", true)
+				await flushModels("litellm", true, {
+					apiKey: message.values.litellmApiKey,
+					baseUrl: message.values.litellmBaseUrl,
+				})
 			}
 
 			// Flush modelharbor cache if API key is provided via message.values (e.g., Refresh Models button)
 			if (message?.values?.modelharborApiKey) {
-				await flushModels("modelharbor", true)
+				await flushModels("modelharbor", true, {
+					apiKey: message.values.modelharborApiKey,
+				})
 			}
 
 			// Optional refresh flag to flush cache before fetching (useful for providers requiring credentials)
@@ -956,7 +961,7 @@ export const webviewMessageHandler = async (
 			// If refresh flag is set and we have a specific provider, flush its cache first
 			if (shouldRefresh && requestedProvider && modelFetchPromises.length > 0) {
 				const targetCandidate = modelFetchPromises[0]
-				await flushModels(targetCandidate.key, true)
+				await flushModels(targetCandidate.key, true, targetCandidate.options)
 			}
 
 			const results = await Promise.allSettled(

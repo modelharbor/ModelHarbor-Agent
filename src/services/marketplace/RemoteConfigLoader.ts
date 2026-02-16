@@ -24,7 +24,7 @@ export class RemoteConfigLoader {
 	private cacheDuration = 5 * 60 * 1000 // 5 minutes
 
 	constructor() {
-		this.apiBaseUrl = "https://api.modelharbor.io"
+		this.apiBaseUrl = "https://app.roocode.com"
 	}
 
 	async loadAllItems(hideMarketplaceMcps = false): Promise<MarketplaceItem[]> {
@@ -91,8 +91,7 @@ export class RemoteConfigLoader {
 				const response = await axios.get(url, {
 					timeout: 10000, // 10 second timeout
 					headers: {
-						Accept: "application/json",
-						"Content-Type": "application/json",
+						Accept: "application/x-yaml, application/json",
 					},
 				})
 				return response.data as T

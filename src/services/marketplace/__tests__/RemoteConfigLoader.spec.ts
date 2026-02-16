@@ -10,7 +10,7 @@ const mockedAxios = axios as any
 
 // Mock the cloud config - RemoteConfigLoader now hardcodes the API URL
 vi.mock("@roo-code/cloud", () => ({
-	getRooCodeApiUrl: () => "https://api.modelharbor.io",
+	getRooCodeApiUrl: () => "https://app.roocode.com",
 }))
 
 describe("RemoteConfigLoader", () => {
@@ -52,22 +52,20 @@ describe("RemoteConfigLoader", () => {
 
 			expect(mockedAxios.get).toHaveBeenCalledTimes(2)
 			expect(mockedAxios.get).toHaveBeenCalledWith(
-				"https://api.modelharbor.io/api/marketplace/modes",
+				"https://app.roocode.com/api/marketplace/modes",
 				expect.objectContaining({
 					timeout: 10000,
 					headers: {
-						Accept: "application/json",
-						"Content-Type": "application/json",
+						Accept: "application/x-yaml, application/json",
 					},
 				}),
 			)
 			expect(mockedAxios.get).toHaveBeenCalledWith(
-				"https://api.modelharbor.io/api/marketplace/mcps",
+				"https://app.roocode.com/api/marketplace/mcps",
 				expect.objectContaining({
 					timeout: 10000,
 					headers: {
-						Accept: "application/json",
-						"Content-Type": "application/json",
+						Accept: "application/x-yaml, application/json",
 					},
 				}),
 			)
@@ -293,6 +291,77 @@ describe("RemoteConfigLoader", () => {
 			// Third call - should hit API again
 			await loader.loadAllItems()
 			expect(mockedAxios.get).toHaveBeenCalledTimes(4)
+		})
+	})
+
+	describe("API configuration", () => {
+		it("should use app.roocode.com as base URL", async () => {
+			const mockModesYaml = `items: []`
+			const mockMcpsYaml = `items: []`
+
+			mockedAxios.get.mockImplementation((url: string) => {
+				if (url.includes("/modes")) {
+					return Promise.resolve({ data: mockModesYaml })
+				}
+				if (url.includes("/mcps")) {
+					return Promise.resolve({ data: mockMcpsYaml })
+				}
+				return Promise.reject(new Error("Unknown URL"))
+			})
+
+			await loader.loadAllItems()
+
+			// Verify all API calls use the correct base URL
+			for (const call of mockedAxios.get.mock.calls) {
+				expect(call[0]).toMatch(/^https:\/\/app\.roocode\.com\//)
+			}
+		})
+
+		it("should send Accept header that supports YAML format", async () => {
+			const mockModesYaml = `items: []`
+			const mockMcpsYaml = `items: []`
+
+			mockedAxios.get.mockImplementation((url: string) => {
+				if (url.includes("/modes")) {
+					return Promise.resolve({ data: mockModesYaml })
+				}
+				if (url.includes("/mcps")) {
+					return Promise.resolve({ data: mockMcpsYaml })
+				}
+				return Promise.reject(new Error("Unknown URL"))
+			})
+
+			await loader.loadAllItems()
+
+			// Verify all API calls include YAML in Accept header
+			for (const call of mockedAxios.get.mock.calls) {
+				const config = call[1]
+				expect(config.headers.Accept).toContain("application/x-yaml")
+				expect(config.headers.Accept).toContain("application/json")
+			}
+		})
+
+		it("should not include Content-Type header in GET requests", async () => {
+			const mockModesYaml = `items: []`
+			const mockMcpsYaml = `items: []`
+
+			mockedAxios.get.mockImplementation((url: string) => {
+				if (url.includes("/modes")) {
+					return Promise.resolve({ data: mockModesYaml })
+				}
+				if (url.includes("/mcps")) {
+					return Promise.resolve({ data: mockMcpsYaml })
+				}
+				return Promise.reject(new Error("Unknown URL"))
+			})
+
+			await loader.loadAllItems()
+
+			// Verify no Content-Type header is sent (unnecessary for GET requests)
+			for (const call of mockedAxios.get.mock.calls) {
+				const config = call[1]
+				expect(config.headers).not.toHaveProperty("Content-Type")
+			}
 		})
 	})
 
