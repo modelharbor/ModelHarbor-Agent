@@ -259,6 +259,8 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		maxDiagnosticMessages: 50,
 		openRouterImageApiKey: "",
 		openRouterImageGenerationSelectedModel: "",
+		liteLlmImageApiKey: "",
+		liteLlmImageBaseUrl: "",
 		includeCurrentTime: true,
 		includeCurrentCost: true,
 	})

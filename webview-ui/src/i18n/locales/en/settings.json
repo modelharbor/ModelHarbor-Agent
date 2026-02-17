@@ -855,6 +855,11 @@
 			"modelSelectionLabel": "Image Generation Model",
 			"modelSelectionDescription": "Select the model to use for image generation",
 			"warningMissingKey": "⚠️ OpenRouter API key is required for OpenRouter image generation. Please configure it above.",
+			"warningMissingLiteLlmKey": "⚠️ LiteLLM API key is required for LiteLLM image generation. Please configure it above.",
+			"liteLlmApiKeyLabel": "LiteLLM API Key",
+			"liteLlmApiKeyPlaceholder": "Enter your LiteLLM API key",
+			"liteLlmBaseUrlLabel": "LiteLLM Base URL",
+			"liteLlmBaseUrlPlaceholder": "http://localhost:4000",
 			"successConfigured": "✓ Image generation is configured and ready to use"
 		},
 		"RUN_SLASH_COMMAND": {

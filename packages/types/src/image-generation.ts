@@ -22,6 +22,8 @@ export const IMAGE_GENERATION_MODELS: ImageGenerationModel[] = [
 	{ value: "openai/gpt-5-image-mini", label: "GPT-5 Image Mini", provider: "openrouter" },
 	{ value: "black-forest-labs/flux.2-flex", label: "Black Forest Labs FLUX.2 Flex", provider: "openrouter" },
 	{ value: "black-forest-labs/flux.2-pro", label: "Black Forest Labs FLUX.2 Pro", provider: "openrouter" },
+	// LiteLLM models
+	{ value: "google/gemini-2.5-flash-image", label: "Gemini 2.5 Flash Image", provider: "litellm" },
 ]
 
 /**
@@ -32,7 +34,7 @@ export const IMAGE_GENERATION_MODEL_IDS = IMAGE_GENERATION_MODELS.map((m) => m.v
 /**
  * Image generation provider type
  */
-export type ImageGenerationProvider = "openrouter"
+export type ImageGenerationProvider = "openrouter" | "litellm"
 
 /**
  * Get the image generation provider with backwards compatibility

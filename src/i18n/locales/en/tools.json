@@ -18,6 +18,7 @@
 	},
 	"generateImage": {
 		"openRouterApiKeyRequired": "OpenRouter API key is required for image generation with OpenRouter models. Please configure it in the Image Generation experimental settings.",
+		"liteLlmApiKeyRequired": "LiteLLM API key is required for image generation with LiteLLM. Please configure it in the Image Generation experimental settings.",
 		"failedWithStatus": "Failed to generate image: {{status}} {{statusText}}",
 		"failedWithMessage": "Failed to generate image: {{message}}",
 		"noImageGenerated": "No image was generated in the response",

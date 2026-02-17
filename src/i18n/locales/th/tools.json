@@ -18,6 +18,7 @@
 	},
 	"generateImage": {
 		"openRouterApiKeyRequired": "ต้องมี OpenRouter API key สำหรับการสร้างรูปภาพด้วยโมเดล OpenRouter กรุณาตั้งค่าในการตั้งค่าทดลองการสร้างรูปภาพ",
+		"liteLlmApiKeyRequired": "ต้องมี LiteLLM API key สำหรับการสร้างรูปภาพด้วย LiteLLM กรุณาตั้งค่าในการตั้งค่าทดลองการสร้างรูปภาพ",
 		"failedWithStatus": "ไม่สามารถสร้างรูปภาพได้: {{status}} {{statusText}}",
 		"failedWithMessage": "ไม่สามารถสร้างรูปภาพได้: {{message}}",
 		"noImageGenerated": "ไม่มีรูปภาพถูกสร้างในการตอบกลับ",

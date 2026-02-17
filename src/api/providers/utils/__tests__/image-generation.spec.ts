@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
-import { generateImageWithImagesApi, generateImageWithProvider } from "../image-generation"
+import { generateImageWithImagesApi, generateImageWithLiteLLM, generateImageWithProvider } from "../image-generation"
 
 // Mock the i18n module
 vi.mock("../../../i18n", () => ({
@@ -8,8 +8,16 @@ vi.mock("../../../i18n", () => ({
 		if (key === "tools:generateImage.failedWithMessage" && options?.message) {
 			return options.message
 		}
+		if (key === "tools:generateImage.failedWithStatus" && options?.status) {
+			return `Failed with status ${options.status}: ${options.statusText}`
+		}
 		return key
 	},
+}))
+
+// Mock aspect-ratio-detection
+vi.mock("../aspect-ratio-detection", () => ({
+	detectAspectRatio: vi.fn().mockReturnValue("1:1"),
 }))
 
 // Mock fetch globally
@@ -346,6 +354,430 @@ describe("generateImageWithImagesApi", () => {
 			expect(result.imageFormat).toBe("jpeg")
 			expect(result.imageData).toContain("data:image/jpeg;base64,")
 		})
+	})
+})
+
+describe("generateImageWithLiteLLM", () => {
+	beforeEach(() => {
+		vi.clearAllMocks()
+	})
+
+	afterEach(() => {
+		vi.clearAllMocks()
+	})
+
+	it("should build correct request payload with model, modalities, and image_config", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [
+								{
+									image_url: {
+										url: "data:image/png;base64,iVBORw0KGgo=",
+									},
+								},
+							],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-litellm-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A cute cat",
+		})
+
+		expect(global.fetch).toHaveBeenCalledWith(
+			"http://localhost:4000/chat/completions",
+			expect.objectContaining({
+				method: "POST",
+				headers: expect.objectContaining({
+					Authorization: "Bearer test-litellm-key",
+					"Content-Type": "application/json",
+				}),
+			}),
+		)
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.model).toBe("google/gemini-2.5-flash-image")
+		expect(body.modalities).toEqual(["image", "text"])
+		expect(body.temperature).toBe(1)
+		expect(body.stream).toBe(false)
+		expect(body.image_config).toEqual({ aspect_ratio: "1:1" })
+		expect(body.messages).toHaveLength(1)
+		expect(body.messages[0].role).toBe("user")
+		expect(body.messages[0].content).toBe("A cute cat")
+	})
+
+	it("should detect aspect ratio from prompt and include in image_config", async () => {
+		const { detectAspectRatio } = await import("../aspect-ratio-detection")
+		vi.mocked(detectAspectRatio).mockReturnValue("16:9")
+
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A landscape wallpaper of mountains",
+		})
+
+		expect(detectAspectRatio).toHaveBeenCalledWith("A landscape wallpaper of mountains")
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+		expect(body.image_config.aspect_ratio).toBe("16:9")
+	})
+
+	it("should include input image in messages content as multipart array", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const inputImageData = "data:image/png;base64,aW5wdXRJbWFnZURhdGE="
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "Make this image brighter",
+			inputImage: inputImageData,
+		})
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		// When inputImage is provided, content should be an array
+		expect(Array.isArray(body.messages[0].content)).toBe(true)
+		expect(body.messages[0].content).toHaveLength(2)
+		expect(body.messages[0].content[0]).toEqual({ type: "text", text: "Make this image brighter" })
+		expect(body.messages[0].content[1]).toEqual({
+			type: "image_url",
+			image_url: { url: inputImageData },
+		})
+	})
+
+	it("should extract image from format 1: message.images array", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [
+								{
+									image_url: {
+										url: "data:image/png;base64,Zm9ybWF0MW RhdGE=",
+									},
+								},
+							],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const result = await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A cat",
+		})
+
+		expect(result.success).toBe(true)
+		expect(result.imageData).toBe("data:image/png;base64,Zm9ybWF0MW RhdGE=")
+		expect(result.imageFormat).toBe("png")
+	})
+
+	it("should extract image from format 2: message.content array with image_url blocks", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							content: [
+								{ type: "text", text: "Here is your image" },
+								{
+									type: "image_url",
+									image_url: { url: "data:image/jpeg;base64,Zm9ybWF0MmRhdGE=" },
+								},
+							],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const result = await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A dog",
+		})
+
+		expect(result.success).toBe(true)
+		expect(result.imageData).toBe("data:image/jpeg;base64,Zm9ybWF0MmRhdGE=")
+		expect(result.imageFormat).toBe("jpeg")
+	})
+
+	it("should extract image from format 3: message.content as data URL string", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							content: "data:image/webp;base64,Zm9ybWF0M2RhdGE=",
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const result = await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A bird",
+		})
+
+		expect(result.success).toBe(true)
+		expect(result.imageData).toBe("data:image/webp;base64,Zm9ybWF0M2RhdGE=")
+		expect(result.imageFormat).toBe("webp")
+	})
+
+	it("should return error when API responds with non-ok status", async () => {
+		const mockResponse = {
+			ok: false,
+			status: 401,
+			statusText: "Unauthorized",
+			text: vi.fn().mockResolvedValue(JSON.stringify({ error: { message: "Invalid API key" } })),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const result = await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "bad-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A cat",
+		})
+
+		expect(result.success).toBe(false)
+		expect(result.error).toBeDefined()
+	})
+
+	it("should return error when API responds with error in body", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				error: {
+					message: "Model not supported",
+					type: "invalid_request_error",
+				},
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const result = await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "invalid-model",
+			prompt: "A cat",
+		})
+
+		expect(result.success).toBe(false)
+		expect(result.error).toBeDefined()
+	})
+
+	it("should return error when no image is found in response", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							content: "I cannot generate images",
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const result = await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A cat",
+		})
+
+		expect(result.success).toBe(false)
+		expect(result.error).toBeDefined()
+	})
+
+	it("should return error when image data is not a valid data URL", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "not-a-valid-data-url" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const result = await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A cat",
+		})
+
+		expect(result.success).toBe(false)
+		expect(result.error).toBeDefined()
+	})
+
+	it("should handle network errors gracefully", async () => {
+		vi.mocked(global.fetch).mockRejectedValue(new Error("Connection refused"))
+
+		const result = await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A cat",
+		})
+
+		expect(result.success).toBe(false)
+		expect(result.error).toBe("Connection refused")
+	})
+
+	it("should not include OpenRouter-specific headers", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,dGVzdA==" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A cat",
+		})
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const headers = callArgs[1]?.headers as Record<string, string>
+
+		// LiteLLM should NOT include OpenRouter-specific headers
+		expect(headers["HTTP-Referer"]).toBeUndefined()
+		expect(headers["X-Title"]).toBeUndefined()
+	})
+
+	it("should include stream_options with include_usage", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,dGVzdA==" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A cat",
+		})
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+		expect(body.stream_options).toEqual({ include_usage: true })
+	})
+
+	it("should handle non-ok status with non-JSON error text", async () => {
+		const mockResponse = {
+			ok: false,
+			status: 500,
+			statusText: "Internal Server Error",
+			text: vi.fn().mockResolvedValue("Something went wrong"),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const result = await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A cat",
+		})
+
+		expect(result.success).toBe(false)
+		expect(result.error).toBeDefined()
 	})
 })
 

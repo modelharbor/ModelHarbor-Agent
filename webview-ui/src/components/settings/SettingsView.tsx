@@ -208,6 +208,8 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 		imageGenerationProvider,
 		openRouterImageApiKey,
 		openRouterImageGenerationSelectedModel,
+		liteLlmImageApiKey,
+		liteLlmImageBaseUrl,
 		reasoningBlockCollapsed,
 		enterBehavior,
 		includeCurrentTime,
@@ -317,6 +319,24 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 		})
 	}, [])
 
+	const setLiteLlmImageApiKey = useCallback((apiKey: string) => {
+		setCachedState((prevState) => {
+			if (prevState.liteLlmImageApiKey !== apiKey) {
+				setChangeDetected(true)
+			}
+			return { ...prevState, liteLlmImageApiKey: apiKey }
+		})
+	}, [])
+
+	const setLiteLlmImageBaseUrl = useCallback((baseUrl: string) => {
+		setCachedState((prevState) => {
+			if (prevState.liteLlmImageBaseUrl !== baseUrl) {
+				setChangeDetected(true)
+			}
+			return { ...prevState, liteLlmImageBaseUrl: baseUrl }
+		})
+	}, [])
+
 	const setCustomSupportPromptsField = useCallback((prompts: Record<string, string | undefined>) => {
 		setCachedState((prevState) => {
 			const previousStr = JSON.stringify(prevState.customSupportPrompts)
@@ -408,6 +428,8 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 					imageGenerationProvider,
 					openRouterImageApiKey,
 					openRouterImageGenerationSelectedModel,
+					liteLlmImageApiKey,
+					liteLlmImageBaseUrl,
 					experiments,
 					customSupportPrompts,
 				},
@@ -907,6 +929,10 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 								setImageGenerationProvider={setImageGenerationProvider}
 								setOpenRouterImageApiKey={setOpenRouterImageApiKey}
 								setImageGenerationSelectedModel={setImageGenerationSelectedModel}
+								liteLlmImageApiKey={liteLlmImageApiKey as string | undefined}
+								liteLlmImageBaseUrl={liteLlmImageBaseUrl as string | undefined}
+								setLiteLlmImageApiKey={setLiteLlmImageApiKey}
+								setLiteLlmImageBaseUrl={setLiteLlmImageBaseUrl}
 							/>
 						)}
 

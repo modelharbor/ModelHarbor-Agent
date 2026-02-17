@@ -440,7 +440,12 @@
 			"providerDescription": "Select which provider to use for image generation.",
 			"providerLabel": "Provider",
 			"successConfigured": "✓ การสร้างภาพได้รับการกำหนดค่าและพร้อมใช้งานแล้ว",
-			"warningMissingKey": "⚠️ ต้องระบุคีย์ API ของ OpenRouter สำหรับการสร้างภาพ โปรดกำหนดค่าด้านบน"
+			"warningMissingKey": "⚠️ ต้องระบุคีย์ API ของ OpenRouter สำหรับการสร้างภาพ โปรดกำหนดค่าด้านบน",
+			"warningMissingLiteLlmKey": "⚠️ ต้องระบุคีย์ API ของ LiteLLM สำหรับการสร้างภาพ โปรดกำหนดค่าด้านบน",
+			"liteLlmApiKeyLabel": "คีย์ API ของ LiteLLM",
+			"liteLlmApiKeyPlaceholder": "ป้อนคีย์ API ของ LiteLLM ของคุณ",
+			"liteLlmBaseUrlLabel": "URL พื้นฐานของ LiteLLM",
+			"liteLlmBaseUrlPlaceholder": "http://localhost:4000"
 		},
 		"INSERT_BLOCK": {
 			"description": "เปิดใช้งานเครื่องมือแทรกเนื้อหาทดลอง ซึ่งช่วยให้ ModelHarbor สามารถแทรกเนื้อหาที่หมายเลขบรรทัดเฉพาะโดยไม่จำเป็นต้องสร้าง diff",

@@ -26,6 +26,10 @@ type ExperimentalSettingsProps = HTMLAttributes<HTMLDivElement> & {
 	setImageGenerationProvider?: (provider: ImageGenerationProvider) => void
 	setOpenRouterImageApiKey?: (apiKey: string) => void
 	setImageGenerationSelectedModel?: (model: string) => void
+	liteLlmImageApiKey?: string
+	liteLlmImageBaseUrl?: string
+	setLiteLlmImageApiKey?: (apiKey: string) => void
+	setLiteLlmImageBaseUrl?: (baseUrl: string) => void
 }
 
 export const ExperimentalSettings = ({
@@ -39,6 +43,10 @@ export const ExperimentalSettings = ({
 	setImageGenerationProvider,
 	setOpenRouterImageApiKey,
 	setImageGenerationSelectedModel,
+	liteLlmImageApiKey,
+	liteLlmImageBaseUrl,
+	setLiteLlmImageApiKey,
+	setLiteLlmImageBaseUrl,
 	className,
 	...props
 }: ExperimentalSettingsProps) => {
@@ -98,6 +106,10 @@ export const ExperimentalSettings = ({
 										setImageGenerationProvider={setImageGenerationProvider}
 										setOpenRouterImageApiKey={setOpenRouterImageApiKey}
 										setImageGenerationSelectedModel={setImageGenerationSelectedModel}
+										liteLlmImageApiKey={liteLlmImageApiKey}
+										liteLlmImageBaseUrl={liteLlmImageBaseUrl}
+										setLiteLlmImageApiKey={setLiteLlmImageApiKey}
+										setLiteLlmImageBaseUrl={setLiteLlmImageBaseUrl}
 									/>
 								</SearchableSetting>
 							)

@@ -1868,6 +1868,8 @@ export class ClineProvider
 			imageGenerationProvider,
 			openRouterImageApiKey,
 			openRouterImageGenerationSelectedModel,
+			liteLlmImageApiKey,
+			liteLlmImageBaseUrl,
 			openRouterUseMiddleOutTransform,
 			isBrowserSessionActive,
 		} = await this.getState()
@@ -2006,6 +2008,8 @@ export class ClineProvider
 			imageGenerationProvider,
 			openRouterImageApiKey,
 			openRouterImageGenerationSelectedModel,
+			liteLlmImageApiKey,
+			liteLlmImageBaseUrl,
 			openRouterUseMiddleOutTransform,
 			debug: vscode.workspace.getConfiguration(Package.name).get<boolean>("debug", false),
 		}
@@ -2165,6 +2169,8 @@ export class ClineProvider
 			imageGenerationProvider: stateValues.imageGenerationProvider,
 			openRouterImageApiKey: stateValues.openRouterImageApiKey,
 			openRouterImageGenerationSelectedModel: stateValues.openRouterImageGenerationSelectedModel,
+			liteLlmImageApiKey: stateValues.liteLlmImageApiKey,
+			liteLlmImageBaseUrl: stateValues.liteLlmImageBaseUrl,
 		}
 	}
 
