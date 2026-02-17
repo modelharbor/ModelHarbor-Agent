@@ -185,8 +185,10 @@ describe("startSuperYoloStuckTimer", () => {
 		} as unknown as vscode.ExtensionContext
 
 		const mockOutputChannel = {
+			name: "mock-output-channel",
 			appendLine: vi.fn(),
 			append: vi.fn(),
+			replace: vi.fn(),
 			clear: vi.fn(),
 			show: vi.fn(),
 			hide: vi.fn(),
