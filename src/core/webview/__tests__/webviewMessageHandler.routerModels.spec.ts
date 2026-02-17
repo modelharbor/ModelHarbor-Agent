@@ -177,8 +177,11 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 			} as any,
 		)
 
-		// flushModels should have been called for litellm with router name and refresh=true
-		expect(flushModelsMock).toHaveBeenCalledWith("litellm", true)
+		// flushModels should have been called for litellm with router name, refresh=true, and credentials
+		expect(flushModelsMock).toHaveBeenCalledWith("litellm", true, {
+			apiKey: "test-api-key",
+			baseUrl: "http://localhost:4000",
+		})
 
 		// getModels should have been called with the provided credentials
 		const litellmCalls = getModelsMock.mock.calls.filter((c: any[]) => c[0]?.provider === "litellm")
@@ -241,10 +244,16 @@ describe("webviewMessageHandler - requestRouterModels provider filter", () => {
 			} as any,
 		)
 
-		// flushModels should have been called for modelharbor with refresh=true
+		// flushModels should have been called for modelharbor with refresh=true and credentials
 		const modelharborFlushCalls = flushModelsMock.mock.calls.filter((c: any[]) => c[0] === "modelharbor")
 		expect(modelharborFlushCalls.length).toBe(1)
-		expect(modelharborFlushCalls[0]).toEqual(["modelharbor", true])
+		expect(modelharborFlushCalls[0]).toEqual([
+			"modelharbor",
+			true,
+			{
+				apiKey: "new-api-key",
+			},
+		])
 
 		// getModels should have been called with the new API key from message values
 		const modelharborCalls = getModelsMock.mock.calls.filter((c: any[]) => c[0]?.provider === "modelharbor")

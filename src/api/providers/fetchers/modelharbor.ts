@@ -1,5 +1,7 @@
 import { ModelInfo, fallbackModelHarborModels } from "@roo-code/types"
 
+import { inferImageSupport } from "./model-capabilities"
+
 // Interface matching the ModelHarbor API response
 interface ModelHarborApiModel {
 	model_name: string
@@ -55,24 +57,6 @@ interface ModelHarborApiResponse {
 function roundPrice(price: number): number {
 	// Round to 6 decimal places to handle typical pricing precision
 	return Math.round(price * 1000000) / 1000000
-}
-
-// Determine if a model supports images based on its name (fallback when API fields are missing)
-function inferImageSupport(modelName: string): boolean {
-	// Models known to support vision/images
-	const visionModelPatterns = [
-		/claude.*(?:sonnet|opus|haiku)/i, // Anthropic Claude vision models
-		/gpt-[45]/i, // OpenAI GPT-4 and GPT-5
-		/gemini/i, // Google Gemini
-		/vision/i, // Any model with "vision" in name
-		/imagen/i, // Google Imagen
-		/vl-/i, // Vision-Language models (like qwen/qwen3-vl)
-		/multimodal/i, // Multimodal models
-		/gpt4v/i, // GPT-4 Vision
-		/omni/i, // Omni models (multimodal)
-	]
-
-	return visionModelPatterns.some((pattern) => pattern.test(modelName))
 }
 
 export async function getModelHarborModels(apiKey?: string): Promise<Record<string, ModelInfo>> {

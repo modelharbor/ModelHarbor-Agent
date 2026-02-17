@@ -3,6 +3,7 @@ import axios from "axios"
 import type { ModelRecord } from "@roo-code/types"
 
 import { DEFAULT_HEADERS } from "../constants"
+import { inferImageSupport } from "./model-capabilities"
 /**
  * Fetches available models from a LiteLLM server
  *
@@ -44,12 +45,22 @@ export async function getLiteLLMModels(apiKey?: string, baseUrl?: string): Promi
 
 				if (!modelName || !modelInfo || !litellmModelName) continue
 
+				const supportsNativeTools = modelInfo.supports_function_calling !== false
+
 				models[modelName] = {
 					maxTokens: modelInfo.max_output_tokens || modelInfo.max_tokens || 8192,
-					contextWindow: modelInfo.max_input_tokens || 200000,
-					supportsImages: Boolean(modelInfo.supports_vision),
+					contextWindow: modelInfo.max_input_tokens || 40960,
+					supportsImages:
+						Boolean(modelInfo.supports_vision) ||
+						Boolean(modelInfo.supports_embedding_image_input) ||
+						inferImageSupport(modelName),
+					supportsComputerUse: Boolean(modelInfo.supports_computer_use),
 					supportsPromptCache: Boolean(modelInfo.supports_prompt_caching),
-					supportsNativeTools: true,
+					supportsReasoningBudget: model?.litellm_params?.thinking?.type === "enabled" || false,
+					requiredReasoningBudget: false,
+					supportsReasoningEffort: Boolean(modelInfo.supports_reasoning),
+					supportsNativeTools,
+					defaultToolProtocol: supportsNativeTools ? ("native" as const) : ("xml" as const),
 					inputPrice: modelInfo.input_cost_per_token ? modelInfo.input_cost_per_token * 1000000 : undefined,
 					outputPrice: modelInfo.output_cost_per_token
 						? modelInfo.output_cost_per_token * 1000000
