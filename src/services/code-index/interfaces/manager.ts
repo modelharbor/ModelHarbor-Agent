@@ -80,6 +80,7 @@ export type EmbedderProvider =
 	| "vercel-ai-gateway"
 	| "bedrock"
 	| "openrouter"
+	| "litellm"
 
 export interface IndexProgressUpdate {
 	systemStatus: IndexingState

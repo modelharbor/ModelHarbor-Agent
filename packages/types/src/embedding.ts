@@ -8,6 +8,7 @@ export type EmbedderProvider =
 	| "bedrock"
 	| "openrouter"
 	| "modelharbor" // ModelHarbor embedding provider.
+	| "litellm"
 
 export interface EmbeddingModelProfile {
 	dimension: number

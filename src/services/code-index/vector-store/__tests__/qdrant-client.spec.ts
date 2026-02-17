@@ -1064,11 +1064,16 @@ describe("QdrantVectorStore", () => {
 	})
 
 	describe("upsertPoints", () => {
+		// Helper to create a vector that matches the mock collection's vector size
+		const createMockVector = (seed: number = 0.1) => new Array(mockVectorSize).fill(seed)
+
 		it("should correctly call qdrantClient.upsert with processed points", async () => {
+			const vector1 = createMockVector(0.1)
+			const vector2 = createMockVector(0.4)
 			const mockPoints = [
 				{
 					id: "test-id-1",
-					vector: [0.1, 0.2, 0.3],
+					vector: vector1,
 					payload: {
 						filePath: "src/components/Button.tsx",
 						content: "export const Button = () => {}",
@@ -1078,7 +1083,7 @@ describe("QdrantVectorStore", () => {
 				},
 				{
 					id: "test-id-2",
-					vector: [0.4, 0.5, 0.6],
+					vector: vector2,
 					payload: {
 						filePath: "src/utils/helpers.ts",
 						content: "export function helper() {}",
@@ -1097,7 +1102,7 @@ describe("QdrantVectorStore", () => {
 				points: [
 					{
 						id: "test-id-1",
-						vector: [0.1, 0.2, 0.3],
+						vector: vector1,
 						payload: {
 							filePath: "src/components/Button.tsx",
 							content: "export const Button = () => {}",
@@ -1112,7 +1117,7 @@ describe("QdrantVectorStore", () => {
 					},
 					{
 						id: "test-id-2",
-						vector: [0.4, 0.5, 0.6],
+						vector: vector2,
 						payload: {
 							filePath: "src/utils/helpers.ts",
 							content: "export function helper() {}",
@@ -1131,10 +1136,11 @@ describe("QdrantVectorStore", () => {
 		})
 
 		it("should handle points without filePath in payload", async () => {
+			const vector1 = createMockVector(0.1)
 			const mockPoints = [
 				{
 					id: "test-id-1",
-					vector: [0.1, 0.2, 0.3],
+					vector: vector1,
 					payload: {
 						content: "some content without filePath",
 						startLine: 1,
@@ -1151,7 +1157,7 @@ describe("QdrantVectorStore", () => {
 				points: [
 					{
 						id: "test-id-1",
-						vector: [0.1, 0.2, 0.3],
+						vector: vector1,
 						payload: {
 							content: "some content without filePath",
 							startLine: 1,
@@ -1175,10 +1181,11 @@ describe("QdrantVectorStore", () => {
 		})
 
 		it("should correctly process pathSegments for nested file paths", async () => {
+			const vector1 = createMockVector(0.1)
 			const mockPoints = [
 				{
 					id: "test-id-1",
-					vector: [0.1, 0.2, 0.3],
+					vector: vector1,
 					payload: {
 						filePath: "src/components/ui/forms/InputField.tsx",
 						content: "export const InputField = () => {}",
@@ -1196,7 +1203,7 @@ describe("QdrantVectorStore", () => {
 				points: [
 					{
 						id: "test-id-1",
-						vector: [0.1, 0.2, 0.3],
+						vector: vector1,
 						payload: {
 							filePath: "src/components/ui/forms/InputField.tsx",
 							content: "export const InputField = () => {}",
@@ -1216,11 +1223,65 @@ describe("QdrantVectorStore", () => {
 			})
 		})
 
+		it("should throw error when vector dimension does not match collection dimension", async () => {
+			const mockPoints = [
+				{
+					id: "test-id-1",
+					vector: [0.1, 0.2, 0.3], // dimension 3, but collection expects 1536
+					payload: {
+						filePath: "src/test.ts",
+						content: "test content",
+						startLine: 1,
+						endLine: 1,
+					},
+				},
+			]
+
+			vitest.spyOn(console, "error").mockImplementation(() => {})
+
+			await expect(vectorStore.upsertPoints(mockPoints)).rejects.toThrow(
+				"Vector dimension mismatch: collection expects 1536 but embedding has 3",
+			)
+
+			// Should not call qdrant upsert since we caught the mismatch early
+			expect(mockQdrantClientInstance.upsert).not.toHaveBeenCalled()
+			;(console.error as any).mockRestore()
+		})
+
+		it("should pass dimension check when vector dimension matches collection dimension", async () => {
+			const mockPoints = [
+				{
+					id: "test-id-1",
+					vector: new Array(mockVectorSize).fill(0.1), // dimension matches
+					payload: {
+						filePath: "src/test.ts",
+						content: "test content",
+						startLine: 1,
+						endLine: 1,
+					},
+				},
+			]
+
+			mockQdrantClientInstance.upsert.mockResolvedValue({} as any)
+
+			await vectorStore.upsertPoints(mockPoints)
+
+			expect(mockQdrantClientInstance.upsert).toHaveBeenCalledTimes(1)
+		})
+
+		it("should skip dimension check for empty points array", async () => {
+			mockQdrantClientInstance.upsert.mockResolvedValue({} as any)
+
+			await vectorStore.upsertPoints([])
+
+			expect(mockQdrantClientInstance.upsert).toHaveBeenCalledTimes(1)
+		})
+
 		it("should handle error scenarios when qdrantClient.upsert fails", async () => {
 			const mockPoints = [
 				{
 					id: "test-id-1",
-					vector: [0.1, 0.2, 0.3],
+					vector: createMockVector(0.1),
 					payload: {
 						filePath: "src/test.ts",
 						content: "test content",

@@ -1258,6 +1258,63 @@ describe("CodeIndexConfigManager", () => {
 			expect(configManager.isFeatureConfigured).toBe(false)
 		})
 
+		it("should validate LiteLLM configuration correctly", async () => {
+			mockContextProxy.getGlobalState.mockImplementation((key: string) => {
+				if (key === "codebaseIndexConfig") {
+					return {
+						codebaseIndexEnabled: true,
+						codebaseIndexQdrantUrl: "http://qdrant.local",
+						codebaseIndexEmbedderProvider: "litellm",
+						codebaseIndexLitellmBaseUrl: "http://localhost:4000",
+					}
+				}
+				return undefined
+			})
+			mockContextProxy.getSecret.mockImplementation((key: string) => {
+				if (key === "codebaseIndexLitellmApiKey") return "test-litellm-key"
+				return undefined
+			})
+
+			await configManager.loadConfiguration()
+			expect(configManager.isFeatureConfigured).toBe(true)
+		})
+
+		it("should validate LiteLLM configuration without apiKey (apiKey is optional)", async () => {
+			mockContextProxy.getGlobalState.mockImplementation((key: string) => {
+				if (key === "codebaseIndexConfig") {
+					return {
+						codebaseIndexEnabled: true,
+						codebaseIndexQdrantUrl: "http://qdrant.local",
+						codebaseIndexEmbedderProvider: "litellm",
+						codebaseIndexLitellmBaseUrl: "http://localhost:4000",
+					}
+				}
+				return undefined
+			})
+			mockContextProxy.getSecret.mockReturnValue(undefined)
+
+			await configManager.loadConfiguration()
+			expect(configManager.isFeatureConfigured).toBe(true)
+		})
+
+		it("should return false when LiteLLM base URL is missing", async () => {
+			mockContextProxy.getGlobalState.mockImplementation((key: string) => {
+				if (key === "codebaseIndexConfig") {
+					return {
+						codebaseIndexEnabled: true,
+						codebaseIndexQdrantUrl: "http://qdrant.local",
+						codebaseIndexEmbedderProvider: "litellm",
+						// no codebaseIndexLitellmBaseUrl
+					}
+				}
+				return undefined
+			})
+			mockContextProxy.getSecret.mockReturnValue(undefined)
+
+			await configManager.loadConfiguration()
+			expect(configManager.isFeatureConfigured).toBe(false)
+		})
+
 		it("should return false when required values are missing", async () => {
 			mockContextProxy.getGlobalState.mockReturnValue({
 				codebaseIndexEnabled: true,

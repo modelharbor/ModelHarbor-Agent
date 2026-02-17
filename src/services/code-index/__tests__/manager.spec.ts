@@ -173,7 +173,7 @@ describe("CodeIndexManager - handleSettingsChange regression", () => {
 					stopWatcher: vi.fn(),
 					dispose: vi.fn(),
 				}),
-				createServices: vi.fn().mockReturnValue({
+				createServices: vi.fn().mockResolvedValue({
 					embedder: { embedderInfo: { name: "openai" } },
 					vectorStore: {},
 					scanner: {},
@@ -247,7 +247,7 @@ describe("CodeIndexManager - handleSettingsChange regression", () => {
 					stopWatcher: vi.fn(),
 					dispose: vi.fn(),
 				}),
-				createServices: vi.fn().mockReturnValue({
+				createServices: vi.fn().mockResolvedValue({
 					embedder: { embedderInfo: { name: "openai" } },
 					vectorStore: {},
 					scanner: {},
@@ -307,7 +307,7 @@ describe("CodeIndexManager - handleSettingsChange regression", () => {
 
 			// Mock service factory instance
 			mockServiceFactoryInstance = {
-				createServices: vi.fn().mockReturnValue({
+				createServices: vi.fn().mockResolvedValue({
 					embedder: mockEmbedder,
 					vectorStore: mockVectorStore,
 					scanner: mockScanner,
@@ -350,7 +350,7 @@ describe("CodeIndexManager - handleSettingsChange regression", () => {
 
 			// Assert
 			expect(mockServiceFactoryInstance.createServices).toHaveBeenCalled()
-			const createdEmbedder = mockServiceFactoryInstance.createServices.mock.results[0].value.embedder
+			const createdEmbedder = (await mockServiceFactoryInstance.createServices.mock.results[0].value).embedder
 			expect(mockServiceFactoryInstance.validateEmbedder).toHaveBeenCalledWith(createdEmbedder)
 			expect(mockStateManager.setSystemState).not.toHaveBeenCalledWith("Error", expect.any(String))
 		})
@@ -369,7 +369,7 @@ describe("CodeIndexManager - handleSettingsChange regression", () => {
 
 			// Assert other expectations
 			expect(mockServiceFactoryInstance.createServices).toHaveBeenCalled()
-			const createdEmbedder = mockServiceFactoryInstance.createServices.mock.results[0].value.embedder
+			const createdEmbedder = (await mockServiceFactoryInstance.createServices.mock.results[0].value).embedder
 			expect(mockServiceFactoryInstance.validateEmbedder).toHaveBeenCalledWith(createdEmbedder)
 			expect(mockStateManager.setSystemState).toHaveBeenCalledWith(
 				"Error",
@@ -392,7 +392,7 @@ describe("CodeIndexManager - handleSettingsChange regression", () => {
 
 			// Assert other expectations
 			expect(mockServiceFactoryInstance.createServices).toHaveBeenCalled()
-			const createdEmbedder = mockServiceFactoryInstance.createServices.mock.results[0].value.embedder
+			const createdEmbedder = (await mockServiceFactoryInstance.createServices.mock.results[0].value).embedder
 			expect(mockServiceFactoryInstance.validateEmbedder).toHaveBeenCalledWith(createdEmbedder)
 			expect(mockStateManager.setSystemState).toHaveBeenCalledWith(
 				"Error",
@@ -500,7 +500,7 @@ describe("CodeIndexManager - handleSettingsChange regression", () => {
 		it("should allow re-initialization after recovery", async () => {
 			// Setup mock for re-initialization
 			const mockServiceFactoryInstance = {
-				createServices: vi.fn().mockReturnValue({
+				createServices: vi.fn().mockResolvedValue({
 					embedder: { embedderInfo: { name: "openai" } },
 					vectorStore: {},
 					scanner: {},

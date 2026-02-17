@@ -51,6 +51,8 @@ export const MODELS_BY_PROVIDER: Partial<Record<ProviderName, Record<string, Mod
 export const PROVIDERS = [
 	// ModelHarbor is the default provider and should be first
 	{ value: "modelharbor", label: "ModelHarbor", proxy: false },
+	// LiteLLM is pinned right after ModelHarbor as a related provider
+	{ value: "litellm", label: "LiteLLM", proxy: false },
 	// Sort the rest alphabetically
 	...[
 		{ value: "openrouter", label: "OpenRouter", proxy: true },
@@ -79,7 +81,6 @@ export const PROVIDERS = [
 		{ value: "groq", label: "Groq", proxy: false },
 		{ value: "huggingface", label: "Hugging Face", proxy: false },
 		{ value: "chutes", label: "Chutes AI", proxy: false },
-		{ value: "litellm", label: "LiteLLM", proxy: false },
 		{ value: "sambanova", label: "SambaNova", proxy: false },
 		{ value: "zai", label: "Z.ai", proxy: false },
 		{ value: "fireworks", label: "Fireworks AI", proxy: false },

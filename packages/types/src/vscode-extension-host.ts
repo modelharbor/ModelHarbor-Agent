@@ -97,6 +97,7 @@ export interface ExtensionMessage {
 		| "customToolsResult"
 		| "modes"
 		| "taskWithAggregatedCosts"
+		| "liteLLMEmbeddingModels"
 	text?: string
 	payload?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 	checkpointWarning?: {
@@ -189,6 +190,19 @@ export interface ExtensionMessage {
 		childrenCost: number
 	}
 	historyItem?: HistoryItem
+	liteLLMEmbeddingModels?: LiteLLMEmbeddingModel[]
+}
+
+/**
+ * Represents an embedding model fetched from the LiteLLM /v1/model/info API.
+ */
+export interface LiteLLMEmbeddingModel {
+	/** model_name from the API response */
+	modelId: string
+	/** model_info.dimension */
+	dimension: number
+	/** model_info.input_cost_per_token (optional) */
+	inputCostPerToken?: number
 }
 
 export type ExtensionState = Pick<
@@ -513,6 +527,8 @@ export interface WebviewMessage {
 		| "language"
 		| "humanRelayResponse"
 		| "humanRelayCancel"
+		| "fetchLiteLLMEmbeddingModels"
+		| "getLiteLLMEmbeddingModelsFromCache"
 	text?: string
 	editedMessageContent?: string
 	tab?: "settings" | "history" | "mcp" | "modes" | "chat" | "marketplace" | "cloud"
@@ -582,6 +598,7 @@ export interface WebviewMessage {
 			| "bedrock"
 			| "openrouter"
 			| "modelharbor"
+			| "litellm"
 		codebaseIndexEmbedderBaseUrl?: string
 		codebaseIndexEmbedderModelId: string
 		codebaseIndexEmbedderModelDimension?: number // Generic dimension for all providers
@@ -591,6 +608,8 @@ export interface WebviewMessage {
 		codebaseIndexSearchMaxResults?: number
 		codebaseIndexSearchMinScore?: number
 		codebaseIndexOpenRouterSpecificProvider?: string // OpenRouter provider routing
+		// LiteLLM specific fields
+		codebaseIndexLitellmBaseUrl?: string
 
 		// Secret settings
 		codeIndexOpenAiKey?: string
@@ -601,6 +620,7 @@ export interface WebviewMessage {
 		codebaseIndexModelHarborApiKey?: string
 		codebaseIndexVercelAiGatewayApiKey?: string
 		codebaseIndexOpenRouterApiKey?: string
+		codebaseIndexLitellmApiKey?: string
 	}
 	updatedSettings?: RooCodeSettings
 }

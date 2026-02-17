@@ -17,6 +17,14 @@ export interface IEmbedder {
 	 */
 	validateConfiguration(): Promise<{ valid: boolean; error?: string }>
 
+	/**
+	 * Detects the actual embedding dimension by sending a test embedding request.
+	 * This is useful for providers where the dimension is not known in advance
+	 * (e.g., LiteLLM proxying to unknown models).
+	 * @returns Promise resolving to the detected dimension, or undefined if detection fails
+	 */
+	detectDimension?(): Promise<number | undefined>
+
 	get embedderInfo(): EmbedderInfo
 }
 
@@ -38,6 +46,7 @@ export type AvailableEmbedders =
 	| "vercel-ai-gateway"
 	| "bedrock"
 	| "openrouter"
+	| "litellm"
 
 export interface EmbedderInfo {
 	name: AvailableEmbedders

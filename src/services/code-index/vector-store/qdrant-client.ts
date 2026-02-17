@@ -343,6 +343,17 @@ export class QdrantVectorStore implements IVectorStore {
 		}>,
 	): Promise<void> {
 		try {
+			// Validate vector dimensions before sending to Qdrant
+			if (points.length > 0) {
+				const firstVector = points[0].vector
+				if (firstVector && firstVector.length !== this.vectorSize) {
+					throw new Error(
+						`Vector dimension mismatch: collection expects ${this.vectorSize} but embedding has ${firstVector.length}. ` +
+							`Please check your embedding model configuration or delete the existing collection.`,
+					)
+				}
+			}
+
 			const processedPoints = points.map((point) => {
 				if (point.payload?.filePath) {
 					const segments = point.payload.filePath.split(path.sep).filter(Boolean)

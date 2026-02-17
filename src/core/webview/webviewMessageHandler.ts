@@ -53,6 +53,10 @@ import { RooIgnoreController } from "../ignore/RooIgnoreController"
 import { getWorkspacePath } from "../../utils/path"
 import { Mode, defaultModeSlug } from "../../shared/modes"
 import { getModels, flushModels } from "../../api/providers/fetchers/modelCache"
+import {
+	fetchLiteLLMEmbeddingModels,
+	getCachedLiteLLMEmbeddingModels,
+} from "../../services/code-index/litellm-model-fetcher"
 import { GetModelsOptions } from "../../shared/api"
 import { generateSystemPrompt } from "./generateSystemPrompt"
 import { getCommand } from "../../utils/commands"
@@ -1072,6 +1076,52 @@ export const webviewMessageHandler = async (
 			// TODO: Cache like we do for OpenRouter, etc?
 			provider.postMessageToWebview({ type: "vsCodeLmModels", vsCodeLmModels })
 			break
+		case "fetchLiteLLMEmbeddingModels": {
+			// Force refresh — user clicked "Refresh Models" button
+			const litellmBaseUrl = message?.values?.baseUrl
+			const litellmApiKey = message?.values?.apiKey
+			if (litellmBaseUrl) {
+				try {
+					const globalStoragePath = provider.contextProxy.globalStorageUri.fsPath
+					const models = await getCachedLiteLLMEmbeddingModels(
+						litellmBaseUrl,
+						litellmApiKey,
+						globalStoragePath,
+						true,
+					)
+					provider.postMessageToWebview({ type: "liteLLMEmbeddingModels", liteLLMEmbeddingModels: models })
+				} catch (error) {
+					console.error("Failed to fetch LiteLLM embedding models:", error)
+					provider.postMessageToWebview({ type: "liteLLMEmbeddingModels", liteLLMEmbeddingModels: [] })
+				}
+			} else {
+				provider.postMessageToWebview({ type: "liteLLMEmbeddingModels", liteLLMEmbeddingModels: [] })
+			}
+			break
+		}
+		case "getLiteLLMEmbeddingModelsFromCache": {
+			// Auto-fetch — uses cache first, then API
+			const litellmBaseUrl = message?.values?.baseUrl
+			const litellmApiKey = message?.values?.apiKey
+			if (litellmBaseUrl) {
+				try {
+					const globalStoragePath = provider.contextProxy.globalStorageUri.fsPath
+					const models = await getCachedLiteLLMEmbeddingModels(
+						litellmBaseUrl,
+						litellmApiKey,
+						globalStoragePath,
+						false,
+					)
+					provider.postMessageToWebview({ type: "liteLLMEmbeddingModels", liteLLMEmbeddingModels: models })
+				} catch (error) {
+					console.error("Failed to get cached LiteLLM embedding models:", error)
+					provider.postMessageToWebview({ type: "liteLLMEmbeddingModels", liteLLMEmbeddingModels: [] })
+				}
+			} else {
+				provider.postMessageToWebview({ type: "liteLLMEmbeddingModels", liteLLMEmbeddingModels: [] })
+			}
+			break
+		}
 		case "requestHuggingFaceModels":
 			// TODO: Why isn't this handled by `requestRouterModels` above?
 			try {
@@ -2312,6 +2362,7 @@ export const webviewMessageHandler = async (
 					codebaseIndexSearchMaxResults: settings.codebaseIndexSearchMaxResults,
 					codebaseIndexSearchMinScore: settings.codebaseIndexSearchMinScore,
 					codebaseIndexOpenRouterSpecificProvider: settings.codebaseIndexOpenRouterSpecificProvider,
+					codebaseIndexLitellmBaseUrl: settings.codebaseIndexLitellmBaseUrl,
 				}
 
 				// Save global state first
@@ -2352,6 +2403,18 @@ export const webviewMessageHandler = async (
 					await provider.contextProxy.storeSecret(
 						"codebaseIndexVercelAiGatewayApiKey",
 						settings.codebaseIndexVercelAiGatewayApiKey,
+					)
+				}
+				if (settings.codebaseIndexOpenRouterApiKey !== undefined) {
+					await provider.contextProxy.storeSecret(
+						"codebaseIndexOpenRouterApiKey",
+						settings.codebaseIndexOpenRouterApiKey,
+					)
+				}
+				if (settings.codebaseIndexLitellmApiKey !== undefined) {
+					await provider.contextProxy.storeSecret(
+						"codebaseIndexLitellmApiKey",
+						settings.codebaseIndexLitellmApiKey,
 					)
 				}
 
@@ -2492,6 +2555,8 @@ export const webviewMessageHandler = async (
 			const hasVercelAiGatewayApiKey = !!(await provider.context.secrets.get(
 				"codebaseIndexVercelAiGatewayApiKey",
 			))
+			const hasOpenRouterApiKey = !!(await provider.context.secrets.get("codebaseIndexOpenRouterApiKey"))
+			const hasLitellmApiKey = !!(await provider.context.secrets.get("codebaseIndexLitellmApiKey"))
 
 			provider.postMessageToWebview({
 				type: "codeIndexSecretStatus",
@@ -2503,6 +2568,8 @@ export const webviewMessageHandler = async (
 					hasMistralApiKey,
 					hasModelHarborApiKey,
 					hasVercelAiGatewayApiKey,
+					hasOpenRouterApiKey,
+					hasLitellmApiKey,
 				},
 			})
 			break
