@@ -159,7 +159,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
 		title: "1. Team Plan",
 		description: "Slack requires a Team plan.",
 		link: {
-			href: EXTERNAL_LINKS.CLOUD_APP_TEAM_TRIAL,
+			href: EXTERNAL_LINKS.CLOUD_APP_SIGNUP,
 			text: "Start a free trial",
 		},
 	},
@@ -216,7 +216,7 @@ export default function SlackPage(): JSX.Element {
 								</Button>
 								<Button variant="outline" size="xl" className="backdrop-blur-sm" asChild>
 									<a
-										href={EXTERNAL_LINKS.SLACK_DOCS}
+										href={EXTERNAL_LINKS.DOCUMENTATION}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="flex items-center justify-center">
@@ -384,7 +384,7 @@ export default function SlackPage(): JSX.Element {
 								className="bg-foreground text-background hover:bg-foreground/90 transition-all duration-300"
 								asChild>
 								<a
-									href={EXTERNAL_LINKS.CLOUD_APP_TEAM_TRIAL}
+									href={EXTERNAL_LINKS.CLOUD_APP_SIGNUP}
 									target="_blank"
 									rel="noopener noreferrer"
 									className="flex items-center justify-center">
