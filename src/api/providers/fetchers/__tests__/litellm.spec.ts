@@ -18,6 +18,52 @@ describe("getLiteLLMModels", () => {
 		vi.clearAllMocks()
 	})
 
+	describe("baseUrl guard check (Invalid URL bug fix)", () => {
+		it("returns empty object when baseUrl is undefined", async () => {
+			const result = await getLiteLLMModels("test-api-key", undefined)
+
+			expect(result).toEqual({})
+			expect(mockedAxios.get).not.toHaveBeenCalled()
+		})
+
+		it("returns empty object when baseUrl is empty string", async () => {
+			const result = await getLiteLLMModels("test-api-key", "")
+
+			expect(result).toEqual({})
+			expect(mockedAxios.get).not.toHaveBeenCalled()
+		})
+
+		it("returns empty object when both apiKey and baseUrl are undefined", async () => {
+			const result = await getLiteLLMModels(undefined, undefined)
+
+			expect(result).toEqual({})
+			expect(mockedAxios.get).not.toHaveBeenCalled()
+		})
+
+		it("returns empty object when called with no arguments", async () => {
+			const result = await getLiteLLMModels()
+
+			expect(result).toEqual({})
+			expect(mockedAxios.get).not.toHaveBeenCalled()
+		})
+
+		it("proceeds with valid baseUrl and constructs URL correctly", async () => {
+			const mockResponse = { data: { data: [] } }
+			mockedAxios.get.mockResolvedValue(mockResponse)
+
+			await getLiteLLMModels("test-api-key", "http://localhost:4000")
+
+			expect(mockedAxios.get).toHaveBeenCalledWith(
+				"http://localhost:4000/v1/model/info",
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						Authorization: "Bearer test-api-key",
+					}),
+				}),
+			)
+		})
+	})
+
 	it("handles base URLs with trailing slashes correctly", async () => {
 		const mockResponse = {
 			data: {
@@ -221,7 +267,13 @@ describe("getLiteLLMModels", () => {
 				maxTokens: 4096,
 				contextWindow: 200000,
 				supportsImages: true,
+				supportsComputerUse: true,
 				supportsPromptCache: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				supportsNativeTools: true,
+				defaultToolProtocol: "native",
 				inputPrice: 3,
 				outputPrice: 15,
 				cacheWritesPrice: undefined,
@@ -231,8 +283,14 @@ describe("getLiteLLMModels", () => {
 			"gpt-4-turbo": {
 				maxTokens: 8192,
 				contextWindow: 128000,
-				supportsImages: false,
+				supportsImages: true,
+				supportsComputerUse: false,
 				supportsPromptCache: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				supportsNativeTools: true,
+				defaultToolProtocol: "native",
 				inputPrice: 10,
 				outputPrice: 30,
 				cacheWritesPrice: undefined,
@@ -302,7 +360,13 @@ describe("getLiteLLMModels", () => {
 			maxTokens: 4096,
 			contextWindow: 200000,
 			supportsImages: true,
+			supportsComputerUse: true,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,
@@ -314,7 +378,13 @@ describe("getLiteLLMModels", () => {
 			maxTokens: 4096,
 			contextWindow: 200000,
 			supportsImages: false,
+			supportsComputerUse: false,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,
@@ -450,7 +520,13 @@ describe("getLiteLLMModels", () => {
 			maxTokens: 4096,
 			contextWindow: 200000,
 			supportsImages: true,
+			supportsComputerUse: false,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,
@@ -461,8 +537,14 @@ describe("getLiteLLMModels", () => {
 		expect(result["gpt-4-turbo"]).toEqual({
 			maxTokens: 8192,
 			contextWindow: 128000,
-			supportsImages: false,
+			supportsImages: true,
+			supportsComputerUse: false,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,
@@ -526,7 +608,13 @@ describe("getLiteLLMModels", () => {
 			maxTokens: 4096,
 			contextWindow: 200000,
 			supportsImages: true,
+			supportsComputerUse: false,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,
@@ -538,7 +626,13 @@ describe("getLiteLLMModels", () => {
 			maxTokens: 8192,
 			contextWindow: 128000,
 			supportsImages: false,
+			supportsComputerUse: true,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,
@@ -550,7 +644,13 @@ describe("getLiteLLMModels", () => {
 			maxTokens: 8192,
 			contextWindow: 128000,
 			supportsImages: false,
+			supportsComputerUse: false,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,
@@ -663,7 +763,13 @@ describe("getLiteLLMModels", () => {
 			maxTokens: 64000,
 			contextWindow: 200000,
 			supportsImages: true,
+			supportsComputerUse: true,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,
@@ -676,7 +782,13 @@ describe("getLiteLLMModels", () => {
 			maxTokens: 8192,
 			contextWindow: 128000,
 			supportsImages: false,
+			supportsComputerUse: false,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,
@@ -689,7 +801,13 @@ describe("getLiteLLMModels", () => {
 			maxTokens: 16384,
 			contextWindow: 100000,
 			supportsImages: false,
+			supportsComputerUse: false,
 			supportsPromptCache: false,
+			supportsReasoningBudget: false,
+			requiredReasoningBudget: false,
+			supportsReasoningEffort: false,
+			supportsNativeTools: true,
+			defaultToolProtocol: "native",
 			inputPrice: undefined,
 			outputPrice: undefined,
 			cacheWritesPrice: undefined,

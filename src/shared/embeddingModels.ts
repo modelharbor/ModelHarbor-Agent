@@ -42,6 +42,10 @@ export const EMBEDDING_MODEL_PROFILES: EmbeddingModelProfiles = {
 	mistral: {
 		"codestral-embed-2505": { dimension: 1536, scoreThreshold: 0.4 },
 	},
+	modelharbor: {
+		"baai/bge-m3": { dimension: 1024, scoreThreshold: 0.4 },
+		"qwen/qwen3-embedding-4b": { dimension: 2560, scoreThreshold: 0.4 },
+	},
 	"vercel-ai-gateway": {
 		// OpenAI models
 		"openai/text-embedding-3-small": { dimension: 1536, scoreThreshold: 0.4 },
@@ -69,6 +73,10 @@ export const EMBEDDING_MODEL_PROFILES: EmbeddingModelProfiles = {
 		// Cohere models available through Bedrock
 		"cohere.embed-english-v3": { dimension: 1024, scoreThreshold: 0.4 },
 		"cohere.embed-multilingual-v3": { dimension: 1024, scoreThreshold: 0.4 },
+	},
+	litellm: {
+		"baai/bge-m3": { dimension: 1024, scoreThreshold: 0.3 },
+		"qwen/qwen3-embedding-4b": { dimension: 2560, scoreThreshold: 0.3 },
 	},
 	openrouter: {
 		// OpenAI models via OpenRouter
@@ -175,11 +183,17 @@ export function getDefaultModelId(provider: EmbedderProvider): string {
 		case "mistral":
 			return "codestral-embed-2505"
 
+		case "modelharbor":
+			return "baai/bge-m3"
+
 		case "vercel-ai-gateway":
 			return "openai/text-embedding-3-large"
 
 		case "bedrock":
 			return "amazon.titan-embed-text-v2:0"
+		case "litellm":
+			return ""
+
 		case "openrouter":
 			return "openai/text-embedding-3-large"
 

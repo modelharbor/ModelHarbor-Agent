@@ -1,8 +1,8 @@
 // npx vitest run src/shared/__tests__/ProfileValidator.spec.ts
 
-import type { ProviderSettings, OrganizationAllowList } from "@roo-code/types"
+import type { ProviderSettings } from "@roo-code/types"
 
-import { ProfileValidator } from "../ProfileValidator"
+import { ProfileValidator, type OrganizationAllowList } from "../ProfileValidator"
 
 describe("ProfileValidator", () => {
 	describe("isProfileAllowed", () => {
@@ -176,8 +176,10 @@ describe("ProfileValidator", () => {
 			"mistral",
 			"deepseek",
 			"xai",
+			"groq",
 			"sambanova",
 			"fireworks",
+			"featherless",
 		]
 
 		apiModelProviders.forEach((provider) => {
@@ -213,6 +215,22 @@ describe("ProfileValidator", () => {
 			expect(ProfileValidator.isProfileAllowed(profile, allowList)).toBe(true)
 		})
 
+		// Test for io-intelligence provider which uses ioIntelligenceModelId
+		it(`should extract ioIntelligenceModelId for io-intelligence provider`, () => {
+			const allowList: OrganizationAllowList = {
+				allowAll: false,
+				providers: {
+					"io-intelligence": { allowAll: false, models: ["test-model"] },
+				},
+			}
+			const profile: ProviderSettings = {
+				apiProvider: "io-intelligence" as any,
+				ioIntelligenceModelId: "test-model",
+			}
+
+			expect(ProfileValidator.isProfileAllowed(profile, allowList)).toBe(true)
+		})
+
 		it("should extract vsCodeLmModelSelector.id for vscode-lm provider", () => {
 			const allowList: OrganizationAllowList = {
 				allowAll: false,
@@ -223,6 +241,21 @@ describe("ProfileValidator", () => {
 			const profile: ProviderSettings = {
 				apiProvider: "vscode-lm",
 				vsCodeLmModelSelector: { id: "copilot-gpt-3.5" },
+			}
+
+			expect(ProfileValidator.isProfileAllowed(profile, allowList)).toBe(true)
+		})
+
+		it("should extract unboundModelId for unbound provider", () => {
+			const allowList: OrganizationAllowList = {
+				allowAll: false,
+				providers: {
+					unbound: { allowAll: false, models: ["unbound-model"] },
+				},
+			}
+			const profile: ProviderSettings = {
+				apiProvider: "unbound",
+				unboundModelId: "unbound-model",
 			}
 
 			expect(ProfileValidator.isProfileAllowed(profile, allowList)).toBe(true)

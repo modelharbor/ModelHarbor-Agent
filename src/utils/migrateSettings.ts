@@ -5,6 +5,7 @@ import { fileExistsAtPath } from "./fs"
 import { GlobalFileNames } from "../shared/globalFileNames"
 import { getSettingsDirectoryPath } from "./storage"
 import * as yaml from "yaml"
+import type { ModeConfig, PromptComponent } from "@roo-code/types"
 
 const deprecatedCustomModesJSONFilename = "custom_modes.json"
 
@@ -19,6 +20,10 @@ export async function migrateSettings(
 ): Promise<void> {
 	// First, migrate commands from old defaults (security fix)
 	await migrateDefaultCommands(context, outputChannel)
+
+	// Then, ensure built-in modes always use latest DEFAULT_MODES
+	await migrateBuiltinModeOverrides(context, outputChannel)
+
 	// Legacy file names that need to be migrated to the new names in GlobalFileNames
 	const fileMigrations = [
 		// custom_modes.json to custom_modes.yaml is handled separately below
@@ -168,5 +173,86 @@ async function migrateDefaultCommands(
 		outputChannel.appendLine("[Default Commands Migration] Migration marked as complete")
 	} catch (error) {
 		outputChannel.appendLine(`[Default Commands Migration] Error migrating default commands: ${error}`)
+	}
+}
+
+/**
+ * Ensures built-in modes always use the latest DEFAULT_MODES values
+ * This migration runs on every extension activation to apply updates
+ * to built-in modes, while preserving fully custom modes.
+ */
+async function migrateBuiltinModeOverrides(
+	context: vscode.ExtensionContext,
+	outputChannel: vscode.OutputChannel,
+): Promise<void> {
+	try {
+		// Built-in mode slugs that should always be overridden
+		const BUILTIN_MODE_SLUGS = ["architect", "code", "ask", "debug", "orchestrator"] as const
+
+		// Get current custom modes from globalState
+		const customModes = context.globalState.get<ModeConfig[]>("customModes") || []
+
+		// Get current custom mode prompts from globalState
+		const customModePrompts = context.globalState.get<Record<string, PromptComponent>>("customModePrompts") || {}
+
+		// If there are no custom modes or custom mode prompts, nothing to do
+		if (customModes.length === 0 && Object.keys(customModePrompts).length === 0) {
+			outputChannel.appendLine("[Built-in Modes Migration] No custom modes or prompts found, skipping")
+			return
+		}
+
+		let modesRemoved = false
+		let promptsRemoved: string[] = []
+
+		// 1. Remove custom modes that override built-in modes
+		const filteredCustomModes = customModes.filter((mode) => {
+			const isBuiltinMode = BUILTIN_MODE_SLUGS.includes(mode.slug as any)
+			if (isBuiltinMode) {
+				modesRemoved = true
+				outputChannel.appendLine(
+					`[Built-in Modes Migration] Removing custom override for built-in mode: ${mode.slug}`,
+				)
+				return false // Remove built-in mode overrides
+			}
+			return true // Keep fully custom modes
+		})
+
+		// 2. Remove custom mode prompts for built-in modes
+		const filteredCustomModePrompts: Record<string, PromptComponent> = {}
+		for (const [slug, prompt] of Object.entries(customModePrompts)) {
+			const isBuiltinMode = BUILTIN_MODE_SLUGS.includes(slug as any)
+			if (isBuiltinMode) {
+				promptsRemoved.push(slug)
+				outputChannel.appendLine(
+					`[Built-in Modes Migration] Removing custom prompt override for built-in mode: ${slug}`,
+				)
+				// Don't copy to filtered object
+			} else {
+				filteredCustomModePrompts[slug] = prompt
+			}
+		}
+
+		// 3. Update globalState if any changes were made
+		if (modesRemoved) {
+			await context.globalState.update("customModes", filteredCustomModes)
+			outputChannel.appendLine(`[Built-in Modes Migration] Updated customModes in globalState`)
+		}
+
+		if (promptsRemoved.length > 0) {
+			await context.globalState.update("customModePrompts", filteredCustomModePrompts)
+			outputChannel.appendLine(
+				`[Built-in Modes Migration] Removed prompt overrides for: ${promptsRemoved.join(", ")}`,
+			)
+		}
+
+		if (!modesRemoved && promptsRemoved.length === 0) {
+			outputChannel.appendLine("[Built-in Modes Migration] No built-in mode overrides found, no changes needed")
+		} else {
+			outputChannel.appendLine(
+				`[Built-in Modes Migration] Completed: removed ${modesRemoved ? "custom mode(s) and " : ""}${promptsRemoved.length} prompt override(s)`,
+			)
+		}
+	} catch (error) {
+		outputChannel.appendLine(`[Built-in Modes Migration] Error: ${error}`)
 	}
 }

@@ -5,17 +5,6 @@ import type { Mock } from "vitest"
 // Mock dependencies - must come before imports
 vi.mock("../../../api/providers/fetchers/modelCache")
 
-vi.mock("../../../integrations/openai-codex/oauth", () => ({
-	openAiCodexOAuthManager: {
-		getAccessToken: vi.fn(),
-		getAccountId: vi.fn(),
-	},
-}))
-
-vi.mock("../../../integrations/openai-codex/rate-limits", () => ({
-	fetchOpenAiCodexRateLimitInfo: vi.fn(),
-}))
-
 // Mock the diagnosticsHandler module
 vi.mock("../diagnosticsHandler", () => ({
 	generateErrorDiagnostics: vi.fn().mockResolvedValue({ success: true, filePath: "/tmp/diagnostics.json" }),
@@ -26,13 +15,8 @@ import type { ModelRecord } from "@roo-code/types"
 import { webviewMessageHandler } from "../webviewMessageHandler"
 import type { ClineProvider } from "../ClineProvider"
 import { getModels } from "../../../api/providers/fetchers/modelCache"
-const { openAiCodexOAuthManager } = await import("../../../integrations/openai-codex/oauth")
-const { fetchOpenAiCodexRateLimitInfo } = await import("../../../integrations/openai-codex/rate-limits")
 
 const mockGetModels = getModels as Mock<typeof getModels>
-const mockGetAccessToken = vi.mocked(openAiCodexOAuthManager.getAccessToken)
-const mockGetAccountId = vi.mocked(openAiCodexOAuthManager.getAccountId)
-const mockFetchOpenAiCodexRateLimitInfo = vi.mocked(fetchOpenAiCodexRateLimitInfo)
 
 // Mock ClineProvider
 const mockClineProvider = {
@@ -265,6 +249,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			apiConfiguration: {
 				openRouterApiKey: "openrouter-key",
 				requestyApiKey: "requesty-key",
+				unboundApiKey: "unbound-key",
 				litellmApiKey: "litellm-key",
 				litellmBaseUrl: "http://localhost:4000",
 			},
@@ -287,7 +272,48 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			},
 		}
 
-		mockGetModels.mockResolvedValue(mockModels)
+		// ModelHarbor returns specific embedding models
+		const mockModelHarborModels: ModelRecord = {
+			"baai/bge-m3": {
+				maxTokens: 8192,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				supportsImages: false,
+				supportsComputerUse: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				inputPrice: 0,
+				outputPrice: 0,
+				cacheReadsPrice: 0,
+				description: "ModelHarbor baai/bge-m3 embedding model with 1024 dimensions",
+			},
+			"qwen/qwen3-embedding-4b": {
+				maxTokens: 8192,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				supportsImages: false,
+				supportsComputerUse: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				inputPrice: 0,
+				outputPrice: 0,
+				cacheReadsPrice: 0,
+				description: "ModelHarbor qwen/qwen3-embedding-4b embedding model with 2560 dimensions",
+			},
+		}
+
+		// Mock getModels to return different models for different providers
+		// The order should match the modelFetchPromises array in webviewMessageHandler.ts
+		mockGetModels
+			.mockResolvedValueOnce(mockModels) // openrouter - position 1
+			.mockResolvedValueOnce(mockModels) // requesty - position 2
+			.mockResolvedValueOnce(mockModels) // unbound - position 3
+			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor - position 4
+			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway - position 5
+			.mockResolvedValueOnce(mockModels) // deepinfra - position 6
+			.mockResolvedValueOnce(mockModels) // litellm - position 7 (if present)
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
@@ -296,38 +322,34 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		// Verify getModels was called for each provider
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "openrouter" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "requesty", apiKey: "requesty-key" })
-		expect(mockGetModels).toHaveBeenCalledWith(
-			expect.objectContaining({
-				provider: "unbound",
-			}),
-		)
+		expect(mockGetModels).toHaveBeenCalledWith({ provider: "unbound", apiKey: "unbound-key" })
+		expect(mockGetModels).toHaveBeenCalledWith({ provider: "modelharbor" })
 		expect(mockGetModels).toHaveBeenCalledWith({ provider: "vercel-ai-gateway" })
-		expect(mockGetModels).toHaveBeenCalledWith(
-			expect.objectContaining({
-				provider: "roo",
-				baseUrl: expect.any(String),
-			}),
-		)
+		expect(mockGetModels).toHaveBeenCalledWith({ provider: "deepinfra" })
 		expect(mockGetModels).toHaveBeenCalledWith({
 			provider: "litellm",
 			apiKey: "litellm-key",
 			baseUrl: "http://localhost:4000",
 		})
+		// Note: huggingface is not fetched in requestRouterModels - it has its own handler
+		// Note: io-intelligence is not fetched because no API key is provided in the mock state
 
-		// Verify response was sent
+		// Verify response was sent with correct ModelHarbor models
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
 			type: "routerModels",
 			routerModels: {
+				deepinfra: mockModels,
 				openrouter: mockModels,
 				requesty: mockModels,
 				unbound: mockModels,
 				litellm: mockModels,
-				roo: mockModels,
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModelHarborModels,
 				"vercel-ai-gateway": mockModels,
+				huggingface: {},
+				"io-intelligence": {},
 			},
-			values: undefined,
 		})
 	})
 
@@ -336,6 +358,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			apiConfiguration: {
 				openRouterApiKey: "openrouter-key",
 				requestyApiKey: "requesty-key",
+				unboundApiKey: "unbound-key",
 				// Missing litellm config
 			},
 		})
@@ -349,7 +372,31 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			},
 		}
 
-		mockGetModels.mockResolvedValue(mockModels)
+		const mockModelHarborModels: ModelRecord = {
+			"baai/bge-m3": {
+				maxTokens: 8192,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				supportsImages: false,
+				supportsComputerUse: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				inputPrice: 0,
+				outputPrice: 0,
+				cacheReadsPrice: 0,
+				description: "ModelHarbor baai/bge-m3 embedding model with 1024 dimensions",
+			},
+		}
+
+		mockGetModels
+			.mockResolvedValueOnce(mockModels) // openrouter
+			.mockResolvedValueOnce(mockModels) // requesty
+			.mockResolvedValueOnce(mockModels) // unbound
+			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
+			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway
+			.mockResolvedValueOnce(mockModels) // deepinfra
+			.mockResolvedValueOnce({}) // litellm (empty because no config)
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
@@ -372,6 +419,7 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			apiConfiguration: {
 				openRouterApiKey: "openrouter-key",
 				requestyApiKey: "requesty-key",
+				unboundApiKey: "unbound-key",
 				// Missing litellm config
 			},
 		})
@@ -385,7 +433,30 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			},
 		}
 
-		mockGetModels.mockResolvedValue(mockModels)
+		const mockModelHarborModels: ModelRecord = {
+			"baai/bge-m3": {
+				maxTokens: 8192,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				supportsImages: false,
+				supportsComputerUse: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				inputPrice: 0,
+				outputPrice: 0,
+				cacheReadsPrice: 0,
+				description: "ModelHarbor baai/bge-m3 embedding model with 1024 dimensions",
+			},
+		}
+
+		mockGetModels
+			.mockResolvedValueOnce(mockModels) // openrouter
+			.mockResolvedValueOnce(mockModels) // requesty
+			.mockResolvedValueOnce(mockModels) // unbound
+			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
+			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway
+			.mockResolvedValueOnce(mockModels) // deepinfra
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
@@ -403,16 +474,18 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
 			type: "routerModels",
 			routerModels: {
+				deepinfra: mockModels,
 				openrouter: mockModels,
 				requesty: mockModels,
 				unbound: mockModels,
-				roo: mockModels,
 				litellm: {},
 				ollama: {},
 				lmstudio: {},
+				modelharbor: mockModelHarborModels,
 				"vercel-ai-gateway": mockModels,
+				huggingface: {},
+				"io-intelligence": {},
 			},
-			values: undefined,
 		})
 	})
 
@@ -426,20 +499,56 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 			},
 		}
 
+		const mockModelHarborModels: ModelRecord = {
+			"baai/bge-m3": {
+				maxTokens: 8192,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				supportsImages: false,
+				supportsComputerUse: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				inputPrice: 0,
+				outputPrice: 0,
+				cacheReadsPrice: 0,
+				description: "ModelHarbor baai/bge-m3 embedding model with 1024 dimensions",
+			},
+		}
+
 		// Mock some providers to succeed and others to fail
 		mockGetModels
 			.mockResolvedValueOnce(mockModels) // openrouter
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty
-			.mockResolvedValueOnce(mockModels) // unbound
-			.mockResolvedValueOnce(mockModels) // vercel-ai-gateway
-			.mockResolvedValueOnce(mockModels) // roo
+			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
+			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
+			.mockRejectedValueOnce(new Error("Vercel AI Gateway error")) // vercel-ai-gateway
+			.mockResolvedValueOnce(mockModels) // deepinfra
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
 		})
 
-		// Verify error messages were sent for failed providers (these come first)
+		// Verify final response includes successful providers
+		expect(mockClineProvider.postMessageToWebview).toHaveBeenLastCalledWith({
+			type: "routerModels",
+			routerModels: {
+				deepinfra: mockModels,
+				openrouter: mockModels,
+				requesty: {},
+				unbound: {},
+				litellm: {},
+				ollama: {},
+				lmstudio: {},
+				modelharbor: mockModelHarborModels,
+				"vercel-ai-gateway": {},
+				huggingface: {},
+				"io-intelligence": {},
+			},
+		})
+
+		// Verify error messages were sent for failed providers
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
 			type: "singleRouterModelFetchResponse",
 			success: false,
@@ -450,35 +559,37 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
 			type: "singleRouterModelFetchResponse",
 			success: false,
-			error: "LiteLLM connection failed",
-			values: { provider: "litellm" },
-		})
-
-		// Verify final routerModels response includes successful providers and empty objects for failed ones
-		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
-			type: "routerModels",
-			routerModels: {
-				openrouter: mockModels,
-				requesty: {},
-				unbound: mockModels,
-				roo: mockModels,
-				litellm: {},
-				ollama: {},
-				lmstudio: {},
-				"vercel-ai-gateway": mockModels,
-			},
-			values: undefined,
+			error: "Unbound API error",
+			values: { provider: "unbound" },
 		})
 	})
 
 	it("handles Error objects and string errors correctly", async () => {
+		const mockModelHarborModels: ModelRecord = {
+			"baai/bge-m3": {
+				maxTokens: 8192,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				supportsImages: false,
+				supportsComputerUse: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				inputPrice: 0,
+				outputPrice: 0,
+				cacheReadsPrice: 0,
+				description: "ModelHarbor baai/bge-m3 embedding model with 1024 dimensions",
+			},
+		}
+
 		// Mock providers to fail with different error types
 		mockGetModels
 			.mockRejectedValueOnce(new Error("Structured error message")) // openrouter
 			.mockRejectedValueOnce(new Error("Requesty API error")) // requesty
-			.mockRejectedValueOnce(new Error("Unbound error")) // unbound
+			.mockRejectedValueOnce(new Error("Unbound API error")) // unbound
+			.mockRejectedValueOnce(new Error("ModelHarbor API error")) // modelharbor
 			.mockRejectedValueOnce(new Error("Vercel AI Gateway error")) // vercel-ai-gateway
-			.mockRejectedValueOnce(new Error("Roo API error")) // roo
+			.mockRejectedValueOnce(new Error("DeepInfra API error")) // deepinfra
 			.mockRejectedValueOnce(new Error("LiteLLM connection failed")) // litellm
 
 		await webviewMessageHandler(mockClineProvider, {
@@ -503,8 +614,15 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
 			type: "singleRouterModelFetchResponse",
 			success: false,
-			error: "Unbound error",
+			error: "Unbound API error",
 			values: { provider: "unbound" },
+		})
+
+		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
+			type: "singleRouterModelFetchResponse",
+			success: false,
+			error: "DeepInfra API error",
+			values: { provider: "deepinfra" },
 		})
 
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
@@ -517,8 +635,8 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
 			type: "singleRouterModelFetchResponse",
 			success: false,
-			error: "Roo API error",
-			values: { provider: "roo" },
+			error: "ModelHarbor API error",
+			values: { provider: "modelharbor" },
 		})
 
 		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
@@ -531,7 +649,31 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 
 	it("prefers config values over message values for LiteLLM", async () => {
 		const mockModels: ModelRecord = {}
-		mockGetModels.mockResolvedValue(mockModels)
+		const mockModelHarborModels: ModelRecord = {
+			"baai/bge-m3": {
+				maxTokens: 8192,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				supportsImages: false,
+				supportsComputerUse: false,
+				supportsReasoningBudget: false,
+				requiredReasoningBudget: false,
+				supportsReasoningEffort: false,
+				inputPrice: 0,
+				outputPrice: 0,
+				cacheReadsPrice: 0,
+				description: "ModelHarbor baai/bge-m3 embedding model with 1024 dimensions",
+			},
+		}
+
+		mockGetModels
+			.mockResolvedValueOnce({}) // openrouter
+			.mockResolvedValueOnce({}) // requesty
+			.mockResolvedValueOnce({}) // unbound
+			.mockResolvedValueOnce(mockModelHarborModels) // modelharbor
+			.mockResolvedValueOnce({}) // vercel-ai-gateway
+			.mockResolvedValueOnce({}) // deepinfra
+			.mockResolvedValueOnce(mockModels) // litellm
 
 		await webviewMessageHandler(mockClineProvider, {
 			type: "requestRouterModels",
@@ -550,49 +692,12 @@ describe("webviewMessageHandler - requestRouterModels", () => {
 	})
 })
 
-describe("webviewMessageHandler - requestOpenAiCodexRateLimits", () => {
-	beforeEach(() => {
-		vi.clearAllMocks()
-		mockGetAccessToken.mockResolvedValue(null)
-		mockGetAccountId.mockResolvedValue(null)
-	})
-
-	it("posts error when not authenticated", async () => {
-		await webviewMessageHandler(mockClineProvider, { type: "requestOpenAiCodexRateLimits" } as any)
-
-		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
-			type: "openAiCodexRateLimits",
-			error: "Not authenticated with OpenAI Codex",
-		})
-	})
-
-	it("posts values when authenticated", async () => {
-		mockGetAccessToken.mockResolvedValue("token")
-		mockGetAccountId.mockResolvedValue("acct_123")
-		mockFetchOpenAiCodexRateLimitInfo.mockResolvedValue({
-			primary: { usedPercent: 10, resetsAt: 1700000000000 },
-			fetchedAt: 1700000000000,
-		})
-
-		await webviewMessageHandler(mockClineProvider, { type: "requestOpenAiCodexRateLimits" } as any)
-
-		expect(mockFetchOpenAiCodexRateLimitInfo).toHaveBeenCalledWith("token", { accountId: "acct_123" })
-		expect(mockClineProvider.postMessageToWebview).toHaveBeenCalledWith({
-			type: "openAiCodexRateLimits",
-			values: {
-				primary: { usedPercent: 10, resetsAt: 1700000000000 },
-				fetchedAt: 1700000000000,
-			},
-		})
-	})
-})
-
 describe("webviewMessageHandler - deleteCustomMode", () => {
 	beforeEach(() => {
 		vi.clearAllMocks()
 		vi.mocked(getWorkspacePath).mockReturnValue("/mock/workspace")
 		vi.mocked(vscode.window.showErrorMessage).mockResolvedValue(undefined)
-		vi.mocked(ensureSettingsDirectoryExists).mockResolvedValue("/mock/global/storage/.roo")
+		vi.mocked(ensureSettingsDirectoryExists).mockResolvedValue("/mock/global/storage/.modelharbor")
 	})
 
 	it("should delete a project mode and its rules folder", async () => {

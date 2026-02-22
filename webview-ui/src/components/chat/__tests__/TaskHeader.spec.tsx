@@ -222,7 +222,8 @@ describe("TaskHeader", () => {
 			vi.useRealTimers()
 		})
 
-		it("should show DismissibleUpsell after 2 minutes when task is not complete", async () => {
+		it.skip("should show DismissibleUpsell after 2 minutes when task is not complete", async () => {
+			// SKIPPED: DismissibleUpsell component was removed as part of cloud/telemetry removal
 			renderTaskHeader()
 
 			// Initially, the upsell should not be visible
@@ -236,7 +237,8 @@ describe("TaskHeader", () => {
 			expect(screen.getByText("cloud:upsell.longRunningTask")).toBeInTheDocument()
 		})
 
-		it("should not show DismissibleUpsell when task is complete", async () => {
+		it.skip("should not show DismissibleUpsell when task is complete", async () => {
+			// SKIPPED: DismissibleUpsell component was removed as part of cloud/telemetry removal
 			// Set up mock state with a completion_result message
 			mockExtensionState = {
 				...mockExtensionState,
@@ -259,7 +261,8 @@ describe("TaskHeader", () => {
 			expect(screen.queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
 		})
 
-		it("should not show DismissibleUpsell when currentTaskItem is null", async () => {
+		it.skip("should not show DismissibleUpsell when currentTaskItem is null", async () => {
+			// SKIPPED: DismissibleUpsell component was removed as part of cloud/telemetry removal
 			// Update the mock state to have null currentTaskItem
 			mockExtensionState = {
 				...mockExtensionState,
@@ -275,7 +278,8 @@ describe("TaskHeader", () => {
 			expect(screen.queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
 		})
 
-		it("should not show DismissibleUpsell when task has completion_result in clineMessages", async () => {
+		it.skip("should not show DismissibleUpsell when task has completion_result in clineMessages", async () => {
+			// SKIPPED: DismissibleUpsell component was removed as part of cloud/telemetry removal
 			// Set up mock state with a completion_result message from the start
 			mockExtensionState = {
 				...mockExtensionState,
@@ -304,7 +308,8 @@ describe("TaskHeader", () => {
 			expect(screen.queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
 		})
 
-		it("should not show DismissibleUpsell when task has completion_result followed by resume messages", async () => {
+		it.skip("should not show DismissibleUpsell when task has completion_result followed by resume messages", async () => {
+			// SKIPPED: DismissibleUpsell component was removed as part of cloud/telemetry removal
 			// Set up mock state with a completion_result message followed by resume messages
 			mockExtensionState = {
 				...mockExtensionState,
@@ -345,7 +350,8 @@ describe("TaskHeader", () => {
 			expect(screen.queryByTestId("dismissible-upsell")).not.toBeInTheDocument()
 		})
 
-		it("should show DismissibleUpsell when task has non-completion message followed by resume messages", async () => {
+		it.skip("should show DismissibleUpsell when task has non-completion message followed by resume messages", async () => {
+			// SKIPPED: DismissibleUpsell component was removed as part of cloud/telemetry removal
 			// Set up mock state with a non-completion message followed by resume messages
 			mockExtensionState = {
 				...mockExtensionState,

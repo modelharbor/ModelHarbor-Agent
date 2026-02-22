@@ -2,8 +2,6 @@ import * as vscode from "vscode"
 import { Ignore } from "ignore"
 
 import type { EmbedderProvider } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
-import { TelemetryEventName } from "@roo-code/types"
 
 import { t } from "../../i18n"
 
@@ -17,9 +15,11 @@ import { CodeIndexOllamaEmbedder } from "./embedders/ollama"
 import { OpenAICompatibleEmbedder } from "./embedders/openai-compatible"
 import { GeminiEmbedder } from "./embedders/gemini"
 import { MistralEmbedder } from "./embedders/mistral"
+import { ModelHarborEmbedder } from "./embedders/modelharbor"
 import { VercelAiGatewayEmbedder } from "./embedders/vercel-ai-gateway"
 import { BedrockEmbedder } from "./embedders/bedrock"
 import { OpenRouterEmbedder } from "./embedders/openrouter"
+import { LiteLLMEmbedder } from "./embedders/litellm"
 import { QdrantVectorStore } from "./vector-store/qdrant-client"
 import { codeParser, DirectoryScanner, FileWatcher } from "./processors"
 import { ICodeParser, IEmbedder, IFileWatcher, IVectorStore } from "./interfaces"
@@ -82,6 +82,14 @@ export class CodeIndexServiceFactory {
 				throw new Error(t("embeddings:serviceFactory.mistralConfigMissing"))
 			}
 			return new MistralEmbedder(config.mistralOptions.apiKey, config.modelId)
+		} else if (provider === "modelharbor") {
+			if (!config.modelHarborOptions?.apiKey) {
+				throw new Error(t("embeddings:serviceFactory.modelHarborConfigMissing"))
+			}
+			return new ModelHarborEmbedder({
+				modelHarborApiKey: config.modelHarborOptions.apiKey,
+				modelHarborEmbeddingModelId: config.modelId,
+			})
 		} else if (provider === "vercel-ai-gateway") {
 			if (!config.vercelAiGatewayOptions?.apiKey) {
 				throw new Error(t("embeddings:serviceFactory.vercelAiGatewayConfigMissing"))
@@ -103,6 +111,15 @@ export class CodeIndexServiceFactory {
 				undefined, // maxItemTokens
 				config.openRouterOptions.specificProvider,
 			)
+		} else if (provider === "litellm") {
+			if (!config.litellmOptions?.baseUrl) {
+				throw new Error(t("embeddings:serviceFactory.litellmConfigMissing"))
+			}
+			return new LiteLLMEmbedder(
+				config.litellmOptions.baseUrl,
+				config.modelId || "",
+				config.litellmOptions.apiKey,
+			)
 		}
 
 		throw new Error(
@@ -119,13 +136,6 @@ export class CodeIndexServiceFactory {
 		try {
 			return await embedder.validateConfiguration()
 		} catch (error) {
-			// Capture telemetry for the error
-			TelemetryService.instance.captureEvent(TelemetryEventName.CODE_INDEX_ERROR, {
-				error: error instanceof Error ? error.message : String(error),
-				stack: error instanceof Error ? error.stack : undefined,
-				location: "validateEmbedder",
-			})
-
 			// If validation throws an exception, preserve the original error message
 			return {
 				valid: false,
@@ -156,7 +166,7 @@ export class CodeIndexServiceFactory {
 		}
 
 		if (vectorSize === undefined || vectorSize <= 0) {
-			if (provider === "openai-compatible") {
+			if (provider === "openai-compatible" || provider === "litellm") {
 				throw new Error(
 					t("embeddings:serviceFactory.vectorDimensionNotDeterminedOpenAiCompatible", { modelId, provider }),
 				)
@@ -170,6 +180,72 @@ export class CodeIndexServiceFactory {
 		}
 
 		// Assuming constructor is updated: new QdrantVectorStore(workspacePath, url, vectorSize, apiKey?)
+		return new QdrantVectorStore(this.workspacePath, config.qdrantUrl, vectorSize, config.qdrantApiKey)
+	}
+
+	/**
+	 * Creates a vector store instance using the current configuration, with auto-detection of
+	 * embedding dimension when the model dimension is not known from profiles.
+	 * This is an async version of createVectorStore that can probe the embedder for dimension.
+	 */
+	public async createVectorStoreWithDimensionDetection(embedder: IEmbedder): Promise<IVectorStore> {
+		const config = this.configManager.getConfig()
+
+		const provider = config.embedderProvider as EmbedderProvider
+		const defaultModel = getDefaultModelId(provider)
+		const modelId = config.modelId ?? defaultModel
+
+		let vectorSize: number | undefined
+		let dimensionSource: string | undefined
+
+		// First try to get the model-specific dimension from profiles
+		vectorSize = getModelDimension(provider, modelId)
+		if (vectorSize) {
+			dimensionSource = "profile"
+		}
+
+		// If no profile dimension, try auto-detecting from the embedder
+		if (!vectorSize && embedder.detectDimension) {
+			try {
+				const detectedDimension = await embedder.detectDimension()
+				if (detectedDimension && detectedDimension > 0) {
+					vectorSize = detectedDimension
+					dimensionSource = "auto-detected from API"
+				}
+			} catch (error) {
+				console.warn(
+					`[CodeIndex] Failed to auto-detect embedding dimension:`,
+					error instanceof Error ? error.message : String(error),
+				)
+			}
+		}
+
+		// Fall back to manual dimension from config
+		if (!vectorSize && config.modelDimension && config.modelDimension > 0) {
+			vectorSize = config.modelDimension
+			dimensionSource = "manual config"
+		}
+
+		if (vectorSize && dimensionSource) {
+			console.log(
+				`[CodeIndex] Dimension source: ${dimensionSource} (${vectorSize}) for model: ${modelId} (provider: ${provider})`,
+			)
+		}
+
+		if (vectorSize === undefined || vectorSize <= 0) {
+			if (provider === "openai-compatible" || provider === "litellm") {
+				throw new Error(
+					t("embeddings:serviceFactory.vectorDimensionNotDeterminedOpenAiCompatible", { modelId, provider }),
+				)
+			} else {
+				throw new Error(t("embeddings:serviceFactory.vectorDimensionNotDetermined", { modelId, provider }))
+			}
+		}
+
+		if (!config.qdrantUrl) {
+			throw new Error(t("embeddings:serviceFactory.qdrantUrlMissing"))
+		}
+
 		return new QdrantVectorStore(this.workspacePath, config.qdrantUrl, vectorSize, config.qdrantApiKey)
 	}
 
@@ -232,24 +308,24 @@ export class CodeIndexServiceFactory {
 	 * Creates all required service dependencies if the service is properly configured.
 	 * @throws Error if the service is not properly configured
 	 */
-	public createServices(
+	public async createServices(
 		context: vscode.ExtensionContext,
 		cacheManager: CacheManager,
 		ignoreInstance: Ignore,
 		rooIgnoreController?: RooIgnoreController,
-	): {
+	): Promise<{
 		embedder: IEmbedder
 		vectorStore: IVectorStore
 		parser: ICodeParser
 		scanner: DirectoryScanner
 		fileWatcher: IFileWatcher
-	} {
+	}> {
 		if (!this.configManager.isFeatureConfigured) {
 			throw new Error(t("embeddings:serviceFactory.codeIndexingNotConfigured"))
 		}
 
 		const embedder = this.createEmbedder()
-		const vectorStore = this.createVectorStore()
+		const vectorStore = await this.createVectorStoreWithDimensionDetection(embedder)
 		const parser = codeParser
 		const scanner = this.createDirectoryScanner(embedder, vectorStore, parser, ignoreInstance)
 		const fileWatcher = this.createFileWatcher(

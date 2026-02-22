@@ -12,9 +12,8 @@ import {
 	getModelId,
 	type ProviderName,
 	isProviderName,
-	isRetiredProvider,
+	modelHarborDefaultModelId,
 } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { Mode, modes } from "../../shared/modes"
 import { buildApiHandler } from "../../api"
@@ -24,11 +23,7 @@ type ModelMigrations = {
 	[K in ProviderName]?: Record<string, string>
 }
 
-const MODEL_MIGRATIONS: ModelMigrations = {
-	roo: {
-		"roo/code-supernova": "roo/code-supernova-1-million",
-	},
-} as const satisfies ModelMigrations
+const MODEL_MIGRATIONS: ModelMigrations = {} as const satisfies ModelMigrations
 
 export interface SyncCloudProfilesResult {
 	hasChanges: boolean
@@ -36,14 +31,16 @@ export interface SyncCloudProfilesResult {
 	activeProfileId: string
 }
 
+// Using z.any() to avoid deep type instantiation from providerSettingsWithIdSchema
 export const providerProfilesSchema = z.object({
 	currentApiConfigName: z.string(),
-	apiConfigs: z.record(z.string(), providerSettingsWithIdSchema),
+	apiConfigs: z.record(z.string(), z.any()),
 	modeApiConfigs: z.record(z.string(), z.string()).optional(),
 	cloudProfileIds: z.array(z.string()).optional(),
 	migrations: z
 		.object({
 			rateLimitSecondsMigrated: z.boolean().optional(),
+			diffSettingsMigrated: z.boolean().optional(),
 			openAiHeadersMigrated: z.boolean().optional(),
 			consecutiveMistakeLimitMigrated: z.boolean().optional(),
 			todoListEnabledMigrated: z.boolean().optional(),
@@ -64,10 +61,17 @@ export class ProviderSettingsManager {
 
 	private readonly defaultProviderProfiles: ProviderProfiles = {
 		currentApiConfigName: "default",
-		apiConfigs: { default: { id: this.defaultConfigId } },
+		apiConfigs: {
+			default: {
+				id: this.defaultConfigId,
+				apiProvider: "modelharbor",
+				modelharborModelId: modelHarborDefaultModelId,
+			},
+		},
 		modeApiConfigs: this.defaultModeApiConfigs,
 		migrations: {
 			rateLimitSecondsMigrated: true, // Mark as migrated on fresh installs
+			diffSettingsMigrated: true, // Mark as migrated on fresh installs
 			openAiHeadersMigrated: true, // Mark as migrated on fresh installs
 			consecutiveMistakeLimitMigrated: true, // Mark as migrated on fresh installs
 			todoListEnabledMigrated: true, // Mark as migrated on fresh installs
@@ -140,6 +144,7 @@ export class ProviderSettingsManager {
 				if (!providerProfiles.migrations) {
 					providerProfiles.migrations = {
 						rateLimitSecondsMigrated: false,
+						diffSettingsMigrated: false,
 						openAiHeadersMigrated: false,
 						consecutiveMistakeLimitMigrated: false,
 						todoListEnabledMigrated: false,
@@ -151,6 +156,12 @@ export class ProviderSettingsManager {
 				if (!providerProfiles.migrations.rateLimitSecondsMigrated) {
 					await this.migrateRateLimitSeconds(providerProfiles)
 					providerProfiles.migrations.rateLimitSecondsMigrated = true
+					isDirty = true
+				}
+
+				if (!providerProfiles.migrations.diffSettingsMigrated) {
+					await this.migrateDiffSettings(providerProfiles)
+					providerProfiles.migrations.diffSettingsMigrated = true
 					isDirty = true
 				}
 
@@ -175,8 +186,7 @@ export class ProviderSettingsManager {
 				if (!providerProfiles.migrations.claudeCodeLegacySettingsMigrated) {
 					// These keys were used by the removed local Claude Code CLI wrapper.
 					for (const apiConfig of Object.values(providerProfiles.apiConfigs)) {
-						// Cast to string for comparison since "claude-code" is no longer a valid ProviderName
-						if ((apiConfig.apiProvider as string) !== "claude-code") continue
+						if (apiConfig.apiProvider !== "claude-code") continue
 
 						const config = apiConfig as unknown as Record<string, unknown>
 						if ("claudeCodePath" in config) {
@@ -224,6 +234,41 @@ export class ProviderSettingsManager {
 			}
 		} catch (error) {
 			console.error(`[MigrateRateLimitSeconds] Failed to migrate rate limit settings:`, error)
+		}
+	}
+
+	private async migrateDiffSettings(providerProfiles: ProviderProfiles) {
+		try {
+			let diffEnabled: boolean | undefined
+			let fuzzyMatchThreshold: number | undefined
+
+			try {
+				diffEnabled = await this.context.globalState.get<boolean>("diffEnabled")
+				fuzzyMatchThreshold = await this.context.globalState.get<number>("fuzzyMatchThreshold")
+			} catch (error) {
+				console.error("[MigrateDiffSettings] Error getting global diff settings:", error)
+			}
+
+			if (diffEnabled === undefined) {
+				// Failed to get the existing value, use the default.
+				diffEnabled = true
+			}
+
+			if (fuzzyMatchThreshold === undefined) {
+				// Failed to get the existing value, use the default.
+				fuzzyMatchThreshold = 1.0
+			}
+
+			for (const [_name, apiConfig] of Object.entries(providerProfiles.apiConfigs)) {
+				if (apiConfig.diffEnabled === undefined) {
+					apiConfig.diffEnabled = diffEnabled
+				}
+				if (apiConfig.fuzzyMatchThreshold === undefined) {
+					apiConfig.fuzzyMatchThreshold = fuzzyMatchThreshold
+				}
+			}
+		} catch (error) {
+			console.error(`[MigrateDiffSettings] Failed to migrate diff settings:`, error)
 		}
 	}
 
@@ -360,14 +405,8 @@ export class ProviderSettingsManager {
 				const existingId = providerProfiles.apiConfigs[name]?.id
 				const id = config.id || existingId || this.generateId()
 
-				// For active providers, filter out settings from other providers.
-				// For retired providers, preserve full profile fields (including legacy
-				// provider-specific keys) to avoid data loss — passthrough() keeps
-				// unknown keys that strict parse() would strip.
-				const filteredConfig =
-					typeof config.apiProvider === "string" && isRetiredProvider(config.apiProvider)
-						? providerSettingsWithIdSchema.passthrough().parse(config)
-						: discriminatedProviderSettingsWithIdSchema.parse(config)
+				// Filter out settings from other providers.
+				const filteredConfig = discriminatedProviderSettingsWithIdSchema.parse(config)
 				providerProfiles.apiConfigs[name] = { ...filteredConfig, id }
 				await this.store(providerProfiles)
 				return id
@@ -514,14 +553,7 @@ export class ProviderSettingsManager {
 				const profiles = providerProfilesSchema.parse(await this.load())
 				const configs = profiles.apiConfigs
 				for (const name in configs) {
-					const apiProvider = configs[name].apiProvider
-
-					if (typeof apiProvider === "string" && isRetiredProvider(apiProvider)) {
-						// Preserve retired-provider profiles as-is to prevent dropping legacy fields.
-						continue
-					}
-
-					// Avoid leaking properties from other active providers.
+					// Avoid leaking properties from other providers.
 					configs[name] = discriminatedProviderSettingsWithIdSchema.parse(configs[name])
 
 					// If it has no apiProvider, skip filtering
@@ -596,21 +628,7 @@ export class ProviderSettingsManager {
 					// First, sanitize invalid apiProvider values before parsing
 					// This handles removed providers (like "glama") gracefully
 					const sanitizedConfig = this.sanitizeProviderConfig(apiConfig)
-
-					// For retired providers, use passthrough() to preserve legacy
-					// provider-specific fields (e.g. groqApiKey, deepInfraModelId)
-					// that strict parse() would strip.
-					const providerValue =
-						typeof sanitizedConfig === "object" &&
-						sanitizedConfig !== null &&
-						"apiProvider" in sanitizedConfig
-							? (sanitizedConfig as Record<string, unknown>).apiProvider
-							: undefined
-					const schema =
-						typeof providerValue === "string" && isRetiredProvider(providerValue)
-							? providerSettingsWithIdSchema.passthrough()
-							: providerSettingsWithIdSchema
-					const result = schema.safeParse(sanitizedConfig)
+					const result = providerSettingsWithIdSchema.safeParse(sanitizedConfig)
 					return result.success ? { ...acc, [key]: result.data } : acc
 				},
 				{} as Record<string, ProviderSettingsWithId>,
@@ -623,20 +641,12 @@ export class ProviderSettingsManager {
 				),
 			}
 		} catch (error) {
-			if (error instanceof ZodError) {
-				TelemetryService.instance.captureSchemaValidationError({
-					schemaName: "ProviderProfiles",
-					error,
-				})
-			}
-
 			throw new Error(`Failed to read provider profiles from secrets: ${error}`)
 		}
 	}
 
 	/**
-	 * Sanitizes a provider config by resetting unknown apiProvider values.
-	 * Retired providers are preserved.
+	 * Sanitizes a provider config by resetting invalid/removed apiProvider values.
 	 * This handles cases where a user had a provider selected that was later removed
 	 * from the extension (e.g., "glama").
 	 */
@@ -647,15 +657,10 @@ export class ProviderSettingsManager {
 
 		const config = apiConfig as Record<string, unknown>
 
-		const apiProvider = config.apiProvider
-
-		// Check if apiProvider is set and if it's still recognized (active or retired)
-		if (
-			apiProvider !== undefined &&
-			(typeof apiProvider !== "string" || (!isProviderName(apiProvider) && !isRetiredProvider(apiProvider)))
-		) {
+		// Check if apiProvider is set and if it's still valid
+		if (config.apiProvider !== undefined && !isProviderName(config.apiProvider)) {
 			console.log(
-				`[ProviderSettingsManager] Sanitizing unknown provider "${config.apiProvider}" - resetting to undefined`,
+				`[ProviderSettingsManager] Sanitizing invalid provider "${config.apiProvider}" - resetting to undefined`,
 			)
 			// Return a new config object without the invalid apiProvider
 			// This effectively resets the profile so the user can select a valid provider
@@ -847,7 +852,11 @@ export class ProviderSettingsManager {
 				// Step 5: Handle case where all profiles might be deleted
 				if (Object.keys(providerProfiles.apiConfigs).length === 0 && changedProfiles.length > 0) {
 					// Create a default profile only if we have changed profiles
-					const defaultProfile = { id: this.generateId() }
+					const defaultProfile = {
+						id: this.generateId(),
+						apiProvider: "modelharbor" as const,
+						modelharborModelId: modelHarborDefaultModelId,
+					}
 					providerProfiles.apiConfigs["default"] = defaultProfile
 					activeProfileChanged = true
 					activeProfileId = defaultProfile.id || ""

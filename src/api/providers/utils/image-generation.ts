@@ -1,4 +1,5 @@
 import { t } from "../../../i18n"
+import { detectAspectRatio } from "./aspect-ratio-detection"
 
 // Image generation types
 interface ImageGenerationResponse {
@@ -169,6 +170,170 @@ export async function generateImageWithProvider(options: ImageGenerationOptions)
 			error: error instanceof Error ? error.message : t("tools:generateImage.unknownError"),
 		}
 	}
+}
+
+/**
+ * LiteLLM-specific image generation options
+ */
+interface LiteLLMImageGenerationOptions {
+	baseURL: string
+	authToken: string
+	model: string
+	prompt: string
+	inputImage?: string
+}
+
+/**
+ * Generate an image using LiteLLM's chat completions endpoint.
+ *
+ * This implementation is tailored for `google/gemini-2.5-flash-image`
+ * via LiteLLM proxy and includes:
+ *   - `modalities: ["image", "text"]`
+ *   - `image_config.aspect_ratio` auto-detected from the prompt
+ *   - `temperature: 1` (required for image output)
+ *   - `stream: false`
+ *
+ * The response may contain images in two formats:
+ *   1. `choices[0].message.images[].image_url.url`  (OpenRouter style)
+ *   2. `choices[0].message.content` as array with `{ type: "image_url", image_url: { url } }` blocks
+ */
+export async function generateImageWithLiteLLM(options: LiteLLMImageGenerationOptions): Promise<ImageGenerationResult> {
+	const { baseURL, authToken, model, prompt, inputImage } = options
+
+	// Detect aspect ratio from prompt (only meaningful for gemini-2.5-flash-image)
+	const aspectRatio = detectAspectRatio(prompt)
+
+	try {
+		// Build user message content
+		let userContent: string | Array<Record<string, unknown>>
+		if (inputImage) {
+			userContent = [
+				{ type: "text", text: prompt },
+				{ type: "image_url", image_url: { url: inputImage } },
+			]
+		} else {
+			userContent = prompt
+		}
+
+		const requestBody: Record<string, unknown> = {
+			model,
+			messages: [
+				{
+					role: "user",
+					content: userContent,
+				},
+			],
+			temperature: 1,
+			modalities: ["image", "text"],
+			image_config: {
+				aspect_ratio: aspectRatio,
+			},
+			stream: false,
+			stream_options: {
+				include_usage: true,
+			},
+		}
+
+		const response = await fetch(`${baseURL}/chat/completions`, {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${authToken}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(requestBody),
+		})
+
+		if (!response.ok) {
+			const errorText = await response.text()
+			let errorMessage = t("tools:generateImage.failedWithStatus", {
+				status: response.status,
+				statusText: response.statusText,
+			})
+
+			try {
+				const errorJson = JSON.parse(errorText)
+				if (errorJson.error?.message) {
+					errorMessage = t("tools:generateImage.failedWithMessage", {
+						message: errorJson.error.message,
+					})
+				}
+			} catch {
+				// Use default error message
+			}
+			return { success: false, error: errorMessage }
+		}
+
+		const result = await response.json()
+
+		if (result.error) {
+			return {
+				success: false,
+				error: t("tools:generateImage.failedWithMessage", { message: result.error.message }),
+			}
+		}
+
+		// Try extracting image from multiple response formats
+		const imageData = extractImageFromLiteLLMResponse(result)
+		if (!imageData) {
+			return { success: false, error: t("tools:generateImage.noImageGenerated") }
+		}
+
+		// Validate base64 data URL format
+		const base64Match = imageData.match(/^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/)
+		if (!base64Match) {
+			return { success: false, error: t("tools:generateImage.invalidImageFormat") }
+		}
+
+		return {
+			success: true,
+			imageData,
+			imageFormat: base64Match[1],
+		}
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : t("tools:generateImage.unknownError"),
+		}
+	}
+}
+
+/**
+ * Extract image data URL from a LiteLLM response.
+ *
+ * Handles two known response shapes:
+ *   1. `choices[0].message.images[0].image_url.url`
+ *   2. `choices[0].message.content` being an array containing
+ *      `{ type: "image_url", image_url: { url: "data:image/..." } }` blocks
+ */
+function extractImageFromLiteLLMResponse(result: any): string | undefined {
+	const message = result?.choices?.[0]?.message
+	if (!message) {
+		return undefined
+	}
+
+	// Format 1: message.images array (OpenRouter / some LiteLLM configs)
+	if (Array.isArray(message.images) && message.images.length > 0) {
+		const url = message.images[0]?.image_url?.url
+		if (url) {
+			return url
+		}
+	}
+
+	// Format 2: message.content is an array of content blocks
+	if (Array.isArray(message.content)) {
+		for (const block of message.content) {
+			if (block.type === "image_url" && block.image_url?.url) {
+				return block.image_url.url
+			}
+		}
+	}
+
+	// Format 3: message.content is a string that is itself a data URL
+	if (typeof message.content === "string" && message.content.startsWith("data:image/")) {
+		return message.content
+	}
+
+	return undefined
 }
 
 /**

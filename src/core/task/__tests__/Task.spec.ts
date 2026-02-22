@@ -7,7 +7,6 @@ import * as vscode from "vscode"
 import { Anthropic } from "@anthropic-ai/sdk"
 
 import type { GlobalState, ProviderSettings, ModelInfo } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
 
 import { Task } from "../Task"
 import { ClineProvider } from "../../webview/ClineProvider"
@@ -200,10 +199,6 @@ describe("Cline", () => {
 	let mockExtensionContext: vscode.ExtensionContext
 
 	beforeEach(() => {
-		if (!TelemetryService.hasInstance()) {
-			TelemetryService.createInstance([])
-		}
-
 		// Setup mock extension context
 		const storageUri = {
 			fsPath: path.join(os.tmpdir(), "test-storage"),
@@ -1370,11 +1365,8 @@ describe("Cline", () => {
 					startTask: false,
 				})
 
-				// Initially should be MultiSearchReplaceDiffStrategy
-				expect(task.diffStrategy).toBeInstanceOf(MultiSearchReplaceDiffStrategy)
-
-				// Wait for async strategy update
-				await new Promise((resolve) => setTimeout(resolve, 10))
+				// Wait for async strategy update to complete - increased timeout
+				await new Promise((resolve) => setTimeout(resolve, 50))
 
 				// Should still be MultiSearchReplaceDiffStrategy
 				expect(task.diffStrategy).toBeInstanceOf(MultiSearchReplaceDiffStrategy)

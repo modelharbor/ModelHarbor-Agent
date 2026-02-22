@@ -6,8 +6,7 @@ import NodeCache from "node-cache"
 import { z } from "zod"
 
 import type { ProviderName, ModelRecord } from "@roo-code/types"
-import { modelInfoSchema, TelemetryEventName } from "@roo-code/types"
-import { TelemetryService } from "@roo-code/telemetry"
+import { modelInfoSchema } from "@roo-code/types"
 
 import { safeWriteJson } from "../../../utils/safeWriteJson"
 
@@ -24,12 +23,17 @@ import { getLiteLLMModels } from "./litellm"
 import { GetModelsOptions } from "../../../shared/api"
 import { getOllamaModels } from "./ollama"
 import { getLMStudioModels } from "./lmstudio"
-import { getRooModels } from "./roo"
+import { getIOIntelligenceModels } from "./io-intelligence"
+import { getModelHarborModels } from "./modelharbor"
+import { getDeepInfraModels } from "./deepinfra"
+import { getHuggingFaceModels } from "./huggingface"
+import { clearModelHarborCache } from "@roo-code/types"
 
 const memoryCache = new NodeCache({ stdTTL: 5 * 60, checkperiod: 5 * 60 })
 
 // Zod schema for validating ModelRecord structure from disk cache
-const modelRecordSchema = z.record(z.string(), modelInfoSchema)
+// Using z.unknown() to avoid deep type instantiation
+const modelRecordSchema = z.record(z.string(), z.any()) as z.ZodType<Record<string, any>>
 
 // Track in-flight refresh requests to prevent concurrent API calls for the same provider
 // This prevents race conditions where multiple calls might overwrite each other's results
@@ -70,6 +74,7 @@ async function fetchModelsFromProvider(options: GetModelsOptions): Promise<Model
 			models = await getRequestyModels(options.baseUrl, options.apiKey)
 			break
 		case "unbound":
+			// Unbound models endpoint requires an API key to fetch application specific models.
 			models = await getUnboundModels(options.apiKey)
 			break
 		case "litellm":
@@ -82,15 +87,21 @@ async function fetchModelsFromProvider(options: GetModelsOptions): Promise<Model
 		case "lmstudio":
 			models = await getLMStudioModels(options.baseUrl)
 			break
+		case "deepinfra":
+			models = await getDeepInfraModels(options.apiKey, options.baseUrl)
+			break
+		case "io-intelligence":
+			models = await getIOIntelligenceModels(options.apiKey)
+			break
 		case "vercel-ai-gateway":
 			models = await getVercelAiGatewayModels()
 			break
-		case "roo": {
-			// Roo Code Cloud provider requires baseUrl and optional apiKey
-			const rooBaseUrl = options.baseUrl ?? process.env.ROO_CODE_PROVIDER_URL ?? "https://api.roocode.com/proxy"
-			models = await getRooModels(rooBaseUrl, options.apiKey)
+		case "huggingface":
+			models = await getHuggingFaceModels()
 			break
-		}
+		case "modelharbor":
+			models = await getModelHarborModels(options.apiKey)
+			break
 		default: {
 			// Ensures router is exhaustively checked if RouterName is a strict union.
 			const exhaustiveCheck: never = provider
@@ -134,11 +145,6 @@ export const getModels = async (options: GetModelsOptions): Promise<ModelRecord>
 				console.error(`[MODEL_CACHE] Error writing ${provider} models to file cache:`, err),
 			)
 		} else {
-			TelemetryService.instance.captureEvent(TelemetryEventName.MODEL_CACHE_EMPTY_RESPONSE, {
-				provider,
-				context: "getModels",
-				hasExistingCache: false,
-			})
 		}
 
 		return models
@@ -182,12 +188,6 @@ export const refreshModels = async (options: GetModelsOptions): Promise<ModelRec
 			const existingCount = existingCache ? Object.keys(existingCache).length : 0
 
 			if (modelCount === 0) {
-				TelemetryService.instance.captureEvent(TelemetryEventName.MODEL_CACHE_EMPTY_RESPONSE, {
-					provider,
-					context: "refreshModels",
-					hasExistingCache: existingCount > 0,
-					existingCacheSize: existingCount,
-				})
 				if (existingCount > 0) {
 					return existingCache!
 				} else {
@@ -249,20 +249,29 @@ export async function initializeModelCacheRefresh(): Promise<void> {
 /**
  * Flush models memory cache for a specific router.
  *
- * @param options - The options for fetching models, including provider, apiKey, and baseUrl
+ * @param router - The router to flush models for.
  * @param refresh - If true, immediately fetch fresh data from API
  */
-export const flushModels = async (options: GetModelsOptions, refresh: boolean = false): Promise<void> => {
-	const { provider } = options
+export const flushModels = async (
+	router: RouterName,
+	refresh: boolean = false,
+	options?: Partial<GetModelsOptions>,
+): Promise<void> => {
+	// Clear ModelHarbor's internal cache in the types package
+	if (router === "modelharbor") {
+		clearModelHarborCache()
+	}
+
 	if (refresh) {
 		// Don't delete memory cache - let refreshModels atomically replace it
 		// This prevents a race condition where getModels() might be called
 		// before refresh completes, avoiding a gap in cache availability
-		// Await the refresh to ensure the cache is updated before returning
-		await refreshModels(options)
+		refreshModels({ provider: router, ...options } as GetModelsOptions).catch((error) => {
+			console.error(`[flushModels] Refresh failed for ${router}:`, error)
+		})
 	} else {
 		// Only delete memory cache when not refreshing
-		memoryCache.del(provider)
+		memoryCache.del(router)
 	}
 }
 

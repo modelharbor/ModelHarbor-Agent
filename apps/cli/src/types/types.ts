@@ -7,7 +7,7 @@ export const supportedProviders = [
 	"gemini",
 	"openrouter",
 	"vercel-ai-gateway",
-	"roo",
+	"modelharbor",
 ] as const satisfies ProviderName[]
 
 export type SupportedProvider = (typeof supportedProviders)[number]

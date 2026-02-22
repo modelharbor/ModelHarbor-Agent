@@ -1,4 +1,5 @@
-import type { ProviderSettings, OrganizationAllowList, RouterModels } from "@roo-code/types"
+import type { ProviderSettings, RouterModels } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 // Mock i18next to return translation keys with interpolated values
 vi.mock("i18next", () => ({
@@ -43,8 +44,11 @@ describe("Model Validation Functions", () => {
 		litellm: {},
 		ollama: {},
 		lmstudio: {},
+		deepinfra: {},
+		"io-intelligence": {},
+		modelharbor: {},
 		"vercel-ai-gateway": {},
-		roo: {},
+		huggingface: {},
 	}
 
 	const allowAllOrganization: OrganizationAllowList = {
@@ -103,24 +107,28 @@ describe("Model Validation Functions", () => {
 			expect(result).toBeUndefined()
 		})
 
-		it("handles empty model IDs gracefully", () => {
+		it("handles empty model IDs gracefully by using default model", () => {
 			const config: ProviderSettings = {
 				apiProvider: "openrouter",
 				openRouterModelId: "",
 			}
 
+			// When model ID is empty, getProviderDefaultModelId is called
+			// If default model is not in routerModels, modelAvailability error is returned
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("settings:validation.modelId")
+			expect(result).toContain("settings:validation.modelAvailability")
 		})
 
-		it("handles undefined model IDs gracefully", () => {
+		it("handles undefined model IDs gracefully by using default model", () => {
 			const config: ProviderSettings = {
 				apiProvider: "openrouter",
 				// openRouterModelId is undefined
 			}
 
+			// When model ID is undefined, getProviderDefaultModelId is called
+			// If default model is not in routerModels, modelAvailability error is returned
 			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
-			expect(result).toBe("settings:validation.modelId")
+			expect(result).toContain("settings:validation.modelAvailability")
 		})
 	})
 
@@ -171,6 +179,46 @@ describe("Model Validation Functions", () => {
 				restrictiveOrganization,
 			)
 			expect(result).toBeUndefined() // Should exclude model-specific org errors
+		})
+
+		it("returns undefined for valid IO Intelligence model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "io-intelligence",
+				ioIntelligenceModelId: "valid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns error for invalid IO Intelligence model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "io-intelligence",
+				ioIntelligenceModelId: "invalid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns undefined for valid ModelHarbor model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "valid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
+		})
+
+		it("returns error for invalid ModelHarbor model", () => {
+			const config: ProviderSettings = {
+				apiProvider: "modelharbor",
+				modelharborModelId: "invalid-model",
+			}
+
+			const result = getModelValidationError(config, mockRouterModels, allowAllOrganization)
+			expect(result).toBeUndefined()
 		})
 	})
 })

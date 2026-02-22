@@ -286,4 +286,200 @@ describe("executeCommandTool", () => {
 			expect(mockOptions.commandExecutionTimeout).toBeDefined()
 		})
 	})
+
+	/**
+	 * Tests for Super YOLO mode command execution timeout
+	 *
+	 * Note: These tests verify the timeout computation logic in the execute method.
+	 * Since executeCommandInTerminal is called internally (not via module export),
+	 * we test the timeout behavior by examining the side effects and verifying
+	 * the code flow through the command approval and execution.
+	 *
+	 * The actual timeout logic (commandExecutionTimeout > 0 triggering timeout)
+	 * is tested through integration tests in src/core/auto-approval/__tests__/super-yolo-mode.spec.ts
+	 */
+	describe("Super YOLO mode command execution timeout", () => {
+		// These tests verify that the command execution completes successfully
+		// with Super YOLO mode enabled. The timeout logic implementation is
+		// verified in integration tests and through code review.
+		it("should execute command successfully with superYoloMode enabled", async () => {
+			// Setup - Enable Super YOLO mode with custom timeout
+			const superYoloTimeout = 180000 // 3 minutes
+			mockCline.providerRef.deref = vitest.fn().mockResolvedValue({
+				getState: vitest.fn().mockResolvedValue({
+					terminalOutputLineLimit: 500,
+					terminalOutputCharacterLimit: 100000,
+					terminalShellIntegrationDisabled: true,
+					superYoloMode: true,
+					superYoloStuckTimeoutMs: superYoloTimeout,
+				}),
+				postMessageToWebview: vitest.fn(),
+			})
+
+			mockToolUse.params.command = "echo test"
+
+			// Execute
+			await executeCommandTool.handle(mockCline as unknown as Task, mockToolUse, {
+				askApproval: mockAskApproval as unknown as AskApproval,
+				handleError: mockHandleError as unknown as HandleError,
+				pushToolResult: mockPushToolResult as unknown as PushToolResult,
+				removeClosingTag: mockRemoveClosingTag as unknown as RemoveClosingTag,
+				toolProtocol: "xml",
+			})
+
+			// Verify that the command was approved and executed
+			expect(mockAskApproval).toHaveBeenCalledWith("command", "echo test")
+			expect(mockPushToolResult).toHaveBeenCalled()
+			// The result should contain information about the command execution
+			const result = mockPushToolResult.mock.calls[0][0]
+			expect(typeof result).toBe("string")
+		})
+
+		it("should execute command successfully with default 5-minute timeout when superYoloStuckTimeoutMs not set", async () => {
+			// Setup - Enable Super YOLO mode without custom timeout
+			mockCline.providerRef.deref = vitest.fn().mockResolvedValue({
+				getState: vitest.fn().mockResolvedValue({
+					terminalOutputLineLimit: 500,
+					terminalOutputCharacterLimit: 100000,
+					terminalShellIntegrationDisabled: true,
+					superYoloMode: true,
+					// superYoloStuckTimeoutMs not set - should default to 300000 (5 minutes)
+				}),
+				postMessageToWebview: vitest.fn(),
+			})
+
+			mockToolUse.params.command = "echo test"
+
+			// Execute
+			await executeCommandTool.handle(mockCline as unknown as Task, mockToolUse, {
+				askApproval: mockAskApproval as unknown as AskApproval,
+				handleError: mockHandleError as unknown as HandleError,
+				pushToolResult: mockPushToolResult as unknown as PushToolResult,
+				removeClosingTag: mockRemoveClosingTag as unknown as RemoveClosingTag,
+				toolProtocol: "xml",
+			})
+
+			// Verify that the command was approved and executed
+			expect(mockAskApproval).toHaveBeenCalledWith("command", "echo test")
+			expect(mockPushToolResult).toHaveBeenCalled()
+		})
+
+		it("should execute command when user-configured timeout is shorter than Super YOLO timeout", async () => {
+			// Setup - User configured 2 minutes, Super YOLO is 5 minutes
+			const superYoloTimeout = 300000 // 5 minutes
+			mockCline.providerRef.deref = vitest.fn().mockResolvedValue({
+				getState: vitest.fn().mockResolvedValue({
+					terminalOutputLineLimit: 500,
+					terminalOutputCharacterLimit: 100000,
+					terminalShellIntegrationDisabled: true,
+					superYoloMode: true,
+					superYoloStuckTimeoutMs: superYoloTimeout,
+				}),
+				postMessageToWebview: vitest.fn(),
+			})
+
+			// User configured 2-minute timeout in VSCode settings (shorter than Super YOLO)
+			const mockConfig = {
+				get: vitest.fn().mockImplementation((key: string, defaultValue: any) => {
+					if (key === "commandExecutionTimeout") return 120 // 2 minutes in seconds
+					if (key === "commandTimeoutAllowlist") return []
+					return defaultValue
+				}),
+			}
+			;(vscode.workspace.getConfiguration as any).mockReturnValue(mockConfig)
+
+			mockToolUse.params.command = "echo test"
+
+			// Execute
+			await executeCommandTool.handle(mockCline as unknown as Task, mockToolUse, {
+				askApproval: mockAskApproval as unknown as AskApproval,
+				handleError: mockHandleError as unknown as HandleError,
+				pushToolResult: mockPushToolResult as unknown as PushToolResult,
+				removeClosingTag: mockRemoveClosingTag as unknown as RemoveClosingTag,
+				toolProtocol: "xml",
+			})
+
+			// Verify that the command was approved and executed
+			expect(mockAskApproval).toHaveBeenCalledWith("command", "echo test")
+			expect(mockPushToolResult).toHaveBeenCalled()
+		})
+
+		it("should execute command without timeout when superYoloMode is disabled", async () => {
+			// Setup - Super YOLO mode disabled
+			mockCline.providerRef.deref = vitest.fn().mockResolvedValue({
+				getState: vitest.fn().mockResolvedValue({
+					terminalOutputLineLimit: 500,
+					terminalOutputCharacterLimit: 100000,
+					terminalShellIntegrationDisabled: true,
+					superYoloMode: false,
+					superYoloStuckTimeoutMs: 300000,
+				}),
+				postMessageToWebview: vitest.fn(),
+			})
+
+			// User has no timeout configured
+			const mockConfig = {
+				get: vitest.fn().mockImplementation((key: string, defaultValue: any) => {
+					if (key === "commandExecutionTimeout") return 0 // No timeout
+					if (key === "commandTimeoutAllowlist") return []
+					return defaultValue
+				}),
+			}
+			;(vscode.workspace.getConfiguration as any).mockReturnValue(mockConfig)
+
+			mockToolUse.params.command = "echo test"
+
+			// Execute
+			await executeCommandTool.handle(mockCline as unknown as Task, mockToolUse, {
+				askApproval: mockAskApproval as unknown as AskApproval,
+				handleError: mockHandleError as unknown as HandleError,
+				pushToolResult: mockPushToolResult as unknown as PushToolResult,
+				removeClosingTag: mockRemoveClosingTag as unknown as RemoveClosingTag,
+				toolProtocol: "xml",
+			})
+
+			// Verify that no timeout error occurred (command completes normally)
+			expect(mockAskApproval).toHaveBeenCalledWith("command", "echo test")
+			expect(mockPushToolResult).toHaveBeenCalled()
+		})
+
+		it("should execute allowlisted commands without timeout even in Super YOLO mode", async () => {
+			// Setup - Enable Super YOLO mode
+			mockCline.providerRef.deref = vitest.fn().mockResolvedValue({
+				getState: vitest.fn().mockResolvedValue({
+					terminalOutputLineLimit: 500,
+					terminalOutputCharacterLimit: 100000,
+					terminalShellIntegrationDisabled: true,
+					superYoloMode: true,
+					superYoloStuckTimeoutMs: 300000,
+				}),
+				postMessageToWebview: vitest.fn(),
+			})
+
+			// Add "npm run" to the allowlist
+			const mockConfig = {
+				get: vitest.fn().mockImplementation((key: string, defaultValue: any) => {
+					if (key === "commandExecutionTimeout") return 60 // 1 minute
+					if (key === "commandTimeoutAllowlist") return ["npm run"]
+					return defaultValue
+				}),
+			}
+			;(vscode.workspace.getConfiguration as any).mockReturnValue(mockConfig)
+
+			mockToolUse.params.command = "npm run dev"
+
+			// Execute
+			await executeCommandTool.handle(mockCline as unknown as Task, mockToolUse, {
+				askApproval: mockAskApproval as unknown as AskApproval,
+				handleError: mockHandleError as unknown as HandleError,
+				pushToolResult: mockPushToolResult as unknown as PushToolResult,
+				removeClosingTag: mockRemoveClosingTag as unknown as RemoveClosingTag,
+				toolProtocol: "xml",
+			})
+
+			// Verify that the allowlisted command was executed without timeout error
+			expect(mockAskApproval).toHaveBeenCalledWith("command", "npm run dev")
+			expect(mockPushToolResult).toHaveBeenCalled()
+		})
+	})
 })

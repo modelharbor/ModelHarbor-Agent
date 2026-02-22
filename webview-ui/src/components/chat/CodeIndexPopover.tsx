@@ -12,7 +12,12 @@ import {
 import * as ProgressPrimitive from "@radix-ui/react-progress"
 import { AlertTriangle } from "lucide-react"
 
-import { type IndexingStatus, type EmbedderProvider, CODEBASE_INDEX_DEFAULTS } from "@roo-code/types"
+import {
+	type IndexingStatus,
+	type EmbedderProvider,
+	type LiteLLMEmbeddingModel,
+	CODEBASE_INDEX_DEFAULTS,
+} from "@roo-code/types"
 
 import { vscode } from "@src/utils/vscode"
 import { useExtensionState } from "@src/context/ExtensionStateContext"
@@ -78,9 +83,13 @@ interface LocalCodeIndexSettings {
 	codebaseIndexOpenAiCompatibleApiKey?: string
 	codebaseIndexGeminiApiKey?: string
 	codebaseIndexMistralApiKey?: string
+	codebaseIndexModelHarborApiKey?: string
 	codebaseIndexVercelAiGatewayApiKey?: string
 	codebaseIndexOpenRouterApiKey?: string
 	codebaseIndexOpenRouterSpecificProvider?: string
+	// LiteLLM-specific settings
+	codebaseIndexLitellmBaseUrl?: string
+	codebaseIndexLitellmApiKey?: string
 }
 
 // Validation schema for codebase index settings
@@ -176,6 +185,26 @@ const createValidationSchema = (provider: EmbedderProvider, t: any) => {
 					.min(1, t("settings:codeIndex.validation.modelSelectionRequired")),
 			})
 
+		case "modelharbor":
+			return baseSchema.extend({
+				codebaseIndexModelHarborApiKey: z
+					.string()
+					.min(1, t("settings:codeIndex.validation.modelharborApiKeyRequired")),
+				codebaseIndexEmbedderModelId: z
+					.string()
+					.min(1, t("settings:codeIndex.validation.modelSelectionRequired")),
+			})
+
+		case "litellm":
+			return baseSchema.extend({
+				codebaseIndexLitellmBaseUrl: z
+					.string()
+					.min(1, t("settings:codeIndex.validation.baseUrlRequired"))
+					.url(t("settings:codeIndex.validation.invalidBaseUrl")),
+				codebaseIndexLitellmApiKey: z.string().optional(),
+				codebaseIndexEmbedderModelId: z.string().min(1, t("settings:codeIndex.validation.modelIdRequired")),
+			})
+
 		default:
 			return baseSchema
 	}
@@ -199,6 +228,10 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 
 	// Form validation state
 	const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+
+	// LiteLLM dynamic model fetching state
+	const [litellmModels, setLitellmModels] = useState<LiteLLMEmbeddingModel[]>([])
+	const [litellmModelsFetchStatus, setLitellmModelsFetchStatus] = useState<"idle" | "fetching" | "error">("idle")
 
 	// Discard changes dialog state
 	const [isDiscardDialogShow, setDiscardDialogShow] = useState(false)
@@ -225,6 +258,8 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 		codebaseIndexVercelAiGatewayApiKey: "",
 		codebaseIndexOpenRouterApiKey: "",
 		codebaseIndexOpenRouterSpecificProvider: "",
+		codebaseIndexLitellmBaseUrl: "",
+		codebaseIndexLitellmApiKey: "",
 	})
 
 	// Initial settings state - stores the settings when popover opens
@@ -265,6 +300,8 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 				codebaseIndexOpenRouterApiKey: "",
 				codebaseIndexOpenRouterSpecificProvider:
 					codebaseIndexConfig.codebaseIndexOpenRouterSpecificProvider || "",
+				codebaseIndexLitellmBaseUrl: codebaseIndexConfig.codebaseIndexLitellmBaseUrl || "",
+				codebaseIndexLitellmApiKey: "",
 			}
 			setInitialSettings(settings)
 			setCurrentSettings(settings)
@@ -389,6 +426,17 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 							? SECRET_PLACEHOLDER
 							: ""
 					}
+					if (
+						!prev.codebaseIndexModelHarborApiKey ||
+						prev.codebaseIndexModelHarborApiKey === SECRET_PLACEHOLDER
+					) {
+						updated.codebaseIndexModelHarborApiKey = secretStatus.hasModelHarborApiKey
+							? SECRET_PLACEHOLDER
+							: ""
+					}
+					if (!prev.codebaseIndexLitellmApiKey || prev.codebaseIndexLitellmApiKey === SECRET_PLACEHOLDER) {
+						updated.codebaseIndexLitellmApiKey = secretStatus.hasLitellmApiKey ? SECRET_PLACEHOLDER : ""
+					}
 
 					return updated
 				}
@@ -405,6 +453,51 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 		window.addEventListener("message", handleMessage)
 		return () => window.removeEventListener("message", handleMessage)
 	}, [saveStatus])
+
+	// Listen for LiteLLM embedding models response
+	useEffect(() => {
+		const handleMessage = (event: MessageEvent) => {
+			if (event.data.type === "liteLLMEmbeddingModels") {
+				const models = event.data.liteLLMEmbeddingModels
+				if (models && models.length > 0) {
+					setLitellmModels(models)
+					setLitellmModelsFetchStatus("idle")
+				} else {
+					setLitellmModels([])
+					setLitellmModelsFetchStatus("error")
+				}
+			}
+		}
+
+		window.addEventListener("message", handleMessage)
+		return () => window.removeEventListener("message", handleMessage)
+	}, [])
+
+	// Auto-fetch LiteLLM embedding models from cache when popover opens or provider switches to litellm
+	useEffect(() => {
+		if (
+			open &&
+			currentSettings.codebaseIndexEmbedderProvider === "litellm" &&
+			currentSettings.codebaseIndexLitellmBaseUrl
+		) {
+			vscode.postMessage({
+				type: "getLiteLLMEmbeddingModelsFromCache",
+				values: {
+					baseUrl: currentSettings.codebaseIndexLitellmBaseUrl,
+					apiKey:
+						currentSettings.codebaseIndexLitellmApiKey &&
+						currentSettings.codebaseIndexLitellmApiKey !== SECRET_PLACEHOLDER
+							? currentSettings.codebaseIndexLitellmApiKey
+							: undefined,
+				},
+			})
+		}
+	}, [
+		open,
+		currentSettings.codebaseIndexEmbedderProvider,
+		currentSettings.codebaseIndexLitellmBaseUrl,
+		currentSettings.codebaseIndexLitellmApiKey,
+	])
 
 	// Generic comparison function that detects changes between initial and current settings
 	const hasUnsavedChanges = useMemo(() => {
@@ -463,7 +556,9 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 					key === "codebaseIndexGeminiApiKey" ||
 					key === "codebaseIndexMistralApiKey" ||
 					key === "codebaseIndexVercelAiGatewayApiKey" ||
-					key === "codebaseIndexOpenRouterApiKey"
+					key === "codebaseIndexOpenRouterApiKey" ||
+					key === "codebaseIndexModelHarborApiKey" ||
+					key === "codebaseIndexLitellmApiKey"
 				) {
 					dataToValidate[key] = "placeholder-valid"
 				}
@@ -593,6 +688,24 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 				!!currentSettings.codebaseIndexEmbedderModelId,
 		},
 	)
+
+	const handleFetchLiteLLMModels = useCallback(() => {
+		const baseUrl = currentSettings.codebaseIndexLitellmBaseUrl
+		if (!baseUrl) return
+		setLitellmModelsFetchStatus("fetching")
+		setLitellmModels([])
+		vscode.postMessage({
+			type: "fetchLiteLLMEmbeddingModels",
+			values: {
+				baseUrl,
+				apiKey:
+					currentSettings.codebaseIndexLitellmApiKey &&
+					currentSettings.codebaseIndexLitellmApiKey !== SECRET_PLACEHOLDER
+						? currentSettings.codebaseIndexLitellmApiKey
+						: undefined,
+			},
+		})
+	}, [currentSettings.codebaseIndexLitellmBaseUrl, currentSettings.codebaseIndexLitellmApiKey])
 
 	const portalContainer = useRooPortal("roo-portal")
 
@@ -732,11 +845,42 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 														)
 													}
 												}
+
+												// Auto-populate LiteLLM base URL and API key from chat provider config
+												if (
+													value === "litellm" &&
+													apiConfiguration?.apiProvider === "litellm"
+												) {
+													if (
+														!currentSettings.codebaseIndexLitellmBaseUrl &&
+														apiConfiguration.litellmBaseUrl
+													) {
+														updateSetting(
+															"codebaseIndexLitellmBaseUrl",
+															apiConfiguration.litellmBaseUrl,
+														)
+													}
+													if (
+														!currentSettings.codebaseIndexLitellmApiKey &&
+														apiConfiguration.litellmApiKey
+													) {
+														updateSetting(
+															"codebaseIndexLitellmApiKey",
+															apiConfiguration.litellmApiKey,
+														)
+													}
+												}
 											}}>
 											<SelectTrigger className="w-full">
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent>
+												<SelectItem value="modelharbor">
+													{t("settings:codeIndex.modelharborProvider")}
+												</SelectItem>
+												<SelectItem value="litellm">
+													{t("settings:codeIndex.litellmProvider")}
+												</SelectItem>
 												<SelectItem value="openai">
 													{t("settings:codeIndex.openaiProvider")}
 												</SelectItem>
@@ -766,6 +910,72 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 									</div>
 
 									{/* Provider-specific settings */}
+									{currentSettings.codebaseIndexEmbedderProvider === "modelharbor" && (
+										<>
+											<div className="space-y-2">
+												<label className="text-sm font-medium">
+													{t("settings:codeIndex.modelharborApiKeyLabel")}
+												</label>
+												<VSCodeTextField
+													type="password"
+													value={currentSettings.codebaseIndexModelHarborApiKey || ""}
+													onInput={(e: any) =>
+														updateSetting("codebaseIndexModelHarborApiKey", e.target.value)
+													}
+													placeholder={t("settings:codeIndex.modelharborApiKeyPlaceholder")}
+													className={cn("w-full", {
+														"border-red-500": formErrors.codebaseIndexModelHarborApiKey,
+													})}
+													data-testid="modelharbor-api-key"
+												/>
+												{formErrors.codebaseIndexModelHarborApiKey && (
+													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
+														{formErrors.codebaseIndexModelHarborApiKey}
+													</p>
+												)}
+											</div>
+
+											<div className="space-y-2">
+												<label className="text-sm font-medium">
+													{t("settings:codeIndex.modelLabel")}
+												</label>
+												<VSCodeDropdown
+													value={currentSettings.codebaseIndexEmbedderModelId}
+													onChange={(e: any) =>
+														updateSetting("codebaseIndexEmbedderModelId", e.target.value)
+													}
+													className={cn("w-full", {
+														"border-red-500": formErrors.codebaseIndexEmbedderModelId,
+													})}>
+													<VSCodeOption value="" className="p-2">
+														{t("settings:codeIndex.selectModel")}
+													</VSCodeOption>
+													{getAvailableModels().map((modelId) => {
+														const model =
+															codebaseIndexModels?.[
+																currentSettings.codebaseIndexEmbedderProvider as keyof typeof codebaseIndexModels
+															]?.[modelId]
+														return (
+															<VSCodeOption key={modelId} value={modelId} className="p-2">
+																{modelId}{" "}
+																{model
+																	? t("settings:codeIndex.modelDimensions", {
+																			dimension: model.dimension,
+																		})
+																	: ""}
+															</VSCodeOption>
+														)
+													})}
+												</VSCodeDropdown>
+												{formErrors.codebaseIndexEmbedderModelId && (
+													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
+														{formErrors.codebaseIndexEmbedderModelId}
+													</p>
+												)}
+											</div>
+										</>
+									)}
+
 									{currentSettings.codebaseIndexEmbedderProvider === "openai" && (
 										<>
 											<div className="space-y-2">
@@ -1307,6 +1517,117 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 														)
 													})}
 												</VSCodeDropdown>
+												{formErrors.codebaseIndexEmbedderModelId && (
+													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
+														{formErrors.codebaseIndexEmbedderModelId}
+													</p>
+												)}
+											</div>
+										</>
+									)}
+
+									{currentSettings.codebaseIndexEmbedderProvider === "litellm" && (
+										<>
+											<div className="space-y-2">
+												<label className="text-sm font-medium">
+													{t("settings:codeIndex.litellmBaseUrlLabel")}
+												</label>
+												<VSCodeTextField
+													value={currentSettings.codebaseIndexLitellmBaseUrl || ""}
+													onInput={(e: any) =>
+														updateSetting("codebaseIndexLitellmBaseUrl", e.target.value)
+													}
+													placeholder={t("settings:codeIndex.litellmBaseUrlPlaceholder")}
+													className={cn("w-full", {
+														"border-red-500": formErrors.codebaseIndexLitellmBaseUrl,
+													})}
+												/>
+												{formErrors.codebaseIndexLitellmBaseUrl && (
+													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
+														{formErrors.codebaseIndexLitellmBaseUrl}
+													</p>
+												)}
+											</div>
+
+											<div className="space-y-2">
+												<label className="text-sm font-medium">
+													{t("settings:codeIndex.litellmApiKeyLabel")}
+													<span className="text-xs text-vscode-descriptionForeground ml-1">
+														({t("settings:codeIndex.optional")})
+													</span>
+												</label>
+												<VSCodeTextField
+													type="password"
+													value={currentSettings.codebaseIndexLitellmApiKey || ""}
+													onInput={(e: any) =>
+														updateSetting("codebaseIndexLitellmApiKey", e.target.value)
+													}
+													placeholder={t("settings:codeIndex.litellmApiKeyPlaceholder")}
+													className={cn("w-full", {
+														"border-red-500": formErrors.codebaseIndexLitellmApiKey,
+													})}
+												/>
+												{formErrors.codebaseIndexLitellmApiKey && (
+													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
+														{formErrors.codebaseIndexLitellmApiKey}
+													</p>
+												)}
+											</div>
+
+											<div className="space-y-2">
+												<label className="text-sm font-medium">
+													{t("settings:codeIndex.modelLabel")}
+												</label>
+												<div className="flex items-center gap-2">
+													<Button
+														variant="secondary"
+														size="sm"
+														onClick={handleFetchLiteLLMModels}
+														disabled={
+															!currentSettings.codebaseIndexLitellmBaseUrl ||
+															litellmModelsFetchStatus === "fetching"
+														}>
+														{litellmModelsFetchStatus === "fetching"
+															? t("settings:codeIndex.litellmFetchingModels")
+															: t("settings:codeIndex.litellmRefreshModels", {
+																	defaultValue: "Refresh Models",
+																})}
+													</Button>
+												</div>
+												<VSCodeDropdown
+													value={currentSettings.codebaseIndexEmbedderModelId}
+													onChange={(e: any) =>
+														updateSetting("codebaseIndexEmbedderModelId", e.target.value)
+													}
+													className={cn("w-full", {
+														"border-red-500": formErrors.codebaseIndexEmbedderModelId,
+													})}>
+													<VSCodeOption value="" className="p-2">
+														{t("settings:codeIndex.selectModel")}
+													</VSCodeOption>
+													{litellmModels.map((model) => (
+														<VSCodeOption
+															key={model.modelId}
+															value={model.modelId}
+															className="p-2">
+															{model.modelId}{" "}
+															{t("settings:codeIndex.modelDimensions", {
+																dimension: model.dimension,
+															})}
+														</VSCodeOption>
+													))}
+												</VSCodeDropdown>
+												{litellmModels.length === 0 &&
+													litellmModelsFetchStatus !== "fetching" && (
+														<p className="text-xs text-vscode-descriptionForeground mt-1 mb-0">
+															{litellmModelsFetchStatus === "error"
+																? t("settings:codeIndex.litellmNoModelsFound")
+																: t("settings:codeIndex.litellmRefreshModelsHint", {
+																		defaultValue:
+																			"Click Refresh Models to load available models",
+																	})}
+														</p>
+													)}
 												{formErrors.codebaseIndexEmbedderModelId && (
 													<p className="text-xs text-vscode-errorForeground mt-1 mb-0">
 														{formErrors.codebaseIndexEmbedderModelId}

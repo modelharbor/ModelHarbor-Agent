@@ -1,12 +1,8 @@
 import { useCallback } from "react"
 import { VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
 
-import {
-	type ProviderSettings,
-	type OrganizationAllowList,
-	type RouterModels,
-	unboundDefaultModelId,
-} from "@roo-code/types"
+import { type ProviderSettings, type RouterModels, unboundDefaultModelId } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 import { vscode } from "@src/utils/vscode"
 import { useAppTranslation } from "@src/i18n/TranslationContext"

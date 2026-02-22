@@ -13,19 +13,23 @@ import { isWriteToolAction, isReadOnlyToolAction } from "./tools"
 import { isMcpToolAlwaysAllowed } from "./mcp"
 import { getCommandDecision } from "./commands"
 
-// We have auto-approval actions for different categories.
+// We have 11 different actions that can be auto-approved.
 export type AutoApprovalState =
 	| "alwaysAllowReadOnly"
 	| "alwaysAllowWrite"
+	| "alwaysAllowBrowser"
 	| "alwaysAllowMcp"
 	| "alwaysAllowModeSwitch"
 	| "alwaysAllowSubtasks"
 	| "alwaysAllowExecute"
 	| "alwaysAllowFollowupQuestions"
+	| "alwaysAllowUpdateTodoList"
 
 // Some of these actions have additional settings associated with them.
 export type AutoApprovalStateOptions =
 	| "autoApprovalEnabled"
+	| "superYoloMode"
+	| "alwaysApproveResubmit"
 	| "alwaysAllowReadOnlyOutsideWorkspace" // For `alwaysAllowReadOnly`.
 	| "alwaysAllowWriteOutsideWorkspace" // For `alwaysAllowWrite`.
 	| "alwaysAllowWriteProtected"
@@ -63,6 +67,32 @@ export async function checkAutoApproval({
 		return { decision: "ask" }
 	}
 
+	// Super YOLO Mode: auto-approve ALL commands and most ask types
+	if (state.superYoloMode === true) {
+		// Auto-approve commands unconditionally in Super YOLO mode
+		if (ask === "command") {
+			return { decision: "approve" }
+		}
+
+		// Auto-approve browser actions
+		if (ask === "browser_action_launch") {
+			return { decision: "approve" }
+		}
+
+		// Auto-approve MCP server usage
+		if (ask === "use_mcp_server") {
+			return { decision: "approve" }
+		}
+
+		// Auto-approve tool usage (read/write/mode switch/subtasks/etc.)
+		if (ask === "tool") {
+			return { decision: "approve" }
+		}
+
+		// For followup questions, still use the timeout mechanism if configured
+		// to allow user to intervene, but with Super YOLO the stuck timer will handle it
+	}
+
 	if (ask === "followup") {
 		if (state.alwaysAllowFollowupQuestions === true) {
 			try {
@@ -87,6 +117,10 @@ export async function checkAutoApproval({
 		} else {
 			return { decision: "ask" }
 		}
+	}
+
+	if (ask === "browser_action_launch") {
+		return state.alwaysAllowBrowser === true ? { decision: "approve" } : { decision: "ask" }
 	}
 
 	if (ask === "use_mcp_server") {
@@ -146,11 +180,14 @@ export async function checkAutoApproval({
 			return { decision: "approve" }
 		}
 
-		// The skill tool only loads pre-defined instructions from global or project skills.
-		// It does not read arbitrary files - skills must be explicitly installed/defined by the user.
-		// Auto-approval is intentional to provide a seamless experience when loading task instructions.
-		if (tool.tool === "skill") {
-			return { decision: "approve" }
+		if (tool?.tool === "fetchInstructions") {
+			if (tool.content === "create_mode") {
+				return state.alwaysAllowModeSwitch === true ? { decision: "approve" } : { decision: "ask" }
+			}
+
+			if (tool.content === "create_mcp_server") {
+				return state.alwaysAllowMcp === true ? { decision: "approve" } : { decision: "ask" }
+			}
 		}
 
 		if (tool?.tool === "switchMode") {

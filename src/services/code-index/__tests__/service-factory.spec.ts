@@ -4,6 +4,7 @@ import { OpenAiEmbedder } from "../embedders/openai"
 import { CodeIndexOllamaEmbedder } from "../embedders/ollama"
 import { OpenAICompatibleEmbedder } from "../embedders/openai-compatible"
 import { GeminiEmbedder } from "../embedders/gemini"
+import { LiteLLMEmbedder } from "../embedders/litellm"
 import { QdrantVectorStore } from "../vector-store/qdrant-client"
 
 // Mock the embedders and vector store
@@ -11,6 +12,7 @@ vitest.mock("../embedders/openai")
 vitest.mock("../embedders/ollama")
 vitest.mock("../embedders/openai-compatible")
 vitest.mock("../embedders/gemini")
+vitest.mock("../embedders/litellm")
 vitest.mock("../vector-store/qdrant-client")
 
 // Mock the embedding models module
@@ -32,6 +34,7 @@ const MockedOpenAiEmbedder = OpenAiEmbedder as MockedClass<typeof OpenAiEmbedder
 const MockedCodeIndexOllamaEmbedder = CodeIndexOllamaEmbedder as MockedClass<typeof CodeIndexOllamaEmbedder>
 const MockedOpenAICompatibleEmbedder = OpenAICompatibleEmbedder as MockedClass<typeof OpenAICompatibleEmbedder>
 const MockedGeminiEmbedder = GeminiEmbedder as MockedClass<typeof GeminiEmbedder>
+const MockedLiteLLMEmbedder = LiteLLMEmbedder as MockedClass<typeof LiteLLMEmbedder>
 const MockedQdrantVectorStore = QdrantVectorStore as MockedClass<typeof QdrantVectorStore>
 
 // Import the mocked functions
@@ -343,6 +346,73 @@ describe("CodeIndexServiceFactory", () => {
 
 			// Act & Assert
 			expect(() => factory.createEmbedder()).toThrow("serviceFactory.geminiConfigMissing")
+		})
+
+		it("should create LiteLLMEmbedder when using litellm provider", () => {
+			// Arrange
+			const testModelId = "baai/bge-m3"
+			const testConfig = {
+				embedderProvider: "litellm",
+				modelId: testModelId,
+				litellmOptions: {
+					baseUrl: "http://localhost:4000",
+					apiKey: "test-litellm-key",
+				},
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+
+			// Act
+			factory.createEmbedder()
+
+			// Assert
+			expect(MockedLiteLLMEmbedder).toHaveBeenCalledWith("http://localhost:4000", testModelId, "test-litellm-key")
+		})
+
+		it("should create LiteLLMEmbedder with empty modelId when not specified", () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "litellm",
+				modelId: undefined,
+				litellmOptions: {
+					baseUrl: "http://localhost:4000",
+					apiKey: undefined,
+				},
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+
+			// Act
+			factory.createEmbedder()
+
+			// Assert
+			expect(MockedLiteLLMEmbedder).toHaveBeenCalledWith("http://localhost:4000", "", undefined)
+		})
+
+		it("should throw error when LiteLLM base URL is missing", () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "litellm",
+				modelId: "baai/bge-m3",
+				litellmOptions: {
+					baseUrl: undefined,
+				},
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+
+			// Act & Assert
+			expect(() => factory.createEmbedder()).toThrow("serviceFactory.litellmConfigMissing")
+		})
+
+		it("should throw error when LiteLLM options are missing", () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "litellm",
+				modelId: "baai/bge-m3",
+				litellmOptions: undefined,
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+
+			// Act & Assert
+			expect(() => factory.createEmbedder()).toThrow("serviceFactory.litellmConfigMissing")
 		})
 
 		it("should throw error for invalid embedder provider", () => {
@@ -677,6 +747,202 @@ describe("CodeIndexServiceFactory", () => {
 
 			// Act & Assert
 			expect(() => factory.createVectorStore()).toThrow("serviceFactory.qdrantUrlMissing")
+		})
+	})
+
+	describe("createVectorStoreWithDimensionDetection", () => {
+		beforeEach(() => {
+			vitest.clearAllMocks()
+			mockGetDefaultModelId.mockReturnValue("default-model")
+		})
+
+		it("should use auto-detected dimension when model profile returns undefined", async () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "litellm",
+				modelId: "custom-model",
+				litellmOptions: {
+					baseUrl: "http://localhost:4000",
+				},
+				qdrantUrl: "http://localhost:6333",
+				qdrantApiKey: "test-key",
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+			mockGetModelDimension.mockReturnValue(undefined) // No profile dimension
+
+			const mockEmbedder = {
+				detectDimension: vitest.fn().mockResolvedValue(1024),
+				embedderInfo: { name: "litellm" },
+			}
+
+			// Act
+			await factory.createVectorStoreWithDimensionDetection(mockEmbedder as any)
+
+			// Assert
+			expect(mockEmbedder.detectDimension).toHaveBeenCalled()
+			expect(MockedQdrantVectorStore).toHaveBeenCalledWith(
+				"/test/workspace",
+				"http://localhost:6333",
+				1024,
+				"test-key",
+			)
+		})
+
+		it("should prefer profile dimension over auto-detected dimension", async () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "openai",
+				modelId: "text-embedding-3-small",
+				qdrantUrl: "http://localhost:6333",
+				qdrantApiKey: "test-key",
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+			mockGetModelDimension.mockReturnValue(1536) // Profile has dimension
+
+			const mockEmbedder = {
+				detectDimension: vitest.fn().mockResolvedValue(1024),
+				embedderInfo: { name: "openai" },
+			}
+
+			// Act
+			await factory.createVectorStoreWithDimensionDetection(mockEmbedder as any)
+
+			// Assert
+			expect(mockEmbedder.detectDimension).not.toHaveBeenCalled()
+			expect(MockedQdrantVectorStore).toHaveBeenCalledWith(
+				"/test/workspace",
+				"http://localhost:6333",
+				1536,
+				"test-key",
+			)
+		})
+
+		it("should fall back to config.modelDimension when auto-detection fails", async () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "litellm",
+				modelId: "custom-model",
+				modelDimension: 768,
+				litellmOptions: {
+					baseUrl: "http://localhost:4000",
+				},
+				qdrantUrl: "http://localhost:6333",
+				qdrantApiKey: "test-key",
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+			mockGetModelDimension.mockReturnValue(undefined)
+
+			const mockEmbedder = {
+				detectDimension: vitest.fn().mockResolvedValue(undefined), // Detection fails
+				embedderInfo: { name: "litellm" },
+			}
+
+			// Act
+			await factory.createVectorStoreWithDimensionDetection(mockEmbedder as any)
+
+			// Assert
+			expect(mockEmbedder.detectDimension).toHaveBeenCalled()
+			expect(MockedQdrantVectorStore).toHaveBeenCalledWith(
+				"/test/workspace",
+				"http://localhost:6333",
+				768,
+				"test-key",
+			)
+		})
+
+		it("should work when embedder does not have detectDimension method", async () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "openai-compatible",
+				modelId: "custom-model",
+				modelDimension: 512,
+				openAiCompatibleOptions: {
+					baseUrl: "https://api.example.com/v1",
+					apiKey: "test-api-key",
+				},
+				qdrantUrl: "http://localhost:6333",
+				qdrantApiKey: "test-key",
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+			mockGetModelDimension.mockReturnValue(undefined)
+
+			const mockEmbedder = {
+				// No detectDimension method
+				embedderInfo: { name: "openai-compatible" },
+			}
+
+			// Act
+			await factory.createVectorStoreWithDimensionDetection(mockEmbedder as any)
+
+			// Assert
+			expect(MockedQdrantVectorStore).toHaveBeenCalledWith(
+				"/test/workspace",
+				"http://localhost:6333",
+				512,
+				"test-key",
+			)
+		})
+
+		it("should throw error when all dimension sources fail", async () => {
+			// Arrange
+			const testConfig = {
+				embedderProvider: "litellm",
+				modelId: "unknown-model",
+				litellmOptions: {
+					baseUrl: "http://localhost:4000",
+				},
+				qdrantUrl: "http://localhost:6333",
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+			mockGetModelDimension.mockReturnValue(undefined)
+
+			const mockEmbedder = {
+				detectDimension: vitest.fn().mockResolvedValue(undefined),
+				embedderInfo: { name: "litellm" },
+			}
+
+			// Act & Assert
+			await expect(factory.createVectorStoreWithDimensionDetection(mockEmbedder as any)).rejects.toThrow(
+				"serviceFactory.vectorDimensionNotDeterminedOpenAiCompatible",
+			)
+		})
+
+		it("should handle detectDimension throwing an error gracefully", async () => {
+			// Arrange
+			vitest.spyOn(console, "warn").mockImplementation(() => {})
+			const testConfig = {
+				embedderProvider: "litellm",
+				modelId: "custom-model",
+				modelDimension: 1024,
+				litellmOptions: {
+					baseUrl: "http://localhost:4000",
+				},
+				qdrantUrl: "http://localhost:6333",
+				qdrantApiKey: "test-key",
+			}
+			mockConfigManager.getConfig.mockReturnValue(testConfig as any)
+			mockGetModelDimension.mockReturnValue(undefined)
+
+			const mockEmbedder = {
+				detectDimension: vitest.fn().mockRejectedValue(new Error("Network error")),
+				embedderInfo: { name: "litellm" },
+			}
+
+			// Act
+			await factory.createVectorStoreWithDimensionDetection(mockEmbedder as any)
+
+			// Assert - should fall back to config dimension
+			expect(MockedQdrantVectorStore).toHaveBeenCalledWith(
+				"/test/workspace",
+				"http://localhost:6333",
+				1024,
+				"test-key",
+			)
+			expect(console.warn).toHaveBeenCalledWith(
+				expect.stringContaining("Failed to auto-detect embedding dimension"),
+				expect.any(String),
+			)
+			;(console.warn as any).mockRestore()
 		})
 	})
 

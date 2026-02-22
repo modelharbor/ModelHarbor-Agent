@@ -1,6 +1,7 @@
 import * as vscode from "vscode"
 
 import { migrateSettings } from "../migrateSettings"
+import type { ModeConfig } from "@roo-code/types"
 
 // Mock vscode module
 vi.mock("vscode", () => ({
@@ -289,6 +290,134 @@ describe("migrateSettings", () => {
 
 			// No notification should be shown
 			expect(vscode.window.showInformationMessage).not.toHaveBeenCalled()
+		})
+	})
+
+	describe("built-in modes migration", () => {
+		it("should remove custom modes that override built-in modes", async () => {
+			// Set up custom modes with built-in mode override
+			const customModesWithBuiltin: ModeConfig[] = [
+				{
+					slug: "code",
+					name: "Custom Code",
+					roleDefinition: "Custom role",
+					groups: ["read"],
+				},
+				{
+					slug: "my-custom-mode",
+					name: "My Custom",
+					roleDefinition: "Custom",
+					groups: ["read"],
+				},
+			]
+			mockGlobalState.set("customModes", customModesWithBuiltin)
+
+			// Mock file system
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			// Should remove "code" but keep "my-custom-mode"
+			const updatedModes = mockGlobalState.get("customModes")
+			expect(updatedModes).toHaveLength(1)
+			expect(updatedModes[0].slug).toBe("my-custom-mode")
+		})
+
+		it("should remove custom mode prompts for built-in modes", async () => {
+			mockGlobalState.set("customModePrompts", {
+				code: { roleDefinition: "Custom code role" },
+				orchestrator: { customInstructions: "Custom orchestrator instructions" },
+				"my-custom": { roleDefinition: "Custom role" },
+			})
+
+			// Mock file system
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedPrompts = mockGlobalState.get("customModePrompts")
+			expect(updatedPrompts).toEqual({
+				"my-custom": { roleDefinition: "Custom role" },
+			})
+		})
+
+		it("should preserve fully custom modes", async () => {
+			const fullyCustomModes: ModeConfig[] = [
+				{ slug: "custom-architect", name: "Custom", roleDefinition: "Role", groups: ["read"] },
+				{ slug: "reviewer", name: "Reviewer", roleDefinition: "Role", groups: ["read"] },
+			]
+			mockGlobalState.set("customModes", fullyCustomModes)
+
+			// Mock file system
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedModes = mockGlobalState.get("customModes")
+			expect(updatedModes).toEqual(fullyCustomModes)
+		})
+
+		it("should handle missing customModes gracefully", async () => {
+			// customModes not set
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await expect(migrateSettings(mockContext, mockOutputChannel)).resolves.toBeUndefined()
+			expect(mockOutputChannel.appendLine).toHaveBeenCalledWith(
+				expect.stringContaining("No custom modes or prompts found"),
+			)
+		})
+
+		it("should remove all built-in mode overrides (architect, code, ask, debug, orchestrator)", async () => {
+			const customModesWithAllBuiltins: ModeConfig[] = [
+				{ slug: "architect", name: "Custom Architect", roleDefinition: "Role", groups: ["read"] },
+				{ slug: "code", name: "Custom Code", roleDefinition: "Role", groups: ["read"] },
+				{ slug: "ask", name: "Custom Ask", roleDefinition: "Role", groups: ["read"] },
+				{ slug: "debug", name: "Custom Debug", roleDefinition: "Role", groups: ["read"] },
+				{ slug: "orchestrator", name: "Custom Orchestrator", roleDefinition: "Role", groups: ["read"] },
+				{ slug: "truly-custom", name: "Custom", roleDefinition: "Role", groups: ["read"] },
+			]
+			mockGlobalState.set("customModes", customModesWithAllBuiltins)
+
+			// Mock file system
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedModes = mockGlobalState.get("customModes")
+			expect(updatedModes).toHaveLength(1)
+			expect(updatedModes[0].slug).toBe("truly-custom")
+		})
+
+		it("should remove both custom modes and prompts for built-in modes", async () => {
+			mockGlobalState.set("customModes", [
+				{ slug: "code", name: "Custom Code", roleDefinition: "Role", groups: ["read"] },
+				{ slug: "my-mode", name: "My Mode", roleDefinition: "Role", groups: ["read"] },
+			])
+			mockGlobalState.set("customModePrompts", {
+				code: { roleDefinition: "Custom code role" },
+				ask: { customInstructions: "Custom ask instructions" },
+				"my-mode": { roleDefinition: "Custom my-mode role" },
+			})
+
+			// Mock file system
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedModes = mockGlobalState.get("customModes")
+			const updatedPrompts = mockGlobalState.get("customModePrompts")
+
+			expect(updatedModes).toHaveLength(1)
+			expect(updatedModes[0].slug).toBe("my-mode")
+			expect(updatedPrompts).toEqual({
+				"my-mode": { roleDefinition: "Custom my-mode role" },
+			})
 		})
 	})
 })

@@ -33,8 +33,9 @@ export const commandIds = [
 	"historyButtonClicked",
 	"marketplaceButtonClicked",
 	"popoutButtonClicked",
-	"cloudButtonClicked",
 	"settingsButtonClicked",
+	"promptsButtonClicked",
+	"mcpButtonClicked",
 
 	"openInNewTab",
 
@@ -47,6 +48,12 @@ export const commandIds = [
 	"acceptInput",
 	"focusPanel",
 	"toggleAutoApprove",
+
+	// Human Relay commands
+	"showHumanRelayDialog",
+	"handleHumanRelayResponse",
+	"registerHumanRelayCallback",
+	"unregisterHumanRelayCallback",
 ] as const
 
 export type CommandId = (typeof commandIds)[number]
@@ -55,26 +62,7 @@ export type CommandId = (typeof commandIds)[number]
  * Language
  */
 
-export const languages = [
-	"ca",
-	"de",
-	"en",
-	"es",
-	"fr",
-	"hi",
-	"id",
-	"it",
-	"ja",
-	"ko",
-	"nl",
-	"pl",
-	"pt-BR",
-	"ru",
-	"tr",
-	"vi",
-	"zh-CN",
-	"zh-TW",
-] as const
+export const languages = ["en", "th"] as const
 
 export const languagesSchema = z.enum(languages)
 

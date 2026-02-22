@@ -1,0 +1,114 @@
+{
+	"answers": {
+		"cancel": "ยกเลิก",
+		"keep": "เก็บไว้",
+		"no": "ไม่",
+		"remove": "ลบ",
+		"yes": "ใช่"
+	},
+	"confirmation": {
+		"deleteMessage": "ลบข้อความ",
+		"deleteOnly": "ไม่, ลบข้อความเท่านั้น",
+		"deleteQuestionWithCheckpoint": "การลบข้อความนี้จะลบข้อความที่มาทีหลังทั้งหมดในการสนทนา คุณต้องการยกเลิกการเปลี่ยนแปลงทั้งหมดกลับไปยังจุดตรวจสอบนี้ด้วยหรือไม่",
+		"deleteWarning": "การลบข้อความนี้จะลบข้อความที่ตามมาทั้งหมดในการสนทนา คุณต้องการดำเนินการต่อหรือไม่",
+		"dontShowAgain": "ไม่ต้องแสดงอีก",
+		"editMessage": "แก้ไขข้อความ",
+		"editOnly": "ไม่, แก้ไขข้อความเท่านั้น",
+		"editQuestionWithCheckpoint": "การแก้ไขข้อความนี้จะลบข้อความที่มาทีหลังทั้งหมดในการสนทนา คุณต้องการยกเลิกการเปลี่ยนแปลงทั้งหมดกลับไปยังจุดตรวจสอบนี้ด้วยหรือไม่",
+		"editWarning": "การแก้ไขข้อความนี้จะลบข้อความที่ตามมาทั้งหมดในการสนทนา คุณต้องการดำเนินการต่อหรือไม่",
+		"proceed": "ดำเนินการต่อ",
+		"restoreToCheckpoint": "ใช่, กู้คืนจุดตรวจสอบ"
+	},
+	"costs": {
+		"own": "Own",
+		"subtasks": "Subtasks"
+	},
+	"errorBoundary": {
+		"componentStack": "สแต็กคอมโพเนนต์:",
+		"copyInstructions": "คัดลอกและวางข้อความแสดงข้อผิดพลาดต่อไปนี้เพื่อรวมไว้เป็นส่วนหนึ่งของการส่งของคุณ:",
+		"errorStack": "สแต็กข้อผิดพลาด:",
+		"githubText": "หน้า GitHub Issues ของเรา",
+		"reportText": "โปรดช่วยเราปรับปรุงโดยการรายงานข้อผิดพลาดนี้ที่",
+		"title": "เกิดข้อผิดพลาดบางอย่าง"
+	},
+	"errors": {
+		"attempt_completion_tool_failed": "Cannot execute attempt_completion because a previous tool call failed in this turn. Please address the tool failure before attempting completion.",
+		"init_checkpoint_fail_long_time": "Checkpoint initialization has taken more than {{timeout}} seconds, so checkpoints are disabled for this task. You can disable checkpoints or extend the waiting time in <settingsLink>the checkpoint settings</settingsLink>.",
+		"wait_checkpoint_long_time": "Waited {{timeout}} seconds for checkpoint initialization. If you don't need the checkpoint feature, please turn it off in <settingsLink>the checkpoint settings</settingsLink>."
+	},
+	"file": {
+		"errors": {
+			"copyingImage": "เกิดข้อผิดพลาดในการคัดลอกรูปภาพ: {{error}}",
+			"couldNotOpen": "ไม่สามารถเปิดไฟล์ได้: {{error}}",
+			"couldNotOpenGeneric": "ไม่สามารถเปิดไฟล์ได้!",
+			"invalidDataUri": "รูปแบบ URI ข้อมูลไม่ถูกต้อง",
+			"openingImage": "เกิดข้อผิดพลาดในการเปิดรูปภาพ: {{error}}",
+			"pathNotExists": "ไม่พบเส้นทาง: {{path}}"
+		},
+		"success": {
+			"imageDataUriCopied": "คัดลอก URI ข้อมูลรูปภาพไปยังคลิปบอร์ดแล้ว"
+		}
+	},
+	"image": {
+		"noData": "ไม่มีข้อมูลรูปภาพ",
+		"tabs": {
+			"view": "รูปภาพ"
+		}
+	},
+	"mermaid": {
+		"buttons": {
+			"close": "ปิด",
+			"copy": "คัดลอก",
+			"save": "บันทึกรูปภาพ",
+			"viewCode": "ดูโค้ด",
+			"viewDiagram": "ดูไดอะแกรม",
+			"zoom": "ซูม",
+			"zoomIn": "ซูมเข้า",
+			"zoomOut": "ซูมออก"
+		},
+		"feedback": {
+			"copyError": "เกิดข้อผิดพลาดในการคัดลอกรูปภาพ",
+			"imageCopied": "คัดลอกรูปภาพไปยังคลิปบอร์ดแล้ว"
+		},
+		"loading": "กำลังสร้างไดอะแกรม mermaid...",
+		"modal": {
+			"codeTitle": "โค้ด Mermaid"
+		},
+		"render_error": "ไม่สามารถแสดงไดอะแกรมได้",
+		"tabs": {
+			"code": "โค้ด",
+			"diagram": "ไดอะแกรม"
+		}
+	},
+	"number_format": {
+		"billion_suffix": "พันล้าน",
+		"million_suffix": "ล้าน",
+		"thousand_suffix": "พัน"
+	},
+	"tasks": {
+		"awaiting_child": "Awaiting child task {{childId}}",
+		"delegated": "Delegated to subtask",
+		"delegated_to": "Delegated to task {{childId}}",
+		"delegation_completed": "Subtask completed, resuming parent"
+	},
+	"time_ago": {
+		"day_ago": "1 วันที่แล้ว",
+		"days_ago": "{{count}} วันที่แล้ว",
+		"hour_ago": "1 ชั่วโมงที่แล้ว",
+		"hours_ago": "{{count}} ชั่วโมงที่แล้ว",
+		"just_now": "เมื่อสักครู่",
+		"minute_ago": "1 นาทีที่แล้ว",
+		"minutes_ago": "{{count}} นาทีที่แล้ว",
+		"month_ago": "1 เดือนที่แล้ว",
+		"months_ago": "{{count}} เดือนที่แล้ว",
+		"seconds_ago": "{{count}} วินาทีที่แล้ว",
+		"week_ago": "1 สัปดาห์ที่แล้ว",
+		"weeks_ago": "{{count}} สัปดาห์ที่แล้ว",
+		"year_ago": "1 ปีที่แล้ว",
+		"years_ago": "{{count}} ปีที่แล้ว"
+	},
+	"ui": {
+		"no_results": "ไม่พบผลลัพธ์",
+		"search_placeholder": "ค้นหา..."
+	}
+}

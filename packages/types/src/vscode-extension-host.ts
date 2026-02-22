@@ -4,7 +4,6 @@ import type { GlobalSettings, RooCodeSettings } from "./global-settings.js"
 import type { ProviderSettings, ProviderSettingsEntry } from "./provider-settings.js"
 import type { HistoryItem } from "./history.js"
 import type { ModeConfig, PromptComponent } from "./mode.js"
-import type { TelemetrySetting } from "./telemetry.js"
 import type { Experiments } from "./experiment.js"
 import type { ClineMessage, QueuedMessage } from "./message.js"
 import {
@@ -14,14 +13,15 @@ import {
 	marketplaceItemSchema,
 } from "./marketplace.js"
 import type { TodoItem } from "./todo.js"
-import type { CloudUserInfo, CloudOrganizationMembership, OrganizationAllowList, ShareVisibility } from "./cloud.js"
 import type { SerializedCustomToolDefinition } from "./custom-tool.js"
 import type { GitCommit } from "./git.js"
 import type { McpServer } from "./mcp.js"
 import type { ModelRecord, RouterModels } from "./model.js"
-import type { OpenAiCodexRateLimitInfo } from "./providers/openai-codex-rate-limits.js"
-import type { SkillMetadata } from "./skills.js"
-import type { WorktreeIncludeStatus } from "./worktree.js"
+
+/**
+ * Share visibility options for task sharing
+ */
+export type ShareVisibility = "public" | "private" | "unlisted"
 
 /**
  * ExtensionMessage
@@ -31,8 +31,6 @@ export interface ExtensionMessage {
 	type:
 		| "action"
 		| "state"
-		| "taskHistoryUpdated"
-		| "taskHistoryItemUpdated"
 		| "selectedImages"
 		| "theme"
 		| "workspaceUpdated"
@@ -47,6 +45,7 @@ export interface ExtensionMessage {
 		| "ollamaModels"
 		| "lmStudioModels"
 		| "vsCodeLmModels"
+		| "huggingFaceModels"
 		| "vsCodeLmApiAvailable"
 		| "updatePrompt"
 		| "systemPrompt"
@@ -59,8 +58,12 @@ export interface ExtensionMessage {
 		| "deleteCustomModeCheck"
 		| "currentCheckpointUpdated"
 		| "checkpointInitWarning"
+		| "browserToolEnabled"
+		| "browserConnectionResult"
+		| "remoteBrowserEnabled"
 		| "ttsStart"
 		| "ttsStop"
+		| "maxReadFileLine"
 		| "fileSearchResults"
 		| "toggleApiConfigPin"
 		| "acceptInput"
@@ -72,7 +75,6 @@ export interface ExtensionMessage {
 		| "condenseTaskContextStarted"
 		| "condenseTaskContextResponse"
 		| "singleRouterModelFetchResponse"
-		| "rooCreditBalance"
 		| "indexingStatusUpdate"
 		| "indexCleared"
 		| "codebaseIndexConfig"
@@ -89,24 +91,14 @@ export interface ExtensionMessage {
 		| "dismissedUpsells"
 		| "organizationSwitchResult"
 		| "interactionRequired"
+		| "browserSessionUpdate"
+		| "browserSessionNavigate"
+		| "claudeCodeRateLimits"
 		| "customToolsResult"
 		| "modes"
 		| "taskWithAggregatedCosts"
-		| "openAiCodexRateLimits"
-		// Worktree response types
-		| "worktreeList"
-		| "worktreeResult"
-		| "worktreeCopyProgress"
-		| "branchList"
-		| "worktreeDefaults"
-		| "worktreeIncludeStatus"
-		| "branchWorktreeIncludeResult"
-		| "folderSelected"
-		| "skills"
-		| "fileContent"
+		| "liteLLMEmbeddingModels"
 	text?: string
-	/** For fileContent: { path, content, error? } */
-	fileContent?: { path: string; content: string | null; error?: string }
 	payload?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 	checkpointWarning?: {
 		type: "WAIT_TIMEOUT" | "INIT_TIMEOUT"
@@ -117,17 +109,14 @@ export interface ExtensionMessage {
 		| "settingsButtonClicked"
 		| "historyButtonClicked"
 		| "marketplaceButtonClicked"
-		| "cloudButtonClicked"
+		| "promptsButtonClicked"
+		| "mcpButtonClicked"
 		| "didBecomeVisible"
 		| "focusInput"
 		| "switchTab"
 		| "toggleAutoApprove"
 	invoke?: "newChat" | "sendMessage" | "primaryButtonClick" | "secondaryButtonClick" | "setChatBoxMessage"
-	/**
-	 * Partial state updates are allowed to reduce message size (e.g. omit large fields like taskHistory).
-	 * The webview is responsible for merging.
-	 */
-	state?: Partial<ExtensionState>
+	state?: ExtensionState
 	images?: string[]
 	filePaths?: string[]
 	openedTabs?: Array<{
@@ -141,6 +130,23 @@ export interface ExtensionMessage {
 	ollamaModels?: ModelRecord
 	lmStudioModels?: ModelRecord
 	vsCodeLmModels?: { vendor?: string; family?: string; version?: string; id?: string }[]
+	huggingFaceModels?: Array<{
+		id: string
+		object: string
+		created: number
+		owned_by: string
+		providers: Array<{
+			provider: string
+			status: "live" | "staging" | "error"
+			supports_tools?: boolean
+			supports_structured_output?: boolean
+			context_length?: number
+			pricing?: {
+				input: number
+				output: number
+			}
+		}>
+	}>
 	mcpServers?: McpServer[]
 	commits?: GitCommit[]
 	listApiConfig?: ProviderSettingsEntry[]
@@ -148,9 +154,7 @@ export interface ExtensionMessage {
 	customMode?: ModeConfig
 	slug?: string
 	success?: boolean
-	/** Generic payload for extension messages that use `values` */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	values?: Record<string, any>
+	values?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 	requestId?: string
 	promptText?: string
 	results?:
@@ -161,14 +165,11 @@ export interface ExtensionMessage {
 	value?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 	hasContent?: boolean
 	items?: MarketplaceItem[]
-	userInfo?: CloudUserInfo
-	organizationAllowList?: OrganizationAllowList
 	tab?: string
 	marketplaceItems?: MarketplaceItem[]
 	organizationMcps?: MarketplaceItem[]
 	marketplaceInstalledMetadata?: MarketplaceInstalledMetadata
 	errors?: string[]
-	visibility?: ShareVisibility
 	rulesFolderPath?: string
 	settings?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 	messageTs?: number
@@ -177,9 +178,10 @@ export interface ExtensionMessage {
 	commands?: Command[]
 	queuedMessages?: QueuedMessage[]
 	list?: string[] // For dismissedUpsells
-	organizationId?: string | null // For organizationSwitchResult
+	browserSessionMessages?: ClineMessage[] // For browser session panel updates
+	isBrowserSessionActive?: boolean // For browser session panel updates
+	stepIndex?: number // For browserSessionNavigate: the target step index to display
 	tools?: SerializedCustomToolDefinition[] // For customToolsResult
-	skills?: SkillMetadata[] // For skills response
 	modes?: { slug: string; name: string }[] // For modes response
 	aggregatedCosts?: {
 		// For taskWithAggregatedCosts response
@@ -188,62 +190,19 @@ export interface ExtensionMessage {
 		childrenCost: number
 	}
 	historyItem?: HistoryItem
-	taskHistory?: HistoryItem[] // For taskHistoryUpdated: full sorted task history
-	/** For taskHistoryItemUpdated: single updated/added history item */
-	taskHistoryItem?: HistoryItem
-	// Worktree response properties
-	worktrees?: Array<{
-		path: string
-		branch: string
-		commitHash: string
-		isCurrent: boolean
-		isBare: boolean
-		isDetached: boolean
-		isLocked: boolean
-		lockReason?: string
-	}>
-	isGitRepo?: boolean
-	isMultiRoot?: boolean
-	isSubfolder?: boolean
-	gitRootPath?: string
-	worktreeResult?: {
-		success: boolean
-		message: string
-		worktree?: {
-			path: string
-			branch: string
-			commitHash: string
-			isCurrent: boolean
-			isBare: boolean
-			isDetached: boolean
-			isLocked: boolean
-			lockReason?: string
-		}
-	}
-	localBranches?: string[]
-	remoteBranches?: string[]
-	currentBranch?: string
-	suggestedBranch?: string
-	suggestedPath?: string
-	worktreeIncludeExists?: boolean
-	worktreeIncludeStatus?: WorktreeIncludeStatus
-	hasGitignore?: boolean
-	gitignoreContent?: string
-	// branchWorktreeIncludeResult
-	branch?: string
-	hasWorktreeInclude?: boolean
-	// worktreeCopyProgress (size-based)
-	copyProgressBytesCopied?: number
-	copyProgressTotalBytes?: number
-	copyProgressItemName?: string
-	// folderSelected
-	path?: string
+	liteLLMEmbeddingModels?: LiteLLMEmbeddingModel[]
 }
 
-export interface OpenAiCodexRateLimitsMessage {
-	type: "openAiCodexRateLimits"
-	values?: OpenAiCodexRateLimitInfo
-	error?: string
+/**
+ * Represents an embedding model fetched from the LiteLLM /v1/model/info API.
+ */
+export interface LiteLLMEmbeddingModel {
+	/** model_name from the API response */
+	modelId: string
+	/** model_info.dimension */
+	dimension: number
+	/** model_info.input_cost_per_token (optional) */
+	inputCostPerToken?: number
 }
 
 export type ExtensionState = Pick<
@@ -259,21 +218,32 @@ export type ExtensionState = Pick<
 	| "alwaysAllowWrite"
 	| "alwaysAllowWriteOutsideWorkspace"
 	| "alwaysAllowWriteProtected"
+	| "alwaysAllowBrowser"
 	| "alwaysAllowMcp"
 	| "alwaysAllowModeSwitch"
 	| "alwaysAllowSubtasks"
 	| "alwaysAllowFollowupQuestions"
 	| "alwaysAllowExecute"
 	| "followupAutoApproveTimeoutMs"
+	| "superYoloMode"
+	| "superYoloStuckTimeoutMs"
 	| "allowedCommands"
 	| "deniedCommands"
 	| "allowedMaxRequests"
 	| "allowedMaxCost"
+	| "browserToolEnabled"
+	| "browserViewportSize"
+	| "screenshotQuality"
+	| "remoteBrowserEnabled"
+	| "cachedChromeHostUrl"
+	| "remoteBrowserHost"
 	| "ttsEnabled"
 	| "ttsSpeed"
 	| "soundEnabled"
 	| "soundVolume"
-	| "terminalOutputPreviewSize"
+	| "maxConcurrentFileReads"
+	| "terminalOutputLineLimit"
+	| "terminalOutputCharacterLimit"
 	| "terminalShellIntegrationTimeout"
 	| "terminalShellIntegrationDisabled"
 	| "terminalCommandDelay"
@@ -282,12 +252,16 @@ export type ExtensionState = Pick<
 	| "terminalZshOhMy"
 	| "terminalZshP10k"
 	| "terminalZdotdir"
+	| "terminalCompressProgressBar"
 	| "diagnosticsEnabled"
+	| "diffEnabled"
+	| "fuzzyMatchThreshold"
 	| "language"
 	| "modeApiConfigs"
 	| "customModePrompts"
 	| "customSupportPrompts"
 	| "enhancementApiConfigId"
+	| "condensingApiConfigId"
 	| "customCondensingPrompt"
 	| "codebaseIndexConfig"
 	| "codebaseIndexModels"
@@ -296,6 +270,7 @@ export type ExtensionState = Pick<
 	| "maxDiagnosticMessages"
 	| "imageGenerationProvider"
 	| "openRouterImageGenerationSelectedModel"
+	| "liteLlmImageBaseUrl"
 	| "includeTaskHistoryInEnhance"
 	| "reasoningBlockCollapsed"
 	| "enterBehavior"
@@ -303,10 +278,10 @@ export type ExtensionState = Pick<
 	| "includeCurrentCost"
 	| "maxGitStatusFiles"
 	| "requestDelaySeconds"
-	| "showWorktreesInHomeScreen"
-	| "disabledTools"
+	| "alwaysApproveResubmit"
+	| "alwaysAllowUpdateTodoList"
+	| "openRouterUseMiddleOutTransform"
 > & {
-	lockApiConfigAcrossModes?: boolean
 	version: string
 	clineMessages: ClineMessage[]
 	currentTaskItem?: HistoryItem
@@ -325,36 +300,26 @@ export type ExtensionState = Pick<
 	maxWorkspaceFiles: number // Maximum number of files to include in current working directory details (0-500)
 	showRooIgnoredFiles: boolean // Whether to show .rooignore'd files in listings
 	enableSubfolderRules: boolean // Whether to load rules from subdirectories
-	maxReadFileLine?: number // Maximum line limit for read_file tool (-1 for default)
+	maxReadFileLine: number // Maximum number of lines to read from a file before truncating
 	maxImageFileSize: number // Maximum size of image files to process in MB
 	maxTotalImageSize: number // Maximum total size for all images in a single read operation in MB
 
 	experiments: Experiments // Map of experiment IDs to their enabled state
 
 	mcpEnabled: boolean
+	enableMcpServerCreation: boolean
 
 	mode: string
 	customModes: ModeConfig[]
-	toolRequirements?: Record<string, boolean> // Map of tool names to their requirements (e.g. {"apply_diff": true})
+	toolRequirements?: Record<string, boolean> // Map of tool names to their requirements (e.g. {"apply_diff": true} if diffEnabled)
 
 	cwd?: string // Current working directory
-	telemetrySetting: TelemetrySetting
-	telemetryKey?: string
-	machineId?: string
 
 	renderContext: "sidebar" | "editor"
 	settingsImportedAt?: number
 	historyPreviewCollapsed?: boolean
 
-	cloudUserInfo: CloudUserInfo | null
-	cloudIsAuthenticated: boolean
-	cloudAuthSkipModel?: boolean // Flag indicating auth completed without model selection (user should pick 3rd-party provider)
-	cloudApiUrl?: string
-	cloudOrganizations?: CloudOrganizationMembership[]
-	sharingEnabled: boolean
-	publicSharingEnabled: boolean
-	organizationAllowList: OrganizationAllowList
-	organizationSettingsVersion?: number
+	isBrowserSessionActive: boolean // Actual browser session state
 
 	autoCondenseContext: boolean
 	autoCondenseContextPercent: number
@@ -364,22 +329,16 @@ export type ExtensionState = Pick<
 	profileThresholds: Record<string, number>
 	hasOpenedModeSelector: boolean
 	openRouterImageApiKey?: string
+	liteLlmImageApiKey?: string
 	messageQueue?: QueuedMessage[]
 	lastShownAnnouncementId?: string
 	apiModelId?: string
 	mcpServers?: McpServer[]
+	hasSystemPromptOverride?: boolean
 	mdmCompliant?: boolean
-	taskSyncEnabled: boolean
+	claudeCodeIsAuthenticated?: boolean
 	openAiCodexIsAuthenticated?: boolean
 	debug?: boolean
-
-	/**
-	 * Monotonically increasing sequence number for clineMessages state pushes.
-	 * When present, the frontend should only apply clineMessages from a state push
-	 * if its seq is greater than the last applied seq. This prevents stale state
-	 * (captured during async getStateToPostToWebview) from overwriting newer messages.
-	 */
-	clineMessagesSeq?: number
 }
 
 export interface Command {
@@ -442,10 +401,10 @@ export interface WebviewMessage {
 		| "requestRooModels"
 		| "requestRooCreditBalance"
 		| "requestVsCodeLmModels"
+		| "requestHuggingFaceModels"
 		| "openImage"
 		| "saveImage"
 		| "openFile"
-		| "readFileContent"
 		| "openMention"
 		| "cancelTask"
 		| "cancelAutoApproval"
@@ -474,6 +433,8 @@ export interface WebviewMessage {
 		| "deleteMessageConfirm"
 		| "submitEditedMessage"
 		| "editMessageConfirm"
+		| "enableMcpServerCreation"
+		| "remoteControlEnabled"
 		| "taskSyncEnabled"
 		| "searchCommits"
 		| "setApiConfigPassword"
@@ -493,28 +454,28 @@ export interface WebviewMessage {
 		| "deleteMcpServer"
 		| "codebaseIndexEnabled"
 		| "telemetrySetting"
+		| "testBrowserConnection"
+		| "browserConnectionResult"
 		| "searchFiles"
 		| "toggleApiConfigPin"
 		| "hasOpenedModeSelector"
-		| "lockApiConfigAcrossModes"
 		| "clearCloudAuthSkipModel"
 		| "cloudButtonClicked"
 		| "rooCloudSignIn"
 		| "cloudLandingPageSignIn"
 		| "rooCloudSignOut"
 		| "rooCloudManualUrl"
+		| "claudeCodeSignIn"
+		| "claudeCodeSignOut"
 		| "openAiCodexSignIn"
 		| "openAiCodexSignOut"
 		| "switchOrganization"
 		| "condenseTaskContextRequest"
 		| "requestIndexingStatus"
 		| "startIndexing"
-		| "stopIndexing"
 		| "clearIndexData"
 		| "indexingStatusUpdate"
 		| "indexCleared"
-		| "toggleWorkspaceIndexing"
-		| "setAutoEnableDefault"
 		| "focusPanelRequest"
 		| "openExternal"
 		| "filterMarketplaceItems"
@@ -552,33 +513,24 @@ export interface WebviewMessage {
 		| "allowedCommands"
 		| "getTaskWithAggregatedCosts"
 		| "deniedCommands"
+		| "killBrowserSession"
+		| "openBrowserSessionPanel"
+		| "showBrowserSessionPanelAtStep"
+		| "refreshBrowserSessionPanel"
+		| "browserPanelDidLaunch"
 		| "openDebugApiHistory"
 		| "openDebugUiHistory"
 		| "downloadErrorDiagnostics"
-		| "requestOpenAiCodexRateLimits"
+		| "requestClaudeCodeRateLimits"
 		| "refreshCustomTools"
 		| "requestModes"
 		| "switchMode"
 		| "debugSetting"
-		// Worktree messages
-		| "listWorktrees"
-		| "createWorktree"
-		| "deleteWorktree"
-		| "switchWorktree"
-		| "getAvailableBranches"
-		| "getWorktreeDefaults"
-		| "getWorktreeIncludeStatus"
-		| "checkBranchWorktreeInclude"
-		| "createWorktreeInclude"
-		| "checkoutBranch"
-		| "browseForWorktreePath"
-		// Skills messages
-		| "requestSkills"
-		| "createSkill"
-		| "deleteSkill"
-		| "moveSkill"
-		| "updateSkillModes"
-		| "openSkillFile"
+		| "language"
+		| "humanRelayResponse"
+		| "humanRelayCancel"
+		| "fetchLiteLLMEmbeddingModels"
+		| "getLiteLLMEmbeddingModelsFromCache"
 	text?: string
 	editedMessageContent?: string
 	tab?: "settings" | "history" | "mcp" | "modes" | "chat" | "marketplace" | "cloud"
@@ -603,7 +555,6 @@ export interface WebviewMessage {
 	promptMode?: string | "enhance"
 	customPrompt?: PromptComponent
 	dataUrls?: string[]
-	/** Generic payload for webview messages that use `values` */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	values?: Record<string, any>
 	query?: string
@@ -613,18 +564,9 @@ export interface WebviewMessage {
 	timeout?: number
 	payload?: WebViewMessagePayload
 	source?: "global" | "project"
-	skillName?: string // For skill operations (createSkill, deleteSkill, moveSkill, openSkillFile)
-	/** @deprecated Use skillModeSlugs instead */
-	skillMode?: string // For skill operations (current mode restriction)
-	/** @deprecated Use newSkillModeSlugs instead */
-	newSkillMode?: string // For moveSkill (target mode)
-	skillDescription?: string // For createSkill (skill description)
-	/** Mode slugs for skill operations. undefined/empty = any mode */
-	skillModeSlugs?: string[] // For skill operations (mode restrictions)
-	/** Target mode slugs for updateSkillModes */
-	newSkillModeSlugs?: string[] // For updateSkillModes (new mode restrictions)
 	requestId?: string
 	ids?: string[]
+	hasSystemPromptOverride?: boolean
 	terminalOperation?: "continue" | "abort"
 	messageTs?: number
 	restoreCheckpoint?: boolean
@@ -657,6 +599,8 @@ export interface WebviewMessage {
 			| "vercel-ai-gateway"
 			| "bedrock"
 			| "openrouter"
+			| "modelharbor"
+			| "litellm"
 		codebaseIndexEmbedderBaseUrl?: string
 		codebaseIndexEmbedderModelId: string
 		codebaseIndexEmbedderModelDimension?: number // Generic dimension for all providers
@@ -666,6 +610,8 @@ export interface WebviewMessage {
 		codebaseIndexSearchMaxResults?: number
 		codebaseIndexSearchMinScore?: number
 		codebaseIndexOpenRouterSpecificProvider?: string // OpenRouter provider routing
+		// LiteLLM specific fields
+		codebaseIndexLitellmBaseUrl?: string
 
 		// Secret settings
 		codeIndexOpenAiKey?: string
@@ -673,22 +619,12 @@ export interface WebviewMessage {
 		codebaseIndexOpenAiCompatibleApiKey?: string
 		codebaseIndexGeminiApiKey?: string
 		codebaseIndexMistralApiKey?: string
+		codebaseIndexModelHarborApiKey?: string
 		codebaseIndexVercelAiGatewayApiKey?: string
 		codebaseIndexOpenRouterApiKey?: string
+		codebaseIndexLitellmApiKey?: string
 	}
 	updatedSettings?: RooCodeSettings
-	// Worktree properties
-	worktreePath?: string
-	worktreeBranch?: string
-	worktreeBaseBranch?: string
-	worktreeCreateNewBranch?: boolean
-	worktreeForce?: boolean
-	worktreeNewWindow?: boolean
-	worktreeIncludeContent?: string
-}
-
-export interface RequestOpenAiCodexRateLimitsMessage {
-	type: "requestOpenAiCodexRateLimits"
 }
 
 export const checkoutDiffPayloadSchema = z.object({
@@ -709,7 +645,7 @@ export const checkoutRestorePayloadSchema = z.object({
 export type CheckpointRestorePayload = z.infer<typeof checkoutRestorePayloadSchema>
 
 export interface IndexingStatusPayload {
-	state: "Standby" | "Indexing" | "Indexed" | "Error" | "Stopping"
+	state: "Standby" | "Indexing" | "Indexed" | "Error"
 	message: string
 }
 
@@ -743,8 +679,6 @@ export interface IndexingStatus {
 	totalItems: number
 	currentItemUnit?: string
 	workspacePath?: string
-	workspaceEnabled?: boolean
-	autoEnableDefault?: boolean
 }
 
 export interface IndexingStatusUpdateMessage {
@@ -766,7 +700,7 @@ export interface ClineSayTool {
 		| "newFileCreated"
 		| "codebaseSearch"
 		| "readFile"
-		| "readCommandOutput"
+		| "fetchInstructions"
 		| "listFilesTopLevel"
 		| "listFilesRecursive"
 		| "searchFiles"
@@ -777,18 +711,9 @@ export interface ClineSayTool {
 		| "imageGenerated"
 		| "runSlashCommand"
 		| "updateTodoList"
-		| "skill"
 	path?: string
-	// For readCommandOutput
-	readStart?: number
-	readEnd?: number
-	totalBytes?: number
-	searchPattern?: string
-	matchCount?: number
 	diff?: string
 	content?: string
-	// Original file content before first edit (for merged diff display in FileChangesPanel)
-	originalContent?: string
 	// Unified diff statistics computed by the extension
 	diffStats?: { added: number; removed: number }
 	regex?: string
@@ -799,7 +724,6 @@ export interface ClineSayTool {
 	isProtected?: boolean
 	additionalFileCount?: number // Number of additional files in the same read_file request
 	lineNumber?: number
-	startLine?: number // Starting line for read_file operations (for navigation on click)
 	query?: string
 	batchFiles?: Array<{
 		path: string
@@ -820,12 +744,6 @@ export interface ClineSayTool {
 			startLine?: number
 		}>
 	}>
-	batchDirs?: Array<{
-		path: string
-		recursive: boolean
-		isOutsideWorkspace?: boolean
-		key: string
-	}>
 	question?: string
 	imageData?: string // Base64 encoded image data for generated images
 	// Properties for runSlashCommand tool
@@ -833,8 +751,39 @@ export interface ClineSayTool {
 	args?: string
 	source?: string
 	description?: string
-	// Properties for skill tool
-	skill?: string
+}
+
+// Must keep in sync with system prompt.
+export const browserActions = [
+	"launch",
+	"click",
+	"hover",
+	"type",
+	"press",
+	"scroll_down",
+	"scroll_up",
+	"resize",
+	"close",
+	"screenshot",
+] as const
+
+export type BrowserAction = (typeof browserActions)[number]
+
+export interface ClineSayBrowserAction {
+	action: BrowserAction
+	coordinate?: string
+	size?: string
+	text?: string
+	executedCoordinate?: string
+}
+
+export type BrowserActionResult = {
+	screenshot?: string
+	logs?: string
+	currentUrl?: string
+	currentMousePosition?: string
+	viewportWidth?: number
+	viewportHeight?: number
 }
 
 export interface ClineAskUseMcpServer {

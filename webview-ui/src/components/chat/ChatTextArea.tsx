@@ -32,7 +32,6 @@ import { MAX_IMAGES_PER_MESSAGE } from "./ChatView"
 import ContextMenu from "./ContextMenu"
 import { IndexingStatusBadge } from "./IndexingStatusBadge"
 import { usePromptHistory } from "./hooks/usePromptHistory"
-import { CloudAccountSwitcher } from "../cloud/CloudAccountSwitcher"
 
 interface ChatTextAreaProps {
 	inputValue: string
@@ -52,6 +51,9 @@ interface ChatTextAreaProps {
 	// Edit mode props
 	isEditMode?: boolean
 	onCancel?: () => void
+	// Browser session status
+	isBrowserSessionActive?: boolean
+	showBrowserDockToggle?: boolean
 	// Stop/Queue functionality
 	isStreaming?: boolean
 	onStop?: () => void
@@ -76,6 +78,8 @@ export const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			modeShortcutText,
 			isEditMode = false,
 			onCancel,
+			isBrowserSessionActive = false,
+			showBrowserDockToggle = false,
 			isStreaming = false,
 			onStop,
 			onEnqueueMessage,
@@ -96,9 +100,7 @@ export const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			taskHistory,
 			clineMessages,
 			commands,
-			cloudUserInfo,
 			enterBehavior,
-			lockApiConfigAcrossModes,
 		} = useExtensionState()
 
 		// Find the ID and display text for the currently selected API configuration.
@@ -941,11 +943,6 @@ export const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			vscode.postMessage({ type: "loadApiConfigurationById", text: value })
 		}, [])
 
-		const handleToggleLockApiConfig = useCallback(() => {
-			const newValue = !lockApiConfigAcrossModes
-			vscode.postMessage({ type: "lockApiConfigAcrossModes", bool: newValue })
-		}, [lockApiConfigAcrossModes])
-
 		return (
 			<div
 				className={cn(
@@ -1317,15 +1314,13 @@ export const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							listApiConfigMeta={listApiConfigMeta || []}
 							pinnedApiConfigs={pinnedApiConfigs}
 							togglePinnedApiConfig={togglePinnedApiConfig}
-							lockApiConfigAcrossModes={!!lockApiConfigAcrossModes}
-							onToggleLockApiConfig={handleToggleLockApiConfig}
 						/>
 						<AutoApproveDropdown triggerClassName="min-w-[28px] text-ellipsis overflow-hidden flex-shrink" />
 					</div>
 					<div
 						className={cn(
 							"flex flex-shrink-0 items-center gap-0.5 h-5 leading-none",
-							!isEditMode && cloudUserInfo ? "" : "pr-2",
+							!isEditMode ? "pr-2" : "",
 						)}>
 						{isTtsPlaying && (
 							<StandardTooltip content={t("chat:stopTts")}>
@@ -1348,7 +1343,12 @@ export const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							</StandardTooltip>
 						)}
 						{!isEditMode ? <IndexingStatusBadge /> : null}
-						{!isEditMode && cloudUserInfo && <CloudAccountSwitcher />}
+						{/* keep props referenced after moving browser button */}
+						<div
+							className="hidden"
+							data-browser-session-active={isBrowserSessionActive}
+							data-show-browser-dock-toggle={showBrowserDockToggle}
+						/>
 					</div>
 				</div>
 			</div>

@@ -2,7 +2,6 @@ import i18next from "i18next"
 
 import {
 	type ProviderSettings,
-	type OrganizationAllowList,
 	type ProviderName,
 	type RouterModels,
 	modelIdKeysByProvider,
@@ -11,7 +10,9 @@ import {
 	isDynamicProvider,
 	isFauxProvider,
 	isCustomProvider,
+	getProviderDefaultModelId,
 } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 export function validateApiConfiguration(
 	apiConfiguration: ProviderSettings,
@@ -231,7 +232,13 @@ function validateDynamicProviderModelId(
 		return undefined
 	}
 
-	const modelId = getModelIdForProvider(apiConfiguration, provider)
+	let modelId = getModelIdForProvider(apiConfiguration, provider)
+
+	// If no model is configured, use the provider's default model ID
+	// This allows users to proceed with the default model selection on welcome screen
+	if (!modelId) {
+		modelId = getProviderDefaultModelId(provider)
+	}
 
 	if (!modelId) {
 		return i18next.t("settings:validation.modelId")

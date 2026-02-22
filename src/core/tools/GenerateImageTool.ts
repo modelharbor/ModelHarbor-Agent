@@ -14,7 +14,7 @@ import { getReadablePath } from "../../utils/path"
 import { isPathOutsideWorkspace } from "../../utils/pathUtils"
 import { EXPERIMENT_IDS, experiments } from "../../shared/experiments"
 import { OpenRouterHandler } from "../../api/providers/openrouter"
-import { RooHandler } from "../../api/providers/roo"
+import { generateImageWithLiteLLM } from "../../api/providers/utils/image-generation"
 import { BaseTool, ToolCallbacks } from "./BaseTool"
 import type { ToolUse } from "../../shared/tools"
 import { t } from "../../i18n"
@@ -22,9 +22,17 @@ import { t } from "../../i18n"
 export class GenerateImageTool extends BaseTool<"generate_image"> {
 	readonly name = "generate_image" as const
 
+	parseLegacy(params: Partial<Record<string, string>>): GenerateImageParams {
+		return {
+			prompt: params.prompt || "",
+			path: params.path || "",
+			image: params.image,
+		}
+	}
+
 	async execute(params: GenerateImageParams, task: Task, callbacks: ToolCallbacks): Promise<void> {
 		const { prompt, path: relPath, image: inputImagePath } = params
-		const { handleError, pushToolResult, askApproval } = callbacks
+		const { handleError, pushToolResult, askApproval, removeClosingTag, toolProtocol } = callbacks
 
 		const provider = task.providerRef.deref()
 		const state = await provider?.getState()
@@ -59,7 +67,7 @@ export class GenerateImageTool extends BaseTool<"generate_image"> {
 		const accessAllowed = task.rooIgnoreController?.validateAccess(relPath)
 		if (!accessAllowed) {
 			await task.say("rooignore_error", relPath)
-			pushToolResult(formatResponse.rooIgnoreError(relPath))
+			pushToolResult(formatResponse.rooIgnoreError(relPath, toolProtocol))
 			return
 		}
 
@@ -80,7 +88,7 @@ export class GenerateImageTool extends BaseTool<"generate_image"> {
 			const inputImageAccessAllowed = task.rooIgnoreController?.validateAccess(inputImagePath)
 			if (!inputImageAccessAllowed) {
 				await task.say("rooignore_error", inputImagePath)
-				pushToolResult(formatResponse.rooIgnoreError(inputImagePath))
+				pushToolResult(formatResponse.rooIgnoreError(inputImagePath, toolProtocol))
 				return
 			}
 
@@ -153,8 +161,10 @@ export class GenerateImageTool extends BaseTool<"generate_image"> {
 		const modelProvider = imageProvider
 		const apiMethod = modelInfo?.apiMethod
 
-		// Validate API key for OpenRouter
+		// Validate API key per provider
 		const openRouterApiKey = state?.openRouterImageApiKey
+		const liteLlmImageApiKey = state?.liteLlmImageApiKey
+		const liteLlmImageBaseUrl = state?.liteLlmImageBaseUrl || "http://localhost:4000"
 
 		if (imageProvider === "openrouter" && !openRouterApiKey) {
 			const errorMessage = t("tools:generateImage.openRouterApiKeyRequired")
@@ -163,12 +173,19 @@ export class GenerateImageTool extends BaseTool<"generate_image"> {
 			return
 		}
 
-		const fullPath = path.resolve(task.cwd, relPath)
+		if (imageProvider === "litellm" && !liteLlmImageApiKey) {
+			const errorMessage = t("tools:generateImage.liteLlmApiKeyRequired")
+			await task.say("error", errorMessage)
+			pushToolResult(formatResponse.toolError(errorMessage))
+			return
+		}
+
+		const fullPath = path.resolve(task.cwd, removeClosingTag("path", relPath))
 		const isOutsideWorkspace = isPathOutsideWorkspace(fullPath)
 
 		const sharedMessageProps = {
 			tool: "generateImage" as const,
-			path: getReadablePath(task.cwd, relPath),
+			path: getReadablePath(task.cwd, removeClosingTag("path", relPath)),
 			content: prompt,
 			isOutsideWorkspace,
 			isProtected: isWriteProtected,
@@ -189,11 +206,16 @@ export class GenerateImageTool extends BaseTool<"generate_image"> {
 				return
 			}
 
+			// Route to the appropriate provider
 			let result
-			if (modelProvider === "roo") {
-				// Use Roo Code Cloud provider (supports both chat completions and images API)
-				const rooHandler = new RooHandler({} as any)
-				result = await rooHandler.generateImage(prompt, selectedModel, inputImageData, apiMethod)
+			if (imageProvider === "litellm") {
+				result = await generateImageWithLiteLLM({
+					baseURL: liteLlmImageBaseUrl,
+					authToken: liteLlmImageApiKey!,
+					model: selectedModel,
+					prompt,
+					inputImage: inputImageData,
+				})
 			} else {
 				// Use OpenRouter provider (only supports chat completions API)
 				const openRouterHandler = new OpenRouterHandler({} as any)

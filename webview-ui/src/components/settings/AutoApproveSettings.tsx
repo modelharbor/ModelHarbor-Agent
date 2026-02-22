@@ -1,5 +1,5 @@
 import { HTMLAttributes, useState } from "react"
-import { X } from "lucide-react"
+import { X, AlertTriangle } from "lucide-react"
 import { Trans } from "react-i18next"
 import { Package } from "@roo/package"
 
@@ -34,6 +34,7 @@ type AutoApproveSettingsProps = HTMLAttributes<HTMLDivElement> & {
 	allowedMaxRequests?: number | undefined
 	allowedMaxCost?: number | undefined
 	deniedCommands?: string[]
+	superYoloMode?: boolean
 	setCachedStateField: SetCachedStateField<
 		| "alwaysAllowReadOnly"
 		| "alwaysAllowReadOnlyOutsideWorkspace"
@@ -50,6 +51,8 @@ type AutoApproveSettingsProps = HTMLAttributes<HTMLDivElement> & {
 		| "allowedMaxRequests"
 		| "allowedMaxCost"
 		| "deniedCommands"
+		
+		| "superYoloMode"
 	>
 }
 
@@ -69,6 +72,7 @@ export const AutoApproveSettings = ({
 	allowedMaxRequests,
 	allowedMaxCost,
 	deniedCommands,
+	superYoloMode,
 	setCachedStateField,
 	...props
 }: AutoApproveSettingsProps) => {
@@ -148,6 +152,34 @@ export const AutoApproveSettings = ({
 							</p>
 						</div>
 					</SearchableSetting>
+
+					{/* Super YOLO Mode Toggle */}
+					<div className="p-3 border-2 border-vscode-inputValidation-warningBorder bg-vscode-inputValidation-warningBackground rounded-md">
+						<VSCodeCheckbox
+							checked={superYoloMode ?? false}
+							onChange={(e: any) => {
+								const newValue = e.target.checked
+								setCachedStateField("superYoloMode", newValue)
+								vscode.postMessage({
+									type: "updateSettings",
+									updatedSettings: { superYoloMode: newValue },
+								})
+							}}
+							data-testid="super-yolo-mode-checkbox">
+							<span className="font-bold text-vscode-inputValidation-warningForeground">
+								{t("settings:autoApprove.superYoloMode.label")}
+							</span>
+						</VSCodeCheckbox>
+						<div className="text-vscode-descriptionForeground text-sm mt-1">
+							{t("settings:autoApprove.superYoloMode.description")}
+						</div>
+						{superYoloMode && (
+							<div className="flex items-center gap-2 mt-2 text-vscode-inputValidation-warningForeground text-sm">
+								<AlertTriangle className="w-4 h-4" />
+								<span>{t("settings:autoApprove.superYoloMode.warning")}</span>
+							</div>
+						)}
+					</div>
 
 					<AutoApproveToggle
 						alwaysAllowReadOnly={alwaysAllowReadOnly}

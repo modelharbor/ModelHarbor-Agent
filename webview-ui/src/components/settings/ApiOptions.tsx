@@ -1,26 +1,29 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { convertHeadersToObject } from "./utils/headers"
 import { useDebounce } from "react-use"
-import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 import { ExternalLinkIcon } from "@radix-ui/react-icons"
 
 import {
 	type ProviderName,
 	type ProviderSettings,
-	isRetiredProvider,
 	DEFAULT_CONSECUTIVE_MISTAKE_LIMIT,
 	openRouterDefaultModelId,
 	requestyDefaultModelId,
+	unboundDefaultModelId,
 	litellmDefaultModelId,
 	openAiNativeDefaultModelId,
 	openAiCodexDefaultModelId,
 	anthropicDefaultModelId,
+	doubaoDefaultModelId,
+	claudeCodeDefaultModelId,
 	qwenCodeDefaultModelId,
 	geminiDefaultModelId,
 	deepSeekDefaultModelId,
 	moonshotDefaultModelId,
 	mistralDefaultModelId,
 	xaiDefaultModelId,
+	groqDefaultModelId,
+	cerebrasDefaultModelId,
 	basetenDefaultModelId,
 	bedrockDefaultModelId,
 	vertexDefaultModelId,
@@ -28,26 +31,20 @@ import {
 	internationalZAiDefaultModelId,
 	mainlandZAiDefaultModelId,
 	fireworksDefaultModelId,
-	rooDefaultModelId,
+	featherlessDefaultModelId,
+	ioIntelligenceDefaultModelId,
 	vercelAiGatewayDefaultModelId,
+	deepInfraDefaultModelId,
 	minimaxDefaultModelId,
-	unboundDefaultModelId,
+	modelHarborDefaultModelId,
 } from "@roo-code/types"
-
-import {
-	getProviderServiceConfig,
-	getDefaultModelIdForProvider,
-	getStaticModelsForProvider,
-	shouldUseGenericModelPicker,
-	handleModelChangeSideEffects,
-} from "./utils/providerModelConfig"
 
 import { vscode } from "@src/utils/vscode"
 import { validateApiConfigurationExcludingModelErrors, getModelValidationError } from "@src/utils/validate"
 import { useAppTranslation } from "@src/i18n/TranslationContext"
+import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { useRouterModels } from "@src/components/ui/hooks/useRouterModels"
 import { useSelectedModel } from "@src/components/ui/hooks/useSelectedModel"
-import { useExtensionState } from "@src/context/ExtensionStateContext"
 import {
 	useOpenRouterModelProviders,
 	OPENROUTER_DEFAULT_PROVIDER_NAME,
@@ -69,11 +66,18 @@ import {
 	Anthropic,
 	Baseten,
 	Bedrock,
+	Cerebras,
+	ClaudeCode,
 	DeepSeek,
+	Doubao,
 	Gemini,
+	Groq,
+	HuggingFace,
+	IOIntelligence,
 	LMStudio,
 	LiteLLM,
 	Mistral,
+	ModelHarbor,
 	Moonshot,
 	Ollama,
 	OpenAI,
@@ -82,7 +86,6 @@ import {
 	OpenRouter,
 	QwenCode,
 	Requesty,
-	Roo,
 	SambaNova,
 	Unbound,
 	Vertex,
@@ -90,24 +93,25 @@ import {
 	XAI,
 	ZAi,
 	Fireworks,
+	Featherless,
 	VercelAiGateway,
+	DeepInfra,
 	MiniMax,
 } from "./providers"
 
 import { MODELS_BY_PROVIDER, PROVIDERS } from "./constants"
 import { inputEventTransform, noTransform } from "./transforms"
-import { ModelPicker } from "./ModelPicker"
+import { ModelInfoView } from "./ModelInfoView"
 import { ApiErrorMessage } from "./ApiErrorMessage"
 import { ThinkingBudget } from "./ThinkingBudget"
 import { Verbosity } from "./Verbosity"
+import { DiffSettingsControl } from "./DiffSettingsControl"
 import { TodoListSettingsControl } from "./TodoListSettingsControl"
 import { TemperatureControl } from "./TemperatureControl"
 import { RateLimitSecondsControl } from "./RateLimitSecondsControl"
 import { ConsecutiveMistakeLimitControl } from "./ConsecutiveMistakeLimitControl"
 import { BedrockCustomArn } from "./providers/BedrockCustomArn"
-import { RooBalanceDisplay } from "./providers/RooBalanceDisplay"
 import { buildDocLink } from "@src/utils/docLinks"
-import { BookOpenText } from "lucide-react"
 
 export interface ApiOptionsProps {
 	uriScheme: string | undefined
@@ -131,7 +135,7 @@ const ApiOptions = ({
 	setErrorMessage,
 }: ApiOptionsProps) => {
 	const { t } = useAppTranslation()
-	const { organizationAllowList, cloudIsAuthenticated, openAiCodexIsAuthenticated } = useExtensionState()
+	const { organizationAllowList, openAiCodexIsAuthenticated } = useExtensionState()
 
 	const [customHeaders, setCustomHeaders] = useState<[string, string][]>(() => {
 		const headers = apiConfiguration?.openAiHeaders || {}
@@ -157,13 +161,14 @@ const ApiOptions = ({
 
 			// Only update if the processed object is different from the current config.
 			if (JSON.stringify(currentConfigHeaders) !== JSON.stringify(newHeadersObject)) {
-				setApiConfigurationField("openAiHeaders", newHeadersObject, false)
+				setApiConfigurationField("openAiHeaders", newHeadersObject)
 			}
 		},
 		300,
 		[customHeaders, apiConfiguration?.openAiHeaders, setApiConfigurationField],
 	)
 
+	const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
 	const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false)
 
 	const handleInputChange = useCallback(
@@ -181,12 +186,8 @@ const ApiOptions = ({
 		provider: selectedProvider,
 		id: selectedModelId,
 		info: selectedModelInfo,
+		isLoading: isModelLoading,
 	} = useSelectedModel(apiConfiguration)
-	const activeSelectedProvider: ProviderName | undefined = isRetiredProvider(selectedProvider)
-		? undefined
-		: selectedProvider
-	const isRetiredSelectedProvider =
-		typeof apiConfiguration.apiProvider === "string" && isRetiredProvider(apiConfiguration.apiProvider)
 
 	const { data: routerModels, refetch: refetchRouterModels } = useRouterModels()
 
@@ -203,17 +204,14 @@ const ApiOptions = ({
 	)
 
 	// Update `apiModelId` whenever `selectedModelId` changes.
+	// Do not sync when models are still loading to prevent overwriting user selections with default fallbacks
 	useEffect(() => {
-		if (isRetiredSelectedProvider) {
-			return
-		}
-
-		if (selectedModelId && apiConfiguration.apiModelId !== selectedModelId) {
+		if (selectedModelId && apiConfiguration.apiModelId !== selectedModelId && !isModelLoading) {
 			// Pass false as third parameter to indicate this is not a user action
 			// This is an internal sync, not a user-initiated change
 			setApiConfigurationField("apiModelId", selectedModelId, false)
 		}
-	}, [selectedModelId, setApiConfigurationField, apiConfiguration.apiModelId, isRetiredSelectedProvider])
+	}, [selectedModelId, setApiConfigurationField, apiConfiguration.apiModelId, isModelLoading])
 
 	// Debounced refresh model updates, only executed 250ms after the user
 	// stops typing.
@@ -238,7 +236,7 @@ const ApiOptions = ({
 				vscode.postMessage({ type: "requestLmStudioModels" })
 			} else if (selectedProvider === "vscode-lm") {
 				vscode.postMessage({ type: "requestVsCodeLmModels" })
-			} else if (selectedProvider === "litellm" || selectedProvider === "roo") {
+			} else if (selectedProvider === "litellm" || selectedProvider === "deepinfra") {
 				vscode.postMessage({ type: "requestRouterModels" })
 			}
 		},
@@ -252,23 +250,46 @@ const ApiOptions = ({
 			apiConfiguration?.lmStudioBaseUrl,
 			apiConfiguration?.litellmBaseUrl,
 			apiConfiguration?.litellmApiKey,
+			apiConfiguration?.deepInfraApiKey,
+			apiConfiguration?.deepInfraBaseUrl,
 			customHeaders,
 		],
 	)
 
 	useEffect(() => {
-		if (isRetiredSelectedProvider) {
-			setErrorMessage(undefined)
-			return
-		}
-
 		const apiValidationResult = validateApiConfigurationExcludingModelErrors(
 			apiConfiguration,
 			routerModels,
 			organizationAllowList,
 		)
 		setErrorMessage(apiValidationResult)
-	}, [apiConfiguration, routerModels, organizationAllowList, setErrorMessage, isRetiredSelectedProvider])
+	}, [apiConfiguration, routerModels, organizationAllowList, setErrorMessage])
+
+	const selectedProviderModels = useMemo(() => {
+		const models = MODELS_BY_PROVIDER[selectedProvider]
+
+		if (!models) return []
+
+		const filteredModels = filterModels(models, selectedProvider, organizationAllowList)
+
+		// Include the currently selected model even if deprecated (so users can see what they have selected)
+		// But filter out other deprecated models from being newly selectable
+		const availableModels = filteredModels
+			? Object.entries(filteredModels)
+					.filter(([modelId, modelInfo]) => {
+						// Always include the currently selected model
+						if (modelId === selectedModelId) return true
+						// Filter out deprecated models that aren't currently selected
+						return !modelInfo.deprecated
+					})
+					.map(([modelId]) => ({
+						value: modelId,
+						label: modelId,
+					}))
+			: []
+
+		return availableModels
+	}, [selectedProvider, organizationAllowList, selectedModelId])
 
 	const onProviderChange = useCallback(
 		(value: ProviderName) => {
@@ -276,7 +297,7 @@ const ApiOptions = ({
 
 			// It would be much easier to have a single attribute that stores
 			// the modelId, but we have a separate attribute for each of
-			// OpenRouter and Requesty.
+			// OpenRouter, Unbound, and Requesty.
 			// If you switch to one of these providers and the corresponding
 			// modelId is not set then you immediately end up in an error state.
 			// To address that we set the modelId to the default value for th
@@ -330,20 +351,26 @@ const ApiOptions = ({
 					}
 				>
 			> = {
+				modelharbor: { field: "modelharborModelId", default: modelHarborDefaultModelId },
+				deepinfra: { field: "deepInfraModelId", default: deepInfraDefaultModelId },
 				openrouter: { field: "openRouterModelId", default: openRouterDefaultModelId },
-				requesty: { field: "requestyModelId", default: requestyDefaultModelId },
 				unbound: { field: "unboundModelId", default: unboundDefaultModelId },
+				requesty: { field: "requestyModelId", default: requestyDefaultModelId },
 				litellm: { field: "litellmModelId", default: litellmDefaultModelId },
 				anthropic: { field: "apiModelId", default: anthropicDefaultModelId },
+				cerebras: { field: "apiModelId", default: cerebrasDefaultModelId },
+				"claude-code": { field: "apiModelId", default: claudeCodeDefaultModelId },
 				"openai-codex": { field: "apiModelId", default: openAiCodexDefaultModelId },
 				"qwen-code": { field: "apiModelId", default: qwenCodeDefaultModelId },
 				"openai-native": { field: "apiModelId", default: openAiNativeDefaultModelId },
 				gemini: { field: "apiModelId", default: geminiDefaultModelId },
 				deepseek: { field: "apiModelId", default: deepSeekDefaultModelId },
+				doubao: { field: "apiModelId", default: doubaoDefaultModelId },
 				moonshot: { field: "apiModelId", default: moonshotDefaultModelId },
 				minimax: { field: "apiModelId", default: minimaxDefaultModelId },
 				mistral: { field: "apiModelId", default: mistralDefaultModelId },
 				xai: { field: "apiModelId", default: xaiDefaultModelId },
+				groq: { field: "apiModelId", default: groqDefaultModelId },
 				baseten: { field: "apiModelId", default: basetenDefaultModelId },
 				bedrock: { field: "apiModelId", default: bedrockDefaultModelId },
 				vertex: { field: "apiModelId", default: vertexDefaultModelId },
@@ -356,7 +383,8 @@ const ApiOptions = ({
 							: internationalZAiDefaultModelId,
 				},
 				fireworks: { field: "apiModelId", default: fireworksDefaultModelId },
-				roo: { field: "apiModelId", default: rooDefaultModelId },
+				featherless: { field: "apiModelId", default: featherlessDefaultModelId },
+				"io-intelligence": { field: "ioIntelligenceModelId", default: ioIntelligenceDefaultModelId },
 				"vercel-ai-gateway": { field: "vercelAiGatewayModelId", default: vercelAiGatewayDefaultModelId },
 				openai: { field: "openAiModelId" },
 				ollama: { field: "ollamaModelId" },
@@ -380,7 +408,7 @@ const ApiOptions = ({
 		return getModelValidationError(apiConfiguration, routerModels, organizationAllowList)
 	}, [apiConfiguration, routerModels, organizationAllowList])
 
-	const docs = useMemo(() => {
+	const _docs = useMemo(() => {
 		const provider = PROVIDERS.find(({ value }) => value === selectedProvider)
 		const name = provider?.label
 
@@ -462,16 +490,6 @@ const ApiOptions = ({
 			<div className="flex flex-col gap-1 relative">
 				<div className="flex justify-between items-center">
 					<label className="block font-medium">{t("settings:providers.apiProvider")}</label>
-					{selectedProvider === "roo" && cloudIsAuthenticated ? (
-						<RooBalanceDisplay />
-					) : (
-						docs && (
-							<VSCodeLink href={docs.url} target="_blank" className="flex gap-2">
-								{t("settings:providers.apiProviderDocs")}
-								<BookOpenText className="size-4 inline ml-2" />
-							</VSCodeLink>
-						)
-					)}
 				</div>
 				<SearchableSelect
 					value={selectedProvider}
@@ -487,367 +505,421 @@ const ApiOptions = ({
 
 			{errorMessage && <ApiErrorMessage errorMessage={errorMessage} />}
 
-			{isRetiredSelectedProvider ? (
-				<div
-					className="rounded-md border border-vscode-panel-border px-3 py-2 text-sm text-vscode-descriptionForeground"
-					data-testid="retired-provider-message">
-					{t("settings:providers.retiredProviderMessage")}
-				</div>
-			) : (
-				<>
-					{selectedProvider === "openrouter" && (
-						<OpenRouter
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							routerModels={routerModels}
-							selectedModelId={selectedModelId}
-							uriScheme={uriScheme}
-							simplifySettings={fromWelcomeView}
-							organizationAllowList={organizationAllowList}
-							modelValidationError={modelValidationError}
-						/>
-					)}
+			{selectedProvider === "modelharbor" && (
+				<ModelHarbor apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
 
-					{selectedProvider === "requesty" && (
-						<Requesty
-							uriScheme={uriScheme}
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							routerModels={routerModels}
-							refetchRouterModels={refetchRouterModels}
-							organizationAllowList={organizationAllowList}
-							modelValidationError={modelValidationError}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "openrouter" && (
+				<OpenRouter
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					routerModels={routerModels}
+					selectedModelId={selectedModelId}
+					uriScheme={uriScheme}
+					simplifySettings={fromWelcomeView}
+					organizationAllowList={organizationAllowList}
+					modelValidationError={modelValidationError}
+				/>
+			)}
 
-					{selectedProvider === "unbound" && (
-						<Unbound
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							routerModels={routerModels}
-							refetchRouterModels={refetchRouterModels}
-							organizationAllowList={organizationAllowList}
-							modelValidationError={modelValidationError}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "requesty" && (
+				<Requesty
+					uriScheme={uriScheme}
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					routerModels={routerModels}
+					refetchRouterModels={refetchRouterModels}
+					organizationAllowList={organizationAllowList}
+					modelValidationError={modelValidationError}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "anthropic" && (
-						<Anthropic
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "unbound" && (
+				<Unbound
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					routerModels={routerModels}
+					organizationAllowList={organizationAllowList}
+					modelValidationError={modelValidationError}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "openai-codex" && (
-						<OpenAICodex
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							simplifySettings={fromWelcomeView}
-							openAiCodexIsAuthenticated={openAiCodexIsAuthenticated}
-						/>
-					)}
+			{selectedProvider === "deepinfra" && (
+				<DeepInfra
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					routerModels={routerModels}
+					refetchRouterModels={refetchRouterModels}
+					organizationAllowList={organizationAllowList}
+					modelValidationError={modelValidationError}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "openai-native" && (
-						<OpenAI
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							selectedModelInfo={selectedModelInfo}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "anthropic" && (
+				<Anthropic
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "mistral" && (
-						<Mistral
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "claude-code" && (
+				<ClaudeCode
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "baseten" && (
-						<Baseten
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "openai-codex" && (
+				<OpenAICodex
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+					openAiCodexIsAuthenticated={openAiCodexIsAuthenticated}
+				/>
+			)}
 
-					{selectedProvider === "bedrock" && (
-						<Bedrock
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							selectedModelInfo={selectedModelInfo}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "openai-native" && (
+				<OpenAI
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					selectedModelInfo={selectedModelInfo}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "vertex" && (
-						<Vertex
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-						/>
-					)}
+			{selectedProvider === "mistral" && (
+				<Mistral
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "gemini" && (
-						<Gemini
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-						/>
-					)}
+			{selectedProvider === "baseten" && (
+				<Baseten
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "openai" && (
-						<OpenAICompatible
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							organizationAllowList={organizationAllowList}
-							modelValidationError={modelValidationError}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "bedrock" && (
+				<Bedrock
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					selectedModelInfo={selectedModelInfo}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "lmstudio" && (
-						<LMStudio
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-						/>
-					)}
+			{selectedProvider === "vertex" && (
+				<Vertex
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "deepseek" && (
-						<DeepSeek
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "gemini" && (
+				<Gemini
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "qwen-code" && (
-						<QwenCode
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "openai" && (
+				<OpenAICompatible
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					organizationAllowList={organizationAllowList}
+					modelValidationError={modelValidationError}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "moonshot" && (
-						<Moonshot
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "lmstudio" && (
+				<LMStudio
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "minimax" && (
-						<MiniMax
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-						/>
-					)}
+			{selectedProvider === "deepseek" && (
+				<DeepSeek
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "vscode-lm" && (
-						<VSCodeLM
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-						/>
-					)}
+			{selectedProvider === "doubao" && (
+				<Doubao
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "ollama" && (
-						<Ollama
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-						/>
-					)}
+			{selectedProvider === "qwen-code" && (
+				<QwenCode
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "xai" && (
-						<XAI apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
-					)}
+			{selectedProvider === "moonshot" && (
+				<Moonshot
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
 
-					{selectedProvider === "litellm" && (
-						<LiteLLM
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							organizationAllowList={organizationAllowList}
-							modelValidationError={modelValidationError}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "minimax" && (
+				<MiniMax apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
 
-					{selectedProvider === "sambanova" && (
-						<SambaNova
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-						/>
-					)}
+			{selectedProvider === "vscode-lm" && (
+				<VSCodeLM apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
 
-					{selectedProvider === "zai" && (
-						<ZAi apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
-					)}
+			{selectedProvider === "ollama" && (
+				<Ollama apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
 
-					{selectedProvider === "vercel-ai-gateway" && (
-						<VercelAiGateway
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							routerModels={routerModels}
-							organizationAllowList={organizationAllowList}
-							modelValidationError={modelValidationError}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "xai" && (
+				<XAI apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
 
-					{selectedProvider === "fireworks" && (
-						<Fireworks
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-						/>
-					)}
+			{selectedProvider === "groq" && (
+				<Groq apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
 
-					{selectedProvider === "roo" && (
-						<Roo
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							routerModels={routerModels}
-							cloudIsAuthenticated={cloudIsAuthenticated}
-							organizationAllowList={organizationAllowList}
-							modelValidationError={modelValidationError}
-							simplifySettings={fromWelcomeView}
-						/>
-					)}
+			{selectedProvider === "huggingface" && (
+				<HuggingFace apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
 
-					{/* Generic model picker for providers with static models */}
-					{activeSelectedProvider && shouldUseGenericModelPicker(activeSelectedProvider) && (
-						<>
-							<ModelPicker
+			{selectedProvider === "cerebras" && (
+				<Cerebras apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
+
+			{selectedProvider === "litellm" && (
+				<LiteLLM
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					organizationAllowList={organizationAllowList}
+					modelValidationError={modelValidationError}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
+
+			{selectedProvider === "sambanova" && (
+				<SambaNova apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
+
+			{selectedProvider === "zai" && (
+				<ZAi apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
+
+			{selectedProvider === "io-intelligence" && (
+				<IOIntelligence
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					organizationAllowList={organizationAllowList}
+					modelValidationError={modelValidationError}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
+
+			{selectedProvider === "vercel-ai-gateway" && (
+				<VercelAiGateway
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					routerModels={routerModels}
+					organizationAllowList={organizationAllowList}
+					modelValidationError={modelValidationError}
+					simplifySettings={fromWelcomeView}
+				/>
+			)}
+
+			{selectedProvider === "fireworks" && (
+				<Fireworks apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
+
+			{selectedProvider === "featherless" && (
+				<Featherless apiConfiguration={apiConfiguration} setApiConfigurationField={setApiConfigurationField} />
+			)}
+
+			{/* Skip generic model picker for claude-code/openai-codex since they have their own model pickers */}
+			{selectedProviderModels.length > 0 &&
+				selectedProvider !== "claude-code" &&
+				selectedProvider !== "openai-codex" && (
+					<>
+						<div>
+							<label className="block font-medium mb-1">{t("settings:providers.model")}</label>
+							<Select
+								value={selectedModelId === "custom-arn" ? "custom-arn" : selectedModelId}
+								onValueChange={(value) => {
+									setApiConfigurationField("apiModelId", value)
+
+									// Clear custom ARN if not using custom ARN option.
+									if (value !== "custom-arn" && selectedProvider === "bedrock") {
+										setApiConfigurationField("awsCustomArn", "")
+									}
+
+									// Clear reasoning effort when switching models to allow the new model's default to take effect
+									// This is especially important for GPT-5 models which default to "medium"
+									if (selectedProvider === "openai-native") {
+										setApiConfigurationField("reasoningEffort", undefined)
+									}
+								}}>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder={t("settings:common.select")} />
+								</SelectTrigger>
+								<SelectContent>
+									{selectedProviderModels.map((option) => (
+										<SelectItem key={option.value} value={option.value}>
+											{option.label}
+										</SelectItem>
+									))}
+									{selectedProvider === "bedrock" && (
+										<SelectItem value="custom-arn">{t("settings:labels.useCustomArn")}</SelectItem>
+									)}
+								</SelectContent>
+							</Select>
+						</div>
+
+						{/* Show error if a deprecated model is selected */}
+						{selectedModelInfo?.deprecated && (
+							<ApiErrorMessage errorMessage={t("settings:validation.modelDeprecated")} />
+						)}
+
+						{selectedProvider === "bedrock" && selectedModelId === "custom-arn" && (
+							<BedrockCustomArn
 								apiConfiguration={apiConfiguration}
 								setApiConfigurationField={setApiConfigurationField}
-								defaultModelId={getDefaultModelIdForProvider(activeSelectedProvider, apiConfiguration)}
-								models={getStaticModelsForProvider(
-									activeSelectedProvider,
-									t("settings:labels.useCustomArn"),
-								)}
-								modelIdKey="apiModelId"
-								serviceName={getProviderServiceConfig(activeSelectedProvider).serviceName}
-								serviceUrl={getProviderServiceConfig(activeSelectedProvider).serviceUrl}
-								organizationAllowList={organizationAllowList}
-								errorMessage={modelValidationError}
-								simplifySettings={fromWelcomeView}
-								onModelChange={(modelId) =>
-									handleModelChangeSideEffects(
-										activeSelectedProvider,
-										modelId,
-										setApiConfigurationField,
-									)
-								}
 							/>
+						)}
 
-							{selectedProvider === "bedrock" && selectedModelId === "custom-arn" && (
-								<BedrockCustomArn
-									apiConfiguration={apiConfiguration}
-									setApiConfigurationField={setApiConfigurationField}
-								/>
+						{/* Only show model info if not deprecated */}
+						{!selectedModelInfo?.deprecated && (
+							<ModelInfoView
+								apiProvider={selectedProvider}
+								selectedModelId={selectedModelId}
+								modelInfo={selectedModelInfo}
+								isDescriptionExpanded={isDescriptionExpanded}
+								setIsDescriptionExpanded={setIsDescriptionExpanded}
+							/>
+						)}
+					</>
+				)}
+
+			{!fromWelcomeView && (
+				<ThinkingBudget
+					key={`${selectedProvider}-${selectedModelId}`}
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					modelInfo={selectedModelInfo}
+				/>
+			)}
+
+			{/* Gate Verbosity UI by capability flag */}
+			{!fromWelcomeView && selectedModelInfo?.supportsVerbosity && (
+				<Verbosity
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					modelInfo={selectedModelInfo}
+				/>
+			)}
+
+			{!fromWelcomeView && (
+				<Collapsible open={isAdvancedSettingsOpen} onOpenChange={setIsAdvancedSettingsOpen}>
+					<CollapsibleTrigger className="flex items-center gap-1 w-full cursor-pointer hover:opacity-80 mb-2">
+						<span className={`codicon codicon-chevron-${isAdvancedSettingsOpen ? "down" : "right"}`}></span>
+						<span className="font-medium">{t("settings:advancedSettings.title")}</span>
+					</CollapsibleTrigger>
+					<CollapsibleContent className="space-y-3">
+						<TodoListSettingsControl
+							todoListEnabled={apiConfiguration.todoListEnabled}
+							onChange={(field, value) => setApiConfigurationField(field, value)}
+						/>
+						<DiffSettingsControl
+							diffEnabled={apiConfiguration.diffEnabled}
+							fuzzyMatchThreshold={apiConfiguration.fuzzyMatchThreshold}
+							onChange={(field, value) => setApiConfigurationField(field, value)}
+						/>
+						{selectedModelInfo?.supportsTemperature !== false && (
+							<TemperatureControl
+								value={apiConfiguration.modelTemperature}
+								onChange={handleInputChange("modelTemperature", noTransform)}
+								maxValue={2}
+								defaultValue={selectedModelInfo?.defaultTemperature}
+							/>
+						)}
+						<RateLimitSecondsControl
+							value={apiConfiguration.rateLimitSeconds || 0}
+							onChange={(value) => setApiConfigurationField("rateLimitSeconds", value)}
+						/>
+						<ConsecutiveMistakeLimitControl
+							value={
+								apiConfiguration.consecutiveMistakeLimit !== undefined
+									? apiConfiguration.consecutiveMistakeLimit
+									: DEFAULT_CONSECUTIVE_MISTAKE_LIMIT
+							}
+							onChange={(value) => setApiConfigurationField("consecutiveMistakeLimit", value)}
+						/>
+						{selectedProvider === "openrouter" &&
+							openRouterModelProviders &&
+							Object.keys(openRouterModelProviders).length > 0 && (
+								<div>
+									<div className="flex items-center gap-1">
+										<label className="block font-medium mb-1">
+											{t("settings:providers.openRouter.providerRouting.title")}
+										</label>
+										<a href={`https://openrouter.ai/${selectedModelId}/providers`}>
+											<ExternalLinkIcon className="w-4 h-4" />
+										</a>
+									</div>
+									<Select
+										value={
+											apiConfiguration?.openRouterSpecificProvider ||
+											OPENROUTER_DEFAULT_PROVIDER_NAME
+										}
+										onValueChange={(value) =>
+											setApiConfigurationField("openRouterSpecificProvider", value)
+										}>
+										<SelectTrigger className="w-full">
+											<SelectValue placeholder={t("settings:common.select")} />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value={OPENROUTER_DEFAULT_PROVIDER_NAME}>
+												{OPENROUTER_DEFAULT_PROVIDER_NAME}
+											</SelectItem>
+											{Object.entries(openRouterModelProviders).map(([value, { label }]) => (
+												<SelectItem key={value} value={value}>
+													{label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									<div className="text-sm text-vscode-descriptionForeground mt-1">
+										{t("settings:providers.openRouter.providerRouting.description")}{" "}
+										<a href="https://openrouter.ai/docs/features/provider-routing">
+											{t("settings:providers.openRouter.providerRouting.learnMore")}.
+										</a>
+									</div>
+								</div>
 							)}
-						</>
-					)}
-
-					{!fromWelcomeView && (
-						<ThinkingBudget
-							key={`${selectedProvider}-${selectedModelId}`}
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							modelInfo={selectedModelInfo}
-						/>
-					)}
-
-					{/* Gate Verbosity UI by capability flag */}
-					{!fromWelcomeView && selectedModelInfo?.supportsVerbosity && (
-						<Verbosity
-							apiConfiguration={apiConfiguration}
-							setApiConfigurationField={setApiConfigurationField}
-							modelInfo={selectedModelInfo}
-						/>
-					)}
-
-					{!fromWelcomeView && (
-						<Collapsible open={isAdvancedSettingsOpen} onOpenChange={setIsAdvancedSettingsOpen}>
-							<CollapsibleTrigger className="flex items-center gap-1 w-full cursor-pointer hover:opacity-80 mb-2">
-								<span
-									className={`codicon codicon-chevron-${isAdvancedSettingsOpen ? "down" : "right"}`}></span>
-								<span className="font-medium">{t("settings:advancedSettings.title")}</span>
-							</CollapsibleTrigger>
-							<CollapsibleContent className="space-y-3">
-								<TodoListSettingsControl
-									todoListEnabled={apiConfiguration.todoListEnabled}
-									onChange={(field, value) => setApiConfigurationField(field, value)}
-								/>
-								{selectedModelInfo?.supportsTemperature !== false && (
-									<TemperatureControl
-										value={apiConfiguration.modelTemperature}
-										onChange={handleInputChange("modelTemperature", noTransform)}
-										maxValue={2}
-										defaultValue={selectedModelInfo?.defaultTemperature}
-									/>
-								)}
-								<RateLimitSecondsControl
-									value={apiConfiguration.rateLimitSeconds || 0}
-									onChange={(value) => setApiConfigurationField("rateLimitSeconds", value)}
-								/>
-								<ConsecutiveMistakeLimitControl
-									value={
-										apiConfiguration.consecutiveMistakeLimit !== undefined
-											? apiConfiguration.consecutiveMistakeLimit
-											: DEFAULT_CONSECUTIVE_MISTAKE_LIMIT
-									}
-									onChange={(value) => setApiConfigurationField("consecutiveMistakeLimit", value)}
-								/>
-								{selectedProvider === "openrouter" &&
-									openRouterModelProviders &&
-									Object.keys(openRouterModelProviders).length > 0 && (
-										<div>
-											<div className="flex items-center gap-1">
-												<label className="block font-medium mb-1">
-													{t("settings:providers.openRouter.providerRouting.title")}
-												</label>
-												<a href={`https://openrouter.ai/${selectedModelId}/providers`}>
-													<ExternalLinkIcon className="w-4 h-4" />
-												</a>
-											</div>
-											<Select
-												value={
-													apiConfiguration?.openRouterSpecificProvider ||
-													OPENROUTER_DEFAULT_PROVIDER_NAME
-												}
-												onValueChange={(value) =>
-													setApiConfigurationField("openRouterSpecificProvider", value)
-												}>
-												<SelectTrigger className="w-full">
-													<SelectValue placeholder={t("settings:common.select")} />
-												</SelectTrigger>
-												<SelectContent>
-													<SelectItem value={OPENROUTER_DEFAULT_PROVIDER_NAME}>
-														{OPENROUTER_DEFAULT_PROVIDER_NAME}
-													</SelectItem>
-													{Object.entries(openRouterModelProviders).map(
-														([value, { label }]) => (
-															<SelectItem key={value} value={value}>
-																{label}
-															</SelectItem>
-														),
-													)}
-												</SelectContent>
-											</Select>
-											<div className="text-sm text-vscode-descriptionForeground mt-1">
-												{t("settings:providers.openRouter.providerRouting.description")}{" "}
-												<a href="https://openrouter.ai/docs/features/provider-routing">
-													{t("settings:providers.openRouter.providerRouting.learnMore")}.
-												</a>
-											</div>
-										</div>
-									)}
-							</CollapsibleContent>
-						</Collapsible>
-					)}
-				</>
+					</CollapsibleContent>
+				</Collapsible>
 			)}
 		</div>
 	)

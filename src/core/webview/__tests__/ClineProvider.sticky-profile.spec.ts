@@ -1,7 +1,6 @@
 // npx vitest run core/webview/__tests__/ClineProvider.sticky-profile.spec.ts
 
 import * as vscode from "vscode"
-import { TelemetryService } from "@roo-code/telemetry"
 import { ClineProvider } from "../ClineProvider"
 import { ContextProxy } from "../../config/ContextProxy"
 import type { HistoryItem } from "@roo-code/types"
@@ -100,6 +99,7 @@ vi.mock("../../../integrations/workspace/WorkspaceTracker", () => ({
 
 vi.mock("../../diff/strategies/multi-search-replace", () => ({
 	MultiSearchReplaceDiffStrategy: vi.fn().mockImplementation(() => ({
+		getToolDescription: () => "test",
 		getName: () => "test-strategy",
 		applyDiff: vi.fn(),
 	})),
@@ -114,6 +114,9 @@ vi.mock("@roo-code/cloud", () => ({
 			}
 		},
 	},
+	BridgeOrchestrator: {
+		isEnabled: vi.fn().mockReturnValue(false),
+	},
 	getRooCodeApiUrl: vi.fn().mockReturnValue("https://app.roocode.com"),
 }))
 
@@ -123,7 +126,7 @@ vi.mock("../../../shared/modes", () => ({
 			slug: "code",
 			name: "Code Mode",
 			roleDefinition: "You are a code assistant",
-			groups: ["read", "edit"],
+			groups: ["read", "edit", "browser"],
 		},
 		{
 			slug: "architect",
@@ -136,7 +139,7 @@ vi.mock("../../../shared/modes", () => ({
 		slug: "code",
 		name: "Code Mode",
 		roleDefinition: "You are a code assistant",
-		groups: ["read", "edit"],
+		groups: ["read", "edit", "browser"],
 	}),
 	defaultModeSlug: "code",
 }))
@@ -163,36 +166,23 @@ vi.mock("fs/promises", () => ({
 	mkdir: vi.fn().mockResolvedValue(undefined),
 	writeFile: vi.fn().mockResolvedValue(undefined),
 	readFile: vi.fn().mockResolvedValue(""),
-	readdir: vi.fn().mockResolvedValue([]),
 	unlink: vi.fn().mockResolvedValue(undefined),
 	rmdir: vi.fn().mockResolvedValue(undefined),
-	access: vi.fn().mockResolvedValue(undefined),
-	rm: vi.fn().mockResolvedValue(undefined),
 }))
 
-vi.mock("../../../utils/storage", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("../../../utils/storage")>()
-	return {
-		...actual,
-		getStorageBasePath: vi.fn().mockImplementation((defaultPath: string) => defaultPath),
-		getSettingsDirectoryPath: vi.fn().mockResolvedValue("/test/settings/path"),
-		getTaskDirectoryPath: vi.fn().mockResolvedValue("/test/task/path"),
-	}
-})
+const mockTelemetryService = {
+	hasInstance: vi.fn().mockReturnValue(true),
+	createInstance: vi.fn(),
+	instance: {
+		trackEvent: vi.fn(),
+		trackError: vi.fn(),
+		setProvider: vi.fn(),
+		captureModeSwitch: vi.fn(),
+	},
+}
 
 vi.mock("@roo-code/telemetry", () => ({
-	TelemetryService: {
-		hasInstance: vi.fn().mockReturnValue(true),
-		createInstance: vi.fn(),
-		get instance() {
-			return {
-				trackEvent: vi.fn(),
-				trackError: vi.fn(),
-				setProvider: vi.fn(),
-				captureModeSwitch: vi.fn(),
-			}
-		},
-	},
+	TelemetryService: mockTelemetryService,
 }))
 
 describe("ClineProvider - Sticky Provider Profile", () => {
@@ -202,12 +192,12 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 	let mockWebviewView: vscode.WebviewView
 	let mockPostMessage: any
 
-	beforeEach(async () => {
+	beforeEach(() => {
 		vi.clearAllMocks()
 		taskIdCounter = 0
 
-		if (!TelemetryService.hasInstance()) {
-			TelemetryService.createInstance([])
+		if (!mockTelemetryService.hasInstance()) {
+			mockTelemetryService.createInstance([])
 		}
 
 		const globalState: Record<string, string | undefined> = {
@@ -238,11 +228,6 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 					delete secrets[key]
 					return Promise.resolve()
 				}),
-			},
-			workspaceState: {
-				get: vi.fn().mockReturnValue(undefined),
-				update: vi.fn().mockResolvedValue(undefined),
-				keys: vi.fn().mockReturnValue([]),
 			},
 			subscriptions: [],
 			extension: {
@@ -280,9 +265,6 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 
 		provider = new ClineProvider(mockContext, mockOutputChannel, "sidebar", new ContextProxy(mockContext))
 
-		// Wait for the async TaskHistoryStore initialization to complete
-		await new Promise((resolve) => setTimeout(resolve, 10))
-
 		// Mock getMcpHub method
 		provider.getMcpHub = vi.fn().mockReturnValue({
 			listTools: vi.fn().mockResolvedValue([]),
@@ -314,16 +296,20 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 			// Add task to provider stack
 			await provider.addClineToStack(mockTask as any)
 
-			// Populate the store so persistStickyProviderProfileToCurrentTask finds the task
-			await provider.taskHistoryStore.upsert({
-				id: mockTask.taskId,
-				ts: Date.now(),
-				task: "Test task",
-				number: 1,
-				tokensIn: 0,
-				tokensOut: 0,
-				totalCost: 0,
-			})
+			// Mock getGlobalState to return task history
+			vi.spyOn(provider as any, "getGlobalState").mockReturnValue([
+				{
+					id: mockTask.taskId,
+					ts: Date.now(),
+					task: "Test task",
+					number: 1,
+					tokensIn: 0,
+					tokensOut: 0,
+					cacheWrites: 0,
+					cacheReads: 0,
+					totalCost: 0,
+				},
+			])
 
 			// Mock updateTaskHistory to track calls
 			const updateTaskHistorySpy = vi
@@ -617,16 +603,20 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 				updateApiConfiguration: vi.fn(),
 			}
 
-			// Populate the store so persistStickyProviderProfileToCurrentTask finds the task
-			await provider.taskHistoryStore.upsert({
-				id: mockTask.taskId,
-				ts: Date.now(),
-				task: "Test task",
-				number: 1,
-				tokensIn: 0,
-				tokensOut: 0,
-				totalCost: 0,
-			})
+			// Mock getGlobalState to return task history with our task
+			vi.spyOn(provider as any, "getGlobalState").mockReturnValue([
+				{
+					id: mockTask.taskId,
+					ts: Date.now(),
+					task: "Test task",
+					number: 1,
+					tokensIn: 0,
+					tokensOut: 0,
+					cacheWrites: 0,
+					cacheReads: 0,
+					totalCost: 0,
+				},
+			])
 
 			// Mock updateTaskHistory to capture the updated history item
 			let updatedHistoryItem: any
@@ -725,10 +715,7 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 				},
 			]
 
-			// Populate the store
-			for (const item of taskHistory) {
-				await provider.taskHistoryStore.upsert(item as any)
-			}
+			vi.spyOn(provider as any, "getGlobalState").mockReturnValue(taskHistory)
 
 			// Mock updateTaskHistory
 			vi.spyOn(provider, "updateTaskHistory").mockImplementation((item) => {
@@ -784,16 +771,20 @@ describe("ClineProvider - Sticky Provider Profile", () => {
 			// Add task to provider stack
 			await provider.addClineToStack(mockTask as any)
 
-			// Populate the store
-			await provider.taskHistoryStore.upsert({
-				id: mockTask.taskId,
-				ts: Date.now(),
-				task: "Test task",
-				number: 1,
-				tokensIn: 0,
-				tokensOut: 0,
-				totalCost: 0,
-			})
+			// Mock getGlobalState
+			vi.spyOn(provider as any, "getGlobalState").mockReturnValue([
+				{
+					id: mockTask.taskId,
+					ts: Date.now(),
+					task: "Test task",
+					number: 1,
+					tokensIn: 0,
+					tokensOut: 0,
+					cacheWrites: 0,
+					cacheReads: 0,
+					totalCost: 0,
+				},
+			])
 
 			// Mock updateTaskHistory to throw error
 			vi.spyOn(provider, "updateTaskHistory").mockRejectedValue(new Error("Save failed"))

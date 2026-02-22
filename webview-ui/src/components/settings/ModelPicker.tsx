@@ -3,7 +3,8 @@ import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 import { Trans } from "react-i18next"
 import { ChevronsUpDown, Check, X, Info } from "lucide-react"
 
-import { type ProviderSettings, type ModelInfo, type OrganizationAllowList, isRetiredProvider } from "@roo-code/types"
+import type { ProviderSettings, ModelInfo } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { useSelectedModel } from "@/components/ui/hooks/useSelectedModel"
@@ -29,16 +30,15 @@ import { ApiErrorMessage } from "./ApiErrorMessage"
 type ModelIdKey = keyof Pick<
 	ProviderSettings,
 	| "openRouterModelId"
-	| "requestyModelId"
 	| "unboundModelId"
+	| "requestyModelId"
 	| "openAiModelId"
 	| "litellmModelId"
+	| "deepInfraModelId"
+	| "ioIntelligenceModelId"
+	| "modelharborModelId"
 	| "vercelAiGatewayModelId"
 	| "apiModelId"
-	| "ollamaModelId"
-	| "lmStudioModelId"
-	| "lmStudioDraftModelId"
-	| "vsCodeLmModelSelector"
 >
 
 interface ModelPickerProps {
@@ -57,14 +57,6 @@ interface ModelPickerProps {
 	errorMessage?: string
 	simplifySettings?: boolean
 	hidePricing?: boolean
-	/** Label for the model picker field - defaults to "Model" */
-	label?: string
-	/** Transform model ID string to the value stored in configuration (for compound types like VSCodeLM selector) */
-	valueTransform?: (modelId: string) => unknown
-	/** Transform stored configuration value back to display string */
-	displayTransform?: (value: unknown) => string
-	/** Callback when model changes - useful for side effects like clearing related fields */
-	onModelChange?: (modelId: string) => void
 }
 
 export const ModelPicker = ({
@@ -79,10 +71,6 @@ export const ModelPicker = ({
 	errorMessage,
 	simplifySettings,
 	hidePricing,
-	label,
-	valueTransform,
-	displayTransform,
-	onModelChange,
 }: ModelPickerProps) => {
 	const { t } = useAppTranslation()
 
@@ -95,30 +83,22 @@ export const ModelPicker = ({
 
 	const { id: selectedModelId, info: selectedModelInfo } = useSelectedModel(apiConfiguration)
 
-	// Get the display value for the current selection
-	// If displayTransform is provided, use it to convert the stored value to a display string
-	const displayValue = useMemo(() => {
-		if (displayTransform) {
-			const storedValue = apiConfiguration[modelIdKey]
-			return storedValue ? displayTransform(storedValue) : undefined
-		}
-		return selectedModelId
-	}, [displayTransform, apiConfiguration, modelIdKey, selectedModelId])
-
-	const activeProvider =
-		apiConfiguration.apiProvider && isRetiredProvider(apiConfiguration.apiProvider)
-			? undefined
-			: apiConfiguration.apiProvider
+	// Use the actual configured model ID for display, not the validated/default one
+	// This prevents the UI from showing the default model while models are loading
+	const displayedModelId = apiConfiguration[modelIdKey] || selectedModelId
 
 	const modelIds = useMemo(() => {
-		const filteredModels = filterModels(models, activeProvider, organizationAllowList)
+		const filteredModels = filterModels(models, apiConfiguration.apiProvider, organizationAllowList)
 
-		// Include the currently selected model even if deprecated (so users can see what they have selected)
+		// Get the actual configured model ID (not the derived selectedModelId)
+		const configuredModelId = apiConfiguration[modelIdKey]
+
+		// Include the currently configured model even if deprecated (so users can see what they have selected)
 		// But filter out other deprecated models from being newly selectable
 		const availableModels = Object.entries(filteredModels ?? {})
 			.filter(([modelId, modelInfo]) => {
-				// Always include the currently selected model
-				if (modelId === selectedModelId) return true
+				// Always include the currently configured model
+				if (modelId === configuredModelId) return true
 				// Filter out deprecated models that aren't currently selected
 				return !modelInfo.deprecated
 			})
@@ -131,7 +111,7 @@ export const ModelPicker = ({
 			)
 
 		return Object.keys(availableModels).sort((a, b) => a.localeCompare(b))
-	}, [models, activeProvider, organizationAllowList, selectedModelId])
+	}, [models, apiConfiguration, organizationAllowList, modelIdKey])
 
 	const [searchValue, setSearchValue] = useState("")
 
@@ -142,13 +122,7 @@ export const ModelPicker = ({
 			}
 
 			setOpen(false)
-
-			// Apply value transform if provided (e.g., for VSCodeLM selector)
-			const valueToStore = valueTransform ? valueTransform(modelId) : modelId
-			setApiConfigurationField(modelIdKey, valueToStore as ProviderSettings[ModelIdKey])
-
-			// Call the optional change callback
-			onModelChange?.(modelId)
+			setApiConfigurationField(modelIdKey, modelId)
 
 			// Clear any existing timeout
 			if (selectTimeoutRef.current) {
@@ -158,7 +132,7 @@ export const ModelPicker = ({
 			// Delay to ensure the popover is closed before setting the search value.
 			selectTimeoutRef.current = setTimeout(() => setSearchValue(""), 100)
 		},
-		[modelIdKey, setApiConfigurationField, valueTransform, onModelChange],
+		[modelIdKey, setApiConfigurationField],
 	)
 
 	const onOpenChange = useCallback((open: boolean) => {
@@ -182,13 +156,15 @@ export const ModelPicker = ({
 	}, [])
 
 	useEffect(() => {
-		if (!selectedModelId && !isInitialized.current) {
-			const initialValue = modelIds.includes(selectedModelId) ? selectedModelId : defaultModelId
-			setApiConfigurationField(modelIdKey, initialValue, false) // false = automatic initialization
+		if (!isInitialized.current) {
+			// Only set default if no model is currently configured
+			const currentModelId = apiConfiguration[modelIdKey]
+			if (!currentModelId) {
+				setApiConfigurationField(modelIdKey, defaultModelId, false) // false = automatic initialization
+			}
+			isInitialized.current = true
 		}
-
-		isInitialized.current = true
-	}, [modelIds, setApiConfigurationField, modelIdKey, selectedModelId, defaultModelId])
+	}, [setApiConfigurationField, modelIdKey, defaultModelId, apiConfiguration])
 
 	// Cleanup timeouts on unmount to prevent test flakiness
 	useEffect(() => {
@@ -208,7 +184,7 @@ export const ModelPicker = ({
 	return (
 		<>
 			<div>
-				<label className="block font-medium mb-1">{label ?? t("settings:modelPicker.label")}</label>
+				<label className="block font-medium mb-1">{t("settings:modelPicker.label")}</label>
 				<Popover open={open} onOpenChange={onOpenChange}>
 					<PopoverTrigger asChild>
 						<Button
@@ -217,7 +193,7 @@ export const ModelPicker = ({
 							aria-expanded={open}
 							className="w-full justify-between"
 							data-testid="model-picker-button">
-							<div className="truncate">{displayValue ?? t("settings:common.select")}</div>
+							<div className="truncate">{displayedModelId ?? t("settings:common.select")}</div>
 							<ChevronsUpDown className="opacity-50" />
 						</Button>
 					</PopoverTrigger>
@@ -262,7 +238,7 @@ export const ModelPicker = ({
 											<Check
 												className={cn(
 													"size-4 p-0.5 ml-auto",
-													model === displayValue ? "opacity-100" : "opacity-0",
+													model === displayedModelId ? "opacity-100" : "opacity-0",
 												)}
 											/>
 										</CommandItem>

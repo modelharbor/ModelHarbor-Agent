@@ -81,9 +81,11 @@ export type EmbedderProvider =
 	| "openai-compatible"
 	| "gemini"
 	| "mistral"
+	| "modelharbor"
 	| "vercel-ai-gateway"
 	| "bedrock"
 	| "openrouter"
+	| "litellm"
 
 export interface IndexProgressUpdate {
 	systemStatus: IndexingState

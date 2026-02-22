@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
-import type { ProviderSettings, OrganizationAllowList } from "@roo-code/types"
+import type { ProviderSettings } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { useSelectedModel } from "@src/components/ui/hooks/useSelectedModel"
@@ -13,7 +14,6 @@ import { MODELS_BY_PROVIDER, PROVIDERS } from "../constants"
 vi.mock("@src/context/ExtensionStateContext", () => ({
 	useExtensionState: vi.fn(() => ({
 		organizationAllowList: undefined,
-		cloudIsAuthenticated: false,
 	})),
 }))
 
@@ -170,7 +170,8 @@ describe("ApiOptions Provider Filtering", () => {
 		expect(providerValues).toContain("requesty")
 	})
 
-	it("should filter static providers based on organization allow list", () => {
+	it.skip("should filter static providers based on organization allow list", () => {
+		// SKIPPED: effectiveOrganizationAllowList is now hardcoded to allowAll: true as part of cloud/telemetry removal
 		// Create a mock organization allow list that only allows certain models
 		const allowList: OrganizationAllowList = {
 			allowAll: false,
@@ -215,7 +216,8 @@ describe("ApiOptions Provider Filtering", () => {
 		expect(providerValues).not.toContain("mistral")
 	})
 
-	it("should show static provider when allowAll is true for that provider", () => {
+	it.skip("should show static provider when allowAll is true for that provider", () => {
+		// SKIPPED: effectiveOrganizationAllowList is now hardcoded to allowAll: true as part of cloud/telemetry removal
 		const allowList: OrganizationAllowList = {
 			allowAll: false,
 			providers: {
@@ -240,7 +242,8 @@ describe("ApiOptions Provider Filtering", () => {
 		expect(providerValues).toContain("anthropic")
 	})
 
-	it("should always show currently selected provider even if it has no models", () => {
+	it.skip("should always show currently selected provider even if it has no models", () => {
+		// SKIPPED: effectiveOrganizationAllowList is now hardcoded to allowAll: true as part of cloud/telemetry removal
 		// Add an empty static provider to test
 		;(MODELS_BY_PROVIDER as any).testEmptyProvider = {}
 		// Add the provider to the PROVIDERS list

@@ -158,6 +158,33 @@ vi.mock("../RateLimitSecondsControl", () => ({
 	),
 }))
 
+// Mock DiffSettingsControl for tests
+vi.mock("../DiffSettingsControl", () => ({
+	DiffSettingsControl: ({ diffEnabled, fuzzyMatchThreshold, onChange }: any) => (
+		<div data-testid="diff-settings-control">
+			<label>
+				Enable editing through diffs
+				<input
+					type="checkbox"
+					checked={diffEnabled}
+					onChange={(e) => onChange("diffEnabled", e.target.checked)}
+				/>
+			</label>
+			<div>
+				Fuzzy match threshold
+				<input
+					type="range"
+					value={fuzzyMatchThreshold || 1.0}
+					onChange={(e) => onChange("fuzzyMatchThreshold", parseFloat(e.target.value))}
+					min={0.8}
+					max={1}
+					step={0.005}
+				/>
+			</div>
+		</div>
+	),
+}))
+
 // Mock TodoListSettingsControl for tests
 vi.mock("../TodoListSettingsControl", () => ({
 	TodoListSettingsControl: ({ todoListEnabled, onChange }: any) => (
@@ -211,18 +238,6 @@ vi.mock("../providers/LiteLLM", () => ({
 			<button data-testid="litellm-refresh-models">Refresh Models</button>
 		</div>
 	),
-}))
-
-// Mock Roo provider for tests
-vi.mock("../providers/Roo", () => ({
-	Roo: ({ cloudIsAuthenticated }: any) => (
-		<div data-testid="roo-provider">{cloudIsAuthenticated ? "Authenticated" : "Not Authenticated"}</div>
-	),
-}))
-
-// Mock RooBalanceDisplay for tests
-vi.mock("../providers/RooBalanceDisplay", () => ({
-	RooBalanceDisplay: () => <div data-testid="roo-balance-display">Balance: $10.00</div>,
 }))
 
 vi.mock("@src/components/ui/hooks/useSelectedModel", () => ({
@@ -296,16 +311,23 @@ describe("ApiOptions", () => {
 		expect(mockSetApiConfigurationField).toHaveBeenCalledWith("apiModelId", openAiCodexDefaultModelId, false)
 	})
 
-	it("shows temperature and rate limit controls by default", () => {
+	it("shows diff settings, temperature and rate limit controls by default", () => {
 		renderApiOptions({
-			apiConfiguration: {},
+			apiConfiguration: {
+				diffEnabled: true,
+				fuzzyMatchThreshold: 0.95,
+			},
 		})
+		// Check for DiffSettingsControl by looking for text content
+		expect(screen.getByText(/enable editing through diffs/i)).toBeInTheDocument()
 		expect(screen.getByTestId("temperature-control")).toBeInTheDocument()
 		expect(screen.getByTestId("rate-limit-seconds-control")).toBeInTheDocument()
 	})
 
 	it("hides all controls when fromWelcomeView is true", () => {
 		renderApiOptions({ fromWelcomeView: true })
+		// Check for absence of DiffSettingsControl text
+		expect(screen.queryByText(/enable editing through diffs/i)).not.toBeInTheDocument()
 		expect(screen.queryByTestId("temperature-control")).not.toBeInTheDocument()
 		expect(screen.queryByTestId("rate-limit-seconds-control")).not.toBeInTheDocument()
 	})
@@ -567,126 +589,5 @@ describe("ApiOptions", () => {
 
 			expect(screen.queryByTestId("litellm-provider")).not.toBeInTheDocument()
 		})
-	})
-
-	describe("Roo provider tests", () => {
-		it("shows balance display when authenticated", () => {
-			// Mock useExtensionState to return authenticated state
-			const useExtensionStateMock = vi.spyOn(ExtensionStateContext, "useExtensionState")
-			useExtensionStateMock.mockReturnValue({
-				cloudIsAuthenticated: true,
-				organizationAllowList: { providers: {} },
-			} as any)
-
-			renderApiOptions({
-				apiConfiguration: {
-					apiProvider: "roo",
-				},
-			})
-
-			expect(screen.getByTestId("roo-balance-display")).toBeInTheDocument()
-		})
-
-		it("does not show balance display when not authenticated", () => {
-			// Mock useExtensionState to return unauthenticated state
-			const useExtensionStateMock = vi.spyOn(ExtensionStateContext, "useExtensionState")
-			useExtensionStateMock.mockReturnValue({
-				cloudIsAuthenticated: false,
-				organizationAllowList: { providers: {} },
-			} as any)
-
-			renderApiOptions({
-				apiConfiguration: {
-					apiProvider: "roo",
-				},
-			})
-
-			expect(screen.queryByTestId("roo-balance-display")).not.toBeInTheDocument()
-		})
-
-		it("pins roo provider to the top when not on welcome screen", () => {
-			// Mock useExtensionState to ensure no filtering
-			const useExtensionStateMock = vi.spyOn(ExtensionStateContext, "useExtensionState")
-			useExtensionStateMock.mockReturnValue({
-				cloudIsAuthenticated: false,
-				organizationAllowList: { providers: {} },
-			} as any)
-
-			renderApiOptions({
-				apiConfiguration: {},
-				fromWelcomeView: false,
-			})
-
-			const providerSelectContainer = screen.getByTestId("provider-select")
-			const providerSelect = providerSelectContainer.querySelector("select") as HTMLSelectElement
-			const options = Array.from(providerSelect.querySelectorAll("option"))
-
-			// Filter out the placeholder option (empty value)
-			const providerOptions = options.filter((opt) => opt.value !== "")
-
-			// Find the roo option
-			const rooOption = providerOptions.find((opt) => opt.value === "roo")
-
-			// If roo is available, verify it's pinned to the top
-			if (rooOption) {
-				expect(providerOptions[0].value).toBe("roo")
-			}
-
-			useExtensionStateMock.mockRestore()
-		})
-
-		it("filters out roo provider on welcome screen", () => {
-			// Mock useExtensionState to ensure no filtering
-			const useExtensionStateMock = vi.spyOn(ExtensionStateContext, "useExtensionState")
-			useExtensionStateMock.mockReturnValue({
-				cloudIsAuthenticated: false,
-				organizationAllowList: { providers: {} },
-			} as any)
-
-			renderApiOptions({
-				apiConfiguration: {},
-				fromWelcomeView: true,
-			})
-
-			const providerSelectContainer = screen.getByTestId("provider-select")
-			const providerSelect = providerSelectContainer.querySelector("select") as HTMLSelectElement
-			const options = Array.from(providerSelect.querySelectorAll("option"))
-
-			// Filter out the placeholder option (empty value)
-			const providerOptions = options.filter((opt) => opt.value !== "")
-
-			// Check that roo is NOT in the list when on welcome screen
-			const rooOption = providerOptions.find((opt) => opt.value === "roo")
-			expect(rooOption).toBeUndefined()
-
-			useExtensionStateMock.mockRestore()
-		})
-	})
-
-	it("renders retired provider message and hides provider-specific forms", () => {
-		renderApiOptions({
-			apiConfiguration: {
-				apiProvider: "groq",
-			},
-		})
-
-		expect(screen.getByTestId("retired-provider-message")).toHaveTextContent(
-			"settings:providers.retiredProviderMessage",
-		)
-		expect(screen.queryByTestId("litellm-provider")).not.toBeInTheDocument()
-	})
-
-	it("does not reintroduce retired providers into active provider options", () => {
-		renderApiOptions({
-			apiConfiguration: {
-				apiProvider: "groq",
-			},
-		})
-
-		const providerSelectContainer = screen.getByTestId("provider-select")
-		const providerSelect = providerSelectContainer.querySelector("select") as HTMLSelectElement
-		const providerOptions = Array.from(providerSelect.querySelectorAll("option")).map((option) => option.value)
-
-		expect(providerOptions).not.toContain("groq")
 	})
 })

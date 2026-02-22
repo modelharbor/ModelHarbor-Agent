@@ -40,7 +40,7 @@ vi.mock("@src/components/modals/Announcement", () => ({
 	default: () => null,
 }))
 
-vi.mock("@src/components/welcome/RooCloudCTA", () => ({
+vi.mock("@src/components/welcome/RooTips", () => ({
 	default: () => null,
 }))
 
@@ -49,10 +49,6 @@ vi.mock("@src/components/welcome/RooTips", () => ({
 }))
 
 vi.mock("@src/components/welcome/RooHero", () => ({
-	default: () => null,
-}))
-
-vi.mock("../common/TelemetryBanner", () => ({
 	default: () => null,
 }))
 
@@ -104,7 +100,6 @@ const mockPostMessage = (state: any) => {
 				allowedCommands: [],
 				alwaysAllowExecute: false,
 				cloudIsAuthenticated: false,
-				telemetrySetting: "enabled",
 				mode: "code",
 				customModes: [],
 				...state,

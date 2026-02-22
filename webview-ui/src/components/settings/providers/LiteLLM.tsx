@@ -1,12 +1,8 @@
 import { useCallback, useState, useEffect, useRef } from "react"
 import { VSCodeTextField, VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react"
 
-import {
-	type ProviderSettings,
-	type OrganizationAllowList,
-	type ExtensionMessage,
-	litellmDefaultModelId,
-} from "@roo-code/types"
+import { type ProviderSettings, type ExtensionMessage, litellmDefaultModelId } from "@roo-code/types"
+import type { OrganizationAllowList } from "@roo/ProfileValidator"
 
 import { RouterName } from "@roo/api"
 

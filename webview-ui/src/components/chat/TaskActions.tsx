@@ -8,8 +8,8 @@ import { useCopyToClipboard } from "@/utils/clipboard"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 
 import { DeleteTaskDialog } from "../history/DeleteTaskDialog"
-import { ShareButton } from "./ShareButton"
-import { CopyIcon, CheckIcon, DownloadIcon, Trash2Icon, FileJsonIcon, MessageSquareCodeIcon } from "lucide-react"
+import { CloudTaskButton } from "./CloudTaskButton"
+import { CopyIcon, DownloadIcon, Trash2Icon, FileJsonIcon, MessageSquareCodeIcon } from "lucide-react"
 import { LucideIconButton } from "./LucideIconButton"
 
 interface TaskActionsProps {
@@ -20,7 +20,7 @@ interface TaskActionsProps {
 export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 	const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null)
 	const { t } = useTranslation()
-	const { copyWithFeedback, showCopyFeedback } = useCopyToClipboard()
+	const { copyWithFeedback } = useCopyToClipboard()
 	const { debug } = useExtensionState()
 
 	return (
@@ -33,7 +33,7 @@ export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 
 			{item?.task && (
 				<LucideIconButton
-					icon={showCopyFeedback ? CheckIcon : CopyIcon}
+					icon={CopyIcon}
 					title={t("history:copyPrompt")}
 					onClick={(e) => copyWithFeedback(item.task, e)}
 				/>
@@ -62,7 +62,7 @@ export const TaskActions = ({ item, buttonsDisabled }: TaskActionsProps) => {
 					)}
 				</>
 			)}
-			<ShareButton item={item} disabled={false} />
+			<CloudTaskButton />
 			{debug && item?.id && (
 				<>
 					<LucideIconButton

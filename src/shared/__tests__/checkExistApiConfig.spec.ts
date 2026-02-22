@@ -80,9 +80,9 @@ describe("checkExistKey", () => {
 		expect(checkExistKey(config)).toBe(true)
 	})
 
-	it("should return true for roo provider without API key", () => {
+	it("should return true for modelharbor provider without API key", () => {
 		const config: ProviderSettings = {
-			apiProvider: "roo",
+			apiProvider: "modelharbor",
 		}
 		expect(checkExistKey(config)).toBe(true)
 	})

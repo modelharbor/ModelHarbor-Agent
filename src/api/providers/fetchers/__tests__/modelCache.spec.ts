@@ -41,6 +41,9 @@ vi.mock("fs", () => ({
 vi.mock("../litellm")
 vi.mock("../openrouter")
 vi.mock("../requesty")
+vi.mock("../unbound")
+vi.mock("../io-intelligence")
+vi.mock("../modelharbor")
 
 // Mock ContextProxy with a simple static instance
 vi.mock("../../../core/config/ContextProxy", () => ({
@@ -53,20 +56,59 @@ vi.mock("../../../core/config/ContextProxy", () => ({
 	},
 }))
 
+// Mock vercel-ai-gateway, ollama, lmstudio, deepinfra, huggingface
+vi.mock("../vercel-ai-gateway")
+vi.mock("../ollama")
+vi.mock("../lmstudio")
+vi.mock("../deepinfra")
+vi.mock("../huggingface")
+
+// Mock safeWriteJson to prevent actual file writes
+vi.mock("../../../../utils/safeWriteJson", () => ({
+	safeWriteJson: vi.fn().mockResolvedValue(undefined),
+}))
+
+// Mock storage utilities
+vi.mock("../../../../utils/storage", () => ({
+	getCacheDirectoryPath: vi.fn().mockResolvedValue("/mock/storage/path/cache"),
+}))
+
+// Mock file utilities
+vi.mock("../../../../utils/fs", () => ({
+	fileExistsAtPath: vi.fn().mockResolvedValue(false),
+}))
+
+// Mock clearModelHarborCache
+vi.mock("@roo-code/types", async () => {
+	const actual = await vi.importActual("@roo-code/types")
+	return {
+		...actual,
+		clearModelHarborCache: vi.fn(),
+	}
+})
+
 // Then imports
 import type { Mock } from "vitest"
 import * as fsSync from "fs"
 import NodeCache from "node-cache"
-import { getModels, getModelsFromCache } from "../modelCache"
+import { getModels, getModelsFromCache, flushModels } from "../modelCache"
 import { getLiteLLMModels } from "../litellm"
 import { getOpenRouterModels } from "../openrouter"
 import { getRequestyModels } from "../requesty"
+import { getUnboundModels } from "../unbound"
+import { getIOIntelligenceModels } from "../io-intelligence"
+import { getModelHarborModels } from "../modelharbor"
 
 const mockGetLiteLLMModels = getLiteLLMModels as Mock<typeof getLiteLLMModels>
 const mockGetOpenRouterModels = getOpenRouterModels as Mock<typeof getOpenRouterModels>
 const mockGetRequestyModels = getRequestyModels as Mock<typeof getRequestyModels>
+const mockGetUnboundModels = getUnboundModels as Mock<typeof getUnboundModels>
+const mockGetIOIntelligenceModels = getIOIntelligenceModels as Mock<typeof getIOIntelligenceModels>
+const mockGetModelHarborModels = getModelHarborModels as Mock<typeof getModelHarborModels>
 
 const DUMMY_REQUESTY_KEY = "requesty-key-for-testing"
+const DUMMY_UNBOUND_KEY = "unbound-key-for-testing"
+const DUMMY_IOINTELLIGENCE_KEY = "io-intelligence-key-for-testing"
 
 describe("getModels with new GetModelsOptions", () => {
 	beforeEach(() => {
@@ -128,6 +170,40 @@ describe("getModels with new GetModelsOptions", () => {
 		expect(result).toEqual(mockModels)
 	})
 
+	it("calls getUnboundModels with optional API key", async () => {
+		const mockModels = {
+			"unbound/model": {
+				maxTokens: 4096,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				description: "Unbound model",
+			},
+		}
+		mockGetUnboundModels.mockResolvedValue(mockModels)
+
+		const result = await getModels({ provider: "unbound", apiKey: DUMMY_UNBOUND_KEY })
+
+		expect(mockGetUnboundModels).toHaveBeenCalledWith(DUMMY_UNBOUND_KEY)
+		expect(result).toEqual(mockModels)
+	})
+
+	it("calls IOIntelligenceModels for IO-Intelligence provider", async () => {
+		const mockModels = {
+			"io-intelligence/model": {
+				maxTokens: 4096,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				description: "IO Intelligence Model",
+			},
+		}
+		mockGetIOIntelligenceModels.mockResolvedValue(mockModels)
+
+		const result = await getModels({ provider: "io-intelligence", apiKey: DUMMY_IOINTELLIGENCE_KEY })
+
+		expect(mockGetIOIntelligenceModels).toHaveBeenCalled()
+		expect(result).toEqual(mockModels)
+	})
+
 	it("handles errors and re-throws them", async () => {
 		const expectedError = new Error("LiteLLM connection failed")
 		mockGetLiteLLMModels.mockRejectedValue(expectedError)
@@ -139,6 +215,23 @@ describe("getModels with new GetModelsOptions", () => {
 				baseUrl: "http://localhost:4000",
 			}),
 		).rejects.toThrow("LiteLLM connection failed")
+	})
+
+	it("calls getModelHarborModels for modelharbor provider", async () => {
+		const mockModels = {
+			"modelharbor/model": {
+				maxTokens: 4096,
+				contextWindow: 8192,
+				supportsPromptCache: false,
+				description: "ModelHarbor model",
+			},
+		}
+		mockGetModelHarborModels.mockResolvedValue(mockModels)
+
+		const result = await getModels({ provider: "modelharbor" })
+
+		expect(mockGetModelHarborModels).toHaveBeenCalled()
+		expect(result).toEqual(mockModels)
 	})
 
 	it("validates exhaustive provider checking with unknown provider", async () => {
@@ -188,7 +281,7 @@ describe("getModelsFromCache disk fallback", () => {
 
 		mockCache.get.mockReturnValue(memoryModels)
 
-		const result = getModelsFromCache("roo")
+		const result = getModelsFromCache("modelharbor")
 
 		expect(result).toEqual(memoryModels)
 		// Disk should not be checked when memory cache hits
@@ -226,7 +319,7 @@ describe("getModelsFromCache disk fallback", () => {
 
 		const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {})
 
-		const result = getModelsFromCache("roo")
+		const result = getModelsFromCache("modelharbor")
 
 		expect(result).toBeUndefined()
 		expect(consoleErrorSpy).toHaveBeenCalled()
@@ -393,6 +486,73 @@ describe("empty cache protection", () => {
 			// Should return empty but NOT cache it
 			expect(result).toEqual({})
 			expect(mockSet).not.toHaveBeenCalled()
+		})
+
+		it("forwards options to refreshModels when refresh=true", async () => {
+			const mockModels = {
+				"litellm/model": {
+					maxTokens: 4096,
+					contextWindow: 200000,
+					supportsPromptCache: false,
+					description: "LiteLLM model",
+				},
+			}
+
+			mockGetLiteLLMModels.mockResolvedValue(mockModels)
+			mockGet.mockReturnValue(undefined)
+
+			const { flushModels } = await import("../modelCache")
+			await flushModels("litellm", true, {
+				apiKey: "test-key",
+				baseUrl: "http://localhost:4000",
+			})
+
+			// Wait for the async refresh to complete
+			await new Promise((resolve) => setTimeout(resolve, 100))
+
+			// Verify getLiteLLMModels was called with the forwarded options
+			expect(mockGetLiteLLMModels).toHaveBeenCalledWith("test-key", "http://localhost:4000")
+		})
+
+		it("works without options (backward compatible)", async () => {
+			const mockModels = {
+				"openrouter/model": {
+					maxTokens: 8192,
+					contextWindow: 128000,
+					supportsPromptCache: false,
+					description: "OpenRouter model",
+				},
+			}
+
+			mockGetOpenRouterModels.mockResolvedValue(mockModels)
+			mockGet.mockReturnValue(undefined)
+
+			const { flushModels } = await import("../modelCache")
+			// Should not throw when called without options
+			await flushModels("openrouter", true)
+
+			// Wait for the async refresh to complete
+			await new Promise((resolve) => setTimeout(resolve, 100))
+
+			expect(mockGetOpenRouterModels).toHaveBeenCalled()
+		})
+
+		it("deletes memory cache when refresh=false", async () => {
+			const { flushModels } = await import("../modelCache")
+			await flushModels("openrouter", false)
+
+			expect(mockCache.del).toHaveBeenCalledWith("openrouter")
+		})
+
+		it("does not delete memory cache when refresh=true", async () => {
+			mockGetOpenRouterModels.mockResolvedValue({})
+			mockGet.mockReturnValue(undefined)
+
+			const { flushModels } = await import("../modelCache")
+			await flushModels("openrouter", true)
+
+			// Should NOT call del when refresh=true (to prevent cache gap)
+			expect(mockCache.del).not.toHaveBeenCalled()
 		})
 
 		it("reuses in-flight request for concurrent calls to same provider", async () => {

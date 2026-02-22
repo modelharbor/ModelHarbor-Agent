@@ -6,8 +6,8 @@
 		"imageTooLarge": "Image file is too large ({{size}} MB). The maximum allowed size is {{max}} MB.",
 		"imageWithSize": "Image file ({{size}} KB)"
 	},
-	"toolRepetitionLimitReached": "Roo appears to be stuck in a loop, attempting the same action ({{toolName}}) repeatedly. This might indicate a problem with its current strategy. Consider rephrasing the task, providing more specific instructions, or guiding it towards a different approach.",
-	"unknownToolError": "Roo tried to use an unknown tool: \"{{toolName}}\". Retrying...",
+	"toolRepetitionLimitReached": "ModelHarbor appears to be stuck in a loop, attempting the same action ({{toolName}}) repeatedly. This might indicate a problem with its current strategy. Consider rephrasing the task, providing more specific instructions, or guiding it towards a different approach.",
+	"unknownToolError": "ModelHarbor tried to use an unknown tool: \"{{toolName}}\". Retrying...",
 	"codebaseSearch": {
 		"approval": "Searching for '{{query}}' in codebase..."
 	},
@@ -18,14 +18,12 @@
 	},
 	"generateImage": {
 		"openRouterApiKeyRequired": "OpenRouter API key is required for image generation with OpenRouter models. Please configure it in the Image Generation experimental settings.",
+		"liteLlmApiKeyRequired": "LiteLLM API key is required for image generation with LiteLLM. Please configure it in the Image Generation experimental settings.",
 		"failedWithStatus": "Failed to generate image: {{status}} {{statusText}}",
 		"failedWithMessage": "Failed to generate image: {{message}}",
 		"noImageGenerated": "No image was generated in the response",
 		"invalidImageData": "Invalid image data in response",
 		"invalidImageFormat": "Invalid image format received",
-		"unknownError": "Unknown error occurred",
-		"roo": {
-			"authRequired": "Roo Code Cloud authentication is required for image generation. Please sign in to Roo Code Cloud."
-		}
+		"unknownError": "Unknown error occurred"
 	}
 }

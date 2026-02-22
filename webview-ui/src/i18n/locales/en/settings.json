@@ -29,9 +29,8 @@
 		"providers": "Providers",
 		"modes": "Modes",
 		"mcp": "MCP Servers",
-		"worktrees": "Worktrees",
-		"skills": "Skills",
 		"autoApprove": "Auto-Approve",
+		"browser": "Browser",
 		"checkpoints": "Checkpoints",
 		"notifications": "Notifications",
 		"contextManagement": "Context",
@@ -41,7 +40,7 @@
 		"ui": "UI",
 		"experimental": "Experimental",
 		"language": "Language",
-		"about": "About Roo Code"
+		"about": "About ModelHarbor Agent"
 	},
 	"about": {
 		"bugReport": {
@@ -59,7 +58,7 @@
 		"contact": {
 			"label": "Need to talk to us? Write"
 		},
-		"community": "Want tips or to just hang out with other Roo Code users? Join <redditLink>reddit.com/r/RooCode</redditLink> or <discordLink>discord.gg/roocode</discordLink>",
+		"community": "Want tips or to just hang out with other ModelHarbor Agent users? Join <redditLink>reddit.com/r/ModelHarbor</redditLink> or <discordLink>discord.gg/modelharbor</discordLink>",
 		"contactAndCommunity": "Contact & Community",
 		"manageSettings": "Manage Settings",
 		"debugMode": {
@@ -68,92 +67,7 @@
 		}
 	},
 	"slashCommands": {
-		"description": "Slash commands are shortcuts for reusable workflows and actions to be used on demand (like creating a PR, running a set of tasks, etc). <DocsLink>Learn more</DocsLink>",
-		"workspaceCommands": "Workspace Commands",
-		"globalCommands": "Global Commands",
-		"noWorkspaceCommands": "No commands in this project yet.",
-		"noGlobalCommands": "No global commands yet.",
-		"addCommand": "Add Slash Command",
-		"editCommand": "Edit command",
-		"deleteCommand": "Delete command",
-		"deleteDialog": {
-			"title": "Delete Command",
-			"description": "Are you sure you want to delete the command \"{{name}}\"? This action cannot be undone.",
-			"confirm": "Delete",
-			"cancel": "Cancel"
-		},
-		"createDialog": {
-			"title": "Create New Slash Command",
-			"nameLabel": "Name",
-			"namePlaceholder": "my-command-name",
-			"nameHint": "Lowercase letters, numbers, hyphens and underscores only",
-			"sourceLabel": "Location",
-			"create": "Create",
-			"cancel": "Cancel"
-		},
-		"source": {
-			"global": "Global (available in all workspaces)",
-			"project": "Workspace"
-		},
-		"validation": {
-			"nameRequired": "Name is required",
-			"nameTooLong": "Name must be 64 characters or less",
-			"nameInvalid": "Name must contain only letters, numbers, hyphens, and underscores"
-		},
-		"footer": "Use slash commands for quick access to frequently used prompts and workflows."
-	},
-	"skills": {
-		"description": "Skills encapsulate contextual instructions and workflows, which the agent can load on-demand. They can include general instructions, specific workflows and even scripts to be run as needed. <DocsLink>Learn more</DocsLink>",
-		"workspaceSkills": "Workspace Skills",
-		"globalSkills": "Global Skills",
-		"noWorkspaceSkills": "No skills in this project yet.",
-		"noGlobalSkills": "No global skills yet.",
-		"addSkill": "Add Skill",
-		"editSkill": "Edit skill",
-		"deleteSkill": "Delete skill",
-		"configureModes": "Mode availability",
-		"modeAny": "Any mode",
-		"modeCount": "{{count}} modes",
-		"deleteDialog": {
-			"title": "Delete Skill",
-			"description": "Are you sure you want to delete the skill \"{{name}}\"? This action cannot be undone.",
-			"confirm": "Delete",
-			"cancel": "Cancel"
-		},
-		"modeDialog": {
-			"title": "Configure Skill Modes",
-			"description": "Choose which modes can use this skill",
-			"intro": "To keep your context light, we recommend only making skills available for the modes that need them.",
-			"anyMode": "Any mode (available everywhere)",
-			"save": "Save",
-			"cancel": "Cancel"
-		},
-		"createDialog": {
-			"title": "Create New Skill",
-			"nameLabel": "Name",
-			"namePlaceholder": "my-skill-name (Lowercase letters, numbers, and hyphens only)",
-			"descriptionLabel": "Description",
-			"descriptionPlaceholder": "Describe when this skill should be used and its contents...",
-			"sourceLabel": "Location",
-			"modeLabel": "Mode (optional)",
-			"modePlaceholder": "Any mode",
-			"modeAny": "Any mode",
-			"modeHint": "Restrict this skill to a specific mode",
-			"create": "Create",
-			"cancel": "Cancel"
-		},
-		"source": {
-			"global": "Global (available in all projects)",
-			"project": "Project (this workspace only)"
-		},
-		"validation": {
-			"nameRequired": "Name is required",
-			"nameTooLong": "Name must be 64 characters or less",
-			"nameInvalid": "Name must be 1-64 lowercase letters, numbers, or hyphens",
-			"descriptionRequired": "Description is required",
-			"descriptionTooLong": "Description must be 1024 characters or less"
-		},
-		"footer": "Create your own skills with the Skill Writer mode, available in the <MarketplaceLink>Modes Marketplace</MarketplaceLink>."
+		"description": "Manage your slash commands to quickly execute custom workflows and actions. <DocsLink>Learn more</DocsLink>"
 	},
 	"ui": {
 		"collapseThinking": {
@@ -166,7 +80,7 @@
 		}
 	},
 	"prompts": {
-		"description": "Configure support prompts that are used for quick actions like enhancing prompts, explaining code, and fixing issues. These prompts help Roo provide better assistance for common development tasks."
+		"description": "Configure support prompts that are used for quick actions like enhancing prompts, explaining code, and fixing issues. These prompts help ModelHarbor provide better assistance for common development tasks."
 	},
 	"codeIndex": {
 		"title": "Codebase Indexing",
@@ -201,6 +115,20 @@
 		"openRouterApiKeyPlaceholder": "Enter your OpenRouter API key",
 		"openRouterProviderRoutingLabel": "OpenRouter Provider Routing",
 		"openRouterProviderRoutingDescription": "OpenRouter routes requests to the best available providers for your embedding model. By default, requests are load balanced across the top providers to maximize uptime. However, you can choose a specific provider to use for this model.",
+		"litellmProvider": "LiteLLM",
+		"litellmBaseUrlLabel": "Base URL",
+		"litellmBaseUrlPlaceholder": "http://localhost:4000",
+		"litellmApiKeyLabel": "API Key",
+		"litellmApiKeyPlaceholder": "Enter your LiteLLM API key",
+		"litellmFetchModels": "Fetch Models",
+		"litellmFetchingModels": "Fetching...",
+		"litellmModelPlaceholder": "Enter model ID (e.g., baai/bge-m3)",
+		"litellmNoModelsFound": "No embedding models found. You can enter a model ID manually.",
+		"litellmRefreshModels": "Refresh Models",
+		"litellmRefreshModelsHint": "Click Refresh Models to load available models",
+		"modelharborProvider": "ModelHarbor",
+		"modelharborApiKeyLabel": "ModelHarbor API Key",
+		"modelharborApiKeyPlaceholder": "Enter your ModelHarbor API key",
 		"openaiCompatibleProvider": "OpenAI Compatible",
 		"openAiKeyLabel": "OpenAI API Key",
 		"openAiKeyPlaceholder": "Enter your OpenAI API key",
@@ -270,27 +198,28 @@
 			"bedrockRegionRequired": "AWS region is required",
 			"bedrockProfileRequired": "AWS profile is required",
 			"openRouterApiKeyRequired": "OpenRouter API key is required",
+			"modelharborApiKeyRequired": "ModelHarbor API key is required",
 			"ollamaBaseUrlRequired": "Ollama base URL is required",
 			"baseUrlRequired": "Base URL is required",
 			"modelDimensionMinValue": "Model dimension must be greater than 0"
 		},
-		"optional": "optional",
-		"stopIndexingButton": "Stop Indexing",
-		"stoppingButton": "Stopping...",
-		"workspaceToggleLabel": "Enable indexing for this workspace",
-		"workspaceDisabledMessage": "Indexing is configured but not enabled for this workspace.",
-		"autoEnableDefaultLabel": "Auto-enable indexing for new workspaces"
+		"optional": "optional"
 	},
 	"autoApprove": {
+		"superYoloMode": {
+			"label": "🚀 Super YOLO Mode",
+			"description": "DANGER: Auto-approves ALL commands (including dangerous ones) and auto-continues if stuck for 5 minutes. Use with extreme caution!",
+			"warning": "⚠️ This will bypass ALL safety checks for command execution and automatically continue stuck tasks."
+		},
 		"description": "Run these actions without asking for permission. Only enable for actions you fully trust and if you understand the security risks.",
 		"toggleShortcut": "You can configure a keyboard shortcut for this setting <SettingsLink>in your IDE preferences</SettingsLink>.",
 		"enabled": "Auto-Approve Enabled",
 		"readOnly": {
 			"label": "Read",
-			"description": "When enabled, Roo will automatically view directory contents and read files without requiring you to click the Approve button.",
+			"description": "When enabled, ModelHarbor will automatically view directory contents and read files without requiring you to click the Approve button.",
 			"outsideWorkspace": {
 				"label": "Include files outside workspace",
-				"description": "Allow Roo to read files outside the current workspace without requiring approval."
+				"description": "Allow ModelHarbor to read files outside the current workspace without requiring approval."
 			}
 		},
 		"write": {
@@ -299,12 +228,16 @@
 			"delayLabel": "Delay after writes to allow diagnostics to detect potential problems",
 			"outsideWorkspace": {
 				"label": "Include files outside workspace",
-				"description": "Allow Roo to create and edit files outside the current workspace without requiring approval."
+				"description": "Allow ModelHarbor to create and edit files outside the current workspace without requiring approval."
 			},
 			"protected": {
 				"label": "Include protected files",
-				"description": "Allow Roo to create and edit protected files (like .rooignore and .roo/ configuration files) without requiring approval."
+				"description": "Allow ModelHarbor to create and edit protected files (like .rooignore and .roo/ configuration files) without requiring approval."
 			}
+		},
+		"browser": {
+			"label": "Browser",
+			"description": "Automatically perform browser actions without requiring approval. Note: Only applies when the model supports computer use"
 		},
 		"mcp": {
 			"label": "MCP",
@@ -372,7 +305,6 @@
 		"searchProviderPlaceholder": "Search providers",
 		"noProviderMatchFound": "No providers found",
 		"noMatchFound": "No matching profiles found",
-		"retiredProviderMessage": "Sorry, this provider is no longer supported. We saw very few Roo users actually using it and we need to reduce the surface area of our codebase so we can keep shipping fast and serving our community well in this space. It was a really hard decision but it lets us focus on what matters most to you. It sucks, we know.",
 		"vscodeLmDescription": " The VS Code Language Model API allows you to run models provided by other VS Code extensions (including but not limited to GitHub Copilot). The easiest way to get started is to install the Copilot and Copilot Chat extensions from the VS Code Marketplace.",
 		"awsCustomArnUse": "Enter a valid Amazon Bedrock ARN for the model you want to use. Format examples:",
 		"awsCustomArnDesc": "Make sure the region in the ARN matches your selected AWS Region above.",
@@ -381,37 +313,6 @@
 		"vercelAiGatewayApiKey": "Vercel AI Gateway API Key",
 		"getVercelAiGatewayApiKey": "Get Vercel AI Gateway API Key",
 		"apiKeyStorageNotice": "API keys are stored securely in VSCode's Secret Storage",
-		"openAiCodexRateLimits": {
-			"title": "Usage Limits for Codex{{planLabel}}",
-			"loading": "Loading usage limits...",
-			"loadError": "Failed to load usage limits",
-			"retry": "Retry",
-			"usedPercent": "{{percent}}% used",
-			"resetsIn": "Resets in {{time}}",
-			"plan": {
-				"default": "",
-				"withType": " ({{planType}})"
-			},
-			"time": {
-				"now": "Now",
-				"notAvailable": "N/A"
-			},
-			"duration": {
-				"daysHours": "{{days}}d {{hours}}h",
-				"hoursMinutes": "{{hours}}h {{minutes}}m",
-				"minutes": "{{minutes}}m"
-			},
-			"window": {
-				"usage": "Usage",
-				"fiveHour": "5h limit",
-				"oneHour": "1h limit",
-				"daily": "Daily limit",
-				"weekly": "Weekly limit",
-				"days": "{{days}}d limit",
-				"hours": "{{hours}}h limit",
-				"minutes": "{{minutes}}m limit"
-			}
-		},
 		"useCustomBaseUrl": "Use custom base URL",
 		"useReasoning": "Enable reasoning",
 		"useHostHeader": "Use custom Host header",
@@ -419,8 +320,6 @@
 		"headerName": "Header name",
 		"headerValue": "Header value",
 		"noCustomHeaders": "No custom headers defined. Click the + button to add one.",
-		"unboundApiKey": "Unbound API Key",
-		"getUnboundApiKey": "Get Unbound API Key",
 		"requestyApiKey": "Requesty API Key",
 		"refreshModels": {
 			"label": "Refresh Models",
@@ -436,20 +335,34 @@
 		"getAnthropicApiKey": "Get Anthropic API Key",
 		"anthropicUseAuthToken": "Pass Anthropic API Key as Authorization header instead of X-Api-Key",
 		"anthropic1MContextBetaLabel": "Enable 1M context window (Beta)",
-		"anthropic1MContextBetaDescription": "Extends context window to 1 million tokens for Claude Sonnet 4.x / Claude Opus 4.6",
+		"anthropic1MContextBetaDescription": "Extends context window to 1 million tokens for Claude Sonnet 4",
 		"awsBedrock1MContextBetaLabel": "Enable 1M context window (Beta)",
-		"awsBedrock1MContextBetaDescription": "Extends context window to 1 million tokens for Claude Sonnet 4.x / Claude Opus 4.6",
+		"awsBedrock1MContextBetaDescription": "Extends context window to 1 million tokens for Claude Sonnet 4",
 		"vertex1MContextBetaLabel": "Enable 1M context window (Beta)",
-		"vertex1MContextBetaDescription": "Extends context window to 1 million tokens for Claude Sonnet 4.x / Claude Opus 4.6",
+		"vertex1MContextBetaDescription": "Extends context window to 1 million tokens for Claude Sonnet 4",
 		"basetenApiKey": "Baseten API Key",
 		"getBasetenApiKey": "Get Baseten API Key",
+		"cerebrasApiKey": "Cerebras API Key",
+		"getCerebrasApiKey": "Get Cerebras API Key",
+		"chutesApiKey": "Chutes API Key",
+		"getChutesApiKey": "Get Chutes API Key",
 		"fireworksApiKey": "Fireworks API Key",
 		"getFireworksApiKey": "Get Fireworks API Key",
+		"featherlessApiKey": "Featherless API Key",
+		"getFeatherlessApiKey": "Get Featherless API Key",
+		"ioIntelligenceApiKey": "IO Intelligence API Key",
+		"ioIntelligenceApiKeyPlaceholder": "Enter your IO Intelligence API key",
+		"getIoIntelligenceApiKey": "Get IO Intelligence API Key",
 		"deepSeekApiKey": "DeepSeek API Key",
 		"getDeepSeekApiKey": "Get DeepSeek API Key",
+		"doubaoApiKey": "Doubao API Key",
+		"getDoubaoApiKey": "Get Doubao API Key",
 		"moonshotApiKey": "Moonshot API Key",
 		"getMoonshotApiKey": "Get Moonshot API Key",
 		"moonshotBaseUrl": "Moonshot Entrypoint",
+		"modelharborApiKey": "ModelHarbor API Key",
+		"getModelHarborApiKey": "Get ModelHarbor API Key",
+		"modelHarborFacebook": "ModelHarbor (Facebook)",
 		"minimaxApiKey": "MiniMax API Key",
 		"getMiniMaxApiKey": "Get MiniMax API Key",
 		"minimaxBaseUrl": "MiniMax Entrypoint",
@@ -458,8 +371,23 @@
 		"zaiEntrypoint": "Z AI Entrypoint",
 		"zaiEntrypointDescription": "Please select the appropriate API entrypoint based on your location. If you are in China, choose open.bigmodel.cn. Otherwise, choose api.z.ai.",
 		"geminiApiKey": "Gemini API Key",
+		"getGroqApiKey": "Get Groq API Key",
+		"groqApiKey": "Groq API Key",
 		"getSambaNovaApiKey": "Get SambaNova API Key",
 		"sambaNovaApiKey": "SambaNova API Key",
+		"getHuggingFaceApiKey": "Get Hugging Face API Key",
+		"huggingFaceApiKey": "Hugging Face API Key",
+		"huggingFaceModelId": "Model ID",
+		"huggingFaceLoading": "Loading...",
+		"huggingFaceModelsCount": "({{count}} models)",
+		"huggingFaceSelectModel": "Select a model...",
+		"huggingFaceSearchModels": "Search models...",
+		"huggingFaceNoModelsFound": "No models found",
+		"huggingFaceProvider": "Provider",
+		"huggingFaceProviderAuto": "Auto",
+		"huggingFaceSelectProvider": "Select a provider...",
+		"huggingFaceSearchProviders": "Search providers...",
+		"huggingFaceNoProvidersFound": "No providers found",
 		"getGeminiApiKey": "Get Gemini API Key",
 		"openAiApiKey": "OpenAI API Key",
 		"apiKey": "API Key",
@@ -501,6 +429,16 @@
 		"cacheUsageNote": "Note: If you don't see cache usage, try selecting a different model and then selecting your desired model again.",
 		"vscodeLmModel": "Language Model",
 		"vscodeLmWarning": "Note: Models accessed via the VS Code Language Model API may be wrapped or fine-tuned by the provider, so behavior can differ from using the same model directly from a typical provider or router. To use a model from the Language Model dropdown, first switch to that model and then click Accept in the Copilot Chat prompt; otherwise you may see an error such as 400 \"The requested model is not supported\".",
+		"geminiParameters": {
+			"urlContext": {
+				"title": "Enable URL context",
+				"description": "Lets Gemini read linked pages to extract, compare, and synthesize their content into informed responses."
+			},
+			"groundingSearch": {
+				"title": "Enable Grounding with Google search",
+				"description": "Connects Gemini to real‑time web data for accurate, up‑to‑date answers with verifiable citations."
+			}
+		},
 		"googleCloudSetup": {
 			"title": "To use Google Cloud Vertex AI, you need to:",
 			"step1": "1. Create a Google Cloud account, enable the Vertex AI API & enable the desired Claude models.",
@@ -519,7 +457,7 @@
 			"draftModelDesc": "Draft model must be from the same model family for speculative decoding to work correctly.",
 			"selectDraftModel": "Select Draft Model",
 			"noModelsFound": "No draft models found. Please ensure LM Studio is running with Server Mode enabled.",
-			"description": "LM Studio allows you to run models locally on your computer. For instructions on how to get started, see their <a>quickstart guide</a>. You will also need to start LM Studio's <b>local server</b> feature to use it with this extension. <span>Note:</span> Roo Code uses complex prompts and works best with Claude models. Less capable models may not work as expected."
+			"description": "LM Studio allows you to run models locally on your computer. For instructions on how to get started, see their <a>quickstart guide</a>. You will also need to start LM Studio's <b>local server</b> feature to use it with this extension. <span>Note:</span> ModelHarbor Agent uses complex prompts and works best with Claude models. Less capable models may not work as expected."
 		},
 		"ollama": {
 			"baseUrl": "Base URL (optional)",
@@ -529,11 +467,15 @@
 			"numCtx": "Context Window Size (num_ctx)",
 			"numCtxHelp": "Override the model's default context window size. Leave empty to use the model's Modelfile configuration. Minimum value is 128.",
 			"description": "Ollama allows you to run models locally on your computer. For instructions on how to get started, see their quickstart guide.",
-			"warning": "Note: Roo Code uses complex prompts and works best with Claude models. Less capable models may not work as expected."
+			"warning": "Note: ModelHarbor Agent uses complex prompts and works best with Claude models. Less capable models may not work as expected."
 		},
+		"unboundApiKey": "Unbound API Key",
+		"getUnboundApiKey": "Get Unbound API Key",
+		"unboundRefreshModelsSuccess": "Models list updated! You can now select from the latest models.",
+		"unboundInvalidApiKey": "Invalid API key. Please check your API key and try again.",
 		"roo": {
-			"authenticatedMessage": "Securely authenticated through your Roo Code Cloud account.",
-			"connectButton": "Connect to Roo Code Cloud"
+			"authenticatedMessage": "Securely authenticated through your ModelHarbor Cloud account.",
+			"connectButton": "Connect to ModelHarbor Cloud"
 		},
 		"openRouter": {
 			"providerRouting": {
@@ -543,7 +485,7 @@
 			}
 		},
 		"customModel": {
-			"capabilities": "Configure the capabilities and pricing for your custom OpenAI-compatible model. Be careful when specifying the model capabilities, as they can affect how Roo Code performs.",
+			"capabilities": "Configure the capabilities and pricing for your custom OpenAI-compatible model. Be careful when specifying the model capabilities, as they can affect how ModelHarbor Agent performs.",
 			"maxTokens": {
 				"label": "Max Output Tokens",
 				"description": "Maximum number of tokens the model can generate in a response. (Specify -1 to allow the server to set the max tokens.)"
@@ -590,7 +532,7 @@
 		},
 		"consecutiveMistakeLimit": {
 			"label": "Error & Repetition Limit",
-			"description": "Number of consecutive errors or repeated actions before showing 'Roo is having trouble' dialog. Set to 0 to disable this safety mechanism (it will never trigger).",
+			"description": "Number of consecutive errors or repeated actions before showing 'ModelHarbor is having trouble' dialog. Set to 0 to disable this safety mechanism (it will never trigger).",
 			"unlimitedDescription": "Unlimited retries enabled (auto-proceed). The dialog will never appear.",
 			"warning": "⚠️ Setting to 0 allows unlimited retries which may consume significant API usage"
 		},
@@ -619,6 +561,34 @@
 			"maxTokensDescription": "Maximum number of output tokens for Claude Code responses. Default is 8000."
 		}
 	},
+	"browser": {
+		"enable": {
+			"label": "Enable browser tool",
+			"description": "When enabled, ModelHarbor can use a browser to interact with websites when using models that support computer use. <0>Learn more</0>"
+		},
+		"viewport": {
+			"label": "Viewport size",
+			"description": "Select the viewport size for browser interactions. This affects how websites are displayed and interacted with.",
+			"options": {
+				"largeDesktop": "Large Desktop (1280x800)",
+				"smallDesktop": "Small Desktop (900x600)",
+				"tablet": "Tablet (768x1024)",
+				"mobile": "Mobile (360x640)"
+			}
+		},
+		"screenshotQuality": {
+			"label": "Screenshot quality",
+			"description": "Adjust the WebP quality of browser screenshots. Higher values provide clearer screenshots but increase token usage."
+		},
+		"remote": {
+			"label": "Use remote browser connection",
+			"description": "Connect to a Chrome browser running with remote debugging enabled (--remote-debugging-port=9222).",
+			"urlPlaceholder": "Custom URL (e.g., http://localhost:9222)",
+			"testButton": "Test Connection",
+			"testingButton": "Testing...",
+			"instructions": "Enter the DevTools Protocol host address or leave empty to auto-discover Chrome local instances. The Test Connection button will try the custom URL if provided, or auto-discover if the field is empty."
+		}
+	},
 	"checkpoints": {
 		"timeout": {
 			"label": "Checkpoint initialization timeout (seconds)",
@@ -626,18 +596,18 @@
 		},
 		"enable": {
 			"label": "Enable automatic checkpoints",
-			"description": "When enabled, Roo will automatically create checkpoints during task execution, making it easy to review changes or revert to earlier states. <0>Learn more</0>"
+			"description": "When enabled, ModelHarbor will automatically create checkpoints during task execution, making it easy to review changes or revert to earlier states. <0>Learn more</0>"
 		}
 	},
 	"notifications": {
 		"sound": {
 			"label": "Enable sound effects",
-			"description": "When enabled, Roo will play sound effects for notifications and events.",
+			"description": "When enabled, ModelHarbor will play sound effects for notifications and events.",
 			"volumeLabel": "Volume"
 		},
 		"tts": {
 			"label": "Enable text-to-speech",
-			"description": "When enabled, Roo will read aloud its responses using text-to-speech.",
+			"description": "When enabled, ModelHarbor will read aloud its responses using text-to-speech.",
 			"speedLabel": "Speed"
 		}
 	},
@@ -645,7 +615,7 @@
 		"description": "Control what information is included in the AI's context window, affecting token usage and response quality",
 		"autoCondenseContextPercent": {
 			"label": "Threshold to trigger intelligent context condensing",
-			"description": "When the context window reaches this threshold, Roo will automatically condense it."
+			"description": "When the context window reaches this threshold, ModelHarbor will automatically condense it."
 		},
 		"condensingApiConfiguration": {
 			"label": "API Configuration for Context Condensing",
@@ -661,7 +631,7 @@
 		},
 		"autoCondenseContext": {
 			"name": "Automatically trigger intelligent context condensing",
-			"description": "When enabled, Roo will automatically condense the context when the threshold is reached. When disabled, you can still manually trigger context condensing."
+			"description": "When enabled, ModelHarbor will automatically condense the context when the threshold is reached. When disabled, you can still manually trigger context condensing."
 		},
 		"openTabs": {
 			"label": "Open tabs context limit",
@@ -681,7 +651,7 @@
 		},
 		"maxReadFile": {
 			"label": "File read auto-truncate threshold",
-			"description": "Roo reads this number of lines when the model omits start/end values. If this number is less than the file's total, Roo generates a line number index of code definitions. Special cases: -1 instructs Roo to read the entire file (without indexing), and 0 instructs it to read no lines and provides line indexes only for minimal context. Lower values minimize initial context usage, enabling precise subsequent line-range reads. Explicit start/end requests are not limited by this setting.",
+			"description": "ModelHarbor reads this number of lines when the model omits start/end values. If this number is less than the file's total, ModelHarbor generates a line number index of code definitions. Special cases: -1 instructs ModelHarbor to read the entire file (without indexing), and 0 instructs it to read no lines and provides line indexes only for minimal context. Lower values minimize initial context usage, enabling precise subsequent line-range reads. Explicit start/end requests are not limited by this setting.",
 			"lines": "lines",
 			"always_full_read": "Always read entire file"
 		},
@@ -748,20 +718,11 @@
 		},
 		"outputLineLimit": {
 			"label": "Terminal output limit",
-			"description": "Keeps the first and last lines and drops the middle to stay under the limit. Lower to save tokens; raise to give Roo more middle detail. Roo sees a placeholder where the content is skipped.<0>Learn more</0>"
+			"description": "Keeps the first and last lines and drops the middle to stay under the limit. Lower to save tokens; raise to give ModelHarbor more middle detail. ModelHarbor sees a placeholder where the content is skipped.<0>Learn more</0>"
 		},
 		"outputCharacterLimit": {
 			"label": "Terminal character limit",
-			"description": "Overrides the line limit to prevent memory issues by enforcing a hard cap on output size. If exceeded, keeps the beginning and end and shows a placeholder to Roo where content is skipped. <0>Learn more</0>"
-		},
-		"outputPreviewSize": {
-			"label": "Command output preview size",
-			"description": "Controls how much command output Roo sees directly. Full output is always saved and accessible when needed.",
-			"options": {
-				"small": "Small (5KB)",
-				"medium": "Medium (10KB)",
-				"large": "Large (20KB)"
-			}
+			"description": "Overrides the line limit to prevent memory issues by enforcing a hard cap on output size. If exceeded, keeps the beginning and end and shows a placeholder to ModelHarbor where content is skipped. <0>Learn more</0>"
 		},
 		"shellIntegrationTimeout": {
 			"label": "Terminal shell integration timeout",
@@ -769,11 +730,15 @@
 		},
 		"shellIntegrationDisabled": {
 			"label": "Use Inline Terminal (recommended)",
-			"description": "Run commands in the Inline Terminal (chat) to bypass shell profiles/integration for faster, more reliable runs. When disabled Roo uses the VS Code terminal with your shell profile, prompts, and plugins. <0>Learn more</0>"
+			"description": "Run commands in the Inline Terminal (chat) to bypass shell profiles/integration for faster, more reliable runs. When disabled ModelHarbor uses the VS Code terminal with your shell profile, prompts, and plugins. <0>Learn more</0>"
 		},
 		"commandDelay": {
 			"label": "Terminal command delay",
 			"description": "Adds a short pause after each command so the VS Code terminal can flush all output (bash/zsh: PROMPT_COMMAND sleep; PowerShell: start-sleep). Use only if you see missing tail output; otherwise leave at 0. <0>Learn more</0>"
+		},
+		"compressProgressBar": {
+			"label": "Compress progress bar output",
+			"description": "Collapses progress bars/spinners so only the final state is kept (saves tokens). <0>Learn more</0>"
 		},
 		"powershellCounter": {
 			"label": "Enable PowerShell counter workaround",
@@ -803,10 +768,18 @@
 	"advancedSettings": {
 		"title": "Advanced settings"
 	},
+	"toolProtocol": {
+		"label": "Tool Call Protocol",
+		"description": "Choose how ModelHarbor communicates with the API. Native uses the provider's function calling API, while XML uses XML-formatted tool definitions.",
+		"default": "Default",
+		"xml": "XML",
+		"native": "Native",
+		"currentDefault": "Default: {{protocol}}"
+	},
 	"advanced": {
 		"diff": {
 			"label": "Enable editing through diffs",
-			"description": "When enabled, Roo will be able to edit files more quickly and will automatically reject truncated full-file writes",
+			"description": "When enabled, ModelHarbor will be able to edit files more quickly and will automatically reject truncated full-file writes",
 			"strategy": {
 				"label": "Diff strategy",
 				"options": {
@@ -819,11 +792,15 @@
 					"unified": "Unified diff strategy takes multiple approaches to applying diffs and chooses the best approach.",
 					"multiBlock": "Multi-block diff strategy allows updating multiple code blocks in a file in one request."
 				}
+			},
+			"matchPrecision": {
+				"label": "Match precision",
+				"description": "This slider controls how precisely code sections must match when applying diffs. Lower values allow more flexible matching but increase the risk of incorrect replacements. Use values below 100% with extreme caution."
 			}
 		},
 		"todoList": {
 			"label": "Enable todo list tool",
-			"description": "When enabled, Roo can create and manage todo lists to track task progress. This helps organize complex tasks into manageable steps."
+			"description": "When enabled, ModelHarbor can create and manage todo lists to track task progress. This helps organize complex tasks into manageable steps."
 		}
 	},
 	"experimental": {
@@ -833,23 +810,31 @@
 		},
 		"INSERT_BLOCK": {
 			"name": "Use experimental insert content tool",
-			"description": "Enable the experimental insert content tool, allowing Roo to insert content at specific line numbers without needing to create a diff."
+			"description": "Enable the experimental insert content tool, allowing ModelHarbor to insert content at specific line numbers without needing to create a diff."
+		},
+		"POWER_STEERING": {
+			"name": "Use experimental \"power steering\" mode",
+			"description": "When enabled, ModelHarbor will remind the model about the details of its current mode definition more frequently. This will lead to stronger adherence to role definitions and custom instructions, but will use more tokens per message."
 		},
 		"CONCURRENT_FILE_READS": {
 			"name": "Enable concurrent file reads",
-			"description": "When enabled, Roo can read multiple files in a single request. When disabled, Roo must read files one at a time. Disabling this can help when working with less capable models or when you want more control over file access."
+			"description": "When enabled, ModelHarbor can read multiple files in a single request. When disabled, ModelHarbor must read files one at a time. Disabling this can help when working with less capable models or when you want more control over file access."
 		},
 		"MULTI_SEARCH_AND_REPLACE": {
 			"name": "Use experimental multi block diff tool",
-			"description": "When enabled, Roo will use multi block diff tool. This will try to update multiple code blocks in the file in one request."
+			"description": "When enabled, ModelHarbor will use multi block diff tool. This will try to update multiple code blocks in the file in one request."
 		},
 		"MARKETPLACE": {
 			"name": "Enable Marketplace",
 			"description": "When enabled, you can install MCPs and custom modes from the Marketplace."
 		},
+		"MULTI_FILE_APPLY_DIFF": {
+			"name": "Enable concurrent file edits",
+			"description": "When enabled, ModelHarbor can edit multiple files in a single request. When disabled, ModelHarbor must edit files one at a time. Disabling this can help when working with less capable models or when you want more control over file modifications."
+		},
 		"PREVENT_FOCUS_DISRUPTION": {
 			"name": "Background editing",
-			"description": "Prevent editor focus disruption when enabled. File edits happen in the background without opening diff views or stealing focus. You can continue working uninterrupted while Roo makes changes. Files can be opened without focus to capture diagnostics or kept closed entirely."
+			"description": "Prevent editor focus disruption when enabled. File edits happen in the background without opening diff views or stealing focus. You can continue working uninterrupted while ModelHarbor makes changes. Files can be opened without focus to capture diagnostics or kept closed entirely."
 		},
 		"ASSISTANT_MESSAGE_PARSER": {
 			"name": "Use new message parser",
@@ -861,7 +846,7 @@
 		},
 		"IMAGE_GENERATION": {
 			"name": "Enable AI image generation",
-			"description": "When enabled, Roo can generate images from text prompts using image generation models.",
+			"description": "When enabled, ModelHarbor can generate images from text prompts using image generation models.",
 			"providerLabel": "Provider",
 			"providerDescription": "Select which provider to use for image generation.",
 			"openRouterApiKeyLabel": "OpenRouter API Key",
@@ -870,15 +855,24 @@
 			"modelSelectionLabel": "Image Generation Model",
 			"modelSelectionDescription": "Select the model to use for image generation",
 			"warningMissingKey": "⚠️ OpenRouter API key is required for OpenRouter image generation. Please configure it above.",
+			"warningMissingLiteLlmKey": "⚠️ LiteLLM API key is required for LiteLLM image generation. Please configure it above.",
+			"liteLlmApiKeyLabel": "LiteLLM API Key",
+			"liteLlmApiKeyPlaceholder": "Enter your LiteLLM API key",
+			"liteLlmBaseUrlLabel": "LiteLLM Base URL",
+			"liteLlmBaseUrlPlaceholder": "http://localhost:4000",
 			"successConfigured": "✓ Image generation is configured and ready to use"
 		},
 		"RUN_SLASH_COMMAND": {
 			"name": "Enable model-initiated slash commands",
-			"description": "When enabled, Roo can run your slash commands to execute workflows."
+			"description": "When enabled, ModelHarbor can run your slash commands to execute workflows."
+		},
+		"MULTIPLE_NATIVE_TOOL_CALLS": {
+			"name": "Parallel tool calls",
+			"description": "When enabled, the native protocol can execute multiple tools in a single assistant message turn."
 		},
 		"CUSTOM_TOOLS": {
 			"name": "Enable custom tools",
-			"description": "When enabled, Roo can load and use custom TypeScript/JavaScript tools from your project's .roo/tools directory or ~/.roo/tools for global tools. Note: these tools will automatically be auto-approved.",
+			"description": "When enabled, ModelHarbor can load and use custom TypeScript/JavaScript tools from your project's .roo/tools directory or ~/.roo/tools for global tools. Note: these tools will automatically be auto-approved.",
 			"toolsHeader": "Available Custom Tools",
 			"noTools": "No custom tools loaded. Add .ts or .js files to your project's .roo/tools directory or ~/.roo/tools for global tools.",
 			"refreshButton": "Refresh",
@@ -890,7 +884,7 @@
 	},
 	"promptCaching": {
 		"label": "Disable prompt caching",
-		"description": "When checked, Roo will not use prompt caching for this model."
+		"description": "When checked, ModelHarbor will not use prompt caching for this model."
 	},
 	"temperature": {
 		"useCustom": "Use custom temperature",
@@ -920,7 +914,7 @@
 		}
 	},
 	"modelPicker": {
-		"automaticFetch": "The extension automatically fetches the latest list of models available on <serviceLink>{{serviceName}}</serviceLink>. If you're unsure which model to choose, Roo Code works best with <defaultModelLink>{{defaultModelId}}</defaultModelLink>. You can also try searching \"free\" for no-cost options currently available.",
+		"automaticFetch": "The extension automatically fetches the latest list of models available on <serviceLink>{{serviceName}}</serviceLink>. If you're unsure which model to choose, ModelHarbor Agent works best with <defaultModelLink>{{defaultModelId}}</defaultModelLink>. You can also try searching \"free\" for no-cost options currently available.",
 		"label": "Model",
 		"searchPlaceholder": "Search",
 		"noMatchFound": "No match found",
@@ -930,7 +924,7 @@
 	"footer": {
 		"telemetry": {
 			"label": "Allow anonymous error and usage reporting",
-			"description": "Help improve Roo Code by sending anonymous usage data and error reports. This telemetry does not collect code, prompts or personal information. See our <privacyLink>privacy policy</privacyLink> for more details."
+			"description": "Help improve ModelHarbor Agent by sending anonymous usage data and error reports. This telemetry does not collect code, prompts or personal information. See our <privacyLink>privacy policy</privacyLink> for more details."
 		},
 		"settings": {
 			"import": "Import",

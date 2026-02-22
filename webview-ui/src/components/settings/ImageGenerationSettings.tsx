@@ -12,6 +12,10 @@ interface ImageGenerationSettingsProps {
 	setImageGenerationProvider: (provider: ImageGenerationProvider) => void
 	setOpenRouterImageApiKey: (apiKey: string) => void
 	setImageGenerationSelectedModel: (model: string) => void
+	liteLlmImageApiKey?: string
+	liteLlmImageBaseUrl?: string
+	setLiteLlmImageApiKey?: (apiKey: string) => void
+	setLiteLlmImageBaseUrl?: (baseUrl: string) => void
 }
 
 export const ImageGenerationSettings = ({
@@ -23,6 +27,10 @@ export const ImageGenerationSettings = ({
 	setImageGenerationProvider,
 	setOpenRouterImageApiKey,
 	setImageGenerationSelectedModel,
+	liteLlmImageApiKey,
+	liteLlmImageBaseUrl,
+	setLiteLlmImageApiKey,
+	setLiteLlmImageBaseUrl,
 }: ImageGenerationSettingsProps) => {
 	const { t } = useAppTranslation()
 
@@ -82,13 +90,26 @@ export const ImageGenerationSettings = ({
 		setOpenRouterImageApiKey(value)
 	}
 
+	// Handle LiteLLM API key changes
+	const handleLiteLlmApiKeyChange = (value: string) => {
+		setLiteLlmImageApiKey?.(value)
+	}
+
+	// Handle LiteLLM Base URL changes
+	const handleLiteLlmBaseUrlChange = (value: string) => {
+		setLiteLlmImageBaseUrl?.(value)
+	}
+
 	// Handle model selection changes
 	const handleModelChange = (value: string) => {
 		setImageGenerationSelectedModel(value)
 	}
 
-	const requiresApiKey = currentProvider === "openrouter"
-	const isConfigured = !requiresApiKey || (requiresApiKey && openRouterImageApiKey)
+	const requiresApiKey = currentProvider === "openrouter" || currentProvider === "litellm"
+	const isConfigured =
+		currentProvider === "litellm"
+			? !!liteLlmImageApiKey
+			: !requiresApiKey || (requiresApiKey && !!openRouterImageApiKey)
 
 	return (
 		<div className="space-y-4">
@@ -119,6 +140,9 @@ export const ImageGenerationSettings = ({
 							</VSCodeOption>
 							<VSCodeOption value="openrouter" className="py-2 px-3">
 								OpenRouter
+							</VSCodeOption>
+							<VSCodeOption value="litellm" className="py-2 px-3">
+								LiteLLM
 							</VSCodeOption>
 						</VSCodeDropdown>
 						<p className="text-vscode-descriptionForeground text-xs mt-1">
@@ -152,6 +176,35 @@ export const ImageGenerationSettings = ({
 						</div>
 					)}
 
+					{/* API Configuration (only for LiteLLM) */}
+					{currentProvider === "litellm" && (
+						<>
+							<div>
+								<label className="block font-medium mb-1">
+									{t("settings:experimental.IMAGE_GENERATION.liteLlmBaseUrlLabel")}
+								</label>
+								<VSCodeTextField
+									value={liteLlmImageBaseUrl || ""}
+									onInput={(e: any) => handleLiteLlmBaseUrlChange(e.target.value)}
+									placeholder={t("settings:experimental.IMAGE_GENERATION.liteLlmBaseUrlPlaceholder")}
+									className="w-full"
+								/>
+							</div>
+							<div>
+								<label className="block font-medium mb-1">
+									{t("settings:experimental.IMAGE_GENERATION.liteLlmApiKeyLabel")}
+								</label>
+								<VSCodeTextField
+									value={liteLlmImageApiKey || ""}
+									onInput={(e: any) => handleLiteLlmApiKeyChange(e.target.value)}
+									placeholder={t("settings:experimental.IMAGE_GENERATION.liteLlmApiKeyPlaceholder")}
+									className="w-full"
+									type="password"
+								/>
+							</div>
+						</>
+					)}
+
 					{/* Model Selection */}
 					<div>
 						<label className="block font-medium mb-1">
@@ -175,7 +228,9 @@ export const ImageGenerationSettings = ({
 					{/* Status Message */}
 					{enabled && !isConfigured && (
 						<div className="p-2 bg-vscode-editorWarning-background text-vscode-editorWarning-foreground rounded text-sm">
-							{t("settings:experimental.IMAGE_GENERATION.warningMissingKey")}
+							{currentProvider === "litellm"
+								? t("settings:experimental.IMAGE_GENERATION.warningMissingLiteLlmKey")
+								: t("settings:experimental.IMAGE_GENERATION.warningMissingKey")}
 						</div>
 					)}
 
