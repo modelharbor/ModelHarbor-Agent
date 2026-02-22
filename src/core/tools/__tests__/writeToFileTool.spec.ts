@@ -108,6 +108,7 @@ describe.skip("writeToFileTool", () => {
 	let mockAskApproval: ReturnType<typeof vi.fn>
 	let mockHandleError: ReturnType<typeof vi.fn>
 	let mockPushToolResult: ReturnType<typeof vi.fn>
+	let mockRemoveClosingTag: ReturnType<typeof vi.fn>
 	let toolResult: ToolResponse | undefined
 
 	beforeEach(() => {
@@ -185,6 +186,7 @@ describe.skip("writeToFileTool", () => {
 
 		mockAskApproval = vi.fn().mockResolvedValue(true)
 		mockHandleError = vi.fn().mockResolvedValue(undefined)
+		mockRemoveClosingTag = vi.fn((tag, content) => content)
 
 		toolResult = undefined
 	})
@@ -217,10 +219,6 @@ describe.skip("writeToFileTool", () => {
 				content: testContent,
 				...params,
 			},
-			nativeArgs: {
-				path: (params.path ?? testFilePath) as any,
-				content: (params.content ?? testContent) as any,
-			},
 			partial: isPartial,
 		}
 
@@ -232,6 +230,8 @@ describe.skip("writeToFileTool", () => {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		return toolResult

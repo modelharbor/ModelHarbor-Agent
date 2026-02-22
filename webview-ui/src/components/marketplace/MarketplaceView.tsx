@@ -93,7 +93,7 @@ export function MarketplaceView({ stateManager, onDone, targetTab }: Marketplace
 								onClick={() => onDone?.()}
 								aria-label={t("settings:back")}>
 								<ArrowLeft />
-								<span className="sr-only">{t("settings:back")}</span>
+							<span className="sr-only">{t("settings:back")}</span>
 							</Button>
 							<h3 className="font-bold m-0">{t("marketplace:title")}</h3>
 						</div>

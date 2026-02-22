@@ -315,6 +315,7 @@ describe("VercelAiGatewayHandler", () => {
 				const messageGenerator = handler.createMessage("test prompt", [], {
 					taskId: "test-task-id",
 					tools: testTools,
+					toolProtocol: "native",
 				})
 				await messageGenerator.next()
 
@@ -338,6 +339,7 @@ describe("VercelAiGatewayHandler", () => {
 				const messageGenerator = handler.createMessage("test prompt", [], {
 					taskId: "test-task-id",
 					tools: testTools,
+					toolProtocol: "native",
 					tool_choice: "auto",
 				})
 				await messageGenerator.next()
@@ -349,12 +351,13 @@ describe("VercelAiGatewayHandler", () => {
 				)
 			})
 
-			it("should set parallel_tool_calls when parallelToolCalls is enabled", async () => {
+			it("should set parallel_tool_calls when toolProtocol is native", async () => {
 				const handler = new VercelAiGatewayHandler(mockOptions)
 
 				const messageGenerator = handler.createMessage("test prompt", [], {
 					taskId: "test-task-id",
 					tools: testTools,
+					toolProtocol: "native",
 					parallelToolCalls: true,
 				})
 				await messageGenerator.next()
@@ -366,19 +369,19 @@ describe("VercelAiGatewayHandler", () => {
 				)
 			})
 
-			it("should include parallel_tool_calls: true by default", async () => {
+			it("should default parallel_tool_calls to false", async () => {
 				const handler = new VercelAiGatewayHandler(mockOptions)
 
 				const messageGenerator = handler.createMessage("test prompt", [], {
 					taskId: "test-task-id",
 					tools: testTools,
+					toolProtocol: "native",
 				})
 				await messageGenerator.next()
 
 				expect(mockCreate).toHaveBeenCalledWith(
 					expect.objectContaining({
-						tools: expect.any(Array),
-						parallel_tool_calls: true,
+						parallel_tool_calls: false,
 					}),
 				)
 			})
@@ -442,6 +445,7 @@ describe("VercelAiGatewayHandler", () => {
 				const stream = handler.createMessage("test prompt", [], {
 					taskId: "test-task-id",
 					tools: testTools,
+					toolProtocol: "native",
 				})
 
 				const chunks = []

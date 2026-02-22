@@ -13,7 +13,6 @@ import { t } from "../../i18n"
 export class CodeIndexOrchestrator {
 	private _fileWatcherSubscriptions: vscode.Disposable[] = []
 	private _isProcessing: boolean = false
-	private _abortController: AbortController | null = null
 
 	constructor(
 		private readonly configManager: CodeIndexConfigManager,
@@ -116,8 +115,6 @@ export class CodeIndexOrchestrator {
 		}
 
 		this._isProcessing = true
-		this._abortController = new AbortController()
-		const signal = this._abortController.signal
 		this.stateManager.setSystemState("Indexing", "Initializing services...")
 
 		// Track whether we successfully connected to Qdrant and started indexing
@@ -175,15 +172,7 @@ export class CodeIndexOrchestrator {
 					},
 					handleBlocksIndexed,
 					handleFileParsed,
-					signal,
 				)
-
-				if (signal.aborted) {
-					await this.cacheManager.flush()
-					this.stopWatcher()
-					this.stateManager.setSystemState("Standby", t("embeddings:orchestrator.indexingStopped"))
-					return
-				}
 
 				if (!result) {
 					throw new Error("Incremental scan failed, is scanner initialized?")
@@ -236,15 +225,7 @@ export class CodeIndexOrchestrator {
 					},
 					handleBlocksIndexed,
 					handleFileParsed,
-					signal,
 				)
-
-				if (signal.aborted) {
-					await this.cacheManager.flush()
-					this.stopWatcher()
-					this.stateManager.setSystemState("Standby", t("embeddings:orchestrator.indexingStopped"))
-					return
-				}
 
 				if (!result) {
 					throw new Error("Scan failed, is scanner initialized?")
@@ -295,15 +276,6 @@ export class CodeIndexOrchestrator {
 				this.stateManager.setSystemState("Indexed", t("embeddings:orchestrator.fileWatcherStarted"))
 			}
 		} catch (error: any) {
-			// Handle abort gracefully — not an error, just a user-initiated stop
-			if (error?.name === "AbortError" || signal.aborted) {
-				console.log("[CodeIndexOrchestrator] Indexing aborted by user.")
-				await this.cacheManager.flush()
-				this.stopWatcher()
-				this.stateManager.setSystemState("Standby", t("embeddings:orchestrator.indexingStopped"))
-				return
-			}
-
 			console.error("[CodeIndexOrchestrator] Error during indexing:", error)
 
 			if (indexingStarted) {
@@ -338,20 +310,7 @@ export class CodeIndexOrchestrator {
 			this.stopWatcher()
 		} finally {
 			this._isProcessing = false
-			this._abortController = null
 		}
-	}
-
-	/**
-	 * Stops any in-progress indexing by aborting the scan and stopping the file watcher.
-	 */
-	public stopIndexing(): void {
-		if (this._abortController) {
-			this.stateManager.setSystemState("Stopping", t("embeddings:orchestrator.indexingStoppedPartial"))
-			this._abortController.abort()
-			this._abortController = null
-		}
-		this.stopWatcher()
 	}
 
 	/**
@@ -362,7 +321,7 @@ export class CodeIndexOrchestrator {
 		this._fileWatcherSubscriptions.forEach((sub) => sub.dispose())
 		this._fileWatcherSubscriptions = []
 
-		if (this.stateManager.state !== "Error" && this.stateManager.state !== "Stopping") {
+		if (this.stateManager.state !== "Error") {
 			this.stateManager.setSystemState("Standby", t("embeddings:orchestrator.fileWatcherStopped"))
 		}
 		this._isProcessing = false

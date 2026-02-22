@@ -3,15 +3,17 @@ import * as path from "path"
 import * as fs from "fs/promises"
 import * as diff from "diff"
 import stripBom from "strip-bom"
+import { XMLBuilder } from "fast-xml-parser"
 import delay from "delay"
 
-import { type ClineSayTool, DEFAULT_WRITE_DELAY_MS } from "@roo-code/types"
+import { type ClineSayTool, DEFAULT_WRITE_DELAY_MS, isNativeProtocol } from "@roo-code/types"
 
 import { createDirectoriesForFile } from "../../utils/fs"
 import { arePathsEqual, getReadablePath } from "../../utils/path"
 import { formatResponse } from "../../core/prompts/responses"
 import { diagnosticsToProblemsString, getNewDiagnostics } from "../diagnostics"
 import { Task } from "../../core/task/Task"
+import { resolveToolProtocol } from "../../utils/resolveToolProtocol"
 
 import { DecorationController } from "./DecorationController"
 
@@ -98,11 +100,7 @@ export class DiffViewProvider {
 
 		for (const tab of tabs) {
 			if (!tab.isDirty) {
-				try {
-					await vscode.window.tabGroups.close(tab)
-				} catch (err) {
-					console.error(`Failed to close tab ${tab.label}`, err)
-				}
+				await vscode.window.tabGroups.close(tab)
 			}
 			this.documentWasOpen = true
 		}
@@ -308,7 +306,7 @@ export class DiffViewProvider {
 	 * @param task Task instance to get protocol info
 	 * @param cwd Current working directory for path resolution
 	 * @param isNewFile Whether this is a new file or an existing file being modified
-	 * @returns Formatted message (JSON)
+	 * @returns Formatted message (JSON for native protocol, XML for legacy)
 	 */
 	async pushToolWriteResult(task: Task, cwd: string, isNewFile: boolean): Promise<string> {
 		if (!this.relPath) {
@@ -328,6 +326,10 @@ export class DiffViewProvider {
 			await task.say("user_feedback_diff", JSON.stringify(say))
 		}
 
+		// Check which protocol we're using - use the task's locked protocol for consistency
+		const toolProtocol = resolveToolProtocol(task.apiConfiguration, task.api.getModel().info)
+		const useNative = isNativeProtocol(toolProtocol)
+
 		// Build notices array
 		const notices = [
 			"You do not need to re-read the file, as you have seen all changes",
@@ -339,27 +341,60 @@ export class DiffViewProvider {
 				: []),
 		]
 
-		const result: {
-			path: string
-			operation: "created" | "modified"
-			notice: string
-			user_edits?: string
-			problems?: string
-		} = {
-			path: this.relPath,
-			operation: isNewFile ? "created" : "modified",
-			notice: notices.join(" "),
-		}
+		if (useNative) {
+			// Return JSON for native protocol
+			const result: any = {
+				path: this.relPath,
+				operation: isNewFile ? "created" : "modified",
+				notice: notices.join(" "),
+			}
 
-		if (this.userEdits) {
-			result.user_edits = this.userEdits
-		}
+			if (this.userEdits) {
+				result.user_edits = this.userEdits
+			}
 
-		if (this.newProblemsMessage) {
-			result.problems = this.newProblemsMessage
-		}
+			if (this.newProblemsMessage) {
+				result.problems = this.newProblemsMessage
+			}
 
-		return JSON.stringify(result)
+			return JSON.stringify(result)
+		} else {
+			// Build XML response for legacy protocol
+			const xmlObj = {
+				file_write_result: {
+					path: this.relPath,
+					operation: isNewFile ? "created" : "modified",
+					user_edits: this.userEdits ? this.userEdits : undefined,
+					problems: this.newProblemsMessage || undefined,
+					notice: {
+						i: notices,
+					},
+				},
+			}
+
+			const builder = new XMLBuilder({
+				format: true,
+				indentBy: "",
+				suppressEmptyNode: true,
+				processEntities: false,
+				tagValueProcessor: (name, value) => {
+					if (typeof value === "string") {
+						// Only escape <, >, and & characters
+						return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+					}
+					return value
+				},
+				attributeValueProcessor: (name, value) => {
+					if (typeof value === "string") {
+						// Only escape <, >, and & characters
+						return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+					}
+					return value
+				},
+			})
+
+			return builder.build(xmlObj)
+		}
 	}
 
 	async revertChanges(): Promise<void> {

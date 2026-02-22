@@ -1,5 +1,4 @@
 import type { ProviderName, ReasoningEffortExtended } from "@roo-code/types"
-import type { OutputFormat } from "./json-events.js"
 
 export const supportedProviders = [
 	"anthropic",
@@ -19,22 +18,19 @@ export function isSupportedProvider(provider: string): provider is SupportedProv
 export type ReasoningEffortFlagOptions = ReasoningEffortExtended | "unspecified" | "disabled"
 
 export type FlagOptions = {
-	promptFile?: string
-	workspace?: string
-	print: boolean
-	stdinPromptStream: boolean
+	prompt?: string
 	extension?: string
 	debug: boolean
-	requireApproval: boolean
-	exitOnError: boolean
+	yes: boolean
 	apiKey?: string
-	provider?: SupportedProvider
+	provider: SupportedProvider
 	model?: string
 	mode?: string
 	reasoningEffort?: ReasoningEffortFlagOptions
+	exitOnComplete: boolean
+	waitOnComplete: boolean
 	ephemeral: boolean
-	oneshot: boolean
-	outputFormat?: OutputFormat
+	tui: boolean
 }
 
 export enum OnboardingProviderChoice {
@@ -44,24 +40,10 @@ export enum OnboardingProviderChoice {
 
 export interface OnboardingResult {
 	choice: OnboardingProviderChoice
-	token?: string
+	authenticated?: boolean
 	skipped: boolean
 }
 
 export interface CliSettings {
 	onboardingProviderChoice?: OnboardingProviderChoice
-	/** Default mode to use (e.g., "code", "architect", "ask", "debug") */
-	mode?: string
-	/** Default provider to use */
-	provider?: SupportedProvider
-	/** Default model to use */
-	model?: string
-	/** Default reasoning effort level */
-	reasoningEffort?: ReasoningEffortFlagOptions
-	/** Require manual approval for tools/commands/browser/MCP actions */
-	requireApproval?: boolean
-	/** @deprecated Legacy inverse setting kept for backward compatibility */
-	dangerouslySkipPermissions?: boolean
-	/** Exit upon task completion */
-	oneshot?: boolean
 }

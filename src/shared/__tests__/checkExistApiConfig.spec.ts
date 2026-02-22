@@ -55,6 +55,7 @@ describe("checkExistKey", () => {
 			mistralApiKey: undefined,
 			vsCodeLmModelSelector: undefined,
 			requestyApiKey: undefined,
+			unboundApiKey: undefined,
 		}
 		expect(checkExistKey(config)).toBe(false)
 	})
@@ -62,6 +63,13 @@ describe("checkExistKey", () => {
 	it("should return true for fake-ai provider without API key", () => {
 		const config: ProviderSettings = {
 			apiProvider: "fake-ai",
+		}
+		expect(checkExistKey(config)).toBe(true)
+	})
+
+	it("should return true for claude-code provider without API key", () => {
+		const config: ProviderSettings = {
+			apiProvider: "claude-code",
 		}
 		expect(checkExistKey(config)).toBe(true)
 	})

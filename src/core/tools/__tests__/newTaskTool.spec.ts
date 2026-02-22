@@ -1,6 +1,6 @@
 // npx vitest core/tools/__tests__/newTaskTool.spec.ts
 
-import type { AskApproval, HandleError, NativeToolArgs, ToolUse } from "../../../shared/tools"
+import type { AskApproval, HandleError } from "../../../shared/tools"
 
 // Mock vscode module
 vi.mock("vscode", () => ({
@@ -67,6 +67,7 @@ type MockClineInstance = { taskId: string }
 const mockAskApproval = vi.fn<AskApproval>()
 const mockHandleError = vi.fn<HandleError>()
 const mockPushToolResult = vi.fn()
+const mockRemoveClosingTag = vi.fn((_name: string, value: string | undefined) => value ?? "")
 const mockEmit = vi.fn()
 const mockRecordToolError = vi.fn()
 const mockSayAndCreateMissingParamError = vi.fn()
@@ -108,20 +109,9 @@ const mockCline = {
 
 // Import the class to test AFTER mocks are set up
 import { newTaskTool } from "../NewTaskTool"
+import type { ToolUse } from "../../../shared/tools"
 import { getModeBySlug } from "../../../shared/modes"
 import * as vscode from "vscode"
-
-const withNativeArgs = (block: ToolUse<"new_task">): ToolUse<"new_task"> => ({
-	...block,
-	// Native tool calling: `nativeArgs` is the source of truth for tool execution.
-	// These tests intentionally exercise missing-param behavior, so we allow undefined
-	// values and let the tool's runtime validation handle it.
-	nativeArgs: {
-		mode: block.params.mode,
-		message: block.params.message,
-		todos: block.params.todos,
-	} as unknown as NativeToolArgs["new_task"],
-})
 
 describe("newTaskTool", () => {
 	beforeEach(() => {
@@ -144,7 +134,7 @@ describe("newTaskTool", () => {
 	})
 
 	it("should correctly un-escape \\\\@ to \\@ in the message passed to the new task", async () => {
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use", // Add required 'type' property
 			name: "new_task", // Correct property name
 			params: {
@@ -155,10 +145,12 @@ describe("newTaskTool", () => {
 			partial: false,
 		}
 
-		await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		// Verify askApproval was called
@@ -179,7 +171,7 @@ describe("newTaskTool", () => {
 	})
 
 	it("should not un-escape single escaped \@", async () => {
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use", // Add required 'type' property
 			name: "new_task", // Correct property name
 			params: {
@@ -190,10 +182,12 @@ describe("newTaskTool", () => {
 			partial: false,
 		}
 
-		await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		expect(mockStartSubtask).toHaveBeenCalledWith(
@@ -204,7 +198,7 @@ describe("newTaskTool", () => {
 	})
 
 	it("should not un-escape non-escaped @", async () => {
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use", // Add required 'type' property
 			name: "new_task", // Correct property name
 			params: {
@@ -215,10 +209,12 @@ describe("newTaskTool", () => {
 			partial: false,
 		}
 
-		await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		expect(mockStartSubtask).toHaveBeenCalledWith(
@@ -229,7 +225,7 @@ describe("newTaskTool", () => {
 	})
 
 	it("should handle mixed escaping scenarios", async () => {
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use", // Add required 'type' property
 			name: "new_task", // Correct property name
 			params: {
@@ -240,10 +236,12 @@ describe("newTaskTool", () => {
 			partial: false,
 		}
 
-		await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		expect(mockStartSubtask).toHaveBeenCalledWith(
@@ -254,7 +252,7 @@ describe("newTaskTool", () => {
 	})
 
 	it("should handle missing todos parameter gracefully (backward compatibility)", async () => {
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use",
 			name: "new_task",
 			params: {
@@ -265,10 +263,12 @@ describe("newTaskTool", () => {
 			partial: false,
 		}
 
-		await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		// Should NOT error when todos is missing
@@ -284,7 +284,7 @@ describe("newTaskTool", () => {
 	})
 
 	it("should work with todos parameter when provided", async () => {
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use",
 			name: "new_task",
 			params: {
@@ -295,10 +295,12 @@ describe("newTaskTool", () => {
 			partial: false,
 		}
 
-		await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		// Should parse and include todos when provided
@@ -315,7 +317,7 @@ describe("newTaskTool", () => {
 	})
 
 	it("should error when mode parameter is missing", async () => {
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use",
 			name: "new_task",
 			params: {
@@ -326,10 +328,12 @@ describe("newTaskTool", () => {
 			partial: false,
 		}
 
-		await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		expect(mockSayAndCreateMissingParamError).toHaveBeenCalledWith("new_task", "mode")
@@ -338,7 +342,7 @@ describe("newTaskTool", () => {
 	})
 
 	it("should error when message parameter is missing", async () => {
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use",
 			name: "new_task",
 			params: {
@@ -349,10 +353,12 @@ describe("newTaskTool", () => {
 			partial: false,
 		}
 
-		await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		expect(mockSayAndCreateMissingParamError).toHaveBeenCalledWith("new_task", "message")
@@ -361,7 +367,7 @@ describe("newTaskTool", () => {
 	})
 
 	it("should parse todos with different statuses correctly", async () => {
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use",
 			name: "new_task",
 			params: {
@@ -372,10 +378,12 @@ describe("newTaskTool", () => {
 			partial: false,
 		}
 
-		await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		expect(mockStartSubtask).toHaveBeenCalledWith(
@@ -397,7 +405,7 @@ describe("newTaskTool", () => {
 				get: mockGet,
 			} as any)
 
-			const block: ToolUse<"new_task"> = {
+			const block: ToolUse = {
 				type: "tool_use",
 				name: "new_task",
 				params: {
@@ -408,10 +416,12 @@ describe("newTaskTool", () => {
 				partial: false,
 			}
 
-			await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+			await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			// Should NOT error when todos is missing and setting is disabled
@@ -433,7 +443,7 @@ describe("newTaskTool", () => {
 				get: mockGet,
 			} as any)
 
-			const block: ToolUse<"new_task"> = {
+			const block: ToolUse = {
 				type: "tool_use",
 				name: "new_task",
 				params: {
@@ -444,10 +454,12 @@ describe("newTaskTool", () => {
 				partial: false,
 			}
 
-			await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+			await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			// Should error when todos is missing and setting is enabled
@@ -469,7 +481,7 @@ describe("newTaskTool", () => {
 				get: mockGet,
 			} as any)
 
-			const block: ToolUse<"new_task"> = {
+			const block: ToolUse = {
 				type: "tool_use",
 				name: "new_task",
 				params: {
@@ -480,10 +492,12 @@ describe("newTaskTool", () => {
 				partial: false,
 			}
 
-			await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+			await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			// Should NOT error when todos is provided and setting is enabled
@@ -511,7 +525,7 @@ describe("newTaskTool", () => {
 				get: mockGet,
 			} as any)
 
-			const block: ToolUse<"new_task"> = {
+			const block: ToolUse = {
 				type: "tool_use",
 				name: "new_task",
 				params: {
@@ -522,10 +536,12 @@ describe("newTaskTool", () => {
 				partial: false,
 			}
 
-			await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+			await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			// Should NOT error when todos is empty string and setting is enabled
@@ -546,7 +562,7 @@ describe("newTaskTool", () => {
 			} as any)
 			vi.mocked(vscode.workspace.getConfiguration).mockImplementation(mockGetConfiguration)
 
-			const block: ToolUse<"new_task"> = {
+			const block: ToolUse = {
 				type: "tool_use",
 				name: "new_task",
 				params: {
@@ -556,10 +572,12 @@ describe("newTaskTool", () => {
 				partial: false,
 			}
 
-			await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+			await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			// Verify that VSCode configuration was accessed with Package.name
@@ -579,7 +597,7 @@ describe("newTaskTool", () => {
 			const pkg = await import("../../../shared/package")
 			;(pkg.Package as any).name = "roo-code-nightly"
 
-			const block: ToolUse<"new_task"> = {
+			const block: ToolUse = {
 				type: "tool_use",
 				name: "new_task",
 				params: {
@@ -589,10 +607,12 @@ describe("newTaskTool", () => {
 				partial: false,
 			}
 
-			await newTaskTool.handle(mockCline as any, withNativeArgs(block), {
+			await newTaskTool.handle(mockCline as any, block as ToolUse<"new_task">, {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			// Assert: configuration was read using the dynamic nightly namespace
@@ -636,7 +656,7 @@ describe("newTaskTool delegation flow", () => {
 			},
 		}
 
-		const block: ToolUse<"new_task"> = {
+		const block: ToolUse = {
 			type: "tool_use",
 			name: "new_task",
 			params: {
@@ -648,10 +668,12 @@ describe("newTaskTool delegation flow", () => {
 		}
 
 		// Act
-		await newTaskTool.handle(localCline as any, withNativeArgs(block), {
+		await newTaskTool.handle(localCline as any, block as ToolUse<"new_task">, {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "xml",
 		})
 
 		// Assert: provider method called with correct params

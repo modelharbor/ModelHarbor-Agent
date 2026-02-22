@@ -80,11 +80,9 @@ describe("LmStudioHandler Native Tools", () => {
 							}),
 						}),
 					]),
+					parallel_tool_calls: false,
 				}),
 			)
-			// parallel_tool_calls should be true by default when not explicitly set
-			const callArgs = mockCreate.mock.calls[0][0]
-			expect(callArgs).toHaveProperty("parallel_tool_calls", true)
 		})
 
 		it("should include tool_choice when provided", async () => {
@@ -110,7 +108,7 @@ describe("LmStudioHandler Native Tools", () => {
 			)
 		})
 
-		it("should always include tools and tool_choice in request (tools are always present after PR #10841)", async () => {
+		it("should not include tools when toolProtocol is xml", async () => {
 			mockCreate.mockImplementationOnce(() => ({
 				[Symbol.asyncIterator]: async function* () {
 					yield {
@@ -121,15 +119,14 @@ describe("LmStudioHandler Native Tools", () => {
 
 			const stream = handler.createMessage("test prompt", [], {
 				taskId: "test-task-id",
+				tools: testTools,
+				toolProtocol: "xml",
 			})
 			await stream.next()
 
 			const callArgs = mockCreate.mock.calls[mockCreate.mock.calls.length - 1][0]
-			// Tools are now always present (minimum 6 from ALWAYS_AVAILABLE_TOOLS)
-			expect(callArgs).toHaveProperty("tools")
-			expect(callArgs).toHaveProperty("tool_choice")
-			// parallel_tool_calls should be true by default when not explicitly set
-			expect(callArgs).toHaveProperty("parallel_tool_calls", true)
+			expect(callArgs).not.toHaveProperty("tools")
+			expect(callArgs).not.toHaveProperty("tool_choice")
 		})
 
 		it("should yield tool_call_partial chunks during streaming", async () => {
@@ -283,7 +280,7 @@ describe("LmStudioHandler Native Tools", () => {
 			expect(endChunks[0].id).toBe("call_lmstudio_test")
 		})
 
-		it("should work with parallel tool calls disabled (sends false)", async () => {
+		it("should work with parallel tool calls disabled", async () => {
 			mockCreate.mockImplementationOnce(() => ({
 				[Symbol.asyncIterator]: async function* () {
 					yield {
@@ -299,9 +296,11 @@ describe("LmStudioHandler Native Tools", () => {
 			})
 			await stream.next()
 
-			// When parallelToolCalls is false, the parameter should be sent as false
-			const callArgs = mockCreate.mock.calls[0][0]
-			expect(callArgs).toHaveProperty("parallel_tool_calls", false)
+			expect(mockCreate).toHaveBeenCalledWith(
+				expect.objectContaining({
+					parallel_tool_calls: false,
+				}),
+			)
 		})
 
 		it("should handle reasoning content alongside tool calls", async () => {

@@ -42,13 +42,7 @@ export class XAIHandler extends BaseProvider implements SingleCompletionHandler 
 				: xaiDefaultModelId
 
 		const info = xaiModels[id]
-		const params = getModelParams({
-			format: "openai",
-			modelId: id,
-			model: info,
-			settings: this.options,
-			defaultTemperature: XAI_DEFAULT_TEMPERATURE,
-		})
+		const params = getModelParams({ format: "openai", modelId: id, model: info, settings: this.options })
 		return { id, info, ...params }
 	}
 
@@ -58,6 +52,11 @@ export class XAIHandler extends BaseProvider implements SingleCompletionHandler 
 		metadata?: ApiHandlerCreateMessageMetadata,
 	): ApiStream {
 		const { id: modelId, info: modelInfo, reasoning } = this.getModel()
+
+		// Check if model supports native tools and tools are provided with native protocol
+		const supportsNativeTools = modelInfo.supportsNativeTools ?? false
+		const useNativeTools =
+			supportsNativeTools && metadata?.tools && metadata.tools.length > 0 && metadata?.toolProtocol !== "xml"
 
 		// Use the OpenAI-compatible API.
 		const requestOptions = {
@@ -71,9 +70,9 @@ export class XAIHandler extends BaseProvider implements SingleCompletionHandler 
 			stream: true as const,
 			stream_options: { include_usage: true },
 			...(reasoning && reasoning),
-			tools: this.convertToolsForOpenAI(metadata?.tools),
-			tool_choice: metadata?.tool_choice,
-			parallel_tool_calls: metadata?.parallelToolCalls ?? true,
+			...(useNativeTools && { tools: this.convertToolsForOpenAI(metadata.tools) }),
+			...(useNativeTools && metadata.tool_choice && { tool_choice: metadata.tool_choice }),
+			...(useNativeTools && { parallel_tool_calls: metadata?.parallelToolCalls ?? false }),
 		}
 
 		let stream

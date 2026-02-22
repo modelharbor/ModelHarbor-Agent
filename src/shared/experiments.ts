@@ -1,9 +1,12 @@
 import type { AssertEqual, Equals, Keys, Values, ExperimentId, Experiments } from "@roo-code/types"
 
 export const EXPERIMENT_IDS = {
+	MULTI_FILE_APPLY_DIFF: "multiFileApplyDiff",
+	POWER_STEERING: "powerSteering",
 	PREVENT_FOCUS_DISRUPTION: "preventFocusDisruption",
 	IMAGE_GENERATION: "imageGeneration",
 	RUN_SLASH_COMMAND: "runSlashCommand",
+	MULTIPLE_NATIVE_TOOL_CALLS: "multipleNativeToolCalls",
 	CUSTOM_TOOLS: "customTools",
 } as const satisfies Record<string, ExperimentId>
 
@@ -16,9 +19,12 @@ interface ExperimentConfig {
 }
 
 export const experimentConfigsMap: Record<ExperimentKey, ExperimentConfig> = {
-	PREVENT_FOCUS_DISRUPTION: { enabled: false },
+	MULTI_FILE_APPLY_DIFF: { enabled: true },
+	POWER_STEERING: { enabled: false },
+	PREVENT_FOCUS_DISRUPTION: { enabled: true },
 	IMAGE_GENERATION: { enabled: false },
 	RUN_SLASH_COMMAND: { enabled: false },
+	MULTIPLE_NATIVE_TOOL_CALLS: { enabled: false },
 	CUSTOM_TOOLS: { enabled: false },
 }
 

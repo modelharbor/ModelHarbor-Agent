@@ -205,11 +205,14 @@ describe("addCustomInstructions", () => {
 			false, // supportsImages
 			undefined, // mcpHub
 			undefined, // diffStrategy
+			undefined, // browserViewportSize
 			"architect", // mode
 			undefined, // customModePrompts
 			undefined, // customModes
 			undefined, // globalCustomInstructions
+			undefined, // diffEnabled
 			undefined, // experiments
+			true, // enableMcpServerCreation
 			undefined, // language
 			undefined, // rooIgnoreInstructions
 			undefined, // partialReadsEnabled
@@ -225,17 +228,46 @@ describe("addCustomInstructions", () => {
 			false, // supportsImages
 			undefined, // mcpHub
 			undefined, // diffStrategy
+			undefined, // browserViewportSize
 			"ask", // mode
 			undefined, // customModePrompts
 			undefined, // customModes
 			undefined, // globalCustomInstructions
+			undefined, // diffEnabled
 			undefined, // experiments
+			true, // enableMcpServerCreation
 			undefined, // language
 			undefined, // rooIgnoreInstructions
 			undefined, // partialReadsEnabled
 		)
 
 		expect(prompt).toMatchFileSnapshot("./__snapshots__/add-custom-instructions/ask-mode-prompt.snap")
+	})
+
+	it("should include MCP server creation info when enabled", async () => {
+		const mockMcpHub = createMockMcpHub(true)
+
+		const prompt = await SYSTEM_PROMPT(
+			mockContext,
+			"/test/path",
+			false, // supportsImages
+			mockMcpHub, // mcpHub
+			undefined, // diffStrategy
+			undefined, // browserViewportSize
+			defaultModeSlug, // mode
+			undefined, // customModePrompts
+			undefined, // customModes,
+			undefined, // globalCustomInstructions
+			undefined, // diffEnabled
+			undefined, // experiments
+			true, // enableMcpServerCreation
+			undefined, // language
+			undefined, // rooIgnoreInstructions
+			undefined, // partialReadsEnabled
+		)
+
+		expect(prompt).toContain("Creating an MCP Server")
+		expect(prompt).toMatchFileSnapshot("./__snapshots__/add-custom-instructions/mcp-server-creation-enabled.snap")
 	})
 
 	it("should exclude MCP server creation info when disabled", async () => {
@@ -247,11 +279,14 @@ describe("addCustomInstructions", () => {
 			false, // supportsImages
 			mockMcpHub, // mcpHub
 			undefined, // diffStrategy
+			undefined, // browserViewportSize
 			defaultModeSlug, // mode
 			undefined, // customModePrompts
 			undefined, // customModes,
 			undefined, // globalCustomInstructions
+			undefined, // diffEnabled
 			undefined, // experiments
+			false, // enableMcpServerCreation
 			undefined, // language
 			undefined, // rooIgnoreInstructions
 			undefined, // partialReadsEnabled
@@ -259,6 +294,29 @@ describe("addCustomInstructions", () => {
 
 		expect(prompt).not.toContain("Creating an MCP Server")
 		expect(prompt).toMatchFileSnapshot("./__snapshots__/add-custom-instructions/mcp-server-creation-disabled.snap")
+	})
+
+	it("should include partial read instructions when partialReadsEnabled is true", async () => {
+		const prompt = await SYSTEM_PROMPT(
+			mockContext,
+			"/test/path",
+			false, // supportsImages
+			undefined, // mcpHub
+			undefined, // diffStrategy
+			undefined, // browserViewportSize
+			defaultModeSlug, // mode
+			undefined, // customModePrompts
+			undefined, // customModes,
+			undefined, // globalCustomInstructions
+			undefined, // diffEnabled
+			undefined, // experiments
+			true, // enableMcpServerCreation
+			undefined, // language
+			undefined, // rooIgnoreInstructions
+			true, // partialReadsEnabled
+		)
+
+		expect(prompt).toMatchFileSnapshot("./__snapshots__/add-custom-instructions/partial-reads-enabled.snap")
 	})
 
 	it("should prioritize mode-specific rules for code mode", async () => {

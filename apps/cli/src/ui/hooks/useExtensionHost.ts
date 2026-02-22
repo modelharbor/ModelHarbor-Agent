@@ -7,9 +7,9 @@ import { ExtensionHostInterface, ExtensionHostOptions } from "@/agent/index.js"
 
 import { useCLIStore } from "../store.js"
 
-// TODO: Unify with TUIAppProps?
 export interface UseExtensionHostOptions extends ExtensionHostOptions {
 	initialPrompt?: string
+	exitOnComplete?: boolean
 	onExtensionMessage: (msg: ExtensionMessage) => void
 	createExtensionHost: (options: ExtensionHostOptions) => ExtensionHostInterface
 }
@@ -42,7 +42,6 @@ export function useExtensionHost({
 	extensionPath,
 	nonInteractive,
 	ephemeral,
-	debug,
 	exitOnComplete,
 	onExtensionMessage,
 	createExtensionHost,
@@ -74,10 +73,8 @@ export function useExtensionHost({
 					workspacePath,
 					extensionPath,
 					nonInteractive,
-					ephemeral,
-					debug,
-					exitOnComplete,
 					disableOutput: true,
+					ephemeral,
 				})
 
 				hostRef.current = host

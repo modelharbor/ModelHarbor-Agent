@@ -31,8 +31,6 @@ interface SearchableSelectProps {
 	emptyMessage: string
 	className?: string
 	disabled?: boolean
-	/** Maximum items to display when not searching. Defaults to 50 for performance. */
-	maxDisplayItems?: number
 	"data-testid"?: string
 }
 
@@ -45,7 +43,6 @@ export function SearchableSelect({
 	emptyMessage,
 	className,
 	disabled,
-	maxDisplayItems = 50,
 	"data-testid": dataTestId,
 }: SearchableSelectProps) {
 	const [open, setOpen] = React.useState(false)
@@ -57,34 +54,11 @@ export function SearchableSelect({
 	// Find the selected option
 	const selectedOption = options.find((option) => option.value === value)
 
-	// Filter options based on search, always limit for performance.
-	// Ensure the selected option remains visible even when truncating.
+	// Filter options based on search
 	const filteredOptions = React.useMemo(() => {
-		const normalizedSearch = searchValue.trim().toLowerCase()
-		const matchingOptions =
-			normalizedSearch.length === 0
-				? options
-				: options.filter((option) => option.label.toLowerCase().includes(normalizedSearch))
-
-		if (matchingOptions.length <= maxDisplayItems) {
-			return matchingOptions
-		}
-
-		const limitedOptions = matchingOptions.slice(0, maxDisplayItems)
-		if (!selectedOption) {
-			return limitedOptions
-		}
-
-		// If the selected option would be truncated away, prepend it (but only if it matches the current filter).
-		if (
-			matchingOptions.includes(selectedOption) &&
-			!limitedOptions.some((option) => option.value === selectedOption.value)
-		) {
-			return [selectedOption, ...limitedOptions.slice(0, maxDisplayItems - 1)]
-		}
-
-		return limitedOptions
-	}, [options, searchValue, maxDisplayItems, selectedOption])
+		if (!searchValue) return options
+		return options.filter((option) => option.label.toLowerCase().includes(searchValue.toLowerCase()))
+	}, [options, searchValue])
 
 	// Cleanup timeout on unmount
 	React.useEffect(() => {
@@ -155,7 +129,7 @@ export function SearchableSelect({
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
-				<Command shouldFilter={false}>
+				<Command>
 					<div className="relative">
 						<CommandInput
 							ref={searchInputRef}

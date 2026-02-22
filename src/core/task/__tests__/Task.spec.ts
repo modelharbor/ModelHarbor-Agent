@@ -14,6 +14,8 @@ import { ApiStreamChunk } from "../../../api/transform/stream"
 import { ContextProxy } from "../../config/ContextProxy"
 import { processUserContentMentions } from "../../mentions/processUserContentMentions"
 import { MultiSearchReplaceDiffStrategy } from "../../diff/strategies/multi-search-replace"
+import { MultiFileSearchReplaceDiffStrategy } from "../../diff/strategies/multi-file-search-replace"
+import { EXPERIMENT_IDS } from "../../../shared/experiments"
 
 // Mock delay before any imports that might use it
 vi.mock("delay", () => ({
@@ -64,8 +66,6 @@ vi.mock("fs/promises", async (importOriginal) => {
 		}),
 		unlink: vi.fn().mockResolvedValue(undefined),
 		rmdir: vi.fn().mockResolvedValue(undefined),
-		stat: vi.fn().mockRejectedValue({ code: "ENOENT" }),
-		readdir: vi.fn().mockResolvedValue([]),
 	}
 
 	return {
@@ -139,7 +139,7 @@ vi.mock("vscode", () => {
 
 vi.mock("../../mentions", () => ({
 	parseMentions: vi.fn().mockImplementation((text) => {
-		return Promise.resolve({ text: `processed: ${text}`, mode: undefined, contentBlocks: [] })
+		return Promise.resolve({ text: `processed: ${text}`, mode: undefined })
 	}),
 	openMention: vi.fn(),
 	getLatestTerminalOutput: vi.fn(),
@@ -277,7 +277,6 @@ describe("Cline", () => {
 		// Mock provider methods
 		mockProvider.postMessageToWebview = vi.fn().mockResolvedValue(undefined)
 		mockProvider.postStateToWebview = vi.fn().mockResolvedValue(undefined)
-		mockProvider.postStateToWebviewWithoutTaskHistory = vi.fn().mockResolvedValue(undefined)
 		mockProvider.getTaskWithId = vi.fn().mockImplementation(async (id) => ({
 			historyItem: {
 				id,
@@ -308,15 +307,31 @@ describe("Cline", () => {
 	})
 
 	describe("constructor", () => {
-		it("should always have diff strategy defined", async () => {
+		it("should respect provided settings", async () => {
 			const cline = new Task({
 				provider: mockProvider,
 				apiConfiguration: mockApiConfig,
+				fuzzyMatchThreshold: 0.95,
 				task: "test task",
 				startTask: false,
 			})
 
-			// Diff is always enabled - diffStrategy should be defined
+			expect(cline.diffEnabled).toBe(false)
+		})
+
+		it("should use default fuzzy match threshold when not provided", async () => {
+			const cline = new Task({
+				provider: mockProvider,
+				apiConfiguration: mockApiConfig,
+				enableDiff: true,
+				fuzzyMatchThreshold: 0.95,
+				task: "test task",
+				startTask: false,
+			})
+
+			expect(cline.diffEnabled).toBe(true)
+
+			// The diff strategy should be created with default threshold (1.0).
 			expect(cline.diffStrategy).toBeDefined()
 		})
 
@@ -863,7 +878,7 @@ describe("Cline", () => {
 			})
 
 			describe("processUserContentMentions", () => {
-				it("should process mentions in user_message tags", async () => {
+				it("should process mentions in task and feedback tags", async () => {
 					const [cline, task] = Task.create({
 						provider: mockProvider,
 						apiConfiguration: mockApiConfig,
@@ -877,7 +892,7 @@ describe("Cline", () => {
 						} as const,
 						{
 							type: "text",
-							text: "<user_message>Text with 'some/path' (see below for file content) in user_message tags</user_message>",
+							text: "<task>Text with 'some/path' (see below for file content) in task tags</task>",
 						} as const,
 						{
 							type: "tool_result",
@@ -885,7 +900,7 @@ describe("Cline", () => {
 							content: [
 								{
 									type: "text",
-									text: "<user_message>Check 'some/path' (see below for file content)</user_message>",
+									text: "<feedback>Check 'some/path' (see below for file content)</feedback>",
 								},
 							],
 						} as Anthropic.ToolResultBlockParam,
@@ -904,6 +919,7 @@ describe("Cline", () => {
 					const { content: processedContent } = await processUserContentMentions({
 						userContent,
 						cwd: cline.cwd,
+						urlContentFetcher: cline.urlContentFetcher,
 						fileContextTracker: cline.fileContextTracker,
 					})
 
@@ -912,18 +928,18 @@ describe("Cline", () => {
 						"Regular text with 'some/path' (see below for file content)",
 					)
 
-					// Text within user_message tags should be processed
+					// Text within task tags should be processed
 					expect((processedContent[1] as Anthropic.TextBlockParam).text).toContain("processed:")
 					expect((processedContent[1] as Anthropic.TextBlockParam).text).toContain(
-						"<user_message>Text with 'some/path' (see below for file content) in user_message tags</user_message>",
+						"<task>Text with 'some/path' (see below for file content) in task tags</task>",
 					)
 
-					// user_message tag content should be processed
+					// Feedback tag content should be processed
 					const toolResult1 = processedContent[2] as Anthropic.ToolResultBlockParam
 					const content1 = Array.isArray(toolResult1.content) ? toolResult1.content[0] : toolResult1.content
 					expect((content1 as Anthropic.TextBlockParam).text).toContain("processed:")
 					expect((content1 as Anthropic.TextBlockParam).text).toContain(
-						"<user_message>Check 'some/path' (see below for file content)</user_message>",
+						"<feedback>Check 'some/path' (see below for file content)</feedback>",
 					)
 
 					// Regular tool result should not be processed
@@ -958,21 +974,14 @@ describe("Cline", () => {
 				mockProvider = {
 					context: {
 						globalStorageUri: { fsPath: "/test/storage" },
-						globalState: {
-							get: vi.fn().mockImplementation(() => undefined),
-							update: vi.fn().mockResolvedValue(undefined),
-							keys: vi.fn().mockReturnValue([]),
-						},
 					},
 					getState: vi.fn().mockResolvedValue({
 						apiConfiguration: mockApiConfig,
-						mcpEnabled: false,
 					}),
 					getMcpHub: vi.fn().mockReturnValue(undefined),
 					getSkillsManager: vi.fn().mockReturnValue(undefined),
 					say: vi.fn(),
 					postStateToWebview: vi.fn().mockResolvedValue(undefined),
-					postStateToWebviewWithoutTaskHistory: vi.fn().mockResolvedValue(undefined),
 					postMessageToWebview: vi.fn().mockResolvedValue(undefined),
 					updateTaskHistory: vi.fn().mockResolvedValue(undefined),
 				}
@@ -998,7 +1007,6 @@ describe("Cline", () => {
 					task: "parent task",
 					startTask: false,
 				})
-				vi.spyOn(parent as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				// Mock the API stream response
 				const mockStream = {
@@ -1035,7 +1043,6 @@ describe("Cline", () => {
 					rootTask: parent,
 					startTask: false,
 				})
-				vi.spyOn(child as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				// Spy on child.say to verify the emitted message type
 				const saySpy = vi.spyOn(child, "say")
@@ -1087,7 +1094,6 @@ describe("Cline", () => {
 					task: "parent task",
 					startTask: false,
 				})
-				vi.spyOn(parent as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				// Mock the API stream response
 				const mockStream = {
@@ -1126,7 +1132,6 @@ describe("Cline", () => {
 					rootTask: parent,
 					startTask: false,
 				})
-				vi.spyOn(child as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				vi.spyOn(child.api, "createMessage").mockReturnValue(mockStream)
 
@@ -1149,7 +1154,6 @@ describe("Cline", () => {
 					task: "parent task",
 					startTask: false,
 				})
-				vi.spyOn(parent as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				// Mock the API stream response
 				const mockStream = {
@@ -1183,7 +1187,6 @@ describe("Cline", () => {
 					rootTask: parent,
 					startTask: false,
 				})
-				vi.spyOn(child1 as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				vi.spyOn(child1.api, "createMessage").mockReturnValue(mockStream)
 
@@ -1207,7 +1210,6 @@ describe("Cline", () => {
 					rootTask: parent,
 					startTask: false,
 				})
-				vi.spyOn(child2 as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				vi.spyOn(child2.api, "createMessage").mockReturnValue(mockStream)
 
@@ -1224,7 +1226,6 @@ describe("Cline", () => {
 				mockApiConfig.rateLimitSeconds = 0
 				mockProvider.getState.mockResolvedValue({
 					apiConfiguration: mockApiConfig,
-					mcpEnabled: false,
 				})
 
 				// Create parent task
@@ -1234,7 +1235,6 @@ describe("Cline", () => {
 					task: "parent task",
 					startTask: false,
 				})
-				vi.spyOn(parent as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				// Mock the API stream response
 				const mockStream = {
@@ -1268,7 +1268,6 @@ describe("Cline", () => {
 					rootTask: parent,
 					startTask: false,
 				})
-				vi.spyOn(child as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				vi.spyOn(child.api, "createMessage").mockReturnValue(mockStream)
 
@@ -1288,7 +1287,6 @@ describe("Cline", () => {
 					task: "test task",
 					startTask: false,
 				})
-				vi.spyOn(task as any, "getSystemPrompt").mockResolvedValue("mock system prompt")
 
 				// Mock the API stream response
 				const mockStream = {
@@ -1341,18 +1339,52 @@ describe("Cline", () => {
 			})
 
 			it("should use MultiSearchReplaceDiffStrategy by default", async () => {
-				mockProvider.getState.mockResolvedValue({})
+				mockProvider.getState.mockResolvedValue({
+					experiments: {
+						[EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF]: false,
+					},
+				})
 
 				const task = new Task({
 					provider: mockProvider,
 					apiConfiguration: mockApiConfig,
+					enableDiff: true,
 					task: "test task",
 					startTask: false,
 				})
 
+				// Wait for async strategy update to complete - increased timeout
+				await new Promise((resolve) => setTimeout(resolve, 50))
+
 				// Should be MultiSearchReplaceDiffStrategy
 				expect(task.diffStrategy).toBeInstanceOf(MultiSearchReplaceDiffStrategy)
 				expect(task.diffStrategy?.getName()).toBe("MultiSearchReplace")
+			})
+
+			it("should switch to MultiFileSearchReplaceDiffStrategy when experiment is enabled", async () => {
+				mockProvider.getState.mockResolvedValue({
+					experiments: {
+						[EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF]: true,
+					},
+				})
+
+				const task = new Task({
+					provider: mockProvider,
+					apiConfiguration: mockApiConfig,
+					enableDiff: true,
+					task: "test task",
+					startTask: false,
+				})
+
+				// Initially should be MultiSearchReplaceDiffStrategy
+				expect(task.diffStrategy).toBeInstanceOf(MultiSearchReplaceDiffStrategy)
+
+				// Wait for async strategy update
+				await new Promise((resolve) => setTimeout(resolve, 10))
+
+				// Should have switched to MultiFileSearchReplaceDiffStrategy
+				expect(task.diffStrategy).toBeInstanceOf(MultiFileSearchReplaceDiffStrategy)
+				expect(task.diffStrategy?.getName()).toBe("MultiFileSearchReplace")
 			})
 
 			it("should keep MultiSearchReplaceDiffStrategy when experiments are undefined", async () => {
@@ -1361,6 +1393,7 @@ describe("Cline", () => {
 				const task = new Task({
 					provider: mockProvider,
 					apiConfiguration: mockApiConfig,
+					enableDiff: true,
 					task: "test task",
 					startTask: false,
 				})
@@ -1371,6 +1404,19 @@ describe("Cline", () => {
 				// Should still be MultiSearchReplaceDiffStrategy
 				expect(task.diffStrategy).toBeInstanceOf(MultiSearchReplaceDiffStrategy)
 				expect(task.diffStrategy?.getName()).toBe("MultiSearchReplace")
+			})
+
+			it("should not create diff strategy when enableDiff is false", async () => {
+				const task = new Task({
+					provider: mockProvider,
+					apiConfiguration: mockApiConfig,
+					enableDiff: false,
+					task: "test task",
+					startTask: false,
+				})
+
+				expect(task.diffEnabled).toBe(false)
+				expect(task.diffStrategy).toBeUndefined()
 			})
 		})
 
@@ -1470,16 +1516,13 @@ describe("Cline", () => {
 		})
 
 		describe("submitUserMessage", () => {
-			it("should call handleWebviewAskResponse directly", async () => {
+			it("should always route through webview sendMessage invoke", async () => {
 				const task = new Task({
 					provider: mockProvider,
 					apiConfiguration: mockApiConfig,
 					task: "initial task",
 					startTask: false,
 				})
-
-				// Spy on handleWebviewAskResponse
-				const handleResponseSpy = vi.spyOn(task, "handleWebviewAskResponse")
 
 				// Set up some existing messages to simulate an ongoing conversation
 				task.clineMessages = [
@@ -1494,10 +1537,13 @@ describe("Cline", () => {
 				// Call submitUserMessage
 				task.submitUserMessage("test message", ["image1.png"])
 
-				// Verify handleWebviewAskResponse was called directly (not webview)
-				expect(handleResponseSpy).toHaveBeenCalledWith("messageResponse", "test message", ["image1.png"])
-				// Should NOT route through webview anymore
-				expect(mockProvider.postMessageToWebview).not.toHaveBeenCalled()
+				// Verify postMessageToWebview was called with sendMessage invoke
+				expect(mockProvider.postMessageToWebview).toHaveBeenCalledWith({
+					type: "invoke",
+					invoke: "sendMessage",
+					text: "test message",
+					images: ["image1.png"],
+				})
 			})
 
 			it("should handle empty messages gracefully", async () => {
@@ -1508,21 +1554,18 @@ describe("Cline", () => {
 					startTask: false,
 				})
 
-				// Spy on handleWebviewAskResponse
-				const handleResponseSpy = vi.spyOn(task, "handleWebviewAskResponse")
-
 				// Call with empty text and no images
 				task.submitUserMessage("", [])
 
-				// Should not call handleWebviewAskResponse for empty messages
-				expect(handleResponseSpy).not.toHaveBeenCalled()
+				// Should not call postMessageToWebview for empty messages
+				expect(mockProvider.postMessageToWebview).not.toHaveBeenCalled()
 
 				// Call with whitespace only
 				task.submitUserMessage("   ", [])
-				expect(handleResponseSpy).not.toHaveBeenCalled()
+				expect(mockProvider.postMessageToWebview).not.toHaveBeenCalled()
 			})
 
-			it("should call handleWebviewAskResponse for both new and existing task states", async () => {
+			it("should route through webview for both new and existing tasks", async () => {
 				const task = new Task({
 					provider: mockProvider,
 					apiConfiguration: mockApiConfig,
@@ -1530,17 +1573,19 @@ describe("Cline", () => {
 					startTask: false,
 				})
 
-				// Spy on handleWebviewAskResponse
-				const handleResponseSpy = vi.spyOn(task, "handleWebviewAskResponse")
-
 				// Test with no messages (new task scenario)
 				task.clineMessages = []
 				task.submitUserMessage("new task", ["image1.png"])
 
-				expect(handleResponseSpy).toHaveBeenCalledWith("messageResponse", "new task", ["image1.png"])
+				expect(mockProvider.postMessageToWebview).toHaveBeenCalledWith({
+					type: "invoke",
+					invoke: "sendMessage",
+					text: "new task",
+					images: ["image1.png"],
+				})
 
 				// Clear mock
-				handleResponseSpy.mockClear()
+				mockProvider.postMessageToWebview.mockClear()
 
 				// Test with existing messages (ongoing task scenario)
 				task.clineMessages = [
@@ -1553,7 +1598,12 @@ describe("Cline", () => {
 				]
 				task.submitUserMessage("follow-up message", ["image2.png"])
 
-				expect(handleResponseSpy).toHaveBeenCalledWith("messageResponse", "follow-up message", ["image2.png"])
+				expect(mockProvider.postMessageToWebview).toHaveBeenCalledWith({
+					type: "invoke",
+					invoke: "sendMessage",
+					text: "follow-up message",
+					images: ["image2.png"],
+				})
 			})
 
 			it("should handle undefined provider gracefully", async () => {
@@ -1563,9 +1613,6 @@ describe("Cline", () => {
 					task: "initial task",
 					startTask: false,
 				})
-
-				// Spy on handleWebviewAskResponse
-				const handleResponseSpy = vi.spyOn(task, "handleWebviewAskResponse")
 
 				// Simulate weakref returning undefined
 				Object.defineProperty(task, "providerRef", {
@@ -1581,7 +1628,7 @@ describe("Cline", () => {
 				task.submitUserMessage("test message")
 
 				expect(consoleErrorSpy).toHaveBeenCalledWith("[Task#submitUserMessage] Provider reference lost")
-				expect(handleResponseSpy).not.toHaveBeenCalled()
+				expect(mockProvider.postMessageToWebview).not.toHaveBeenCalled()
 
 				// Restore console.error
 				consoleErrorSpy.mockRestore()
@@ -1811,49 +1858,6 @@ describe("Cline", () => {
 			})
 		})
 	})
-
-	describe("start()", () => {
-		it("should be a no-op if the task was already started in the constructor", () => {
-			const task = new Task({
-				provider: mockProvider,
-				apiConfiguration: mockApiConfig,
-				task: "test task",
-				startTask: false,
-			})
-
-			// Manually trigger start
-			const startTaskSpy = vi.spyOn(task as any, "startTask").mockImplementation(async () => {})
-			task.start()
-
-			expect(startTaskSpy).toHaveBeenCalledTimes(1)
-
-			// Calling start() again should be a no-op
-			task.start()
-			expect(startTaskSpy).toHaveBeenCalledTimes(1)
-		})
-
-		it("should not call startTask if already started via constructor", () => {
-			// Create a task that starts immediately (startTask defaults to true)
-			// but mock startTask to prevent actual execution
-			const startTaskSpy = vi.spyOn(Task.prototype as any, "startTask").mockImplementation(async () => {})
-
-			const task = new Task({
-				provider: mockProvider,
-				apiConfiguration: mockApiConfig,
-				task: "test task",
-				startTask: true,
-			})
-
-			// startTask was called by the constructor
-			expect(startTaskSpy).toHaveBeenCalledTimes(1)
-
-			// Calling start() should be a no-op since _started is already true
-			task.start()
-			expect(startTaskSpy).toHaveBeenCalledTimes(1)
-
-			startTaskSpy.mockRestore()
-		})
-	})
 })
 
 describe("Queued message processing after condense", () => {
@@ -1892,7 +1896,6 @@ describe("Queued message processing after condense", () => {
 		const provider = new ClineProvider(ctx, output as any, "sidebar", new ContextProxy(ctx)) as any
 		provider.postMessageToWebview = vi.fn().mockResolvedValue(undefined)
 		provider.postStateToWebview = vi.fn().mockResolvedValue(undefined)
-		provider.postStateToWebviewWithoutTaskHistory = vi.fn().mockResolvedValue(undefined)
 		provider.getState = vi.fn().mockResolvedValue({})
 		return provider
 	}
@@ -2031,7 +2034,6 @@ describe("pushToolResultToUserContent", () => {
 
 		mockProvider.postMessageToWebview = vi.fn().mockResolvedValue(undefined)
 		mockProvider.postStateToWebview = vi.fn().mockResolvedValue(undefined)
-		mockProvider.postStateToWebviewWithoutTaskHistory = vi.fn().mockResolvedValue(undefined)
 	})
 
 	it("should add tool_result when not a duplicate", () => {

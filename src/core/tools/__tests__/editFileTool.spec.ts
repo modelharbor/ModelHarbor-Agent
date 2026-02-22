@@ -91,6 +91,7 @@ describe("editFileTool", () => {
 	let mockAskApproval: ReturnType<typeof vi.fn>
 	let mockHandleError: ReturnType<typeof vi.fn>
 	let mockPushToolResult: ReturnType<typeof vi.fn>
+	let mockRemoveClosingTag: ReturnType<typeof vi.fn>
 	let toolResult: ToolResponse | undefined
 
 	beforeEach(() => {
@@ -154,6 +155,7 @@ describe("editFileTool", () => {
 
 		mockAskApproval = vi.fn().mockResolvedValue(true)
 		mockHandleError = vi.fn().mockResolvedValue(undefined)
+		mockRemoveClosingTag = vi.fn((tag, content) => content)
 
 		toolResult = undefined
 	})
@@ -179,19 +181,6 @@ describe("editFileTool", () => {
 		mockedFsReadFile.mockResolvedValue(fileContent)
 		mockTask.rooIgnoreController.validateAccess.mockReturnValue(accessAllowed)
 
-		const nativeArgs: Record<string, unknown> = {
-			file_path: testFilePath,
-			old_string: testOldString,
-			new_string: testNewString,
-		}
-		for (const [key, value] of Object.entries(params)) {
-			nativeArgs[key] = value
-		}
-		// Keep expected_replacements numeric in native args when provided.
-		if (typeof nativeArgs.expected_replacements === "string") {
-			nativeArgs.expected_replacements = Number(nativeArgs.expected_replacements)
-		}
-
 		const toolUse: ToolUse = {
 			type: "tool_use",
 			name: "edit_file",
@@ -201,7 +190,6 @@ describe("editFileTool", () => {
 				new_string: testNewString,
 				...params,
 			},
-			nativeArgs: nativeArgs as any,
 			partial: isPartial,
 		}
 
@@ -213,6 +201,8 @@ describe("editFileTool", () => {
 			askApproval: mockAskApproval,
 			handleError: mockHandleError,
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: mockRemoveClosingTag,
+			toolProtocol: "native",
 		})
 
 		return toolResult
@@ -290,6 +280,8 @@ describe("editFileTool", () => {
 					askApproval: mockAskApproval,
 					handleError: mockHandleError,
 					pushToolResult: localPushToolResult,
+					removeClosingTag: mockRemoveClosingTag,
+					toolProtocol: "native",
 				})
 
 				return capturedResult
@@ -486,10 +478,7 @@ describe("editFileTool", () => {
 			)
 
 			expect(mockTask.consecutiveMistakeCountForEditFile.get(testFilePath)).toBe(2)
-			expect(mockTask.say).toHaveBeenCalledWith(
-				"diff_error",
-				expect.stringContaining("Occurrence count mismatch"),
-			)
+			expect(mockTask.say).toHaveBeenCalledWith("diff_error", expect.stringContaining("Occurrence count mismatch"))
 		})
 
 		it("resets consecutive error counter on successful edit", async () => {
@@ -642,11 +631,6 @@ describe("editFileTool", () => {
 					old_string: testOldString,
 					new_string: testNewString,
 				},
-				nativeArgs: {
-					file_path: testFilePath,
-					old_string: testOldString,
-					new_string: testNewString,
-				},
 				partial: false,
 			}
 
@@ -659,6 +643,8 @@ describe("editFileTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: localPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "native",
 			})
 
 			expect(capturedResult).toContain("Failed to read file")

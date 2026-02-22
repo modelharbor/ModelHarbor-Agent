@@ -4,20 +4,15 @@ import { vscode } from "@src/utils/vscode"
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 
 import { useTaskSearch } from "./useTaskSearch"
-import { useGroupedTasks } from "./useGroupedTasks"
-import TaskGroupItem from "./TaskGroupItem"
+import TaskItem from "./TaskItem"
 
 const HistoryPreview = () => {
-	const { tasks, searchQuery } = useTaskSearch()
-	const { groups, toggleExpand } = useGroupedTasks(tasks, searchQuery)
+	const { tasks } = useTaskSearch()
 	const { t } = useAppTranslation()
 
 	const handleViewAllHistory = () => {
 		vscode.postMessage({ type: "switchTab", tab: "history" })
 	}
-
-	// Show up to 4 groups (parent + subtasks count as 1 block)
-	const displayGroups = groups.slice(0, 4)
 
 	return (
 		<div className="flex flex-col gap-1">
@@ -30,16 +25,10 @@ const HistoryPreview = () => {
 					{t("history:viewAllHistory")}
 				</button>
 			</div>
-			{displayGroups.length !== 0 && (
+			{tasks.length !== 0 && (
 				<>
-					{displayGroups.map((group) => (
-						<TaskGroupItem
-							key={group.parent.id}
-							group={group}
-							variant="compact"
-							onToggleExpand={() => toggleExpand(group.parent.id)}
-							onToggleSubtaskExpand={toggleExpand}
-						/>
+					{tasks.slice(0, 4).map((item) => (
+						<TaskItem key={item.id} item={item} variant="compact" />
 					))}
 				</>
 			)}

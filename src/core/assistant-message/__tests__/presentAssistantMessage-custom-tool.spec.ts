@@ -2,17 +2,11 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { presentAssistantMessage } from "../presentAssistantMessage"
-import { validateToolUse } from "../../tools/validateToolUse"
 
 // Mock dependencies
 vi.mock("../../task/Task")
 vi.mock("../../tools/validateToolUse", () => ({
 	validateToolUse: vi.fn(),
-	isValidToolName: vi.fn((toolName: string) =>
-		["read_file", "write_to_file", "ask_followup_question", "attempt_completion", "use_mcp_tool"].includes(
-			toolName,
-		),
-	),
 }))
 
 // Mock custom tool registry - must be done inline without external variable references
@@ -45,10 +39,14 @@ describe("presentAssistantMessage - Custom Tool Recording", () => {
 			didCompleteReadingStream: false,
 			didRejectTool: false,
 			didAlreadyUseTool: false,
+			diffEnabled: false,
 			consecutiveMistakeCount: 0,
 			clineMessages: [],
 			api: {
 				getModel: () => ({ id: "test-model", info: {} }),
+			},
+			browserSession: {
+				closeBrowser: vi.fn().mockResolvedValue(undefined),
 			},
 			recordToolUsage: vi.fn(),
 			recordToolError: vi.fn(),
@@ -106,8 +104,33 @@ describe("presentAssistantMessage - Custom Tool Recording", () => {
 
 			await presentAssistantMessage(mockTask)
 
-			// Should record as "custom_tool", not "my_custom_tool"
-			expect(mockTask.recordToolUsage).toHaveBeenCalledWith("custom_tool")
+			// Tool usage is recorded with the actual tool name before custom tool handling
+			// This happens at line 695 of presentAssistantMessage.ts
+			expect(mockTask.recordToolUsage).toHaveBeenCalledWith("my_custom_tool")
+		})
+
+		it("should record custom tool usage with actual tool name in XML protocol", async () => {
+			mockTask.assistantMessageContent = [
+				{
+					type: "tool_use",
+					// No ID = XML protocol
+					name: "my_custom_tool",
+					params: { value: "test" },
+					partial: false,
+				},
+			]
+
+			vi.mocked(customToolRegistry.has).mockReturnValue(true)
+			vi.mocked(customToolRegistry.get).mockReturnValue({
+				name: "my_custom_tool",
+				description: "A custom tool",
+				execute: vi.fn().mockResolvedValue("Custom tool result"),
+			})
+
+			await presentAssistantMessage(mockTask)
+
+			// Tool usage is recorded with the actual tool name
+			expect(mockTask.recordToolUsage).toHaveBeenCalledWith("my_custom_tool")
 		})
 	})
 
@@ -283,44 +306,6 @@ describe("presentAssistantMessage - Custom Tool Recording", () => {
 			// When experiment is off, shouldn't even check the registry
 			// (Code checks stateExperiments?.customTools before calling has())
 			expect(customToolRegistry.has).not.toHaveBeenCalled()
-		})
-	})
-
-	describe("Validation requirements", () => {
-		it("normalizes disabledTools aliases before validateToolUse", async () => {
-			const toolCallId = "tool_call_validation_alias_123"
-			mockTask.assistantMessageContent = [
-				{
-					type: "tool_use",
-					id: toolCallId,
-					name: "some_unknown_tool",
-					params: {},
-					partial: false,
-				},
-			]
-
-			mockTask.providerRef = {
-				deref: () => ({
-					getState: vi.fn().mockResolvedValue({
-						mode: "code",
-						customModes: [],
-						experiments: {
-							customTools: false,
-						},
-						disabledTools: ["search_and_replace"],
-					}),
-				}),
-			}
-
-			await presentAssistantMessage(mockTask)
-
-			const validateToolUseMock = vi.mocked(validateToolUse)
-			expect(validateToolUseMock).toHaveBeenCalled()
-			const toolRequirements = validateToolUseMock.mock.calls[0][3]
-			expect(toolRequirements).toMatchObject({
-				search_and_replace: false,
-				edit: false,
-			})
 		})
 	})
 

@@ -355,9 +355,16 @@ export class AwsBedrockHandler extends BaseProvider implements SingleCompletionH
 		},
 	): ApiStream {
 		const modelConfig = this.getModel()
-		const usePromptCache = Boolean(
-			(this.options.awsUsePromptCache ?? true) && this.supportsAwsPromptCache(modelConfig),
-		)
+		const usePromptCache = Boolean(this.options.awsUsePromptCache && this.supportsAwsPromptCache(modelConfig))
+
+		// Determine early if native tools should be used (needed for message conversion)
+		const supportsNativeTools = modelConfig.info.supportsNativeTools ?? false
+		const useNativeTools =
+			supportsNativeTools &&
+			metadata?.tools &&
+			metadata.tools.length > 0 &&
+			metadata?.toolProtocol !== "xml" &&
+			metadata?.tool_choice !== "none"
 
 		const conversationId =
 			messages.length > 0
@@ -374,6 +381,7 @@ export class AwsBedrockHandler extends BaseProvider implements SingleCompletionH
 			usePromptCache,
 			modelConfig.info,
 			conversationId,
+			useNativeTools,
 		)
 
 		let additionalModelRequestFields: BedrockAdditionalModelFields | undefined
@@ -408,11 +416,34 @@ export class AwsBedrockHandler extends BaseProvider implements SingleCompletionH
 			temperature: modelConfig.temperature ?? (this.options.modelTemperature as number),
 		}
 
-		// Check if 1M context is enabled for supported Claude 4 models
+		// Check if 1M context is enabled for Claude Sonnet 4
 		// Use parseBaseModelId to handle cross-region inference prefixes
 		const baseModelId = this.parseBaseModelId(modelConfig.id)
 		const is1MContextEnabled =
 			BEDROCK_1M_CONTEXT_MODEL_IDS.includes(baseModelId as any) && this.options.awsBedrock1MContext
+
+		// Add anthropic_beta headers for various features
+		// Start with an empty array and add betas as needed
+		const anthropicBetas: string[] = []
+
+		// Add 1M context beta if enabled
+		if (is1MContextEnabled) {
+			anthropicBetas.push("context-1m-2025-08-07")
+		}
+
+		// Add fine-grained tool streaming beta when native tools are used with Claude models
+		// This enables proper tool use streaming for Anthropic models on Bedrock
+		if (useNativeTools && baseModelId.includes("claude")) {
+			anthropicBetas.push("fine-grained-tool-streaming-2025-05-14")
+		}
+
+		// Apply anthropic_beta to additionalModelRequestFields if any betas are needed
+		if (anthropicBetas.length > 0) {
+			if (!additionalModelRequestFields) {
+				additionalModelRequestFields = {} as BedrockAdditionalModelFields
+			}
+			additionalModelRequestFields.anthropic_beta = anthropicBetas
+		}
 
 		// Determine if service tier should be applied (checked later when building payload)
 		const useServiceTier =
@@ -425,32 +456,13 @@ export class AwsBedrockHandler extends BaseProvider implements SingleCompletionH
 			})
 		}
 
-		// Add anthropic_beta headers for various features
-		// Start with an empty array and add betas as needed
-		const anthropicBetas: string[] = []
-
-		// Add 1M context beta if enabled
-		if (is1MContextEnabled) {
-			anthropicBetas.push("context-1m-2025-08-07")
-		}
-
-		// Add fine-grained tool streaming beta for Claude models
-		// This enables proper tool use streaming for Anthropic models on Bedrock
-		if (baseModelId.includes("claude")) {
-			anthropicBetas.push("fine-grained-tool-streaming-2025-05-14")
-		}
-
-		// Apply anthropic_beta to additionalModelRequestFields if any betas are needed
-		if (anthropicBetas.length > 0) {
-			if (!additionalModelRequestFields) {
-				additionalModelRequestFields = {} as BedrockAdditionalModelFields
+		// Build tool configuration if native tools are enabled
+		let toolConfig: ToolConfiguration | undefined
+		if (useNativeTools && metadata?.tools) {
+			toolConfig = {
+				tools: this.convertToolsForBedrock(metadata.tools),
+				toolChoice: this.convertToolChoiceForBedrock(metadata.tool_choice),
 			}
-			additionalModelRequestFields.anthropic_beta = anthropicBetas
-		}
-
-		const toolConfig: ToolConfiguration = {
-			tools: this.convertToolsForBedrock(metadata?.tools ?? []),
-			toolChoice: this.convertToolChoiceForBedrock(metadata?.tool_choice),
 		}
 
 		// Build payload with optional service_tier at top level
@@ -464,7 +476,7 @@ export class AwsBedrockHandler extends BaseProvider implements SingleCompletionH
 			...(additionalModelRequestFields && { additionalModelRequestFields }),
 			// Add anthropic_version at top level when using thinking features
 			...(thinkingEnabled && { anthropic_version: "bedrock-2023-05-31" }),
-			toolConfig,
+			...(toolConfig && { toolConfig }),
 			// Add service_tier as a top-level parameter (not inside additionalModelRequestFields)
 			...(useServiceTier && { service_tier: this.options.awsBedrockServiceTier }),
 		}
@@ -819,9 +831,12 @@ export class AwsBedrockHandler extends BaseProvider implements SingleCompletionH
 		usePromptCache: boolean = false,
 		modelInfo?: any,
 		conversationId?: string, // Optional conversation ID to track cache points across messages
+		useNativeTools: boolean = false, // Whether native tool calling is being used
 	): { system: SystemContentBlock[]; messages: Message[] } {
 		// First convert messages using shared converter for proper image handling
-		const convertedMessages = sharedConverter(anthropicMessages as Anthropic.Messages.MessageParam[])
+		const convertedMessages = sharedConverter(anthropicMessages as Anthropic.Messages.MessageParam[], {
+			useNativeTools,
+		})
 
 		// If prompt caching is disabled, return the converted messages directly
 		if (!usePromptCache) {
@@ -1086,19 +1101,14 @@ export class AwsBedrockHandler extends BaseProvider implements SingleCompletionH
 			}
 		}
 
-		// Check if 1M context is enabled for supported Claude 4 models
+		// Check if 1M context is enabled for Claude Sonnet 4 / 4.5
 		// Use parseBaseModelId to handle cross-region inference prefixes
 		const baseModelId = this.parseBaseModelId(modelConfig.id)
 		if (BEDROCK_1M_CONTEXT_MODEL_IDS.includes(baseModelId as any) && this.options.awsBedrock1MContext) {
-			// Update context window and pricing to 1M tier when 1M context beta is enabled
-			const tier = modelConfig.info.tiers?.[0]
+			// Update context window to 1M tokens when 1M context beta is enabled
 			modelConfig.info = {
 				...modelConfig.info,
-				contextWindow: tier?.contextWindow ?? 1_000_000,
-				inputPrice: tier?.inputPrice ?? modelConfig.info.inputPrice,
-				outputPrice: tier?.outputPrice ?? modelConfig.info.outputPrice,
-				cacheWritesPrice: tier?.cacheWritesPrice ?? modelConfig.info.cacheWritesPrice,
-				cacheReadsPrice: tier?.cacheReadsPrice ?? modelConfig.info.cacheReadsPrice,
+				contextWindow: 1_000_000,
 			}
 		}
 
@@ -1336,6 +1346,8 @@ Please verify:
 1. Reducing the frequency of requests
 2. If using a provisioned model, check its throughput settings
 3. Contact AWS support to request a quota increase if needed
+
+
 
 `,
 			logLevel: "error",

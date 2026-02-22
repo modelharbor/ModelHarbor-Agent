@@ -23,11 +23,6 @@ vi.mock("../../common/CodeBlock", () => ({
 	default: ({ source }: { source: string }) => <div data-testid="code-block">{source}</div>,
 }))
 
-// Mock TerminalOutput
-vi.mock("../TerminalOutput", () => ({
-	TerminalOutput: ({ content }: { content: string }) => <div data-testid="terminal-output">{content}</div>,
-}))
-
 vi.mock("../CommandPatternSelector", () => ({
 	CommandPatternSelector: ({ patterns, onAllowPatternChange, onDenyPatternChange }: any) => (
 		<div data-testid="command-pattern-selector">
@@ -77,9 +72,6 @@ describe("CommandExecution", () => {
 
 		const codeBlocks = screen.getAllByTestId("code-block")
 		expect(codeBlocks[0]).toHaveTextContent("npm install")
-
-		const terminalOutput = screen.getByTestId("terminal-output")
-		expect(terminalOutput).toHaveTextContent("Installing packages...")
 	})
 
 	it("should render with custom icon and title", () => {
@@ -238,9 +230,7 @@ Suggested patterns: npm, npm install, npm run`
 		// First check that the command was parsed correctly
 		const codeBlocks = screen.getAllByTestId("code-block")
 		expect(codeBlocks[0]).toHaveTextContent("npm install")
-
-		const terminalOutput = screen.getByTestId("terminal-output")
-		expect(terminalOutput).toHaveTextContent("Suggested patterns: npm, npm install, npm run")
+		expect(codeBlocks[1]).toHaveTextContent("Suggested patterns: npm, npm install, npm run")
 
 		const selector = screen.getByTestId("command-pattern-selector")
 		expect(selector).toBeInTheDocument()
@@ -302,10 +292,8 @@ Output here`
 
 		// Output should be visible when shell integration is disabled
 		const codeBlocks = screen.getAllByTestId("code-block")
-		expect(codeBlocks).toHaveLength(1) // Only command block
-
-		const terminalOutput = screen.getByTestId("terminal-output")
-		expect(terminalOutput).toHaveTextContent("Output here")
+		expect(codeBlocks).toHaveLength(2) // Command and output blocks
+		expect(codeBlocks[1]).toHaveTextContent("Output here")
 	})
 
 	it("should handle undefined allowedCommands and deniedCommands", () => {
@@ -575,10 +563,9 @@ Output:
 			// Should show a command pattern
 			expect(selector.textContent).toMatch(/wc/)
 
-			// The output should still be displayed
-			const terminalOutput = screen.getByTestId("terminal-output")
-			expect(terminalOutput).toBeInTheDocument()
-			expect(terminalOutput.textContent).toContain("45 total")
+			// The output should still be displayed in the code block
+			expect(codeBlocks.length).toBeGreaterThan(1)
+			expect(codeBlocks[1].textContent).toContain("45 total")
 		})
 
 		it("should handle commands with zero output", () => {
@@ -599,10 +586,10 @@ Output:
 			// Should show a command pattern
 			expect(selector.textContent).toMatch(/wc/)
 
-			// The output should still be displayed
-			const terminalOutput = screen.getByTestId("terminal-output")
-			expect(terminalOutput).toBeInTheDocument()
-			expect(terminalOutput).toHaveTextContent("0 total")
+			// The output should still be displayed in the code block
+			const codeBlocks = screen.getAllByTestId("code-block")
+			expect(codeBlocks.length).toBeGreaterThan(1)
+			expect(codeBlocks[1]).toHaveTextContent("0 total")
 		})
 	})
 })

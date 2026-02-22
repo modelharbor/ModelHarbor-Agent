@@ -54,6 +54,7 @@ export default `
   (simple_identifier) @name.definition.function
 ) @definition.function
 
+
 ; Suspend function declarations
 (function_declaration
   (modifiers
@@ -68,6 +69,8 @@ export default `
 
 ; Companion object declarations
 (companion_object) @definition.companion_object
+
+
 
 ; Annotation class declarations
 (class_declaration

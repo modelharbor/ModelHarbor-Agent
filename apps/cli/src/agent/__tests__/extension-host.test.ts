@@ -36,9 +36,6 @@ function createTestHost({
 		model,
 		workspacePath: "/test/workspace",
 		extensionPath: "/test/extension",
-		ephemeral: false,
-		debug: false,
-		exitOnComplete: false,
 		...options,
 	})
 }
@@ -97,20 +94,16 @@ describe("ExtensionHost", () => {
 				apiKey: "test-key",
 				provider: "openrouter",
 				model: "test-model",
-				ephemeral: false,
-				debug: false,
-				exitOnComplete: false,
-				integrationTest: true, // Set explicitly for testing
 			}
 
 			const host = new ExtensionHost(options)
 
-			// Options are stored as-is
+			// Options are stored but integrationTest is set to true
 			const storedOptions = getPrivate<ExtensionHostOptions>(host, "options")
 			expect(storedOptions.mode).toBe(options.mode)
 			expect(storedOptions.workspacePath).toBe(options.workspacePath)
 			expect(storedOptions.extensionPath).toBe(options.extensionPath)
-			expect(storedOptions.integrationTest).toBe(true)
+			expect(storedOptions.integrationTest).toBe(true) // Always set to true in constructor
 		})
 
 		it("should be an EventEmitter instance", () => {
@@ -299,19 +292,16 @@ describe("ExtensionHost", () => {
 			})
 
 			it("should suppress console when integrationTest is false", () => {
-				// Capture the real console.log before any host is created
+				const host = createTestHost()
 				const originalLog = console.log
 
-				// Create host with integrationTest: true to prevent constructor from suppressing
-				const host = createTestHost({ integrationTest: true })
-
-				// Override integrationTest to false to test suppression
+				// Override integrationTest to false
 				const options = getPrivate<ExtensionHostOptions>(host, "options")
 				options.integrationTest = false
 
 				callPrivate(host, "setupQuietMode")
 
-				// Console should be modified (suppressed)
+				// Console should be modified
 				expect(console.log).not.toBe(originalLog)
 
 				// Restore for other tests
@@ -336,11 +326,8 @@ describe("ExtensionHost", () => {
 
 		describe("restoreConsole", () => {
 			it("should restore original console methods when suppressed", () => {
-				// Capture the real console.log before any host is created
+				const host = createTestHost()
 				const originalLog = console.log
-
-				// Create host with integrationTest: true to prevent constructor from suppressing
-				const host = createTestHost({ integrationTest: true })
 
 				// Override integrationTest to false to actually suppress
 				const options = getPrivate<ExtensionHostOptions>(host, "options")

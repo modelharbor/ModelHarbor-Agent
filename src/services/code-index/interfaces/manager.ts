@@ -40,11 +40,6 @@ export interface ICodeIndexManager {
 	startIndexing(): Promise<void>
 
 	/**
-	 * Stops any in-progress indexing operation and the file watcher
-	 */
-	stopIndexing(): void
-
-	/**
 	 * Stops the file watcher
 	 */
 	stopWatcher(): void
@@ -74,7 +69,7 @@ export interface ICodeIndexManager {
 	dispose(): void
 }
 
-export type IndexingState = "Standby" | "Indexing" | "Indexed" | "Error" | "Stopping"
+export type IndexingState = "Standby" | "Indexing" | "Indexed" | "Error"
 export type EmbedderProvider =
 	| "openai"
 	| "ollama"

@@ -30,45 +30,28 @@ export class CodeIndexManager {
 	private _isRecoveringFromError = false
 
 	public static getInstance(context: vscode.ExtensionContext, workspacePath?: string): CodeIndexManager | undefined {
-		// Resolve the workspace folder to get both fsPath and the real URI
-		let folder: vscode.WorkspaceFolder | undefined
-
-		if (workspacePath) {
-			folder = vscode.workspace.workspaceFolders?.find((f) => f.uri.fsPath === workspacePath)
-		} else {
+		// If workspacePath is not provided, try to get it from the active editor or first workspace folder
+		if (!workspacePath) {
 			const activeEditor = vscode.window.activeTextEditor
 			if (activeEditor) {
-				folder = vscode.workspace.getWorkspaceFolder(activeEditor.document.uri)
+				const workspaceFolder = vscode.workspace.getWorkspaceFolder(activeEditor.document.uri)
+				workspacePath = workspaceFolder?.uri.fsPath
 			}
-			if (!folder) {
+
+			if (!workspacePath) {
 				const workspaceFolders = vscode.workspace.workspaceFolders
 				if (!workspaceFolders || workspaceFolders.length === 0) {
 					return undefined
 				}
-				folder = workspaceFolders[0]
+				// Use the first workspace folder as fallback
+				workspacePath = workspaceFolders[0].uri.fsPath
 			}
-			workspacePath = folder.uri.fsPath
 		}
 
 		if (!CodeIndexManager.instances.has(workspacePath)) {
-			// folder may be undefined when workspacePath was provided but doesn't match
-			// any workspace folder (e.g. cwd passed from a tool). Fall back to file:// URI.
-			const folderUri =
-				folder?.uri ??
-				({
-					fsPath: workspacePath,
-					scheme: "file",
-					authority: "",
-					path: workspacePath,
-					toString: () => `file://${workspacePath}`,
-				} as unknown as vscode.Uri)
-			CodeIndexManager.instances.set(workspacePath, new CodeIndexManager(workspacePath, folderUri, context))
+			CodeIndexManager.instances.set(workspacePath, new CodeIndexManager(workspacePath, context))
 		}
 		return CodeIndexManager.instances.get(workspacePath)!
-	}
-
-	public static getAllInstances(): CodeIndexManager[] {
-		return Array.from(CodeIndexManager.instances.values())
 	}
 
 	public static disposeAll(): void {
@@ -79,44 +62,16 @@ export class CodeIndexManager {
 	}
 
 	private readonly workspacePath: string
-	private readonly _folderUri: vscode.Uri
 	private readonly context: vscode.ExtensionContext
 
 	// Private constructor for singleton pattern
-	private constructor(workspacePath: string, folderUri: vscode.Uri, context: vscode.ExtensionContext) {
+	private constructor(workspacePath: string, context: vscode.ExtensionContext) {
 		this.workspacePath = workspacePath
-		this._folderUri = folderUri
 		this.context = context
 		this._stateManager = new CodeIndexStateManager()
 	}
 
 	// --- Public API ---
-
-	/**
-	 * Returns the workspaceState key for per-folder indexing enablement,
-	 * keyed by the real workspace folder URI so local/remote schemes cannot collide.
-	 */
-	private _workspaceEnabledKey(): string {
-		return "codeIndexWorkspaceEnabled:" + this._folderUri.toString(true)
-	}
-
-	public get isWorkspaceEnabled(): boolean {
-		const explicit = this.context.workspaceState.get<boolean | undefined>(this._workspaceEnabledKey(), undefined)
-		if (explicit !== undefined) return explicit
-		return this.autoEnableDefault
-	}
-
-	public async setWorkspaceEnabled(enabled: boolean): Promise<void> {
-		await this.context.workspaceState.update(this._workspaceEnabledKey(), enabled)
-	}
-
-	public get autoEnableDefault(): boolean {
-		return this.context.globalState.get("codeIndexAutoEnableDefault", true)
-	}
-
-	public async setAutoEnableDefault(enabled: boolean): Promise<void> {
-		await this.context.globalState.update("codeIndexAutoEnableDefault", enabled)
-	}
 
 	public get onProgressUpdate() {
 		return this._stateManager.onProgressUpdate
@@ -186,32 +141,28 @@ export class CodeIndexManager {
 			return { requiresRestart }
 		}
 
-		// 4. Check workspace-level enablement (before creating expensive services)
-		if (!this.isWorkspaceEnabled) {
-			this._stateManager.setSystemState("Standby", "Indexing not enabled for this workspace")
-			return { requiresRestart }
-		}
-
-		// 5. CacheManager Initialization
+		// 4. CacheManager Initialization
 		if (!this._cacheManager) {
 			this._cacheManager = new CacheManager(this.context, this.workspacePath)
 			await this._cacheManager.initialize()
 		}
 
-		// 6. Determine if Core Services Need Recreation
+		// 4. Determine if Core Services Need Recreation
 		const needsServiceRecreation = !this._serviceFactory || requiresRestart
 
 		if (needsServiceRecreation) {
 			await this._recreateServices()
 		}
 
-		// 7. Handle Indexing Start/Restart
+		// 5. Handle Indexing Start/Restart
+		// The enhanced vectorStore.initialize() in startIndexing() now handles dimension changes automatically
+		// by detecting incompatible collections and recreating them, so we rely on that for dimension changes
 		const shouldStartOrRestartIndexing =
 			requiresRestart ||
 			(needsServiceRecreation && (!this._orchestrator || this._orchestrator.state !== "Indexing"))
 
 		if (shouldStartOrRestartIndexing) {
-			this._orchestrator?.startIndexing()
+			this._orchestrator?.startIndexing() // This method is async, but we don't await it here
 		}
 
 		return { requiresRestart }
@@ -225,7 +176,7 @@ export class CodeIndexManager {
 	 * The indexing will continue asynchronously and progress will be reported through events.
 	 */
 	public async startIndexing(): Promise<void> {
-		if (!this.isFeatureEnabled || !this.isWorkspaceEnabled) {
+		if (!this.isFeatureEnabled) {
 			return
 		}
 
@@ -246,15 +197,6 @@ export class CodeIndexManager {
 		}
 
 		await this._orchestrator.startIndexing()
-	}
-
-	/**
-	 * Stops any in-progress indexing operation and the file watcher.
-	 */
-	public stopIndexing(): void {
-		if (this._orchestrator) {
-			this._orchestrator.stopIndexing()
-		}
 	}
 
 	/**
@@ -313,7 +255,9 @@ export class CodeIndexManager {
 	 * Cleans up the manager instance.
 	 */
 	public dispose(): void {
-		this.stopIndexing()
+		if (this._orchestrator) {
+			this.stopWatcher()
+		}
 		this._stateManager.dispose()
 	}
 
@@ -337,8 +281,6 @@ export class CodeIndexManager {
 		return {
 			...status,
 			workspacePath: this.workspacePath,
-			workspaceEnabled: this.isWorkspaceEnabled,
-			autoEnableDefault: this.autoEnableDefault,
 		}
 	}
 
@@ -445,9 +387,13 @@ export class CodeIndexManager {
 			const isFeatureEnabled = this.isFeatureEnabled
 			const isFeatureConfigured = this.isFeatureConfigured
 
-			// If feature is disabled, stop the service (including any active scan)
+			// If feature is disabled, stop the service
 			if (!isFeatureEnabled) {
-				this.stopIndexing()
+				// Stop the orchestrator if it exists
+				if (this._orchestrator) {
+					this._orchestrator.stopWatcher()
+				}
+				// Set state to indicate service is disabled
 				this._stateManager.setSystemState("Standby", "Code indexing is disabled")
 				return
 			}

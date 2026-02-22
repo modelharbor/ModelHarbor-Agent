@@ -18,7 +18,6 @@ import { Button, StandardTooltip } from "@src/components/ui"
 import CodeBlock from "@src/components/common/CodeBlock"
 
 import { CommandPatternSelector } from "./CommandPatternSelector"
-import { TerminalOutput } from "./TerminalOutput"
 
 interface CommandPattern {
 	pattern: string
@@ -226,7 +225,7 @@ const OutputContainerInternal = ({ isExpanded, output }: { isExpanded: boolean; 
 			"max-h-0": !isExpanded,
 			"max-h-[100%] mt-1 pt-1 border-t border-border/25": isExpanded,
 		})}>
-		{output.length > 0 && <TerminalOutput content={output} />}
+		{output.length > 0 && <CodeBlock source={output} language="log" />}
 	</div>
 )
 

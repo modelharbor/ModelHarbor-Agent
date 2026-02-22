@@ -84,6 +84,7 @@ describe("getRulesSection", () => {
 
 	it("includes vendor confidentiality section when isStealthModel is true", () => {
 		const settings = {
+			maxConcurrentFileReads: 5,
 			todoListEnabled: true,
 			useAgentRules: true,
 			newTaskRequireTodos: false,
@@ -101,6 +102,7 @@ describe("getRulesSection", () => {
 
 	it("excludes vendor confidentiality section when isStealthModel is false", () => {
 		const settings = {
+			maxConcurrentFileReads: 5,
 			todoListEnabled: true,
 			useAgentRules: true,
 			newTaskRequireTodos: false,
@@ -115,6 +117,7 @@ describe("getRulesSection", () => {
 
 	it("excludes vendor confidentiality section when isStealthModel is undefined", () => {
 		const settings = {
+			maxConcurrentFileReads: 5,
 			todoListEnabled: true,
 			useAgentRules: true,
 			newTaskRequireTodos: false,

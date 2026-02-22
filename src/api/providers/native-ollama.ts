@@ -206,7 +206,7 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 		metadata?: ApiHandlerCreateMessageMetadata,
 	): ApiStream {
 		const client = this.ensureClient()
-		const { id: modelId } = await this.fetchModel()
+		const { id: modelId, info: modelInfo } = await this.fetchModel()
 		const useR1Format = modelId.toLowerCase().includes("deepseek-r1")
 
 		const ollamaMessages: Message[] = [
@@ -222,6 +222,11 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 					text: chunk.data,
 				}) as const,
 		)
+
+		// Check if we should use native tool calling
+		const supportsNativeTools = modelInfo.supportsNativeTools ?? false
+		const useNativeTools =
+			supportsNativeTools && metadata?.tools && metadata.tools.length > 0 && metadata?.toolProtocol !== "xml"
 
 		try {
 			// Build options object conditionally
@@ -240,7 +245,8 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 				messages: ollamaMessages,
 				stream: true,
 				options: chatOptions,
-				tools: this.convertToolsToOllama(metadata?.tools),
+				// Native tool calling support
+				...(useNativeTools && { tools: this.convertToolsToOllama(metadata.tools) }),
 			})
 
 			let totalInputTokens = 0

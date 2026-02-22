@@ -47,6 +47,9 @@ export class LmStudioHandler extends BaseProvider implements SingleCompletionHan
 			...convertToOpenAiMessages(messages),
 		]
 
+		// LM Studio always supports native tools (https://lmstudio.ai/docs/developer/core/tools)
+		const useNativeTools = metadata?.tools && metadata.tools.length > 0 && metadata?.toolProtocol !== "xml"
+
 		// -------------------------
 		// Track token usage
 		// -------------------------
@@ -88,9 +91,9 @@ export class LmStudioHandler extends BaseProvider implements SingleCompletionHan
 				messages: openAiMessages,
 				temperature: this.options.modelTemperature ?? LMSTUDIO_DEFAULT_TEMPERATURE,
 				stream: true,
-				tools: this.convertToolsForOpenAI(metadata?.tools),
-				tool_choice: metadata?.tool_choice,
-				parallel_tool_calls: metadata?.parallelToolCalls ?? true,
+				...(useNativeTools && { tools: this.convertToolsForOpenAI(metadata.tools) }),
+				...(useNativeTools && metadata.tool_choice && { tool_choice: metadata.tool_choice }),
+				...(useNativeTools && { parallel_tool_calls: metadata?.parallelToolCalls ?? false }),
 			}
 
 			if (this.options.lmStudioSpeculativeDecodingEnabled && this.options.lmStudioDraftModelId) {

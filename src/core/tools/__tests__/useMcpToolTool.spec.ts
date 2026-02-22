@@ -7,12 +7,7 @@ import { ToolUse } from "../../../shared/tools"
 // Mock dependencies
 vi.mock("../../prompts/responses", () => ({
 	formatResponse: {
-		toolResult: vi.fn((result: string, images?: string[]) => {
-			if (images && images.length > 0) {
-				return `Tool result: ${result} [with ${images.length} image(s)]`
-			}
-			return `Tool result: ${result}`
-		}),
+		toolResult: vi.fn((result: string) => `Tool result: ${result}`),
 		toolError: vi.fn((error: string) => `Tool error: ${error}`),
 		invalidMcpToolArgumentError: vi.fn((server: string, tool: string) => `Invalid args for ${server}:${tool}`),
 		unknownMcpToolError: vi.fn((server: string, tool: string, availableTools: string[]) => {
@@ -85,11 +80,6 @@ describe("useMcpToolTool", () => {
 					tool_name: "test_tool",
 					arguments: "{}",
 				},
-				nativeArgs: {
-					server_name: "",
-					tool_name: "test_tool",
-					arguments: {},
-				},
 				partial: false,
 			}
 
@@ -99,6 +89,8 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockTask.consecutiveMistakeCount).toBe(1)
@@ -115,11 +107,6 @@ describe("useMcpToolTool", () => {
 					server_name: "test_server",
 					arguments: "{}",
 				},
-				nativeArgs: {
-					server_name: "test_server",
-					tool_name: "",
-					arguments: {},
-				},
 				partial: false,
 			}
 
@@ -129,6 +116,8 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockTask.consecutiveMistakeCount).toBe(1)
@@ -137,7 +126,7 @@ describe("useMcpToolTool", () => {
 			expect(mockPushToolResult).toHaveBeenCalledWith("Missing tool_name error")
 		})
 
-		it("should handle invalid arguments type", async () => {
+		it("should handle invalid JSON arguments", async () => {
 			const block: ToolUse = {
 				type: "tool_use",
 				name: "use_mcp_tool",
@@ -145,12 +134,6 @@ describe("useMcpToolTool", () => {
 					server_name: "test_server",
 					tool_name: "test_tool",
 					arguments: "invalid json",
-				},
-				nativeArgs: {
-					server_name: "test_server",
-					tool_name: "test_tool",
-					// Native-only: invalid arguments are rejected unless they are an object.
-					arguments: [] as unknown as any,
 				},
 				partial: false,
 			}
@@ -175,6 +158,8 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockTask.consecutiveMistakeCount).toBe(1)
@@ -203,6 +188,8 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockTask.ask).toHaveBeenCalledWith("use_mcp_server", expect.stringContaining("use_mcp_tool"), true)
@@ -218,11 +205,6 @@ describe("useMcpToolTool", () => {
 					server_name: "test_server",
 					tool_name: "test_tool",
 					arguments: '{"param": "value"}',
-				},
-				nativeArgs: {
-					server_name: "test_server",
-					tool_name: "test_tool",
-					arguments: { param: "value" },
 				},
 				partial: false,
 			}
@@ -245,12 +227,14 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockTask.consecutiveMistakeCount).toBe(0)
 			expect(mockAskApproval).toHaveBeenCalled()
 			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_request_started")
-			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_response", "Tool executed successfully", [])
+			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_response", "Tool executed successfully")
 			expect(mockPushToolResult).toHaveBeenCalledWith("Tool result: Tool executed successfully")
 		})
 
@@ -263,26 +247,12 @@ describe("useMcpToolTool", () => {
 					tool_name: "test_tool",
 					arguments: "{}",
 				},
-				nativeArgs: {
-					server_name: "test_server",
-					tool_name: "test_tool",
-					arguments: {},
-				},
 				partial: false,
 			}
 
-			// Ensure server/tool validation passes so we actually reach askApproval.
-			mockProviderRef.deref.mockReturnValueOnce({
-				getMcpHub: () => ({
-					getAllServers: vi
-						.fn()
-						.mockReturnValue([
-							{ name: "test_server", tools: [{ name: "test_tool", description: "desc" }] },
-						]),
-					callTool: vi.fn(),
-				}),
-				postMessageToWebview: vi.fn(),
-			})
+			// Ensure validation does not fail due to unknown server by returning no provider once
+			// This makes validateToolExists return isValid: true and proceed to askApproval
+			mockProviderRef.deref.mockReturnValueOnce(undefined as any)
 
 			mockAskApproval.mockResolvedValue(false)
 
@@ -290,11 +260,12 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockTask.say).not.toHaveBeenCalledWith("mcp_server_request_started")
-			expect(mockAskApproval).toHaveBeenCalled()
-			expect(mockPushToolResult).not.toHaveBeenCalledWith(expect.stringContaining("Tool result:"))
+			expect(mockPushToolResult).not.toHaveBeenCalled()
 		})
 	})
 
@@ -304,10 +275,6 @@ describe("useMcpToolTool", () => {
 				type: "tool_use",
 				name: "use_mcp_tool",
 				params: {
-					server_name: "test_server",
-					tool_name: "test_tool",
-				},
-				nativeArgs: {
 					server_name: "test_server",
 					tool_name: "test_tool",
 				},
@@ -334,6 +301,8 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockHandleError).toHaveBeenCalledWith("executing MCP tool", error)
@@ -369,11 +338,6 @@ describe("useMcpToolTool", () => {
 					tool_name: "non-existing-tool",
 					arguments: JSON.stringify({ test: "data" }),
 				},
-				nativeArgs: {
-					server_name: "test-server",
-					tool_name: "non-existing-tool",
-					arguments: { test: "data" },
-				},
 				partial: false,
 			}
 
@@ -381,6 +345,8 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockTask.consecutiveMistakeCount).toBe(1)
@@ -418,11 +384,6 @@ describe("useMcpToolTool", () => {
 					tool_name: "any-tool",
 					arguments: JSON.stringify({ test: "data" }),
 				},
-				nativeArgs: {
-					server_name: "test-server",
-					tool_name: "any-tool",
-					arguments: { test: "data" },
-				},
 				partial: false,
 			}
 
@@ -430,6 +391,8 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockTask.consecutiveMistakeCount).toBe(1)
@@ -469,11 +432,6 @@ describe("useMcpToolTool", () => {
 					tool_name: "valid-tool",
 					arguments: JSON.stringify({ test: "data" }),
 				},
-				nativeArgs: {
-					server_name: "test-server",
-					tool_name: "valid-tool",
-					arguments: { test: "data" },
-				},
 				partial: false,
 			}
 
@@ -483,12 +441,14 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			expect(mockTask.consecutiveMistakeCount).toBe(0)
 			expect(mockTask.recordToolError).not.toHaveBeenCalled()
 			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_request_started")
-			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_response", "Tool executed successfully", [])
+			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_response", "Tool executed successfully")
 		})
 
 		it("should reject unknown server names with available servers listed", async () => {
@@ -514,11 +474,6 @@ describe("useMcpToolTool", () => {
 					tool_name: "any-tool",
 					arguments: "{}",
 				},
-				nativeArgs: {
-					server_name: "unknown",
-					tool_name: "any-tool",
-					arguments: {},
-				},
 				partial: false,
 			}
 
@@ -527,6 +482,8 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			// Assert
@@ -559,11 +516,6 @@ describe("useMcpToolTool", () => {
 					tool_name: "any-tool",
 					arguments: "{}",
 				},
-				nativeArgs: {
-					server_name: "unknown",
-					tool_name: "any-tool",
-					arguments: {},
-				},
 				partial: false,
 			}
 
@@ -572,6 +524,8 @@ describe("useMcpToolTool", () => {
 				askApproval: mockAskApproval,
 				handleError: mockHandleError,
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
 			})
 
 			// Assert
@@ -581,294 +535,6 @@ describe("useMcpToolTool", () => {
 			expect(mockPushToolResult).toHaveBeenCalledWith(expect.stringContaining("No servers available"))
 			expect(callToolMock).not.toHaveBeenCalled()
 			expect(mockAskApproval).not.toHaveBeenCalled()
-		})
-
-		it("should match tool names using fuzzy matching (hyphens vs underscores)", async () => {
-			// This tests the scenario where models mangle hyphens to underscores
-			// e.g., model sends "get_user_profile" but actual tool name is "get-user-profile"
-			mockTask.consecutiveMistakeCount = 0
-
-			const callToolMock = vi.fn().mockResolvedValue({
-				content: [{ type: "text", text: "Success" }],
-			})
-
-			const mockServers = [
-				{
-					name: "test-server",
-					tools: [{ name: "get-user-profile", description: "Gets a user profile" }],
-				},
-			]
-
-			mockProviderRef.deref.mockReturnValue({
-				getMcpHub: () => ({
-					getAllServers: vi.fn().mockReturnValue(mockServers),
-					callTool: callToolMock,
-				}),
-				postMessageToWebview: vi.fn(),
-			})
-
-			// Model sends the mangled version with underscores
-			const block: ToolUse = {
-				type: "tool_use",
-				name: "use_mcp_tool",
-				params: {
-					server_name: "test-server",
-					tool_name: "get_user_profile", // Model mangled hyphens to underscores
-					arguments: "{}",
-				},
-				nativeArgs: {
-					server_name: "test-server",
-					tool_name: "get_user_profile", // Model mangled hyphens to underscores
-					arguments: {},
-				},
-				partial: false,
-			}
-
-			mockAskApproval.mockResolvedValue(true)
-
-			await useMcpToolTool.handle(mockTask as Task, block as any, {
-				askApproval: mockAskApproval,
-				handleError: mockHandleError,
-				pushToolResult: mockPushToolResult,
-			})
-
-			// Tool should be found and executed
-			expect(mockTask.consecutiveMistakeCount).toBe(0)
-			expect(mockTask.recordToolError).not.toHaveBeenCalled()
-			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_request_started")
-
-			// The original tool name (with hyphens) should be passed to callTool
-			expect(callToolMock).toHaveBeenCalledWith("test-server", "get-user-profile", {})
-		})
-	})
-
-	describe("image handling", () => {
-		it("should handle tool response with image content", async () => {
-			const block: ToolUse = {
-				type: "tool_use",
-				name: "use_mcp_tool",
-				params: {
-					server_name: "figma-server",
-					tool_name: "get_screenshot",
-					arguments: '{"nodeId": "123"}',
-				},
-				nativeArgs: {
-					server_name: "figma-server",
-					tool_name: "get_screenshot",
-					arguments: { nodeId: "123" },
-				},
-				partial: false,
-			}
-
-			mockAskApproval.mockResolvedValue(true)
-
-			const mockToolResult = {
-				content: [
-					{
-						type: "image",
-						mimeType: "image/png",
-						data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ",
-					},
-				],
-				isError: false,
-			}
-
-			mockProviderRef.deref.mockReturnValue({
-				getMcpHub: () => ({
-					callTool: vi.fn().mockResolvedValue(mockToolResult),
-					getAllServers: vi.fn().mockReturnValue([
-						{
-							name: "figma-server",
-							tools: [{ name: "get_screenshot", description: "Get screenshot" }],
-						},
-					]),
-				}),
-				postMessageToWebview: vi.fn(),
-			})
-
-			await useMcpToolTool.handle(mockTask as Task, block as any, {
-				askApproval: mockAskApproval,
-				handleError: mockHandleError,
-				pushToolResult: mockPushToolResult,
-			})
-
-			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_request_started")
-			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_response", "[1 image(s) received]", [
-				"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ",
-			])
-			expect(mockPushToolResult).toHaveBeenCalledWith(expect.stringContaining("with 1 image(s)"))
-		})
-
-		it("should handle tool response with both text and image content", async () => {
-			const block: ToolUse = {
-				type: "tool_use",
-				name: "use_mcp_tool",
-				params: {
-					server_name: "figma-server",
-					tool_name: "get_node_info",
-					arguments: '{"nodeId": "123"}',
-				},
-				nativeArgs: {
-					server_name: "figma-server",
-					tool_name: "get_node_info",
-					arguments: { nodeId: "123" },
-				},
-				partial: false,
-			}
-
-			mockAskApproval.mockResolvedValue(true)
-
-			const mockToolResult = {
-				content: [
-					{ type: "text", text: "Node name: Button" },
-					{
-						type: "image",
-						mimeType: "image/png",
-						data: "base64imagedata",
-					},
-				],
-				isError: false,
-			}
-
-			mockProviderRef.deref.mockReturnValue({
-				getMcpHub: () => ({
-					callTool: vi.fn().mockResolvedValue(mockToolResult),
-					getAllServers: vi
-						.fn()
-						.mockReturnValue([
-							{ name: "figma-server", tools: [{ name: "get_node_info", description: "Get node info" }] },
-						]),
-				}),
-				postMessageToWebview: vi.fn(),
-			})
-
-			await useMcpToolTool.handle(mockTask as Task, block as any, {
-				askApproval: mockAskApproval,
-				handleError: mockHandleError,
-				pushToolResult: mockPushToolResult,
-			})
-
-			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_request_started")
-			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_response", "Node name: Button", [
-				"data:image/png;base64,base64imagedata",
-			])
-			expect(mockPushToolResult).toHaveBeenCalledWith(expect.stringContaining("with 1 image(s)"))
-		})
-
-		it("should handle image with data URL already formatted", async () => {
-			const block: ToolUse = {
-				type: "tool_use",
-				name: "use_mcp_tool",
-				params: {
-					server_name: "figma-server",
-					tool_name: "get_screenshot",
-					arguments: '{"nodeId": "123"}',
-				},
-				nativeArgs: {
-					server_name: "figma-server",
-					tool_name: "get_screenshot",
-					arguments: { nodeId: "123" },
-				},
-				partial: false,
-			}
-
-			mockAskApproval.mockResolvedValue(true)
-
-			const mockToolResult = {
-				content: [
-					{
-						type: "image",
-						mimeType: "image/jpeg",
-						data: "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
-					},
-				],
-				isError: false,
-			}
-
-			mockProviderRef.deref.mockReturnValue({
-				getMcpHub: () => ({
-					callTool: vi.fn().mockResolvedValue(mockToolResult),
-					getAllServers: vi.fn().mockReturnValue([
-						{
-							name: "figma-server",
-							tools: [{ name: "get_screenshot", description: "Get screenshot" }],
-						},
-					]),
-				}),
-				postMessageToWebview: vi.fn(),
-			})
-
-			await useMcpToolTool.handle(mockTask as Task, block as any, {
-				askApproval: mockAskApproval,
-				handleError: mockHandleError,
-				pushToolResult: mockPushToolResult,
-			})
-
-			// Should not double-prefix the data URL
-			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_response", "[1 image(s) received]", [
-				"data:image/jpeg;base64,/9j/4AAQSkZJRg==",
-			])
-		})
-
-		it("should handle multiple images in response", async () => {
-			const block: ToolUse = {
-				type: "tool_use",
-				name: "use_mcp_tool",
-				params: {
-					server_name: "figma-server",
-					tool_name: "get_screenshots",
-					arguments: '{"nodeIds": ["1", "2"]}',
-				},
-				nativeArgs: {
-					server_name: "figma-server",
-					tool_name: "get_screenshots",
-					arguments: { nodeIds: ["1", "2"] },
-				},
-				partial: false,
-			}
-
-			mockAskApproval.mockResolvedValue(true)
-
-			const mockToolResult = {
-				content: [
-					{
-						type: "image",
-						mimeType: "image/png",
-						data: "image1data",
-					},
-					{
-						type: "image",
-						mimeType: "image/png",
-						data: "image2data",
-					},
-				],
-				isError: false,
-			}
-
-			mockProviderRef.deref.mockReturnValue({
-				getMcpHub: () => ({
-					callTool: vi.fn().mockResolvedValue(mockToolResult),
-					getAllServers: vi.fn().mockReturnValue([
-						{
-							name: "figma-server",
-							tools: [{ name: "get_screenshots", description: "Get screenshots" }],
-						},
-					]),
-				}),
-				postMessageToWebview: vi.fn(),
-			})
-
-			await useMcpToolTool.handle(mockTask as Task, block as any, {
-				askApproval: mockAskApproval,
-				handleError: mockHandleError,
-				pushToolResult: mockPushToolResult,
-			})
-
-			expect(mockTask.say).toHaveBeenCalledWith("mcp_server_response", "[2 image(s) received]", [
-				"data:image/png;base64,image1data",
-				"data:image/png;base64,image2data",
-			])
-			expect(mockPushToolResult).toHaveBeenCalledWith(expect.stringContaining("with 2 image(s)"))
 		})
 	})
 })

@@ -13,9 +13,7 @@ describe("askFollowupQuestionTool", () => {
 		mockCline = {
 			ask: vi.fn().mockResolvedValue({ text: "Test response" }),
 			say: vi.fn().mockResolvedValue(undefined),
-			sayAndCreateMissingParamError: vi.fn().mockResolvedValue("Missing parameter error"),
 			consecutiveMistakeCount: 0,
-			recordToolError: vi.fn(),
 		}
 
 		mockPushToolResult = vi.fn((result) => {
@@ -29,10 +27,7 @@ describe("askFollowupQuestionTool", () => {
 			name: "ask_followup_question",
 			params: {
 				question: "What would you like to do?",
-			},
-			nativeArgs: {
-				question: "What would you like to do?",
-				follow_up: [{ text: "Option 1" }, { text: "Option 2" }],
+				follow_up: "<suggest>Option 1</suggest><suggest>Option 2</suggest>",
 			},
 			partial: false,
 		}
@@ -41,6 +36,8 @@ describe("askFollowupQuestionTool", () => {
 			askApproval: vi.fn(),
 			handleError: vi.fn(),
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: vi.fn((tag, content) => content),
+			toolProtocol: "xml",
 		})
 
 		expect(mockCline.ask).toHaveBeenCalledWith(
@@ -56,13 +53,7 @@ describe("askFollowupQuestionTool", () => {
 			name: "ask_followup_question",
 			params: {
 				question: "What would you like to do?",
-			},
-			nativeArgs: {
-				question: "What would you like to do?",
-				follow_up: [
-					{ text: "Write code", mode: "code" },
-					{ text: "Debug issue", mode: "debug" },
-				],
+				follow_up: '<suggest mode="code">Write code</suggest><suggest mode="debug">Debug issue</suggest>',
 			},
 			partial: false,
 		}
@@ -71,6 +62,8 @@ describe("askFollowupQuestionTool", () => {
 			askApproval: vi.fn(),
 			handleError: vi.fn(),
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: vi.fn((tag, content) => content),
+			toolProtocol: "xml",
 		})
 
 		expect(mockCline.ask).toHaveBeenCalledWith(
@@ -88,10 +81,7 @@ describe("askFollowupQuestionTool", () => {
 			name: "ask_followup_question",
 			params: {
 				question: "What would you like to do?",
-			},
-			nativeArgs: {
-				question: "What would you like to do?",
-				follow_up: [{ text: "Regular option" }, { text: "Plan architecture", mode: "architect" }],
+				follow_up: '<suggest>Regular option</suggest><suggest mode="architect">Plan architecture</suggest>',
 			},
 			partial: false,
 		}
@@ -100,6 +90,8 @@ describe("askFollowupQuestionTool", () => {
 			askApproval: vi.fn(),
 			handleError: vi.fn(),
 			pushToolResult: mockPushToolResult,
+			removeClosingTag: vi.fn((tag, content) => content),
+			toolProtocol: "xml",
 		})
 
 		expect(mockCline.ask).toHaveBeenCalledWith(
@@ -109,89 +101,6 @@ describe("askFollowupQuestionTool", () => {
 			),
 			false,
 		)
-	})
-
-	describe("parameter validation", () => {
-		it("should handle missing follow_up parameter", async () => {
-			const block: ToolUse = {
-				type: "tool_use",
-				name: "ask_followup_question",
-				params: {
-					question: "What would you like to do?",
-				},
-				nativeArgs: {
-					question: "What would you like to do?",
-					follow_up: undefined as any,
-				},
-				partial: false,
-			}
-
-			await askFollowupQuestionTool.handle(mockCline, block as ToolUse<"ask_followup_question">, {
-				askApproval: vi.fn(),
-				handleError: vi.fn(),
-				pushToolResult: mockPushToolResult,
-			})
-
-			expect(mockCline.sayAndCreateMissingParamError).toHaveBeenCalledWith("ask_followup_question", "follow_up")
-			expect(mockCline.recordToolError).toHaveBeenCalledWith("ask_followup_question")
-			expect(mockCline.didToolFailInCurrentTurn).toBe(true)
-			expect(mockCline.consecutiveMistakeCount).toBe(1)
-			expect(mockCline.ask).not.toHaveBeenCalled()
-		})
-
-		it("should handle null follow_up parameter", async () => {
-			const block: ToolUse = {
-				type: "tool_use",
-				name: "ask_followup_question",
-				params: {
-					question: "What would you like to do?",
-				},
-				nativeArgs: {
-					question: "What would you like to do?",
-					follow_up: null as any,
-				},
-				partial: false,
-			}
-
-			await askFollowupQuestionTool.handle(mockCline, block as ToolUse<"ask_followup_question">, {
-				askApproval: vi.fn(),
-				handleError: vi.fn(),
-				pushToolResult: mockPushToolResult,
-			})
-
-			expect(mockCline.sayAndCreateMissingParamError).toHaveBeenCalledWith("ask_followup_question", "follow_up")
-			expect(mockCline.recordToolError).toHaveBeenCalledWith("ask_followup_question")
-			expect(mockCline.didToolFailInCurrentTurn).toBe(true)
-			expect(mockCline.consecutiveMistakeCount).toBe(1)
-			expect(mockCline.ask).not.toHaveBeenCalled()
-		})
-
-		it("should handle non-array follow_up parameter", async () => {
-			const block: ToolUse = {
-				type: "tool_use",
-				name: "ask_followup_question",
-				params: {
-					question: "What would you like to do?",
-				},
-				nativeArgs: {
-					question: "What would you like to do?",
-					follow_up: "not an array" as any,
-				} as any,
-				partial: false,
-			}
-
-			await askFollowupQuestionTool.handle(mockCline, block as ToolUse<"ask_followup_question">, {
-				askApproval: vi.fn(),
-				handleError: vi.fn(),
-				pushToolResult: mockPushToolResult,
-			})
-
-			expect(mockCline.sayAndCreateMissingParamError).toHaveBeenCalledWith("ask_followup_question", "follow_up")
-			expect(mockCline.recordToolError).toHaveBeenCalledWith("ask_followup_question")
-			expect(mockCline.didToolFailInCurrentTurn).toBe(true)
-			expect(mockCline.consecutiveMistakeCount).toBe(1)
-			expect(mockCline.ask).not.toHaveBeenCalled()
-		})
 	})
 
 	describe("handlePartial with native protocol", () => {
@@ -213,6 +122,8 @@ describe("askFollowupQuestionTool", () => {
 				askApproval: vi.fn(),
 				handleError: vi.fn(),
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: vi.fn((tag, content) => content || ""),
+				toolProtocol: "native",
 			})
 
 			// During partial streaming, only the question should be sent (not JSON with suggestions)
@@ -233,6 +144,8 @@ describe("askFollowupQuestionTool", () => {
 				askApproval: vi.fn(),
 				handleError: vi.fn(),
 				pushToolResult: mockPushToolResult,
+				removeClosingTag: vi.fn((tag, content) => content || ""),
+				toolProtocol: "xml",
 			})
 
 			expect(mockCline.ask).toHaveBeenCalledWith("followup", "Choose wisely", true)

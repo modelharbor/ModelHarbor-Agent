@@ -221,11 +221,8 @@ describe("AwsBedrockHandler - Extended Thinking", () => {
 			expect(capturedPayload).toBeDefined()
 			expect(capturedPayload.inferenceConfig).not.toHaveProperty("topP")
 
-			// Verify that additionalModelRequestFields contains fine-grained-tool-streaming for Claude models
-			expect(capturedPayload.additionalModelRequestFields).toBeDefined()
-			expect(capturedPayload.additionalModelRequestFields.anthropic_beta).toContain(
-				"fine-grained-tool-streaming-2025-05-14",
-			)
+			// Verify that additionalModelRequestFields is not present or empty
+			expect(capturedPayload.additionalModelRequestFields).toBeUndefined()
 		})
 
 		it("should enable reasoning when enableReasoningEffort is true in settings", async () => {

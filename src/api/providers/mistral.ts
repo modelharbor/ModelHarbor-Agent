@@ -87,9 +87,13 @@ export class MistralHandler extends BaseProvider implements SingleCompletionHand
 			temperature,
 		}
 
-		requestOptions.tools = this.convertToolsForMistral(metadata?.tools ?? [])
-		// Always use "any" to require tool use
-		requestOptions.toolChoice = "any"
+		// Add tools if provided and toolProtocol is not 'xml' and model supports native tools
+		const supportsNativeTools = info.supportsNativeTools ?? false
+		if (metadata?.tools && metadata.tools.length > 0 && metadata?.toolProtocol !== "xml" && supportsNativeTools) {
+			requestOptions.tools = this.convertToolsForMistral(metadata.tools)
+			// Always use "any" to require tool use
+			requestOptions.toolChoice = "any"
+		}
 
 		// Temporary debug log for QA
 		// console.log("[MISTRAL DEBUG] Raw API request body:", requestOptions)

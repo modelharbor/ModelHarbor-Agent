@@ -11,15 +11,12 @@ export interface LoginOptions {
 	verbose?: boolean
 }
 
-export type LoginResult =
-	| {
-			success: true
-			token: string
-	  }
-	| {
-			success: false
-			error: string
-	  }
+export interface LoginResult {
+	success: boolean
+	error?: string
+	userId?: string
+	orgId?: string | null
+}
 
 const LOCALHOST = "127.0.0.1"
 
@@ -46,7 +43,11 @@ export async function login({ timeout = 5 * 60 * 1000, verbose = false }: LoginO
 					const errorUrl = new URL(`${AUTH_BASE_URL}/cli/sign-in?error=error-in-callback`)
 					errorUrl.searchParams.set("message", error)
 					res.writeHead(302, { Location: errorUrl.toString() })
-					res.end(() => {
+					res.end()
+					// Wait for response to be fully sent before closing server and rejecting.
+					// The 'close' event fires when the underlying connection is terminated,
+					// ensuring the browser has received the redirect before we shut down.
+					res.on("close", () => {
 						server.close()
 						reject(new Error(error))
 					})
@@ -54,21 +55,24 @@ export async function login({ timeout = 5 * 60 * 1000, verbose = false }: LoginO
 					const errorUrl = new URL(`${AUTH_BASE_URL}/cli/sign-in?error=missing-token`)
 					errorUrl.searchParams.set("message", "Missing token in callback")
 					res.writeHead(302, { Location: errorUrl.toString() })
-					res.end(() => {
+					res.end()
+					res.on("close", () => {
 						server.close()
 						reject(new Error("Missing token in callback"))
 					})
 				} else if (receivedState !== state) {
 					const errorUrl = new URL(`${AUTH_BASE_URL}/cli/sign-in?error=invalid-state-parameter`)
-					errorUrl.searchParams.set("message", "Invalid state parameter")
+					errorUrl.searchParams.set("message", "Invalid state parameter (possible CSRF attack)")
 					res.writeHead(302, { Location: errorUrl.toString() })
-					res.end(() => {
+					res.end()
+					res.on("close", () => {
 						server.close()
 						reject(new Error("Invalid state parameter"))
 					})
 				} else {
 					res.writeHead(302, { Location: `${AUTH_BASE_URL}/cli/sign-in?success=true` })
-					res.end(() => {
+					res.end()
+					res.on("close", () => {
 						server.close()
 						resolve({ token, state: receivedState })
 					})
@@ -86,7 +90,12 @@ export async function login({ timeout = 5 * 60 * 1000, verbose = false }: LoginO
 			reject(new Error("Authentication timed out"))
 		}, timeout)
 
+		server.on("listening", () => {
+			console.log(`[Auth] Callback server listening on port ${port}`)
+		})
+
 		server.on("close", () => {
+			console.log("[Auth] Callback server closed")
 			clearTimeout(timeoutId)
 		})
 	})
@@ -112,7 +121,7 @@ export async function login({ timeout = 5 * 60 * 1000, verbose = false }: LoginO
 		const { token } = await tokenPromise
 		await saveToken(token)
 		console.log("✓ Successfully authenticated!")
-		return { success: true, token }
+		return { success: true }
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error)
 		console.error(`✗ Authentication failed: ${message}`)

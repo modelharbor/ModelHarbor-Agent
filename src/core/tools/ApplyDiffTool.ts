@@ -23,8 +23,15 @@ interface ApplyDiffParams {
 export class ApplyDiffTool extends BaseTool<"apply_diff"> {
 	readonly name = "apply_diff" as const
 
+	parseLegacy(params: Partial<Record<string, string>>): ApplyDiffParams {
+		return {
+			path: params.path || "",
+			diff: params.diff || "",
+		}
+	}
+
 	async execute(params: ApplyDiffParams, task: Task, callbacks: ToolCallbacks): Promise<void> {
-		const { askApproval, handleError, pushToolResult } = callbacks
+		const { askApproval, handleError, pushToolResult, toolProtocol } = callbacks
 		let { path: relPath, diff: diffContent } = params
 
 		if (diffContent && !task.api.getModel().id.includes("claude")) {
@@ -50,7 +57,7 @@ export class ApplyDiffTool extends BaseTool<"apply_diff"> {
 
 			if (!accessAllowed) {
 				await task.say("rooignore_error", relPath)
-				pushToolResult(formatResponse.rooIgnoreError(relPath))
+				pushToolResult(formatResponse.rooIgnoreError(relPath, toolProtocol))
 				return
 			}
 
@@ -148,7 +155,6 @@ export class ApplyDiffTool extends BaseTool<"apply_diff"> {
 					...sharedMessageProps,
 					diff: diffContent,
 					content: unifiedPatch,
-					originalContent,
 					diffStats,
 					isProtected: isWriteProtected,
 				} satisfies ClineSayTool)
@@ -193,7 +199,6 @@ export class ApplyDiffTool extends BaseTool<"apply_diff"> {
 					...sharedMessageProps,
 					diff: diffContent,
 					content: unifiedPatch,
-					originalContent,
 					diffStats,
 					isProtected: isWriteProtected,
 				} satisfies ClineSayTool)
@@ -232,7 +237,7 @@ export class ApplyDiffTool extends BaseTool<"apply_diff"> {
 			let partFailHint = ""
 
 			if (diffResult.failParts && diffResult.failParts.length > 0) {
-				partFailHint = `But unable to apply all diff parts to file: ${absolutePath}. Use the read_file tool to check the newest file version and re-apply diffs.\n`
+				partFailHint = `But unable to apply all diff parts to file: ${absolutePath}, silently use <read_file> tool to check newest file version and re-apply diffs\n`
 			}
 
 			// Get the formatted response message

@@ -129,6 +129,7 @@ describe("FireworksHandler", () => {
 				contextWindow: 256000,
 				supportsImages: false,
 				supportsPromptCache: true,
+				supportsNativeTools: true,
 				supportsTemperature: true,
 				preserveReasoning: true,
 				defaultTemperature: 1.0,

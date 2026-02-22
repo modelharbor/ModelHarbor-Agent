@@ -80,27 +80,27 @@ describe("converters", () => {
 			const openAITool: OpenAI.Chat.ChatCompletionTool = {
 				type: "function",
 				function: {
-					name: "process_data",
-					description: "Process data with filters",
+					name: "read_file",
+					description: "Read files",
 					parameters: {
 						type: "object",
 						properties: {
-							items: {
+							files: {
 								type: "array",
 								items: {
 									type: "object",
 									properties: {
-										name: { type: "string" },
-										tags: {
+										path: { type: "string" },
+										line_ranges: {
 											type: ["array", "null"],
-											items: { type: "string" },
+											items: { type: "string", pattern: "^[0-9]+-[0-9]+$" },
 										},
 									},
-									required: ["name"],
+									required: ["path", "line_ranges"],
 								},
 							},
 						},
-						required: ["items"],
+						required: ["files"],
 						additionalProperties: false,
 					},
 				},
@@ -147,14 +147,14 @@ describe("converters", () => {
 	})
 
 	describe("convertOpenAIToolChoiceToAnthropic", () => {
-		it("should return auto with enabled parallel tool use by default when toolChoice is undefined", () => {
+		it("should return auto with disabled parallel tool use when toolChoice is undefined", () => {
 			const result = convertOpenAIToolChoiceToAnthropic(undefined)
-			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: false })
+			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: true })
 		})
 
-		it("should return auto with disabled parallel tool use when parallelToolCalls is false", () => {
-			const result = convertOpenAIToolChoiceToAnthropic(undefined, false)
-			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: true })
+		it("should return auto with enabled parallel tool use when parallelToolCalls is true", () => {
+			const result = convertOpenAIToolChoiceToAnthropic(undefined, true)
+			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: false })
 		})
 
 		it("should return undefined for 'none' tool choice", () => {
@@ -164,17 +164,17 @@ describe("converters", () => {
 
 		it("should return auto for 'auto' tool choice", () => {
 			const result = convertOpenAIToolChoiceToAnthropic("auto")
-			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: false })
+			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: true })
 		})
 
 		it("should return any for 'required' tool choice", () => {
 			const result = convertOpenAIToolChoiceToAnthropic("required")
-			expect(result).toEqual({ type: "any", disable_parallel_tool_use: false })
+			expect(result).toEqual({ type: "any", disable_parallel_tool_use: true })
 		})
 
 		it("should return auto for unknown string tool choice", () => {
 			const result = convertOpenAIToolChoiceToAnthropic("unknown" as any)
-			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: false })
+			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: true })
 		})
 
 		it("should convert function object form to tool type", () => {
@@ -185,28 +185,28 @@ describe("converters", () => {
 			expect(result).toEqual({
 				type: "tool",
 				name: "get_weather",
-				disable_parallel_tool_use: false,
+				disable_parallel_tool_use: true,
 			})
 		})
 
-		it("should handle function object form with parallel tool calls disabled", () => {
+		it("should handle function object form with parallel tool calls enabled", () => {
 			const result = convertOpenAIToolChoiceToAnthropic(
 				{
 					type: "function",
 					function: { name: "read_file" },
 				},
-				false,
+				true,
 			)
 			expect(result).toEqual({
 				type: "tool",
 				name: "read_file",
-				disable_parallel_tool_use: true,
+				disable_parallel_tool_use: false,
 			})
 		})
 
 		it("should return auto for object without function property", () => {
 			const result = convertOpenAIToolChoiceToAnthropic({ type: "something" } as any)
-			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: false })
+			expect(result).toEqual({ type: "auto", disable_parallel_tool_use: true })
 		})
 	})
 })

@@ -5,44 +5,62 @@ import type { ExperimentId } from "@roo-code/types"
 import { EXPERIMENT_IDS, experimentConfigsMap, experiments as Experiments } from "../experiments"
 
 describe("experiments", () => {
-	describe("PREVENT_FOCUS_DISRUPTION", () => {
+	describe("POWER_STEERING", () => {
 		it("is configured correctly", () => {
-			expect(EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION).toBe("preventFocusDisruption")
-			expect(experimentConfigsMap.PREVENT_FOCUS_DISRUPTION).toMatchObject({
+			expect(EXPERIMENT_IDS.POWER_STEERING).toBe("powerSteering")
+			expect(experimentConfigsMap.POWER_STEERING).toMatchObject({
 				enabled: false,
 			})
 		})
 	})
 
-	describe("isEnabled", () => {
-		it("returns false when experiment is not enabled", () => {
-			const experiments: Record<ExperimentId, boolean> = {
-				preventFocusDisruption: false,
-				imageGeneration: false,
-				runSlashCommand: false,
-				customTools: false,
-			}
-			expect(Experiments.isEnabled(experiments, EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION)).toBe(false)
+	describe("MULTI_FILE_APPLY_DIFF", () => {
+		it("is configured correctly", () => {
+			expect(EXPERIMENT_IDS.MULTI_FILE_APPLY_DIFF).toBe("multiFileApplyDiff")
+			expect(experimentConfigsMap.MULTI_FILE_APPLY_DIFF).toMatchObject({
+				enabled: true,
+			})
 		})
+	})
 
-		it("returns true when experiment is enabled", () => {
+	describe("isEnabled", () => {
+		it("returns false when POWER_STEERING experiment is not enabled", () => {
 			const experiments: Record<ExperimentId, boolean> = {
+				powerSteering: false,
+				multiFileApplyDiff: true,
 				preventFocusDisruption: true,
 				imageGeneration: false,
 				runSlashCommand: false,
+				multipleNativeToolCalls: false,
 				customTools: false,
 			}
-			expect(Experiments.isEnabled(experiments, EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION)).toBe(true)
+			expect(Experiments.isEnabled(experiments, EXPERIMENT_IDS.POWER_STEERING)).toBe(false)
+		})
+
+		it("returns true when experiment POWER_STEERING is enabled", () => {
+			const experiments: Record<ExperimentId, boolean> = {
+				powerSteering: true,
+				multiFileApplyDiff: true,
+				preventFocusDisruption: true,
+				imageGeneration: false,
+				runSlashCommand: false,
+				multipleNativeToolCalls: false,
+				customTools: false,
+			}
+			expect(Experiments.isEnabled(experiments, EXPERIMENT_IDS.POWER_STEERING)).toBe(true)
 		})
 
 		it("returns false when experiment is not present", () => {
 			const experiments: Record<ExperimentId, boolean> = {
-				preventFocusDisruption: false,
+				powerSteering: false,
+				multiFileApplyDiff: true,
+				preventFocusDisruption: true,
 				imageGeneration: false,
 				runSlashCommand: false,
+				multipleNativeToolCalls: false,
 				customTools: false,
 			}
-			expect(Experiments.isEnabled(experiments, EXPERIMENT_IDS.PREVENT_FOCUS_DISRUPTION)).toBe(false)
+			expect(Experiments.isEnabled(experiments, EXPERIMENT_IDS.POWER_STEERING)).toBe(false)
 		})
 	})
 })

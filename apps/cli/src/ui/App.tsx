@@ -59,33 +59,33 @@ import ScrollIndicator from "./components/ScrollIndicator.js"
 const PICKER_HEIGHT = 10
 
 export interface TUIAppProps extends ExtensionHostOptions {
-	initialPrompt?: string
+	initialPrompt: string
+	debug: boolean
+	exitOnComplete: boolean
 	version: string
-	// Create extension host factory for dependency injection.
 	createExtensionHost: (options: ExtensionHostOptions) => ExtensionHostInterface
 }
 
 /**
  * Inner App component that uses the terminal size context
  */
-function AppInner({ createExtensionHost, ...extensionHostOptions }: TUIAppProps) {
-	const {
-		initialPrompt,
-		workspacePath,
-		extensionPath,
-		user,
-		provider,
-		apiKey,
-		model,
-		mode,
-		nonInteractive = false,
-		debug,
-		exitOnComplete,
-		reasoningEffort,
-		ephemeral,
-		version,
-	} = extensionHostOptions
-
+function AppInner({
+	initialPrompt,
+	workspacePath,
+	extensionPath,
+	user,
+	provider,
+	apiKey,
+	model,
+	mode,
+	nonInteractive = false,
+	debug,
+	exitOnComplete,
+	reasoningEffort,
+	ephemeral,
+	version,
+	createExtensionHost,
+}: TUIAppProps) {
 	const { exit } = useApp()
 
 	const {
@@ -455,8 +455,12 @@ function AppInner({ createExtensionHost, ...extensionHostOptions }: TUIAppProps)
 			{/* Header - fixed size */}
 			<Box flexShrink={0}>
 				<Header
-					{...extensionHostOptions}
+					cwd={workspacePath}
+					user={user}
+					provider={provider}
+					model={model}
 					mode={currentMode || mode}
+					reasoningEffort={reasoningEffort}
 					version={version}
 					tokenUsage={tokenUsage}
 					contextWindow={contextWindow}

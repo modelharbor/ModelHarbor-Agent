@@ -42,7 +42,7 @@ export const WelcomeViewProvider = () => {
 	if (selectedProvider === null) {
 		return (
 			<Tab>
-				<TabContent className="relative flex flex-col gap-4 p-6 justify-center">
+				<TabContent className="flex flex-col gap-4 p-6 justify-center">
 					<RooHero />
 					<h2 className="mt-0 mb-0 text-xl">{t("welcome:greeting")}</h2>
 
@@ -56,14 +56,6 @@ export const WelcomeViewProvider = () => {
 						<Button onClick={handleGetStarted} variant="primary">
 							{t("welcome:start")}
 						</Button>
-					</div>
-
-					<div className="absolute bottom-6 left-6">
-						<button
-							onClick={() => vscode.postMessage({ type: "importSettings" })}
-							className="cursor-pointer bg-transparent border-none p-0 text-vscode-foreground hover:underline">
-							{t("welcome:importSettings")}
-						</button>
 					</div>
 				</TabContent>
 			</Tab>

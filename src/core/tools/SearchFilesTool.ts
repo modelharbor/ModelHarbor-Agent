@@ -19,6 +19,14 @@ interface SearchFilesParams {
 export class SearchFilesTool extends BaseTool<"search_files"> {
 	readonly name = "search_files" as const
 
+	parseLegacy(params: Partial<Record<string, string>>): SearchFilesParams {
+		return {
+			path: params.path || "",
+			regex: params.regex || "",
+			file_pattern: params.file_pattern || undefined,
+		}
+	}
+
 	async execute(params: SearchFilesParams, task: Task, callbacks: ToolCallbacks): Promise<void> {
 		const { askApproval, handleError, pushToolResult } = callbacks
 
@@ -81,9 +89,9 @@ export class SearchFilesTool extends BaseTool<"search_files"> {
 
 		const sharedMessageProps: ClineSayTool = {
 			tool: "searchFiles",
-			path: getReadablePath(task.cwd, relDirPath ?? ""),
-			regex: regex ?? "",
-			filePattern: filePattern ?? "",
+			path: getReadablePath(task.cwd, this.removeClosingTag("path", relDirPath, block.partial)),
+			regex: this.removeClosingTag("regex", regex, block.partial),
+			filePattern: this.removeClosingTag("file_pattern", filePattern, block.partial),
 			isOutsideWorkspace,
 		}
 

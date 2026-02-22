@@ -197,14 +197,14 @@ describe("versionedSettings", () => {
 		it("should handle versioned boolean values", () => {
 			const versionedSettings: VersionedSettings = {
 				"3.36.0": {
-					supportsReasoningEffort: true,
+					supportsNativeTools: true,
 				},
 			}
 
 			const resolved = resolveVersionedSettings(versionedSettings, currentVersion)
 
 			expect(resolved).toEqual({
-				supportsReasoningEffort: true,
+				supportsNativeTools: true,
 			})
 		})
 

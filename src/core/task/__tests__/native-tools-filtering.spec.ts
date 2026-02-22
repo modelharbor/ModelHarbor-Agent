@@ -3,21 +3,22 @@ import type { ModeConfig } from "@roo-code/types"
 describe("Native Tools Filtering by Mode", () => {
 	describe("attemptApiRequest native tool filtering", () => {
 		it("should filter native tools based on mode restrictions", async () => {
-			// This test verifies that native tools are filtered by mode restrictions
-			// before being sent to the API.
+			// This test verifies that when using native protocol, tools are filtered
+			// by mode restrictions before being sent to the API, similar to how
+			// XML tools are filtered in the system prompt.
 
 			const architectMode: ModeConfig = {
 				slug: "architect",
 				name: "Architect",
 				roleDefinition: "Test architect",
-				groups: ["read", "mcp"] as const,
+				groups: ["read", "browser", "mcp"] as const,
 			}
 
 			const codeMode: ModeConfig = {
 				slug: "code",
 				name: "Code",
 				roleDefinition: "Test code",
-				groups: ["read", "edit", "command", "mcp"] as const,
+				groups: ["read", "edit", "browser", "command", "mcp"] as const,
 			}
 
 			// Import the functions we need to test

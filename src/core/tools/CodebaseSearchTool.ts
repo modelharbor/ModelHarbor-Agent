@@ -18,8 +18,22 @@ interface CodebaseSearchParams {
 export class CodebaseSearchTool extends BaseTool<"codebase_search"> {
 	readonly name = "codebase_search" as const
 
+	parseLegacy(params: Partial<Record<string, string>>): CodebaseSearchParams {
+		let query = params.query
+		let directoryPrefix = params.path
+
+		if (directoryPrefix) {
+			directoryPrefix = path.normalize(directoryPrefix)
+		}
+
+		return {
+			query: query || "",
+			path: directoryPrefix,
+		}
+	}
+
 	async execute(params: CodebaseSearchParams, task: Task, callbacks: ToolCallbacks): Promise<void> {
-		const { askApproval, handleError, pushToolResult } = callbacks
+		const { askApproval, handleError, pushToolResult, toolProtocol } = callbacks
 		const { query, path: directoryPrefix } = params
 
 		const workspacePath = task.cwd && task.cwd.trim() !== "" ? task.cwd : getWorkspacePath()

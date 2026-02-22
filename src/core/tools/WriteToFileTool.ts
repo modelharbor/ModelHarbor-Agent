@@ -26,8 +26,15 @@ interface WriteToFileParams {
 export class WriteToFileTool extends BaseTool<"write_to_file"> {
 	readonly name = "write_to_file" as const
 
+	parseLegacy(params: Partial<Record<string, string>>): WriteToFileParams {
+		return {
+			path: params.path || "",
+			content: params.content || "",
+		}
+	}
+
 	async execute(params: WriteToFileParams, task: Task, callbacks: ToolCallbacks): Promise<void> {
-		const { pushToolResult, handleError, askApproval } = callbacks
+		const { pushToolResult, handleError, askApproval, removeClosingTag } = callbacks
 		const relPath = params.path
 		let newContent = params.content
 
@@ -85,12 +92,12 @@ export class WriteToFileTool extends BaseTool<"write_to_file"> {
 			newContent = unescapeHtmlEntities(newContent)
 		}
 
-		const fullPath = relPath ? path.resolve(task.cwd, relPath) : ""
+		const fullPath = relPath ? path.resolve(task.cwd, removeClosingTag("path", relPath)) : ""
 		const isOutsideWorkspace = isPathOutsideWorkspace(fullPath)
 
 		const sharedMessageProps: ClineSayTool = {
 			tool: fileExists ? "editedExistingFile" : "newFileCreated",
-			path: getReadablePath(task.cwd, relPath),
+			path: getReadablePath(task.cwd, removeClosingTag("path", relPath)),
 			content: newContent,
 			isOutsideWorkspace,
 			isProtected: isWriteProtected,

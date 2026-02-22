@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react"
 import { useEvent } from "react-use"
-import { VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
+import { VSCodeTextField, VSCodeRadioGroup, VSCodeRadio } from "@vscode/webview-ui-toolkit/react"
 
 import type { ProviderSettings, ExtensionMessage, ModelRecord } from "@roo-code/types"
 
@@ -9,7 +9,6 @@ import { useRouterModels } from "@src/components/ui/hooks/useRouterModels"
 import { vscode } from "@src/utils/vscode"
 
 import { inputEventTransform } from "../transforms"
-import { ModelPicker } from "../ModelPicker"
 
 type OllamaProps = {
 	apiConfiguration: ProviderSettings
@@ -55,27 +54,25 @@ export const Ollama = ({ apiConfiguration, setApiConfigurationField }: OllamaPro
 	}, [])
 
 	// Check if the selected model exists in the fetched models
-	const modelNotAvailableError = useMemo(() => {
+	const modelNotAvailable = useMemo(() => {
 		const selectedModel = apiConfiguration?.ollamaModelId
-		if (!selectedModel) return undefined
+		if (!selectedModel) return false
 
 		// Check if model exists in local ollama models
 		if (Object.keys(ollamaModels).length > 0 && selectedModel in ollamaModels) {
-			return undefined // Model is available locally
+			return false // Model is available locally
 		}
 
-		// Only validate against router models if they actually contain data (not just an empty placeholder)
-		if (routerModels.data?.ollama && Object.keys(routerModels.data.ollama).length > 0) {
+		// If we have router models data for Ollama
+		if (routerModels.data?.ollama) {
 			const availableModels = Object.keys(routerModels.data.ollama)
-			// Show warning if model is not in the list
-			if (!availableModels.includes(selectedModel)) {
-				return t("settings:validation.modelAvailability", { modelId: selectedModel })
-			}
+			// Show warning if model is not in the list (regardless of how many models there are)
+			return !availableModels.includes(selectedModel)
 		}
 
 		// If neither source has loaded yet, don't show warning
-		return undefined
-	}, [apiConfiguration?.ollamaModelId, routerModels.data, ollamaModels, t])
+		return false
+	}, [apiConfiguration?.ollamaModelId, routerModels.data, ollamaModels])
 
 	return (
 		<>
@@ -100,21 +97,40 @@ export const Ollama = ({ apiConfiguration, setApiConfigurationField }: OllamaPro
 					</div>
 				</VSCodeTextField>
 			)}
-			<ModelPicker
-				apiConfiguration={apiConfiguration}
-				setApiConfigurationField={setApiConfigurationField}
-				defaultModelId=""
-				models={ollamaModels}
-				modelIdKey="ollamaModelId"
-				serviceName="Ollama"
-				serviceUrl="https://ollama.ai"
-				errorMessage={modelNotAvailableError}
-				hidePricing
-			/>
+			<VSCodeTextField
+				value={apiConfiguration?.ollamaModelId || ""}
+				onInput={handleInputChange("ollamaModelId")}
+				placeholder={t("settings:placeholders.modelId.ollama")}
+				className="w-full">
+				<label className="block font-medium mb-1">{t("settings:providers.ollama.modelId")}</label>
+			</VSCodeTextField>
+			{modelNotAvailable && (
+				<div className="flex flex-col gap-2 text-vscode-errorForeground text-sm">
+					<div className="flex flex-row items-center gap-1">
+						<div className="codicon codicon-close" />
+						<div>
+							{t("settings:validation.modelAvailability", { modelId: apiConfiguration?.ollamaModelId })}
+						</div>
+					</div>
+				</div>
+			)}
+			{Object.keys(ollamaModels).length > 0 && (
+				<VSCodeRadioGroup
+					value={
+						(apiConfiguration?.ollamaModelId || "") in ollamaModels ? apiConfiguration?.ollamaModelId : ""
+					}
+					onChange={handleInputChange("ollamaModelId")}>
+					{Object.keys(ollamaModels).map((model) => (
+						<VSCodeRadio key={model} value={model} checked={apiConfiguration?.ollamaModelId === model}>
+							{model}
+						</VSCodeRadio>
+					))}
+				</VSCodeRadioGroup>
+			)}
 			<VSCodeTextField
 				value={apiConfiguration?.ollamaNumCtx?.toString() || ""}
-				onInput={(e) => {
-					const value = (e.target as HTMLInputElement)?.value
+				onInput={(e: any) => {
+					const value = e.target?.value
 					if (value === "") {
 						setApiConfigurationField("ollamaNumCtx", undefined)
 					} else {
