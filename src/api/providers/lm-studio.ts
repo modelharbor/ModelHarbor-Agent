@@ -7,7 +7,7 @@ import { type ModelInfo, openAiModelInfoSaneDefaults, LMSTUDIO_DEFAULT_TEMPERATU
 import type { ApiHandlerOptions } from "../../shared/api"
 
 import { NativeToolCallParser } from "../../core/assistant-message/NativeToolCallParser"
-import { TagMatcher } from "../../utils/tag-matcher"
+import { XmlMatcher } from "../../utils/xml-matcher"
 
 import { convertToOpenAiMessages } from "../transform/openai-format"
 import { ApiStream } from "../transform/stream"
@@ -104,7 +104,7 @@ export class LmStudioHandler extends BaseProvider implements SingleCompletionHan
 				throw handleOpenAIError(error, this.providerName)
 			}
 
-			const matcher = new TagMatcher(
+			const matcher = new XmlMatcher(
 				"think",
 				(chunk) =>
 					({

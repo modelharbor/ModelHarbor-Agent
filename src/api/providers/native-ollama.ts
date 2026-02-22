@@ -6,7 +6,7 @@ import { ApiStream } from "../transform/stream"
 import { BaseProvider } from "./base-provider"
 import type { ApiHandlerOptions } from "../../shared/api"
 import { getOllamaModels } from "./fetchers/ollama"
-import { TagMatcher } from "../../utils/tag-matcher"
+import { XmlMatcher } from "../../utils/xml-matcher"
 import type { SingleCompletionHandler, ApiHandlerCreateMessageMetadata } from "../index"
 
 interface OllamaChatOptions {
@@ -214,7 +214,7 @@ export class NativeOllamaHandler extends BaseProvider implements SingleCompletio
 			...convertToOllamaMessages(messages),
 		]
 
-		const matcher = new TagMatcher(
+		const matcher = new XmlMatcher(
 			"think",
 			(chunk) =>
 				({

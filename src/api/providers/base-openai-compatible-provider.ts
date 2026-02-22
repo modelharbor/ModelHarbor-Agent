@@ -4,7 +4,7 @@ import OpenAI from "openai"
 import type { ModelInfo } from "@roo-code/types"
 
 import { type ApiHandlerOptions, getModelMaxOutputTokens } from "../../shared/api"
-import { TagMatcher } from "../../utils/tag-matcher"
+import { XmlMatcher } from "../../utils/xml-matcher"
 import { ApiStream, ApiStreamUsageChunk } from "../transform/stream"
 import { convertToOpenAiMessages } from "../transform/openai-format"
 
@@ -117,7 +117,7 @@ export abstract class BaseOpenAiCompatibleProvider<ModelName extends string>
 	): ApiStream {
 		const stream = await this.createStream(systemPrompt, messages, metadata)
 
-		const matcher = new TagMatcher(
+		const matcher = new XmlMatcher(
 			"think",
 			(chunk) =>
 				({
