@@ -1,3 +1,4 @@
+import * as fs from "fs"
 import * as path from "path"
 import * as os from "node:os"
 
@@ -7,11 +8,11 @@ import { execa } from "execa"
 import { type ToolUsage, TaskCommandName, RooCodeEventName, IpcMessageType } from "@roo-code/types"
 import { IpcClient } from "@roo-code/ipc"
 
-import { updateTask, createTaskMetrics, updateTaskMetrics, createToolError } from "../db/index"
-import { EVALS_REPO_PATH } from "../exercises/index"
+import { updateTask, createTaskMetrics, updateTaskMetrics, createToolError } from "../db/index.js"
+import { EVALS_REPO_PATH } from "../exercises/index.js"
 
-import { type RunTaskOptions } from "./types"
-import { mergeToolUsage, waitForSubprocessWithTimeout } from "./utils"
+import { type RunTaskOptions } from "./types.js"
+import { mergeToolUsage, waitForSubprocessWithTimeout } from "./utils.js"
 
 /**
  * Run a task using the Roo Code CLI (headless mode).
@@ -19,7 +20,7 @@ import { mergeToolUsage, waitForSubprocessWithTimeout } from "./utils"
  */
 export const runTaskWithCli = async ({ run, task, publish, logger, jobToken }: RunTaskOptions) => {
 	const { language, exercise } = task
-	const promptSourcePath = path.resolve(EVALS_REPO_PATH, `prompts/${language}.md`)
+	const prompt = fs.readFileSync(path.resolve(EVALS_REPO_PATH, `prompts/${language}.md`), "utf-8")
 	const workspacePath = path.resolve(EVALS_REPO_PATH, language, exercise)
 	const ipcSocketPath = path.resolve(os.tmpdir(), `evals-cli-${run.id}-${task.id}.sock`)
 
@@ -39,30 +40,32 @@ export const runTaskWithCli = async ({ run, task, publish, logger, jobToken }: R
 		"--filter",
 		"@roo-code/cli",
 		"start",
-		"--prompt-file",
-		promptSourcePath,
-		"--workspace",
-		workspacePath,
+		"--yes",
+		"--exit-on-complete",
 		"--reasoning-effort",
 		"disabled",
-		"--oneshot",
+		"--workspace",
+		workspacePath,
 	]
 
 	if (run.settings?.mode) {
-		cliArgs.push("--mode", run.settings.mode)
+		cliArgs.push("-M", run.settings.mode)
 	}
 
 	if (run.settings?.apiProvider) {
-		cliArgs.push("--provider", run.settings.apiProvider)
+		cliArgs.push("-p", run.settings.apiProvider)
 	}
 
 	const modelId = run.settings?.apiModelId || run.settings?.openRouterModelId
 
 	if (modelId) {
-		cliArgs.push("--model", modelId)
+		cliArgs.push("-m", modelId)
 	}
 
+	cliArgs.push(prompt)
+
 	logger.info(`CLI command: pnpm ${cliArgs.join(" ")}`)
+
 	const subprocess = execa("pnpm", cliArgs, { env, cancelSignal, cwd: process.cwd() })
 
 	// Buffer for accumulating streaming output until we have complete lines.
@@ -263,7 +266,7 @@ export const runTaskWithCli = async ({ run, task, publish, logger, jobToken }: R
 
 		if (rooTaskId && !isClientDisconnected) {
 			logger.info("cancelling task")
-			client.sendCommand({ commandName: TaskCommandName.CancelTask })
+			client.sendCommand({ commandName: TaskCommandName.CancelTask, data: rooTaskId })
 			await new Promise((resolve) => setTimeout(resolve, 5_000))
 		}
 
@@ -288,7 +291,7 @@ export const runTaskWithCli = async ({ run, task, publish, logger, jobToken }: R
 
 	if (rooTaskId && !isClientDisconnected) {
 		logger.info("closing task")
-		client.sendCommand({ commandName: TaskCommandName.CloseTask })
+		client.sendCommand({ commandName: TaskCommandName.CloseTask, data: rooTaskId })
 		await new Promise((resolve) => setTimeout(resolve, 2_000))
 	}
 
