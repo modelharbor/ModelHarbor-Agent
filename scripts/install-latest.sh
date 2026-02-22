@@ -2,9 +2,9 @@
 # Installs the latest version of the modelharbor-agent .vsix from bin/ using VSCode CLI
 
 set -e
-pnpm lint
+pnpm install --frozen-lockfile
 pnpm clean
-pnpm build
+pnpm lint
 pnpm run check-types
 pnpm vsix
 # Find the latest .vsix file by version
@@ -16,6 +16,6 @@ if [ -z "$LATEST_VSIX" ]; then
 fi
 
 echo "Uninstalling extension"
-code --uninstall-extension modelharbor.modelharbor-agent
+code --uninstall-extension modelharbor.modelharbor-agent || true
 echo "Installing extension: $LATEST_VSIX"
 code --install-extension "$LATEST_VSIX"
