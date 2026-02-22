@@ -19,7 +19,19 @@ Integrated the ModelHarbor patch set via cherry-pick, resolved conflicts, and al
 
 ## Tests
 
-| Test File                                           | Notes  |
-| --------------------------------------------------- | ------ |
-| `src/api/transform/__tests__/openai-format.spec.ts` | Passed |
-| `src/services/mcp/__tests__/McpHub.spec.ts`         | Passed |
+| Test File                                                                     | Notes  |
+| ----------------------------------------------------------------------------- | ------ |
+| `src/utils/__tests__/xml.spec.ts`                                             | Passed |
+| `src/utils/__tests__/xml-matcher.spec.ts`                                     | Passed |
+| `src/utils/__tests__/resolveToolProtocol.spec.ts`                             | Passed |
+| `src/shared/__tests__/experiments.spec.ts`                                    | Passed |
+| `src/core/task/__tests__/Task.super-yolo-stuck-timer.spec.ts`                 | Passed |
+| `src/services/code-index/embedders/__tests__/modelharbor.spec.ts`             | Passed |
+| `src/services/code-index/embedders/__tests__/litellm.spec.ts`                 | Passed |
+| `src/services/code-index/__tests__/litellm-model-fetcher.spec.ts`             | Passed |
+| `src/api/providers/__tests__/modelharbor.spec.ts`                             | Passed |
+| `webview-ui/src/components/settings/providers/__tests__/ModelHarbor.spec.tsx` | Passed |
+| `src/shared/__tests__/language.spec.ts`                                       | Passed |
+| `src/shared/__tests__/api.spec.ts`                                            | Passed |
+| `src/shared/__tests__/checkExistApiConfig.spec.ts`                            | Passed |
+| `src/shared/__tests__/ProfileValidator.spec.ts`                               | Passed |
