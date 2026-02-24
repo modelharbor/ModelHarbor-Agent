@@ -382,7 +382,8 @@ export class VsCodeLmHandler extends BaseProvider implements SingleCompletionHan
 		let accumulatedText: string = ""
 
 		// Determine if we're using native tool protocol
-		const useNativeTools = metadata?.toolProtocol === "native" && metadata?.tools && metadata.tools.length > 0
+		// VSCode LM supports native tools by default; only skip if explicitly set to XML
+		const useNativeTools = metadata?.toolProtocol !== "xml" && metadata?.tools && metadata.tools.length > 0
 
 		try {
 			// Create the response stream with required options

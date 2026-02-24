@@ -51,6 +51,7 @@ import { openMention } from "../mentions"
 import { resolveImageMentions } from "../mentions/resolveImageMentions"
 import { RooIgnoreController } from "../ignore/RooIgnoreController"
 import { getWorkspacePath } from "../../utils/path"
+import { isPathOutsideWorkspace } from "../../utils/pathUtils"
 import { Mode, defaultModeSlug } from "../../shared/modes"
 import { getModels, flushModels } from "../../api/providers/fetchers/modelCache"
 import {
@@ -1155,6 +1156,44 @@ export const webviewMessageHandler = async (
 			}
 			openFile(filePath, message.values as { create?: boolean; content?: string; line?: number })
 			break
+		case "readFileContent": {
+			const relPath = message.text || ""
+			if (!relPath) {
+				provider.postMessageToWebview({
+					type: "fileContent",
+					fileContent: { path: relPath, content: null, error: "No path provided" },
+				})
+				break
+			}
+			try {
+				const cwd = getCurrentCwd()
+				if (!cwd) {
+					provider.postMessageToWebview({
+						type: "fileContent",
+						fileContent: { path: relPath, content: null, error: "No workspace path available" },
+					})
+					break
+				}
+				const absPath = path.resolve(cwd, relPath)
+				// Workspace-boundary validation: prevent path traversal attacks
+				if (isPathOutsideWorkspace(absPath)) {
+					provider.postMessageToWebview({
+						type: "fileContent",
+						fileContent: { path: relPath, content: null, error: "Path is outside workspace" },
+					})
+					break
+				}
+				const content = await fs.readFile(absPath, "utf-8")
+				provider.postMessageToWebview({ type: "fileContent", fileContent: { path: relPath, content } })
+			} catch (err) {
+				const errorMsg = err instanceof Error ? err.message : String(err)
+				provider.postMessageToWebview({
+					type: "fileContent",
+					fileContent: { path: relPath, content: null, error: errorMsg },
+				})
+			}
+			break
+		}
 		case "openMention":
 			openMention(getCurrentCwd(), message.text)
 			break
@@ -3169,6 +3208,176 @@ export const webviewMessageHandler = async (
 				values: message.values,
 				log: (msg) => provider.log(msg),
 			})
+			break
+		}
+
+		// Worktree handlers
+		case "listWorktrees": {
+			const { handleListWorktrees } = await import("./worktree")
+			const result = await handleListWorktrees(provider)
+			provider.postMessageToWebview({
+				type: "worktreeList",
+				...result,
+			})
+			break
+		}
+
+		case "createWorktree": {
+			const { handleCreateWorktree } = await import("./worktree")
+			try {
+				if (!message.worktreePath) {
+					throw new Error("worktreePath is required")
+				}
+				const result = await handleCreateWorktree(
+					provider,
+					{
+						path: message.worktreePath,
+						branch: message.worktreeBranch,
+						baseBranch: message.worktreeBaseBranch,
+						createNewBranch: message.worktreeCreateNewBranch,
+					},
+					(progress) => {
+						provider.postMessageToWebview({
+							type: "worktreeCopyProgress",
+							copyProgressBytesCopied: progress.bytesCopied,
+							copyProgressItemName: progress.itemName,
+						})
+					},
+				)
+				provider.postMessageToWebview({
+					type: "worktreeResult",
+					...result,
+					success: result.success,
+					text: result.message,
+				})
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : String(error)
+				provider.postMessageToWebview({
+					type: "worktreeResult",
+					success: false,
+					text: errorMessage,
+				})
+			}
+			break
+		}
+
+		case "deleteWorktree": {
+			const { handleDeleteWorktree } = await import("./worktree")
+			try {
+				if (!message.worktreePath) {
+					throw new Error("worktreePath is required")
+				}
+				const result = await handleDeleteWorktree(
+					provider,
+					message.worktreePath,
+					message.worktreeForce ?? false,
+				)
+				provider.postMessageToWebview({
+					type: "worktreeResult",
+					...result,
+					success: result.success,
+					text: result.message,
+				})
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : String(error)
+				provider.postMessageToWebview({
+					type: "worktreeResult",
+					success: false,
+					text: errorMessage,
+				})
+			}
+			break
+		}
+
+		case "switchWorktree": {
+			const { handleSwitchWorktree } = await import("./worktree")
+			try {
+				if (!message.worktreePath) {
+					throw new Error("worktreePath is required")
+				}
+				const result = await handleSwitchWorktree(
+					provider,
+					message.worktreePath,
+					message.worktreeNewWindow ?? false,
+				)
+				provider.postMessageToWebview({
+					type: "worktreeResult",
+					...result,
+					success: result.success,
+					text: result.message,
+				})
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : String(error)
+				provider.postMessageToWebview({
+					type: "worktreeResult",
+					success: false,
+					text: errorMessage,
+				})
+			}
+			break
+		}
+
+		case "getAvailableBranches": {
+			const { handleGetAvailableBranches } = await import("./worktree")
+			try {
+				const result = await handleGetAvailableBranches(provider)
+				provider.postMessageToWebview({
+					type: "branchList",
+					...result,
+				})
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : String(error)
+				provider.log(`Error getting available branches: ${errorMessage}`)
+			}
+			break
+		}
+
+		case "getWorktreeDefaults": {
+			const { handleGetWorktreeDefaults } = await import("./worktree")
+			try {
+				const result = await handleGetWorktreeDefaults(provider)
+				provider.postMessageToWebview({
+					type: "worktreeDefaults",
+					...result,
+				})
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : String(error)
+				provider.log(`Error getting worktree defaults: ${errorMessage}`)
+			}
+			break
+		}
+
+		case "getWorktreeIncludeStatus": {
+			const { handleGetWorktreeIncludeStatus } = await import("./worktree")
+			try {
+				const result = await handleGetWorktreeIncludeStatus(provider)
+				provider.postMessageToWebview({
+					type: "worktreeIncludeStatus",
+					exists: result.exists,
+					hasGitignore: result.hasGitignore,
+					gitignoreContent: result.gitignoreContent,
+				})
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : String(error)
+				provider.log(`Error getting worktree include status: ${errorMessage}`)
+			}
+			break
+		}
+
+		case "browseForWorktreePath": {
+			const result = await vscode.window.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				title: "Select folder for new worktree",
+			})
+
+			if (result && result[0]) {
+				provider.postMessageToWebview({
+					type: "folderSelected",
+					path: result[0].fsPath,
+				})
+			}
 			break
 		}
 

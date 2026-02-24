@@ -17,6 +17,7 @@ import type { SerializedCustomToolDefinition } from "./custom-tool.js"
 import type { GitCommit } from "./git.js"
 import type { McpServer } from "./mcp.js"
 import type { ModelRecord, RouterModels } from "./model.js"
+import type { Worktree } from "./worktree.js"
 
 /**
  * Share visibility options for task sharing
@@ -65,6 +66,7 @@ export interface ExtensionMessage {
 		| "ttsStop"
 		| "maxReadFileLine"
 		| "fileSearchResults"
+		| "fileContent"
 		| "toggleApiConfigPin"
 		| "acceptInput"
 		| "setHistoryPreviewCollapsed"
@@ -98,6 +100,13 @@ export interface ExtensionMessage {
 		| "modes"
 		| "taskWithAggregatedCosts"
 		| "liteLLMEmbeddingModels"
+		| "worktreeList"
+		| "worktreeResult"
+		| "branchList"
+		| "worktreeDefaults"
+		| "worktreeIncludeStatus"
+		| "worktreeCopyProgress"
+		| "folderSelected"
 	text?: string
 	payload?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 	checkpointWarning?: {
@@ -119,6 +128,8 @@ export interface ExtensionMessage {
 	state?: ExtensionState
 	images?: string[]
 	filePaths?: string[]
+	/** For fileContent: { path, content, error? } */
+	fileContent?: { path: string; content: string | null; error?: string }
 	openedTabs?: Array<{
 		label: string
 		isActive: boolean
@@ -181,6 +192,23 @@ export interface ExtensionMessage {
 	browserSessionMessages?: ClineMessage[] // For browser session panel updates
 	isBrowserSessionActive?: boolean // For browser session panel updates
 	stepIndex?: number // For browserSessionNavigate: the target step index to display
+	// Worktree response properties
+	worktrees?: Worktree[]
+	isGitRepo?: boolean
+	isMultiRoot?: boolean
+	isSubfolder?: boolean
+	gitRootPath?: string
+	localBranches?: string[]
+	remoteBranches?: string[]
+	currentBranch?: string
+	suggestedBranch?: string
+	suggestedPath?: string
+	exists?: boolean
+	hasGitignore?: boolean
+	gitignoreContent?: string
+	copyProgressBytesCopied?: number
+	copyProgressItemName?: string
+	path?: string // For folderSelected
 	tools?: SerializedCustomToolDefinition[] // For customToolsResult
 	modes?: { slug: string; name: string }[] // For modes response
 	aggregatedCosts?: {
@@ -500,6 +528,7 @@ export interface WebviewMessage {
 		| "openCommandFile"
 		| "deleteCommand"
 		| "createCommand"
+		| "readFileContent"
 		| "insertTextIntoTextarea"
 		| "showMdmAuthRequiredNotification"
 		| "imageGenerationSettings"
@@ -521,6 +550,14 @@ export interface WebviewMessage {
 		| "openDebugApiHistory"
 		| "openDebugUiHistory"
 		| "downloadErrorDiagnostics"
+		| "listWorktrees"
+		| "createWorktree"
+		| "deleteWorktree"
+		| "switchWorktree"
+		| "getAvailableBranches"
+		| "getWorktreeDefaults"
+		| "getWorktreeIncludeStatus"
+		| "browseForWorktreePath"
 		| "requestClaudeCodeRateLimits"
 		| "refreshCustomTools"
 		| "requestModes"
@@ -586,6 +623,13 @@ export interface WebviewMessage {
 	list?: string[] // For dismissedUpsells response
 	organizationId?: string | null // For organization switching
 	useProviderSignup?: boolean // For rooCloudSignIn to use provider signup flow
+	// Worktree properties
+	worktreePath?: string
+	worktreeBranch?: string
+	worktreeBaseBranch?: string
+	worktreeCreateNewBranch?: boolean
+	worktreeForce?: boolean
+	worktreeNewWindow?: boolean
 	codeIndexSettings?: {
 		// Global state settings
 		codebaseIndexEnabled: boolean
@@ -745,6 +789,7 @@ export interface ClineSayTool {
 		}>
 	}>
 	question?: string
+	originalContent?: string
 	imageData?: string // Base64 encoded image data for generated images
 	// Properties for runSlashCommand tool
 	command?: string

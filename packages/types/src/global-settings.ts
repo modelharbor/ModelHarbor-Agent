@@ -203,6 +203,7 @@ export const globalSettingsSchema = z.object({
 	enterBehavior: z.enum(["send", "newline"]).optional(),
 	profileThresholds: z.record(z.string(), z.number()).optional(),
 	hasOpenedModeSelector: z.boolean().optional(),
+	worktreeAutoOpenPath: z.string().optional(),
 	lastModeExportPath: z.string().optional(),
 	lastModeImportPath: z.string().optional(),
 	alwaysApproveResubmit: z.boolean().optional(),

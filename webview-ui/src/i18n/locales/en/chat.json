@@ -201,6 +201,9 @@
 	"instructions": {
 		"wantsToFetch": "ModelHarbor wants to fetch detailed instructions to assist with the current task"
 	},
+	"fileChangesInConversation": {
+		"header": "{{count}} file(s) changed in this conversation"
+	},
 	"fileOperations": {
 		"wantsToRead": "ModelHarbor wants to read this file",
 		"wantsToReadMultiple": "ModelHarbor wants to read multiple files",

@@ -65,16 +65,15 @@ export class ModelHarborHandler
 
 	/**
 	 * Check if the model supports native tool calling based on model name patterns.
-	 * Models that support native tools must contain one of: anthropic, qwen, glm, gpt
+	 * Models that support native tools return tool calls in delta.tool_calls (OpenAI format).
+	 * Models that don't support native tools return tool calls as XML text in the content.
+	 *
+	 * Models supporting native tools: haiku
+	 * Models returning XML tool calls: all other models (anthropic, qwen, glm, gpt, deepseek, etc.)
 	 */
 	private supportsNativeToolsByModelName(modelId: string): boolean {
 		const lowerModelId = modelId.toLowerCase()
-		return (
-			lowerModelId.includes("anthropic") ||
-			lowerModelId.includes("qwen") ||
-			lowerModelId.includes("glm") ||
-			lowerModelId.includes("gpt")
-		)
+		return lowerModelId.includes("haiku")
 	}
 
 	private async initializeModels() {
@@ -210,8 +209,8 @@ export class ModelHarborHandler
 
 		// Check if model supports native tools and tools are provided
 		// For ModelHarbor, native tool support is determined ONLY by model name patterns:
-		// Must contain one of: anthropic, qwen, glm, gpt
-		// We explicitly set native tool protocol for these models regardless of metadata.toolProtocol
+		// Only "haiku" models support native tools; all other models use XML tool calling
+		// We explicitly set native tool protocol for haiku models regardless of metadata.toolProtocol
 		const useNativeTools =
 			this.supportsNativeToolsByModelName(modelId) && metadata?.tools && metadata.tools.length > 0
 

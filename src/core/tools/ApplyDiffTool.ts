@@ -155,6 +155,7 @@ export class ApplyDiffTool extends BaseTool<"apply_diff"> {
 					...sharedMessageProps,
 					diff: diffContent,
 					content: unifiedPatch,
+					originalContent,
 					diffStats,
 					isProtected: isWriteProtected,
 				} satisfies ClineSayTool)
@@ -199,6 +200,7 @@ export class ApplyDiffTool extends BaseTool<"apply_diff"> {
 					...sharedMessageProps,
 					diff: diffContent,
 					content: unifiedPatch,
+					originalContent,
 					diffStats,
 					isProtected: isWriteProtected,
 				} satisfies ClineSayTool)

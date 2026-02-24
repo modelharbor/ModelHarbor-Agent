@@ -108,7 +108,7 @@ describe("ModelHarbor Native Tools Support", () => {
 		}
 	})
 
-	it("should use native tools for anthropic models based on model name (ignores toolProtocol)", async () => {
+	it("should use native tools for haiku models based on model name", async () => {
 		const options: ApiHandlerOptions = {
 			modelharborApiKey: "test-key",
 			modelharborModelId: "anthropic/claude-haiku-4.5-code",
@@ -138,7 +138,6 @@ describe("ModelHarbor Native Tools Support", () => {
 		const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test message" }], {
 			taskId: "test-task-id",
 			tools,
-			// No toolProtocol specified - should still use native tools based on model name
 		})
 
 		// Consume the generator
@@ -162,60 +161,7 @@ describe("ModelHarbor Native Tools Support", () => {
 		)
 	})
 
-	it("should STILL use native tools for anthropic models even when toolProtocol is set to xml", async () => {
-		const options: ApiHandlerOptions = {
-			modelharborApiKey: "test-key",
-			modelharborModelId: "anthropic/claude-haiku-4.5-code",
-		}
-
-		const handler = new ModelHarborHandler(options)
-		;(handler as any).client = mockClient
-
-		const tools = [
-			{
-				type: "function" as const,
-				function: {
-					name: "test_tool",
-					description: "A test tool",
-					parameters: {
-						type: "object",
-						properties: {
-							param: { type: "string" },
-						},
-					},
-				},
-			},
-		]
-
-		// Call createMessage with tools and explicit xml protocol - should be ignored for anthropic models
-		const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test message" }], {
-			taskId: "test-task-id",
-			tools,
-			toolProtocol: "xml", // Explicitly request XML protocol - but should be ignored for anthropic models
-		})
-
-		// Consume the generator
-		const chunks = []
-		for await (const chunk of generator) {
-			chunks.push(chunk)
-		}
-
-		// Verify that tools WERE included in the request (model name determines native tool use, not toolProtocol)
-		expect(mockClient.chat.completions.create).toHaveBeenCalledWith(
-			expect.objectContaining({
-				tools: expect.arrayContaining([
-					expect.objectContaining({
-						type: "function",
-						function: expect.objectContaining({
-							name: "test_tool",
-						}),
-					}),
-				]),
-			}),
-		)
-	})
-
-	it("should use native tools for sonnet-4 based on model name containing 'anthropic'", async () => {
+	it("should use XML protocol for non-haiku models (anthropic without haiku in name)", async () => {
 		const options: ApiHandlerOptions = {
 			modelharborApiKey: "test-key",
 			modelharborModelId: "anthropic/claude-sonnet-4-code",
@@ -240,7 +186,7 @@ describe("ModelHarbor Native Tools Support", () => {
 			},
 		]
 
-		// Call createMessage with tools - no toolProtocol needed
+		// Call createMessage with tools
 		const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test message" }], {
 			taskId: "test-task-id",
 			tools,
@@ -252,22 +198,15 @@ describe("ModelHarbor Native Tools Support", () => {
 			chunks.push(chunk)
 		}
 
-		// Verify that tools were included in the request
+		// Verify that tools were NOT included in the request (non-haiku models use XML)
 		expect(mockClient.chat.completions.create).toHaveBeenCalledWith(
-			expect.objectContaining({
-				tools: expect.arrayContaining([
-					expect.objectContaining({
-						type: "function",
-						function: expect.objectContaining({
-							name: "test_tool",
-						}),
-					}),
-				]),
+			expect.not.objectContaining({
+				tools: expect.anything(),
 			}),
 		)
 	})
 
-	it("should include tools with tool_choice none when model supports native tools", async () => {
+	it("should include tools with tool_choice none when model is haiku", async () => {
 		const options: ApiHandlerOptions = {
 			modelharborApiKey: "test-key",
 			modelharborModelId: "anthropic/claude-haiku-4.5-code",
@@ -296,7 +235,7 @@ describe("ModelHarbor Native Tools Support", () => {
 		const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test message" }], {
 			taskId: "test-task-id",
 			tools,
-			tool_choice: "none", // Pass tool_choice to API
+			tool_choice: "none",
 		})
 
 		// Consume the generator
@@ -305,8 +244,7 @@ describe("ModelHarbor Native Tools Support", () => {
 			chunks.push(chunk)
 		}
 
-		// Verify that tools ARE included (model name determines native tool support)
-		// and tool_choice is passed through to the API
+		// Verify that tools ARE included for haiku models and tool_choice is passed through
 		expect(mockClient.chat.completions.create).toHaveBeenCalledWith(
 			expect.objectContaining({
 				tools: expect.arrayContaining([
@@ -322,8 +260,8 @@ describe("ModelHarbor Native Tools Support", () => {
 		)
 	})
 
-	describe("supportsNativeToolsByModelName - model name determines native tool support", () => {
-		it("should support native tools for models containing 'anthropic' (no toolProtocol needed)", async () => {
+	describe("supportsNativeToolsByModelName - only haiku models support native tools", () => {
+		it("should support native tools for models containing 'haiku'", async () => {
 			const options: ApiHandlerOptions = {
 				modelharborApiKey: "test-key",
 				modelharborModelId: "anthropic/claude-haiku-4.5-code",
@@ -346,7 +284,6 @@ describe("ModelHarbor Native Tools Support", () => {
 			const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test" }], {
 				taskId: "test-task-id",
 				tools,
-				// No toolProtocol - model name determines native tool support
 			})
 
 			for await (const _ of generator) {
@@ -360,8 +297,7 @@ describe("ModelHarbor Native Tools Support", () => {
 			)
 		})
 
-		it("should support native tools for models containing 'qwen' (no toolProtocol needed)", async () => {
-			// Add qwen model to the mock
+		it("should NOT support native tools for models containing 'qwen'", async () => {
 			const qwenModels = {
 				"qwen/qwen-2.5-coder": {
 					maxTokens: 8192,
@@ -379,7 +315,6 @@ describe("ModelHarbor Native Tools Support", () => {
 			}
 
 			const handler = new ModelHarborHandler(options)
-			// Manually inject the qwen model into cache
 			;(handler as any).modelsCache = qwenModels
 			;(handler as any).client = mockClient
 
@@ -397,21 +332,21 @@ describe("ModelHarbor Native Tools Support", () => {
 			const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test" }], {
 				taskId: "test-task-id",
 				tools,
-				// No toolProtocol - model name determines native tool support
 			})
 
 			for await (const _ of generator) {
 				// consume
 			}
 
+			// Should NOT include tools because qwen doesn't match 'haiku' pattern
 			expect(mockClient.chat.completions.create).toHaveBeenCalledWith(
-				expect.objectContaining({
-					tools: expect.any(Array),
+				expect.not.objectContaining({
+					tools: expect.anything(),
 				}),
 			)
 		})
 
-		it("should support native tools for models containing 'glm' (no toolProtocol needed)", async () => {
+		it("should NOT support native tools for models containing 'glm'", async () => {
 			const glmModels = {
 				"zhipu/glm-4": {
 					maxTokens: 4096,
@@ -446,21 +381,21 @@ describe("ModelHarbor Native Tools Support", () => {
 			const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test" }], {
 				taskId: "test-task-id",
 				tools,
-				// No toolProtocol - model name determines native tool support
 			})
 
 			for await (const _ of generator) {
 				// consume
 			}
 
+			// Should NOT include tools because glm doesn't match 'haiku' pattern
 			expect(mockClient.chat.completions.create).toHaveBeenCalledWith(
-				expect.objectContaining({
-					tools: expect.any(Array),
+				expect.not.objectContaining({
+					tools: expect.anything(),
 				}),
 			)
 		})
 
-		it("should support native tools for models containing 'gpt' (no toolProtocol needed)", async () => {
+		it("should NOT support native tools for models containing 'gpt'", async () => {
 			const gptModels = {
 				"openai/gpt-4o": {
 					maxTokens: 4096,
@@ -495,21 +430,21 @@ describe("ModelHarbor Native Tools Support", () => {
 			const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test" }], {
 				taskId: "test-task-id",
 				tools,
-				// No toolProtocol - model name determines native tool support
 			})
 
 			for await (const _ of generator) {
 				// consume
 			}
 
+			// Should NOT include tools because gpt doesn't match 'haiku' pattern
 			expect(mockClient.chat.completions.create).toHaveBeenCalledWith(
-				expect.objectContaining({
-					tools: expect.any(Array),
+				expect.not.objectContaining({
+					tools: expect.anything(),
 				}),
 			)
 		})
 
-		it("should NOT support native tools for models without matching patterns (deepseek)", async () => {
+		it("should NOT support native tools for deepseek models", async () => {
 			const otherModels = {
 				"deepseek/deepseek-coder": {
 					maxTokens: 4096,
@@ -544,7 +479,6 @@ describe("ModelHarbor Native Tools Support", () => {
 			const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test" }], {
 				taskId: "test-task-id",
 				tools,
-				// Even with toolProtocol: "native", deepseek won't use native tools
 				toolProtocol: "native",
 			})
 
@@ -552,7 +486,7 @@ describe("ModelHarbor Native Tools Support", () => {
 				// consume
 			}
 
-			// Should NOT include tools because deepseek doesn't match any pattern
+			// Should NOT include tools because deepseek doesn't match 'haiku' pattern
 			expect(mockClient.chat.completions.create).toHaveBeenCalledWith(
 				expect.not.objectContaining({
 					tools: expect.anything(),
@@ -560,7 +494,7 @@ describe("ModelHarbor Native Tools Support", () => {
 			)
 		})
 
-		it("should NOT support native tools for llama models (even with toolProtocol: native)", async () => {
+		it("should NOT support native tools for llama models", async () => {
 			const llamaModels = {
 				"meta/llama-3.1-70b": {
 					maxTokens: 4096,
@@ -595,7 +529,6 @@ describe("ModelHarbor Native Tools Support", () => {
 			const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test" }], {
 				taskId: "test-task-id",
 				tools,
-				// Even with toolProtocol: "native", llama won't use native tools
 				toolProtocol: "native",
 			})
 
@@ -603,7 +536,7 @@ describe("ModelHarbor Native Tools Support", () => {
 				// consume
 			}
 
-			// Should NOT include tools because llama doesn't match any pattern
+			// Should NOT include tools because llama doesn't match 'haiku' pattern
 			expect(mockClient.chat.completions.create).toHaveBeenCalledWith(
 				expect.not.objectContaining({
 					tools: expect.anything(),
@@ -611,21 +544,21 @@ describe("ModelHarbor Native Tools Support", () => {
 			)
 		})
 
-		it("should be case-insensitive when matching model names (no toolProtocol needed)", async () => {
+		it("should be case-insensitive when matching 'haiku' in model names", async () => {
 			const upperCaseModels = {
-				"OPENAI/GPT-4O-MINI": {
-					maxTokens: 4096,
-					contextWindow: 128000,
+				"anthropic/CLAUDE-HAIKU-4.5": {
+					maxTokens: 8192,
+					contextWindow: 200000,
 					supportsImages: true,
-					supportsPromptCache: false,
-					inputPrice: 0.15,
-					outputPrice: 0.6,
+					supportsPromptCache: true,
+					inputPrice: 1,
+					outputPrice: 5,
 				},
 			}
 
 			const options: ApiHandlerOptions = {
 				modelharborApiKey: "test-key",
-				modelharborModelId: "OPENAI/GPT-4O-MINI",
+				modelharborModelId: "anthropic/CLAUDE-HAIKU-4.5",
 			}
 
 			const handler = new ModelHarborHandler(options)
@@ -646,13 +579,13 @@ describe("ModelHarbor Native Tools Support", () => {
 			const generator = handler.createMessage("System prompt", [{ role: "user", content: "Test" }], {
 				taskId: "test-task-id",
 				tools,
-				// No toolProtocol - model name determines native tool support
 			})
 
 			for await (const _ of generator) {
 				// consume
 			}
 
+			// Should include tools because HAIKU matches (case-insensitive)
 			expect(mockClient.chat.completions.create).toHaveBeenCalledWith(
 				expect.objectContaining({
 					tools: expect.any(Array),

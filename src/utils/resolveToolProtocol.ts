@@ -17,8 +17,8 @@ type ApiMessageForDetection = Anthropic.MessageParam & {
  * Models that support native tools return tool calls in delta.tool_calls (OpenAI format).
  * Models that don't support native tools return tool calls as XML text in the content.
  *
- * Models supporting native tools: haiku, anthropic, qwen, gpt
- * Models returning XML tool calls: glm, deepseek, and others
+ * Models supporting native tools: haiku
+ * Models returning XML tool calls: all other models (anthropic, qwen, glm, gpt, deepseek, etc.)
  *
  * @param modelId - The model ID to check
  * @returns true if the model supports native tools, false otherwise
@@ -33,8 +33,8 @@ function supportsNativeToolsByModelName(modelId: string): boolean {
  *
  * **ModelHarbor and LiteLLM Special Case:**
  * These providers use a hybrid approach depending on the backend model:
- * - Models supporting native tools (haiku, anthropic, qwen, gpt) return tool_calls in delta
- * - Other models (glm, deepseek, etc.) return tool calls as XML text in content
+ * - Models supporting native tools (haiku) return tool_calls in delta
+ * - Other models (anthropic, qwen, glm, gpt, deepseek, etc.) return tool calls as XML text in content
  *
  * For models that return XML tool calls, we must use XML protocol to parse them.
  *

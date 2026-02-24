@@ -101,11 +101,21 @@ export class ZAiHandler extends BaseOpenAiCompatibleProvider<string> {
 			stream_options: { include_usage: true },
 			// For GLM-4.7: thinking is ON by default, so we explicitly disable when needed
 			thinking: useReasoning ? { type: "enabled" } : { type: "disabled" },
-			...(metadata?.tools && { tools: this.convertToolsForOpenAI(metadata.tools) }),
-			...(metadata?.tool_choice && { tool_choice: metadata.tool_choice }),
-			...(metadata?.toolProtocol === "native" && {
-				parallel_tool_calls: metadata.parallelToolCalls ?? false,
-			}),
+			// Include tools only when not explicitly set to XML protocol
+			...(metadata &&
+				metadata.tools &&
+				metadata.toolProtocol !== "xml" && {
+					tools: this.convertToolsForOpenAI(metadata.tools),
+				}),
+			...(metadata &&
+				metadata.tool_choice &&
+				metadata.toolProtocol !== "xml" && {
+					tool_choice: metadata.tool_choice,
+				}),
+			...(metadata &&
+				metadata.toolProtocol !== "xml" && {
+					parallel_tool_calls: metadata.parallelToolCalls ?? false,
+				}),
 		}
 
 		return this.client.chat.completions.create(params)

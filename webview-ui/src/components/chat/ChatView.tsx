@@ -36,6 +36,8 @@ import BrowserSessionStatusRow from "./BrowserSessionStatusRow"
 import ChatRow from "./ChatRow"
 import { ChatTextArea } from "./ChatTextArea"
 import TaskHeader from "./TaskHeader"
+import { WorktreeSelector } from "./WorktreeSelector"
+import FileChangesPanel from "./FileChangesPanel"
 import SystemPromptWarning from "./SystemPromptWarning"
 import { CheckpointWarning } from "./CheckpointWarning"
 import { QueuedMessages } from "./QueuedMessages"
@@ -1515,6 +1517,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 							initialTopMostItemIndex={groupedMessages.length - 1}
 						/>
 					</div>
+					<FileChangesPanel clineMessages={messages} />
 					{areButtonsVisible && (
 						<div
 							className={`flex h-9 items-center mb-1 px-[15px] ${
@@ -1615,6 +1618,10 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 					}
 				}}
 			/>
+			{/* Worktree Selector - positioned above chat input for easy access */}
+			<div className="px-3 pb-2">
+				<WorktreeSelector disabled={sendingDisabled} />
+			</div>
 			<ChatTextArea
 				ref={textAreaRef}
 				inputValue={inputValue}
