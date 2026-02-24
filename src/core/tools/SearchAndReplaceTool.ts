@@ -247,6 +247,17 @@ export class SearchAndReplaceTool extends BaseTool<"search_and_replace"> {
 
 			task.didEditFile = true
 
+			// Update file change tracking for the FileChangesPanel
+			task.updateFileChange({
+				path: getReadablePath(task.cwd, relPath),
+				originalContent: fileContent,
+				updatedContent: newContent,
+				diff: sanitizedDiff,
+				diffStats,
+				isOutsideWorkspace,
+				isProtected: isWriteProtected,
+			})
+
 			// Get the formatted response message
 			const message = await task.diffViewProvider.pushToolWriteResult(task, task.cwd, false)
 

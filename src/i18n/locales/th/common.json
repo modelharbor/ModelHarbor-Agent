@@ -201,7 +201,7 @@
 	"interruption": {
 		"responseInterruptedByApiError": "การตอบกลับถูกขัดจังหวะโดยข้อผิดพลาด API",
 		"responseInterruptedByUser": "การตอบกลับถูกขัดจังหวะโดยผู้ใช้",
-		"streamTerminatedByProvider": "Provider ended the request"
+		"streamTerminatedByProvider": "ผู้ให้บริการยุติการร้องขอ"
 	},
 	"items": {
 		"one": "หนึ่งรายการ",

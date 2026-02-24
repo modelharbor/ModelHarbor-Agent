@@ -146,6 +146,7 @@ describe("searchAndReplaceTool", () => {
 		mockTask.ask = vi.fn().mockResolvedValue(undefined)
 		mockTask.recordToolError = vi.fn()
 		mockTask.recordToolUsage = vi.fn()
+		mockTask.updateFileChange = vi.fn()
 		mockTask.processQueuedMessages = vi.fn()
 		mockTask.sayAndCreateMissingParamError = vi.fn().mockResolvedValue("Missing param error")
 

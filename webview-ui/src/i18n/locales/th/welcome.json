@@ -4,27 +4,27 @@
 	"importSettings": "นำเข้าการตั้งค่า",
 	"introduction": "ด้วยโหมดในตัวและแบบขยายได้หลากหลาย ModelHarbor Agent ช่วยให้คุณวางแผน ออกแบบสถาปัตยกรรม เขียนโค้ด แก้ไขข้อบกพร่อง และเพิ่มประสิทธิภาพการทำงานได้อย่างที่ไม่เคยมีมาก่อน",
 	"landing": {
-		"accountMention": "To get started, create your ModelHarbor Cloud account. Get powerful models, web control, analytics, support and more.",
-		"getStarted": "Create ModelHarbor Account",
-		"greeting": "Welcome to ModelHarbor Agent!",
-		"introduction": "With a range of built-in and extensible Modes, ModelHarbor Agent lets you plan, architect, code, debug and boost your productivity like never before.",
-		"noAccount": "or use without an account"
+		"accountMention": "ในการเริ่มต้น สร้างบัญชี ModelHarbor Cloud ของคุณ รับโมเดลที่มีประสิทธิภาพ การควบคุมเว็บ การวิเคราะห์ การสนับสนุน และอื่นๆ",
+		"getStarted": "สร้างบัญชี ModelHarbor",
+		"greeting": "ยินดีต้อนรับสู่ ModelHarbor Agent!",
+		"introduction": "ด้วยโหมดในตัวและแบบขยายได้หลากหลาย ModelHarbor Agent ช่วยให้คุณวางแผน ออกแบบสถาปัตยกรรม เขียนโค้ด แก้ไขข้อบกพร่อง และเพิ่มประสิทธิภาพการทำงานได้อย่างที่ไม่เคยมีมาก่อน",
+		"noAccount": "หรือใช้โดยไม่มีบัญชี"
 	},
 	"languageSelector": {},
 	"notice": "ในการเริ่มต้น extension นี้ต้องการผู้ให้บริการ API",
 	"providerSignup": {
-		"backToRoo": "Go with the ModelHarbor Cloud Provider.",
-		"chooseProvider": "ModelHarbor needs an LLM provider to work. Choose one to get started, you can add more later.",
-		"finish": "Finish",
-		"getStarted": "Get started",
-		"goBack": "Back",
-		"heading": "Choose your provider",
-		"learnMore": "Learn more",
-		"noApiKeys": "Don't want to deal with keys? Go with the ModelHarbor Cloud Provider.",
-		"rooCloudDescription": "The simplest way to use ModelHarbor. A curated mix of free and paid models at a low cost",
-		"rooCloudProvider": "ModelHarbor Cloud Provider",
-		"useAnotherProvider": "3rd-party Provider",
-		"useAnotherProviderDescription": "Enter an API key and get going."
+		"backToRoo": "ใช้ผู้ให้บริการ ModelHarbor Cloud",
+		"chooseProvider": "ModelHarbor ต้องการผู้ให้บริการ LLM เพื่อทำงาน เลือกหนึ่งรายการเพื่อเริ่มต้น คุณสามารถเพิ่มเพิ่มเติมได้ในภายหลัง",
+		"finish": "เสร็จสิ้น",
+		"getStarted": "เริ่มต้นใช้งาน",
+		"goBack": "ย้อนกลับ",
+		"heading": "เลือกผู้ให้บริการของคุณ",
+		"learnMore": "เรียนรู้เพิ่มเติม",
+		"noApiKeys": "ไม่อยากจัดการกับคีย์? ไปกับผู้ให้บริการ ModelHarbor Cloud",
+		"rooCloudDescription": "วิธีที่ง่ายที่สุดในการใช้ ModelHarbor ชุดผสมโมเดลฟรีและแบบจ่ายเงินที่คัดสรรมาในต้นทุนต่ำ",
+		"rooCloudProvider": "ผู้ให้บริการ ModelHarbor Cloud",
+		"useAnotherProvider": "ผู้ให้บริการบุคคลที่ 3",
+		"useAnotherProviderDescription": "ป้อนคีย์ API แล้วเริ่มต้นใช้งาน"
 	},
 	"routers": {
 		"openrouter": {
@@ -43,16 +43,16 @@
 	"startCustom": "หรือคุณสามารถนำ API key ของผู้ให้บริการของคุณมา:",
 	"startRouter": "เราแนะนำให้ใช้ LLM Router:",
 	"telemetry": {
-		"helpImprove": "Help Improve ModelHarbor Agent",
-		"helpImproveMessage": "ModelHarbor Agent collects error and usage data to help us fix bugs and improve the extension. This telemetry does not collect code, prompts or personal information. You can turn this off in <settingsLink>settings</settingsLink>."
+		"helpImprove": "ช่วยปรับปรุง ModelHarbor Agent",
+		"helpImproveMessage": "ModelHarbor Agent รวบรวมข้อมูลข้อผิดพลาดและการใช้งานเพื่อช่วยเราแก้ไขข้อบกพร่องและปรับปรุง extension การวัดข้อมูลนี้ไม่รวบรวมโค้ด พรอมต์ หรือข้อมูลส่วนบุคคล คุณสามารถปิดการใช้งานนี้ใน <settingsLink>การตั้งค่า</settingsLink>"
 	},
 	"waitingForCloud": {
-		"description": "We'll take you to your browser to sign up for ModelHarbor Cloud. We'll then bring you back here to finish.",
-		"goBack": "Go back",
-		"havingTrouble": "If you've completed sign up but are having trouble, <clickHere>click here</clickHere>.",
-		"heading": "Taking you to ModelHarbor Cloud...",
-		"invalidURL": "That doesn't look like a valid callback URL. Please copy what ModelHarbor Cloud is showing in your browser.",
-		"noPrompt": "If you don't get prompted to open a URL, <clickHere>click here</clickHere>.",
-		"pasteUrl": "Paste the callback URL shown in your browser:"
+		"description": "เราจะพาคุณไปยังเบราว์เซอร์ของคุณเพื่อลงทะเบียน ModelHarbor Cloud จากนั้นเราจะพาคุณกลับมาที่นี่เพื่อเสร็จสิ้น",
+		"goBack": "ย้อนกลับ",
+		"havingTrouble": "หากคุณลงทะเบียนเสร็จสมบูรณ์แต่มีปัญหา <clickHere>คลิกที่นี่</clickHere>",
+		"heading": "กำลังพาคุณไปยัง ModelHarbor Cloud...",
+		"invalidURL": "นั่นดูไม่เหมือน URL การเรียกกลับที่ถูกต้อง โปรดคัดลอกสิ่งที่ ModelHarbor Cloud แสดงในเบราว์เซอร์ของคุณ",
+		"noPrompt": "หากคุณไม่ได้รับพร้อมท์ให้เปิด URL <clickHere>คลิกที่นี่</clickHere>",
+		"pasteUrl": "วาง URL การเรียกกลับที่แสดงในเบราว์เซอร์ของคุณ:"
 	}
 }

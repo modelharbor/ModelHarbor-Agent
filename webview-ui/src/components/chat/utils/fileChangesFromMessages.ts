@@ -22,12 +22,16 @@ export function fileChangesFromMessages(messages: ClineMessage[] | undefined): F
 
 	const entries: FileChangeEntry[] = []
 
-	for (const msg of messages) {
+	for (let i = 0; i < messages.length; i++) {
+		const msg = messages[i]
 		// Tool payload is in ask "tool" (how file edits are stored after approval)
 		const isAskTool = msg.type === "ask" && msg.ask === "tool"
 		if (!isAskTool || !msg.text || msg.partial) continue
-		// Only include ask "tool" file edits that the user (or auto-approval) has approved
-		if (!msg.isAnswered) continue
+		// Only include ask "tool" file edits that the user (or auto-approval) has approved.
+		// A message is considered "answered" if isAnswered is explicitly true, or if it's
+		// not the last message (meaning subsequent messages exist, so it was handled).
+		const isLastMessage = i === messages.length - 1
+		if (!msg.isAnswered && isLastMessage) continue
 
 		const tool = safeJsonParse<ClineSayTool>(msg.text)
 		if (!tool || !FILE_EDIT_TOOLS.has(tool.tool as string)) continue
@@ -78,12 +82,16 @@ export function fileChangesFromMessagesAsFileChange(messages: ClineMessage[] | u
 
 	const entries: FileChange[] = []
 
-	for (const msg of messages) {
+	for (let i = 0; i < messages.length; i++) {
+		const msg = messages[i]
 		// Tool payload is in ask "tool" (how file edits are stored after approval)
 		const isAskTool = msg.type === "ask" && msg.ask === "tool"
 		if (!isAskTool || !msg.text || msg.partial) continue
-		// Only include ask "tool" file edits that the user (or auto-approval) has approved
-		if (!msg.isAnswered) continue
+		// Only include ask "tool" file edits that the user (or auto-approval) has approved.
+		// A message is considered "answered" if isAnswered is explicitly true, or if it's
+		// not the last message (meaning subsequent messages exist, so it was handled).
+		const isLastMessage = i === messages.length - 1
+		if (!msg.isAnswered && isLastMessage) continue
 
 		const tool = safeJsonParse<ClineSayTool>(msg.text)
 		if (!tool || !FILE_EDIT_TOOLS.has(tool.tool as string)) continue

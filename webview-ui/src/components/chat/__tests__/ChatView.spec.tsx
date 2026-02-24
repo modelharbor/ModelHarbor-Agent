@@ -139,6 +139,40 @@ vi.mock("@src/components/welcome/RooTips", () => ({
 	},
 }))
 
+// Mock FileChangesPanel to control rendering for tests
+vi.mock("../FileChangesPanel", () => ({
+	default: function MockFileChangesPanel({ clineMessages }: { clineMessages?: any[] }) {
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		const React = require("react")
+		// Only render if there are file changes in messages
+		const hasFileChanges = clineMessages?.some(
+			(msg: any) =>
+				msg.type === "ask" &&
+				msg.ask === "tool" &&
+				msg.text &&
+				(JSON.parse(msg.text || "{}")?.tool === "editedExistingFile" ||
+					JSON.parse(msg.text || "{}")?.tool === "newFileCreated"),
+		)
+		if (!hasFileChanges) {
+			return null
+		}
+		return React.createElement("div", { "data-testid": "file-changes-panel" }, "File Changes Panel")
+	},
+}))
+
+// Mock WorktreeSelector to control rendering for tests
+vi.mock("../WorktreeSelector", () => ({
+	WorktreeSelector: function MockWorktreeSelector({ disabled }: { disabled?: boolean }) {
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		const React = require("react")
+		return React.createElement(
+			"div",
+			{ "data-testid": "worktree-selector", "data-disabled": disabled },
+			`Worktree Selector (disabled: ${disabled})`,
+		)
+	},
+}))
+
 // Mock RooHero component
 vi.mock("@src/components/welcome/RooHero", () => ({
 	default: function MockRooHero() {
@@ -1728,5 +1762,269 @@ describe("ChatView - Context Condensing Indicator Tests", () => {
 			},
 			{ timeout: 2000 },
 		)
+	})
+})
+
+describe("ChatView - File Changes Panel and Worktree Selector Tests", () => {
+	beforeEach(() => {
+		vi.clearAllMocks()
+	})
+
+	describe("File Changes Panel visibility", () => {
+		it("is hidden when there are no file modifications", () => {
+			const { queryByTestId } = renderChatView()
+
+			// Hydrate state with messages that have no file changes
+			mockPostMessage({
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "say",
+						say: "text",
+						ts: Date.now() - 1000,
+						text: "Some text response",
+					},
+				],
+			})
+
+			// File changes panel should not be rendered
+			expect(queryByTestId("file-changes-panel")).not.toBeInTheDocument()
+		})
+
+		it("shows when files are modified with editedExistingFile tool", async () => {
+			const { getByTestId } = renderChatView()
+
+			// Hydrate state with messages that include file modifications
+			mockPostMessage({
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: "tool",
+						ts: Date.now() - 1000,
+						text: JSON.stringify({ tool: "editedExistingFile", path: "src/file.ts" }),
+						partial: false,
+					},
+				],
+			})
+
+			// File changes panel should be rendered
+			await waitFor(() => {
+				expect(getByTestId("file-changes-panel")).toBeInTheDocument()
+			})
+		})
+
+		it("shows when files are modified with newFileCreated tool", async () => {
+			const { getByTestId } = renderChatView()
+
+			// Hydrate state with messages that include new file creation
+			mockPostMessage({
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: "tool",
+						ts: Date.now() - 1000,
+						text: JSON.stringify({ tool: "newFileCreated", path: "src/newFile.ts", content: "content" }),
+						partial: false,
+					},
+				],
+			})
+
+			// File changes panel should be rendered
+			await waitFor(() => {
+				expect(getByTestId("file-changes-panel")).toBeInTheDocument()
+			})
+		})
+
+		it("is positioned above the worktree selector", () => {
+			const { container } = renderChatView()
+
+			// Hydrate state with file modifications
+			mockPostMessage({
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: "tool",
+						ts: Date.now() - 1000,
+						text: JSON.stringify({ tool: "editedExistingFile", path: "src/file.ts" }),
+						partial: false,
+					},
+				],
+			})
+
+			// Check DOM order: file changes panel should come before worktree selector
+			const allElements = container.querySelectorAll("[data-testid]")
+			const fileChangesIndex = Array.from(allElements).findIndex(
+				(el) => el.getAttribute("data-testid") === "file-changes-panel",
+			)
+			const worktreeIndex = Array.from(allElements).findIndex(
+				(el) => el.getAttribute("data-testid") === "worktree-selector",
+			)
+
+			// File changes panel should appear before worktree selector in DOM
+			expect(fileChangesIndex).toBeLessThan(worktreeIndex)
+		})
+	})
+
+	describe("Worktree Selector visibility", () => {
+		it("is visible when there is an active task", () => {
+			const { getByTestId } = renderChatView()
+
+			// Hydrate state with active task
+			mockPostMessage({
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now(),
+						text: "Active task",
+					},
+				],
+			})
+
+			// Worktree selector should be rendered
+			expect(getByTestId("worktree-selector")).toBeInTheDocument()
+		})
+
+		it("is positioned above the chat text area", () => {
+			const { container } = renderChatView()
+
+			// Hydrate state with active task
+			mockPostMessage({
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now(),
+						text: "Active task",
+					},
+				],
+			})
+
+			// Check DOM order: worktree selector should come before chat text area
+			const allElements = container.querySelectorAll("[data-testid]")
+			const worktreeIndex = Array.from(allElements).findIndex(
+				(el) => el.getAttribute("data-testid") === "worktree-selector",
+			)
+			const chatTextAreaIndex = Array.from(allElements).findIndex(
+				(el) => el.getAttribute("data-testid") === "chat-textarea",
+			)
+
+			// Worktree selector should appear before chat text area in DOM
+			expect(worktreeIndex).toBeLessThan(chatTextAreaIndex)
+		})
+
+		it("is disabled when sending is disabled", async () => {
+			const { getByTestId } = renderChatView()
+
+			// Hydrate state with active task and partial message (sending disabled)
+			mockPostMessage({
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: "tool",
+						ts: Date.now(),
+						text: JSON.stringify({ tool: "readFile", path: "test.txt" }),
+						partial: true, // Partial messages disable sending
+					},
+				],
+			})
+
+			// Wait for state update and check that worktree selector is disabled
+			await waitFor(() => {
+				const worktreeSelector = getByTestId("worktree-selector")
+				expect(worktreeSelector.getAttribute("data-disabled")).toBe("true")
+			})
+		})
+
+		it("is enabled when sending is enabled", () => {
+			const { getByTestId } = renderChatView()
+
+			// Hydrate state with completed task (sending enabled)
+			mockPostMessage({
+				clineMessages: [
+					{
+						type: "ask",
+						ask: "completion_result",
+						ts: Date.now(),
+						text: "Task completed",
+						partial: false,
+					},
+				],
+			})
+
+			// Worktree selector should be enabled
+			const worktreeSelector = getByTestId("worktree-selector")
+			expect(worktreeSelector.getAttribute("data-disabled")).toBe("false")
+		})
+	})
+
+	describe("layout positioning", () => {
+		it("renders components in correct order: FileChangesPanel, WorktreeSelector, ChatTextArea", () => {
+			const { container } = renderChatView()
+
+			// Hydrate state with active task and file modifications
+			mockPostMessage({
+				clineMessages: [
+					{
+						type: "say",
+						say: "task",
+						ts: Date.now() - 2000,
+						text: "Initial task",
+					},
+					{
+						type: "ask",
+						ask: "tool",
+						ts: Date.now() - 1000,
+						text: JSON.stringify({ tool: "editedExistingFile", path: "src/file.ts" }),
+						partial: false,
+					},
+				],
+			})
+
+			// Get all elements with test IDs in the bottom section
+			const allElements = container.querySelectorAll("[data-testid]")
+			const fileChangesIndex = Array.from(allElements).findIndex(
+				(el) => el.getAttribute("data-testid") === "file-changes-panel",
+			)
+			const worktreeIndex = Array.from(allElements).findIndex(
+				(el) => el.getAttribute("data-testid") === "worktree-selector",
+			)
+			const chatTextAreaIndex = Array.from(allElements).findIndex(
+				(el) => el.getAttribute("data-testid") === "chat-textarea",
+			)
+
+			// Verify correct order
+			expect(fileChangesIndex).toBeLessThan(worktreeIndex)
+			expect(worktreeIndex).toBeLessThan(chatTextAreaIndex)
+		})
 	})
 })

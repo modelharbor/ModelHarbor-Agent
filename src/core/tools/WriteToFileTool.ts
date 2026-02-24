@@ -182,6 +182,15 @@ export class WriteToFileTool extends BaseTool<"write_to_file"> {
 
 			task.didEditFile = true
 
+			// Update file change tracking for the FileChangesPanel
+			task.updateFileChange({
+				path: getReadablePath(task.cwd, relPath),
+				originalContent: task.diffViewProvider.originalContent ?? undefined,
+				updatedContent: newContent,
+				isOutsideWorkspace,
+				isProtected: isWriteProtected,
+			})
+
 			const message = await task.diffViewProvider.pushToolWriteResult(task, task.cwd, !fileExists)
 
 			pushToolResult(message)

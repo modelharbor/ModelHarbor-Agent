@@ -236,6 +236,17 @@ export class ApplyDiffTool extends BaseTool<"apply_diff"> {
 
 			// Used to determine if we should wait for busy terminal to update before sending api request
 			task.didEditFile = true
+
+			// Update file change tracking for the FileChangesPanel
+			task.updateFileChange({
+				path: getReadablePath(task.cwd, relPath),
+				originalContent,
+				updatedContent: diffResult.content,
+				diff: unifiedPatch,
+				diffStats,
+				isProtected: isWriteProtected,
+			})
+
 			let partFailHint = ""
 
 			if (diffResult.failParts && diffResult.failParts.length > 0) {

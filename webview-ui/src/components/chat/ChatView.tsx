@@ -1517,7 +1517,6 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 							initialTopMostItemIndex={groupedMessages.length - 1}
 						/>
 					</div>
-					<FileChangesPanel clineMessages={messages} />
 					{areButtonsVisible && (
 						<div
 							className={`flex h-9 items-center mb-1 px-[15px] ${
@@ -1601,6 +1600,9 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 					)}
 				</>
 			)}
+
+			{/* File Change Panel - shows when files are modified, positioned above worktree selector */}
+			{task && <FileChangesPanel clineMessages={messages} />}
 
 			<QueuedMessages
 				queue={messageQueue}

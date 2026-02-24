@@ -201,6 +201,14 @@ export class ApplyPatchTool extends BaseTool<"apply_patch"> {
 		await task.fileContextTracker.trackFileContext(relPath, "roo_edited" as RecordSource)
 		task.didEditFile = true
 
+		// Update file change tracking for the FileChangesPanel
+		task.updateFileChange({
+			path: getReadablePath(task.cwd, relPath),
+			updatedContent: newContent,
+			isOutsideWorkspace,
+			isProtected: isWriteProtected,
+		})
+
 		const message = await task.diffViewProvider.pushToolWriteResult(task, task.cwd, true)
 		pushToolResult(message)
 		await task.diffViewProvider.reset()
@@ -419,6 +427,18 @@ export class ApplyPatchTool extends BaseTool<"apply_patch"> {
 		}
 
 		task.didEditFile = true
+
+		// Update file change tracking for the FileChangesPanel
+		const changePath = change.movePath || relPath
+		task.updateFileChange({
+			path: getReadablePath(task.cwd, changePath),
+			originalContent,
+			updatedContent: newContent,
+			diff: sanitizedDiff,
+			diffStats,
+			isOutsideWorkspace,
+			isProtected: isWriteProtected,
+		})
 
 		const message = await task.diffViewProvider.pushToolWriteResult(task, task.cwd, false)
 		pushToolResult(message)

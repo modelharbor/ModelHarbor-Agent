@@ -686,6 +686,15 @@ ${errorDetails ? `\nTechnical details:\n${errorDetails}\n` : ""}
 
 				// Used to determine if we should wait for busy terminal to update before sending api request
 				cline.didEditFile = true
+
+				// Update file change tracking for the FileChangesPanel
+				cline.updateFileChange({
+					path: getReadablePath(cline.cwd, relPath),
+					originalContent: beforeContent ?? undefined,
+					updatedContent: originalContent ?? undefined,
+					isProtected: cline.rooProtectedController?.isWriteProtected(relPath) || false,
+				})
+
 				let partFailHint = ""
 
 				if (successCount < diffItems.length) {

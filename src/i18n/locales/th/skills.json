@@ -1,0 +1,16 @@
+{
+	"errors": {
+		"name_length": "ชื่อทักษะต้องมีความยาว 1-{{maxLength}} ตัวอักษร (ได้ {{length}})",
+		"name_format": "ชื่อทักษะต้องเป็นตัวอักษรเล็ก/ตัวเลข/ขีดกลางเท่านั้น (ไม่มีขีดกลางนำ/ท้าย, ไม่มีขีดกลางติดต่อกัน)",
+		"description_length": "คำอธิบายทักษะต้องมีความยาว 1-1024 ตัวอักษร (ได้ {{length}})",
+		"no_workspace": "ไม่สามารถสร้างทักษะโปรเจกต์ได้: ไม่มีโฟลเดอร์พื้นที่ทำงานที่เปิดอยู่",
+		"already_exists": "ทักษะ \"{{name}}\" มีอยู่แล้วที่ {{path}}",
+		"not_found": "ไม่พบทักษะ \"{{name}}\" ใน {{source}}{{modeInfo}}",
+		"missing_create_fields": "ขาดฟิลด์ที่จำเป็น: skillName, source หรือ skillDescription",
+		"missing_move_fields": "ขาดฟิลด์ที่จำเป็น: skillName หรือ source",
+		"missing_update_modes_fields": "ขาดฟิลด์ที่จำเป็น: skillName หรือ source",
+		"manager_unavailable": "ไม่พร้อมใช้งานตัวจัดการทักษะ",
+		"missing_delete_fields": "ขาดฟิลด์ที่จำเป็น: skillName หรือ source",
+		"skill_not_found": "ไม่พบทักษะ \"{{name}}\""
+	}
+}
