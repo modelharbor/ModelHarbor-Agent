@@ -1194,6 +1194,24 @@ export const webviewMessageHandler = async (
 			}
 			break
 		}
+		case "getFileChanges": {
+			// Get file changes from the current task
+			const currentTask = provider.getCurrentTask()
+			if (currentTask) {
+				const fileChanges = currentTask.getFileChanges()
+				provider.postMessageToWebview({
+					type: "fileChanges",
+					fileChanges,
+				})
+			} else {
+				// No active task, send empty file changes
+				provider.postMessageToWebview({
+					type: "fileChanges",
+					fileChanges: [],
+				})
+			}
+			break
+		}
 		case "openMention":
 			openMention(getCurrentCwd(), message.text)
 			break

@@ -1,84 +1,177 @@
-# ModelHarbor
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=RooVeterinaryInc.roo-cline"><img src="https://img.shields.io/badge/VS_Code_Marketplace-007ACC?style=flat&logo=visualstudiocode&logoColor=white" alt="VS Code Marketplace"></a>
+  <a href="https://x.com/roocode"><img src="https://img.shields.io/badge/roocode-000000?style=flat&logo=x&logoColor=white" alt="X"></a>
+  <a href="https://youtube.com/@roocodeyt?feature=shared"><img src="https://img.shields.io/badge/YouTube-FF0000?style=flat&logo=youtube&logoColor=white" alt="YouTube"></a>
+  <a href="https://discord.gg/roocode"><img src="https://img.shields.io/badge/Join%20Discord-5865F2?style=flat&logo=discord&logoColor=white" alt="Join Discord"></a>
+  <a href="https://www.reddit.com/r/RooCode/"><img src="https://img.shields.io/badge/Join%20r%2FRooCode-FF4500?style=flat&logo=reddit&logoColor=white" alt="Join r/RooCode"></a>
+</p>
+<p align="center">
+  <em>รับความช่วยเหลือได้รวดเร็ว → <a href="https://discord.gg/roocode">เข้าร่วม Discord</a> • ชอบแบบอะซิงโครนัส? → <a href="https://www.reddit.com/r/RooCode/">เข้าร่วม r/ModelHarbor Agent</a></em>
+</p>
+
+# ModelHarbor Agent
+
+> ทีมพัฒนาซอฟต์แวร์ที่ขับเคลื่อนด้วย AI ของคุณ,right ในตัวแก้ไขโค้ดของคุณ
+
+<details>
+  <summary>🌐 ภาษาที่มี</summary>
+
+- [English](../../README.md)
+- [Català](../ca/README.md)
+- [Deutsch](../de/README.md)
+- [Español](../es/README.md)
+- [Français](../fr/README.md)
+- [हिंदी](../hi/README.md)
+- [Bahasa Indonesia](../id/README.md)
+- [Italiano](../it/README.md)
+- [日本語](../ja/README.md)
+- [한국어](../ko/README.md)
+- [Nederlands](../nl/README.md)
+- [Polski](../pl/README.md)
+- [Português (BR)](../pt-BR/README.md)
+- [Русский](../ru/README.md)
+- [Türkçe](../tr/README.md)
+- [Tiếng Việt](../vi/README.md)
+- [简体中文](../zh-CN/README.md)
+- [繁體中文](../zh-TW/README.md)
+- [ภาษาไทย](README.md)
+- ...
+    </details>
+
+---
+
+## ModelHarbor Agent สามารถทำอะไรให้คุณได้บ้าง?
+
+- สร้างโค้ดจากคำอธิบายภาษาธรรมชาติและข้อมูลจำเพาะ
+- ปรับตัวด้วยโหมดต่างๆ: Code, Architect, Ask, Debug และโหมดที่กำหนดเอง
+- ปรับโครงสร้างและแก้ไขข้อบกพร่องของโค้ดที่มีอยู่
+- เขียนและอัปเดตเอกสาร
+- ตอบคำถามเกี่ยวกับโค้ดเบสของคุณ
+- ทำงานซ้ำๆ โดยอัตโนมัติ
+- ใช้ MCP Servers
+
+## โหมดต่างๆ
+
+ModelHarbor Agent ปรับตัวตามวิธีที่คุณทำงาน:
+
+- โหมด Code: การเขียนโค้ดประจำวัน การแก้ไข และการจัดการไฟล์
+- โหมด Architect: วางแผนระบบ ข้อมูลจำเพาะ และการย้ายข้อมูล
+- โหมด Ask: ตอบคำถามอย่างรวดเร็ว ให้คำอธิบาย และเอกสาร
+- โหมด Debug: ติดตามปัญหา เพิ่มบันทึก และแยกแยะสาเหตุที่แท้จริง
+- โหมด Custom: สร้างโหมดพิเศษสำหรับทีมหรือขั้นตอนการทำงานของคุณ
+- การควบคุม Roomote: Roomote Control ช่วยให้คุณควบคุมงานที่ทำงานอยู่ใน VS Code ท้องถิ่นของคุณจากระยะไกล
+
+เรียนรู้เพิ่มเติม: [การใช้โหมด](https://docs.roocode.com/basic-usage/using-modes) • [โหมดที่กำหนดเอง](https://docs.roocode.com/advanced-usage/custom-modes) • [การควบคุม Roomote](https://docs.roocode.com/roo-code-cloud/roomote-control)
+
+## วิดีโอสอนใช้งานและคุณสมบัติ
 
 <div align="center">
-<sub>
 
-[English](../../README.md#en) • [Català](../ca/README.md) • [Deutsch](../de/README.md) • [Español](../es/README.md) • [Français](../fr/README.md) • [हिंदी](../hi/README.md) • [Bahasa Indonesia](../id/README.md) • [Italiano](../it/README.md) • [日本語](../ja/README.md)
+|                                                                                                                                                                                    |                                                                                                                                                                          |                                                                                                                                                                           |
+| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| <a href="https://www.youtube.com/watch?v=Mcq3r1EPZ-4"><img src="https://img.youtube.com/vi/Mcq3r1EPZ-4/maxresdefault.jpg" width="100%"></a><br><b>การติดตั้ง ModelHarbor Agent</b> | <a href="https://www.youtube.com/watch?v=ZBML8h5cCgo"><img src="https://img.youtube.com/vi/ZBML8h5cCgo/maxresdefault.jpg" width="100%"></a><br><b>การกำหนดค่าโปรไฟล์</b> |  <a href="https://www.youtube.com/watch?v=r1bpod1VWhg"><img src="https://img.youtube.com/vi/r1bpod1VWhg/maxresdefault.jpg" width="100%"></a><br><b>การทำดัชนีโค้ดเบส</b>  |
+|       <a href="https://www.youtube.com/watch?v=iiAv1eKOaxk"><img src="https://img.youtube.com/vi/iiAv1eKOaxk/maxresdefault.jpg" width="100%"></a><br><b>โหมดที่กำหนดเอง</b>        |    <a href="https://www.youtube.com/watch?v=Ho30nyY332E"><img src="https://img.youtube.com/vi/Ho30nyY332E/maxresdefault.jpg" width="100%"></a><br><b>Checkpoints</b>     | <a href="https://www.youtube.com/watch?v=6h5vB9PpoPk"><img src="https://img.youtube.com/vi/6h5vB9PpoPk/maxresdefault.jpg" width="100%"></a><br><b>รายการสิ่งที่ต้องทำ</b> |
 
-</sub>
-<sub>
-
-[한국어](../ko/README.md) • [Nederlands](../nl/README.md) • [Polski](../pl/README.md) • [Português (BR)](../pt-BR/README.md) • [Русский](../ru/README.md) • <b>ไทย</b> • [Türkçe](../tr/README.md) • [Tiếng Việt](../vi/README.md) • [简体中文](../zh-CN/README.md) • [繁體中文](../zh-TW/README.md)
-
-</sub>
 </div>
+<p align="center">
+<a href="https://docs.roocode.com/tutorial-videos">วิดีโอสอนใช้งานและคุณสมบัติเพิ่มเติม...</a>
+</p>
 
-## ModelHarbor คืออะไร ❓
+## ทรัพยากร
 
-ModelHarbor คือผู้ให้บริการ AI Inference สัญชาติไทย ที่รวบรวม front-tier AI Models เช่น Deepseek, Kimi K2, Qwen3 235B, และ Qwen3 Coder และอีกหลากหลายโมเดลคุณภาพสูง ให้ใช้งานง่ายผ่าน API. เราเป็นผู้พัฒนา ModelHarbor Agent ซึ่งเป็น Extension สำหรับ Visual Studio Code ที่ช่วยให้สามารถใช้งาน Large Language Model ได้โดยตรงบน Code Editor ผ่านการเชื่อมต่อ API ของเรา.
+- **[เอกสาร](https://docs.roocode.com):** คู่มือทางการสำหรับการติดตั้ง กำหนดค่า และเชี่ยวชาญ ModelHarbor Agent
+- **[ช่อง YouTube](https://youtube.com/@roocodeyt?feature=shared):** ชมการสอนและดูคุณสมบัติต่างๆ ในการใช้งาน
+- **[เซิร์ฟเวอร์ Discord](https://discord.gg/roocode):** เข้าร่วมชุมชนเพื่อขอความช่วยเหลือแบบเรียลไทม์และการสนทนา
+- **[ชุมชน Reddit](https://www.reddit.com/r/RooCode):** แบ่งปันประสบการณ์ของคุณและดูสิ่งที่คนอื่นกำลังสร้าง
+- **[GitHub Issues](https://github.com/RooCodeInc/Roo-Code/issues):** รายงานข้อบกพร่องและติดตามการพัฒนา
+- **[คำขอคุณสมบัติ](https://github.com/RooCodeInc/Roo-Code/discussions/categories/feature-requests?discussions_q=is%3Aopen+category%3A%22Feature+Requests%22+sort%3Atop):** มีไอเดีย? แบ่งปันกับนักพัฒนา
 
-## เกี่ยวกับเรา
+---
 
-ModelHarbor ก่อตั้งโดยบริษัท นิวเทคโนโลยี่ อินฟอร์เมชั่น จำกัด (NTI) ซึ่งเป็นบริษัทที่ให้บริการ IT Solution ครบวงจรมามากกว่า 30 ปี. ภารกิจของเราคือการเปลี่ยนแปลงขั้นตอนการพัฒนาของคุณด้วยบริการและเครื่องมือใช้งานปัญญาประดิษฐ์ชั้นนำ. วิสัยทัศน์ของเราคือการมอบบริการด้าน IT ที่มีคุณภาพสูงสุดผ่านทีมงานที่มีประสบการณ์และการจัดการที่เป็นมาตรฐาน.
+## การตั้งค่าท้องถิ่นและการพัฒนา
 
-## ModelHarbor Agent: AI Coding Agent ใน Visual Studio Code
+1. **โคลน** repo:
 
-ModelHarbor Agent เป็นเครื่องมือ AI Coding Agent สัญชาติไทยที่ให้คุณใช้งานบน Visual Studio Code เพื่อเชื่อมต่อกับ API ของ ModelHarbor ได้โดยตรง. Agent นี้ช่วยให้นักพัฒนาสามารถพัฒนาโค้ดได้เร็วขึ้น, ลดภาระการจำ syntax และช่วยงานได้หลายอย่าง ไม่ว่าจะเป็นการหา Error, สร้างโค้ด, วางโครงสร้างโปรเจค, และ Debug ผ่านคำสั่งที่เป็นภาษามนุษย์.
+```sh
+git clone https://github.com/RooCodeInc/Roo-Code.git
+```
 
-คุณสามารถทดลองใช้งานได้ง่ายๆ เพียงล็อกอินด้วยบัญชี Gmail บนเว็บไซต์ modelharbor.com เพื่อรับเครดิตใช้งานฟรี และหากรีวิวแอปนี้ก็จะได้รับเครดิตเพิ่มเติมเช่นกัน.
+2. **ติดตั้ง dependencies**:
 
-## การชำระเงิน
+```sh
+pnpm install
+```
 
-สำหรับผู้ใช้งานในประเทศไทย ทางบริษัทรับช่องทางการชำระทั้งบัตรเครดิต (USD และ THB) และช่องทางพร้อมเพย์ (PromptPay). นอกจากนี้ เรายังเข้าร่วมบริการ e-Tax invoice สำหรับใช้ลดหย่อนภาษีด้วย.
+3. **รัน extension**:
 
-## โปรโมชั่น
+มีหลายวิธีในการรัน ModelHarbor Agent extension:
 
-### การอบรมเครื่องมือโปรแกรมมิ่งสำหรับสถาบันอุดมศึกษา
+### โหมดการพัฒนา (F5)
 
-เรามีการจัดอบรมฟรีสำหรับสถาบันอุดมศึกษาที่ใช้ ModelHarbor Agent ซึ่งเป็นเครื่องมือช่วยเขียนโปรแกรมโอเพนซอร์สบน Visual Studio Code.
+สำหรับการพัฒนาที่ใช้งานอยู่ ให้ใช้การดีบักที่มีอยู่ในตัวของ VSCode:
 
-- **สำหรับผู้เข้าอบรม:** นักศึกษาที่เข้าร่วมการอบรมจะได้รับเครดิตมูลค่า 100 บาทต่อคน.
-- **สำหรับนักศึกษาในสาขา:** นักศึกษาในสาขาเดียวกันที่ไม่ได้เข้าอบรมจะได้รับเครดิตมูลค่า 50 บาทต่อคน ตามจำนวนผู้เข้าอบรม.
+กด `F5` (หรือไปที่ **Run** → **Start Debugging**) ใน VSCode ซึ่งจะเปิดหน้าต่าง VSCode ใหม่ที่มี ModelHarbor Agent extension ทำงานอยู่
 
-**หลักสูตรการอบรมที่มีให้เลือก:**
+- การเปลี่ยนแปลง webview จะปรากฏขึ้นทันที
+- การเปลี่ยนแปลงหลักของ extension จะโหลดใหม่โดยอัตโนมัติเช่นกัน
 
-- การพัฒนาด้วย Python
-- การพัฒนาด้วย .NET
-- Frontend ด้วย Vue.js
-- การเชื่อมต่อฐานข้อมูล (MySQL, PostgreSQL, Supabase)
+### การติดตั้ง VSIX แบบอัตโนมัติ
 
-### 🚀 โครงการสำหรับนักศึกษา: University AI Club Sponsorship
+เมื่อต้องการสร้างและติดตั้งแพ็คเกจ VSIX ของ extension โดยตรงลงใน VSCode:
 
-ModelHarbor ขอเชิญชวนนิสิตนักศึกษาผู้มี Passion ในสาย AI ทั่วประเทศ เข้าร่วมโครงการ "ModelHarbor University AI Club Sponsorship" เพื่อก่อตั้งหรือเป็นประธานชมรมปัญญาประดิษฐ์ (AI Club) ในมหาวิทยาลัย.
+```sh
+pnpm install:vsix [-y] [--editor=<command>]
+```
 
-**สิ่งที่ผู้เข้าร่วมโครงการจะได้รับ:**
+คำสั่งนี้จะ:
 
-- ✅ เครดิตใช้ AI Models ระดับโปรฯ ภายในชมรม ฟรี! (มูลค่า 120,000 บาท)
-- ✅ รับคำปรึกษา (Mentor) โดยตรงจากทีมงาน ModelHarbor
-- ✅ โอกาสสร้าง Portfolio ที่โดดเด่นกว่าใคร
-- ✅ พัฒนาทักษะผู้นำและการบริหารจัดการ
+- ถามว่าจะใช้คำสั่งตัวแก้ไขใด (code/cursor/code-insiders) - ค่าเริ่มต้นคือ 'code'
+- ถอนการติดตั้ง extension ที่มีอยู่
+- สร้างแพ็คเกจ VSIX ล่าสุด
+- ติดตั้ง VSIX ที่สร้างใหม่
+- แจ้งให้คุณรีสตาร์ท VS Code เพื่อให้การเปลี่ยนแปลงมีผล
 
-**สมัครได้แล้ววันนี้ - 31 สิงหาคม 2568**
+ตัวเลือก:
 
-## เริ่มต้นใช้งาน
+- `-y`: ข้ามการยืนยันทั้งหมดและใช้ค่าเริ่มต้น
+- `--editor=<command>`: ระบุคำสั่งตัวแก้ไข (เช่น `--editor=cursor` หรือ `--editor=code-insiders`)
 
-1. ติดตั้ง ModelHarbor Agent จาก VS Code Marketplace
-2. ลงทะเบียนที่ [modelharbor.com](https://modelharbor.com) เพื่อรับ API key
-3. กำหนดค่า API key ใน VS Code extension
-4. เริ่มใช้งาน AI Coding Agent ได้ทันที!
+### การติดตั้ง VSIX ด้วยตนเอง
 
-## การสนับสนุน
+หากคุณต้องการติดตั้งแพ็คเกจ VSIX ด้วยตนเอง:
 
-หากคุณมีคำถามหรือต้องการความช่วยเหลือ:
+1. ก่อนอื่น ให้สร้างแพ็คเกจ VSIX:
+    ```sh
+    pnpm vsix
+    ```
+2. ไฟล์ `.vsix` จะถูกสร้างขึ้นในไดเรกทอรี `bin/` (เช่น `bin/roo-cline-<version>.vsix`)
+3. ติดตั้งด้วยตนเองโดยใช้ VSCode CLI:
+    ```sh
+    code --install-extension bin/roo-cline-<version>.vsix
+    ```
 
-- 📧 อีเมล: support@modelharbor.com
-- 🌐 เว็บไซต์: [modelharbor.com](https://modelharbor.com)
-- 📚 เอกสาร: [docs.modelharbor.com](https://docs.modelharbor.com)
+---
+
+เราใช้ [changesets](https://github.com/changesets/changesets) สำหรับการกำหนดเวอร์ชันและการเผยแพร่ ตรวจสอบ `CHANGELOG.md` ของเราสำหรับบันทึกการเผยแพร่
+
+---
+
+## ข้อจำกัดความรับผิดชอบ
+
+**โปรดทราบว่า** ModelHarbor Agent, Inc **ไม่** ทำการรับรองหรือการรับประกันใดๆ เกี่ยวกับโค้ด โมเดล หรือเครื่องมืออื่นๆ ที่ให้หรือทำให้พร้อมใช้งานใน connection กับ ModelHarbor Agent เครื่องมือบุคคลที่สามที่เกี่ยวข้องใดๆ หรือผลลัพธ์ที่เกิดขึ้นใดๆ คุณยอมรับ**ความเสี่ยงทั้งหมด**ที่เกี่ยวข้องกับการใช้เครื่องมือหรือผลลัพธ์ดังกล่าว เครื่องมือดังกล่าวให้มาบนพื้นฐาน **"ตามที่เป็นอยู่"** และ **"ตามที่มีให้"** ความเสี่ยงดังกล่าวอาจรวมถึง แต่ไม่จำกัดเพียง การละเมิดทรัพย์สินทางปัญญา ช่องโหว่หรือการโจมตีทางไซเบอร์ อคติ ความไม่ถูกต้อง ข้อผิดพลาด ข้อบกพร่อง ไวรัส เวลาหยุดทำงาน การสูญเสียหรือเสียหายต่อทรัพย์สิน และ/หรือการบาดเจ็บส่วนบุคคล คุณแต่เพียงผู้เดียวรับผิดชอบต่อการใช้เครื่องมือหรือผลลัพธ์ดังกล่าว (รวมถึง แต่ไม่จำกัดเพียง ความถูกต้องตามกฎหมาย ความเหมาะสม และผลลัพธ์ thereof)
+
+---
 
 ## การมีส่วนร่วม
 
-เรายินดีรับการมีส่วนร่วมจากชุมชน! โปรดอ่าน [คู่มือการมีส่วนร่วม](./CONTRIBUTING.md) และ [หลักปฏิบัติ](./CODE_OF_CONDUCT.md) ก่อนเริ่มต้น.
+เรารักการมีส่วนร่วมจากชุมชน! เริ่มต้นโดยการอ่าน [CONTRIBUTING.md](CONTRIBUTING.md) ของเรา
+
+---
 
 ## ใบอนุญาต
 
-โครงการนี้ได้รับอนุญาตภายใต้ Apache 2.0 License - ดูไฟล์ [LICENSE](../../LICENSE) สำหรับรายละเอียด.
+[Apache 2.0 © 2025 ModelHarbor Agent, Inc.](./LICENSE)
+
+---
+
+**สนุกกับ ModelHarbor Agent!** ไม่ว่าคุณจะควบคุมอย่างใกล้ชิดหรือปล่อยให้ทำงานโดยอิสระ เราอดใจรอไม่ไหวที่จะได้เห็นสิ่งที่คุณสร้าง หากคุณมีคำถามหรือไอเดียคุณสมบัติ แวะมาที่ [ชุมชน Reddit](https://www.reddit.com/r/RooCode/) หรือ [Discord](https://discord.gg/roocode) ของเรา การเขียนโค้ดที่มีความสุข!

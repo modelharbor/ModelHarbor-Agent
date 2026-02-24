@@ -107,6 +107,7 @@ export interface ExtensionMessage {
 		| "worktreeIncludeStatus"
 		| "worktreeCopyProgress"
 		| "folderSelected"
+		| "fileChanges"
 	text?: string
 	payload?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 	checkpointWarning?: {
@@ -210,6 +211,7 @@ export interface ExtensionMessage {
 	copyProgressItemName?: string
 	path?: string // For folderSelected
 	tools?: SerializedCustomToolDefinition[] // For customToolsResult
+	fileChanges?: FileChange[] // For fileChanges
 	modes?: { slug: string; name: string }[] // For modes response
 	aggregatedCosts?: {
 		// For taskWithAggregatedCosts response
@@ -529,6 +531,7 @@ export interface WebviewMessage {
 		| "deleteCommand"
 		| "createCommand"
 		| "readFileContent"
+		| "getFileChanges"
 		| "insertTextIntoTextarea"
 		| "showMdmAuthRequiredNotification"
 		| "imageGenerationSettings"
@@ -759,7 +762,7 @@ export interface ClineSayTool {
 	diff?: string
 	content?: string
 	// Unified diff statistics computed by the extension
-	diffStats?: { added: number; removed: number }
+	diffStats?: DiffStats
 	regex?: string
 	filePattern?: string
 	mode?: string
@@ -782,7 +785,7 @@ export interface ClineSayTool {
 		key: string
 		content: string
 		// Per-file unified diff statistics computed by the extension
-		diffStats?: { added: number; removed: number }
+		diffStats?: DiffStats
 		diffs?: Array<{
 			content: string
 			startLine?: number
@@ -796,6 +799,46 @@ export interface ClineSayTool {
 	args?: string
 	source?: string
 	description?: string
+}
+
+/**
+ * FileChange
+ *
+ * Represents a file that has been modified during a conversation.
+ * Used for the file change panel feature to display a summary of all
+ * modified files above the chat input box.
+ */
+export interface FileChange {
+	/** Relative or absolute path to the modified file */
+	path: string
+	/** The original content of the file before modification */
+	originalContent?: string
+	/** The updated content of the file after modification */
+	updatedContent?: string
+	/** Unified diff string showing the changes */
+	diff?: string
+	/** Statistics about the diff (lines added/removed) */
+	diffStats?: DiffStats
+	/** Whether the file is outside the workspace */
+	isOutsideWorkspace?: boolean
+	/** Whether the file is protected (e.g., by .rooignore) */
+	isProtected?: boolean
+	/** Timestamp when the file was first modified */
+	timestamp?: number
+}
+
+/**
+ * DiffStats
+ *
+ * Represents statistics about changes in a file diff.
+ */
+export interface DiffStats {
+	/** Number of lines added */
+	added: number
+	/** Number of lines removed */
+	removed: number
+	/** File path (optional, included for batch operations) */
+	path?: string
 }
 
 // Must keep in sync with system prompt.

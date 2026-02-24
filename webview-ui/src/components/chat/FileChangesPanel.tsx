@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { ChevronDown, ChevronRight, FileDiff } from "lucide-react"
 import { createTwoFilesPatch } from "diff"
 
-import type { ClineMessage, ExtensionMessage } from "@roo-code/types"
+import type { ClineMessage, ExtensionMessage, FileChange } from "@roo-code/types"
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui"
 import { cn } from "@/lib/utils"
@@ -22,16 +22,45 @@ const FileChangesPanel = memo(({ clineMessages, className }: FileChangesPanelPro
 	const [panelExpanded, setPanelExpanded] = useState(false)
 	const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set())
 	const [finalContentByPath, setFinalContentByPath] = useState<Record<string, string | null>>({})
+	const [backendFileChanges, setBackendFileChanges] = useState<FileChange[]>([])
 	const pendingPathsRef = useRef<Set<string>>(new Set())
 
 	// Reset expanded file rows and final content cache when switching to a different task
 	useEffect(() => {
 		setExpandedPaths(new Set())
 		setFinalContentByPath({})
+		setBackendFileChanges([])
 		pendingPathsRef.current = new Set()
 	}, [clineMessages])
 
-	const fileChanges = useMemo(() => fileChangesFromMessages(clineMessages), [clineMessages])
+	// Request initial file changes and listen for updates from backend
+	useEffect(() => {
+		// Request current file changes from backend
+		vscode.postMessage({ type: "getFileChanges" })
+
+		// Listen for fileChanges messages from backend
+		const handler = (event: MessageEvent) => {
+			const message: ExtensionMessage = event.data
+			if (message.type === "fileChanges" && Array.isArray(message.fileChanges)) {
+				setBackendFileChanges(message.fileChanges)
+			}
+		}
+		window.addEventListener("message", handler)
+		return () => window.removeEventListener("message", handler)
+	}, [])
+
+	// Use backend file changes if available, otherwise fall back to computing from messages
+	const fileChanges = useMemo(() => {
+		if (backendFileChanges.length > 0) {
+			return backendFileChanges.map((change) => ({
+				path: change.path,
+				diff: change.diff ?? "",
+				diffStats: change.diffStats,
+				originalContent: change.originalContent,
+			}))
+		}
+		return fileChangesFromMessages(clineMessages)
+	}, [backendFileChanges, clineMessages])
 
 	// Group by path so we show one row per file (multiple edits to same file combined for display)
 	const byPath = useMemo(() => {

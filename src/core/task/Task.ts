@@ -36,6 +36,7 @@ import {
 	type ToolProtocol,
 	type ClineApiReqCancelReason,
 	type ClineApiReqInfo,
+	type FileChange,
 	RooCodeEventName,
 	TaskStatus,
 	TodoItem,
@@ -316,6 +317,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	// LLM Messages & Chat Messages
 	apiConversationHistory: ApiMessage[] = []
 	clineMessages: ClineMessage[] = []
+
+	// File Changes - tracks all modified files during the conversation
+	fileChanges: Map<string, FileChange> = new Map()
 
 	// Ask
 	private askResponse?: ClineAskResponse
@@ -4548,6 +4552,95 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			}
 		} catch (e) {
 			console.error(`[Task] Queue processing error:`, e)
+		}
+	}
+
+	/**
+	 * Updates or adds a file change record.
+	 * Called by tools when they modify files to track changes for the file change panel.
+	 *
+	 * @param path - The path to the modified file
+	 * @param originalContent - The original content before modification
+	 * @param updatedContent - The updated content after modification
+	 * @param diff - Unified diff string showing the changes
+	 * @param diffStats - Statistics about the diff (lines added/removed)
+	 * @param isOutsideWorkspace - Whether the file is outside the workspace
+	 * @param isProtected - Whether the file is protected (e.g., by .rooignore)
+	 */
+	public updateFileChange({
+		path,
+		originalContent,
+		updatedContent,
+		diff,
+		diffStats,
+		isOutsideWorkspace,
+		isProtected,
+	}: {
+		path: string
+		originalContent?: string
+		updatedContent?: string
+		diff?: string
+		diffStats?: { added: number; removed: number }
+		isOutsideWorkspace?: boolean
+		isProtected?: boolean
+	}): void {
+		const existing = this.fileChanges.get(path)
+		const timestamp = existing?.timestamp ?? Date.now()
+
+		this.fileChanges.set(path, {
+			path,
+			originalContent: existing?.originalContent ?? originalContent,
+			updatedContent,
+			diff,
+			diffStats,
+			isOutsideWorkspace: isOutsideWorkspace ?? existing?.isOutsideWorkspace,
+			isProtected: isProtected ?? existing?.isProtected,
+			timestamp,
+		})
+
+		// Notify webview of file changes update
+		this.notifyFileChangesChanged()
+	}
+
+	/**
+	 * Removes a file change record.
+	 *
+	 * @param path - The path to the file to remove from changes
+	 */
+	public removeFileChange(path: string): void {
+		if (this.fileChanges.delete(path)) {
+			this.notifyFileChangesChanged()
+		}
+	}
+
+	/**
+	 * Gets all file changes as an array.
+	 *
+	 * @returns Array of FileChange objects
+	 */
+	public getFileChanges(): FileChange[] {
+		return Array.from(this.fileChanges.values())
+	}
+
+	/**
+	 * Clears all file changes.
+	 */
+	public clearFileChanges(): void {
+		this.fileChanges.clear()
+		this.notifyFileChangesChanged()
+	}
+
+	/**
+	 * Notifies the webview that file changes have been updated.
+	 * Sends the current list of file changes to the webview.
+	 */
+	private notifyFileChangesChanged(): void {
+		const provider = this.providerRef.deref()
+		if (provider) {
+			provider.postMessageToWebview({
+				type: "fileChanges",
+				fileChanges: this.getFileChanges(),
+			})
 		}
 	}
 }

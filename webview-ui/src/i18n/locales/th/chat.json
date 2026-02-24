@@ -269,6 +269,9 @@
 		"wantsToReadMultiple": "ModelHarbor ต้องการอ่านหลายไฟล์:",
 		"wantsToReadOutsideWorkspace": "ModelHarbor ต้องการอ่านไฟล์นี้นอกพื้นที่ทำงาน:"
 	},
+	"fileChangesInConversation": {
+		"header": "{{count}} ไฟล์ถูกเปลี่ยนแปลงในการสนทนานี้"
+	},
 	"followUpSuggest": {
 		"copyToInput": "คัดลอกไปยังอินพุต (เหมือนกับ shift + คลิก)",
 		"timerPrefix": "Auto-approve enabled. Selecting in {{seconds}}s…"

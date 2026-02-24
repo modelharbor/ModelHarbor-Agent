@@ -32,10 +32,11 @@
 - [Русский](locales/ru/README.md)
 - [Türkçe](locales/tr/README.md)
 - [Tiếng Việt](locales/vi/README.md)
+- [ภาษาไทย](locales/th/README.md)
 - [简体中文](locales/zh-CN/README.md)
 - [繁體中文](locales/zh-TW/README.md)
 - ...
-  </details>
+    </details>
 
 ---
 
