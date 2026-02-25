@@ -110,12 +110,8 @@ export async function getModelHarborModels(apiKey?: string): Promise<Record<stri
 							? roundPrice(model_info.cache_read_input_token_cost * 1000000)
 							: 0
 
-						// Determine tool support and protocol based on API or model name
-						// For haiku-4.5 and sonnet-4 models, enable native tools support
-						const isNativeToolModel =
-							apiModel.model_name.includes("haiku-4.5") || apiModel.model_name.includes("sonnet-4")
-
-						const supportsNativeTools = model_info.supports_function_calling || isNativeToolModel
+						// Code models always use XML protocol; others use native if supported
+						const supportsNativeTools = model_info.supports_function_calling
 
 						// For models that support native tools, use native protocol; otherwise use xml
 						const defaultToolProtocol = supportsNativeTools ? ("native" as const) : ("xml" as const)

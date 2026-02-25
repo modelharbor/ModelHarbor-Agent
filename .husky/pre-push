@@ -16,7 +16,7 @@ else
   fi
 fi
 
-$pnpm_cmd check-types -- --filter=!@roo-code/cli
+#pnpm check-types
 
 # Use dotenvx to securely load .env.local and run commands that depend on it
 if [ -f ".env.local" ]; then

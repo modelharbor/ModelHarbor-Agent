@@ -13,6 +13,7 @@ import type { ApiHandlerCreateMessageMetadata, SingleCompletionHandler } from ".
 import { ApiStream, ApiStreamUsageChunk } from "../transform/stream"
 import { convertToOpenAiMessages } from "../transform/openai-format"
 import { calculateApiCostOpenAI } from "../../shared/cost"
+import { resolveToolProtocol } from "../../utils/resolveToolProtocol"
 
 import type { ApiHandlerOptions } from "../../shared/api"
 
@@ -61,19 +62,6 @@ export class ModelHarborHandler
 		// Match gpt-5, gpt5, and variants like gpt-5o, gpt-5-turbo, gpt5-preview, gpt-5.1
 		// Avoid matching gpt-50, gpt-500, etc.
 		return /\bgpt-?5(?!\d)/i.test(modelId)
-	}
-
-	/**
-	 * Check if the model supports native tool calling based on model name patterns.
-	 * Models that support native tools return tool calls in delta.tool_calls (OpenAI format).
-	 * Models that don't support native tools return tool calls as XML text in the content.
-	 *
-	 * Models supporting native tools: haiku
-	 * Models returning XML tool calls: all other models (anthropic, qwen, glm, gpt, deepseek, etc.)
-	 */
-	private supportsNativeToolsByModelName(modelId: string): boolean {
-		const lowerModelId = modelId.toLowerCase()
-		return lowerModelId.includes("haiku")
 	}
 
 	private async initializeModels() {
@@ -207,12 +195,13 @@ export class ModelHarborHandler
 		// Check if this is a GPT-5 model that requires max_completion_tokens instead of max_tokens
 		const isGPT5Model = this.isGpt5(modelId)
 
-		// Check if model supports native tools and tools are provided
-		// For ModelHarbor, native tool support is determined ONLY by model name patterns:
-		// Only "haiku" models support native tools; all other models use XML tool calling
-		// We explicitly set native tool protocol for haiku models regardless of metadata.toolProtocol
-		const useNativeTools =
-			this.supportsNativeToolsByModelName(modelId) && metadata?.tools && metadata.tools.length > 0
+		// Resolve tool protocol - use metadata's locked protocol if provided, otherwise resolve from options
+		const toolProtocol = resolveToolProtocol(this.options, info, metadata?.toolProtocol)
+		const isNativeProtocol = toolProtocol === TOOL_PROTOCOL.NATIVE
+
+		// Check if model supports native tools and tools are provided with native protocol
+		const supportsNativeTools = info.supportsNativeTools ?? false
+		const useNativeTools = supportsNativeTools && metadata?.tools && metadata.tools.length > 0 && isNativeProtocol
 
 		const requestOptions: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming = {
 			model: modelId,
