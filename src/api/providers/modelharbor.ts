@@ -73,12 +73,7 @@ export class ModelHarborHandler
 	 */
 	private supportsNativeToolsByModelName(modelId: string): boolean {
 		const lowerModelId = modelId.toLowerCase()
-		return (
-			lowerModelId.includes("qwen") ||
-			lowerModelId.includes("glm") ||
-			lowerModelId.includes("gpt") ||
-			lowerModelId.includes("deepseek")
-		)
+		return lowerModelId.includes("haiku")
 	}
 
 	private async initializeModels() {
