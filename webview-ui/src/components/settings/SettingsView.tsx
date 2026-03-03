@@ -26,6 +26,7 @@ import {
 	Glasses,
 	Plug,
 	Server,
+	Sparkles,
 	Users2,
 	ArrowLeft,
 } from "lucide-react"
@@ -78,6 +79,7 @@ import { SlashCommandsSettings } from "./SlashCommandsSettings"
 import { UISettings } from "./UISettings"
 import ModesView from "../modes/ModesView"
 import McpView from "../mcp/McpView"
+import SkillsView from "../skills/SkillsView"
 import { SettingsSearch } from "./SettingsSearch"
 import { useSearchIndexRegistry, SearchIndexProvider } from "./useSettingsSearch"
 
@@ -103,6 +105,7 @@ export const sectionNames = [
 	"terminal",
 	"modes",
 	"mcp",
+	"skills",
 	"prompts",
 	"ui",
 	"experimental",
@@ -520,6 +523,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 			{ id: "providers", icon: Plug },
 			{ id: "modes", icon: Users2 },
 			{ id: "mcp", icon: Server },
+			{ id: "skills", icon: Sparkles },
 			{ id: "autoApprove", icon: CheckCheck },
 			{ id: "slashCommands", icon: SquareSlash },
 			{ id: "browser", icon: SquareMousePointer },
@@ -892,6 +896,9 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 
 						{/* MCP Section */}
 						{renderTab === "mcp" && <McpView />}
+
+						{/* Skills Section */}
+						{renderTab === "skills" && <SkillsView />}
 
 						{/* Prompts Section */}
 						{renderTab === "prompts" && (
