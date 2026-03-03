@@ -435,6 +435,40 @@ describe("FileChangesPanel", () => {
 		})
 	})
 
+	describe("scrollable content area", () => {
+		const createToolMessage = (toolData: any) => ({
+			type: "ask" as const,
+			ask: "tool" as const,
+			ts: Date.now(),
+			partial: false,
+			isAnswered: true,
+			text: JSON.stringify(toolData),
+		})
+
+		it("has max-h-[40vh] and overflow-y-auto classes on the file list container", () => {
+			const messages = [
+				createToolMessage({
+					tool: "editedExistingFile",
+					path: "src/file.ts",
+					diff: "diff",
+					diffStats: { added: 1, removed: 0 },
+				}),
+			]
+
+			const { container } = renderFileChangesPanel(messages)
+
+			// Expand the panel
+			const panelButton = screen.getByRole("button")
+			fireEvent.click(panelButton)
+
+			// Find the file list container div inside CollapsibleContent
+			const fileListContainer = container.querySelector(".max-h-\\[40vh\\].overflow-y-auto")
+			expect(fileListContainer).toBeInTheDocument()
+			expect(fileListContainer).toHaveClass("max-h-[40vh]")
+			expect(fileListContainer).toHaveClass("overflow-y-auto")
+		})
+	})
+
 	describe("batch diffs", () => {
 		const createToolMessage = (toolData: any) => ({
 			type: "ask" as const,
