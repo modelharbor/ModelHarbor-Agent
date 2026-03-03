@@ -351,6 +351,95 @@ export class SkillsManager {
 		this.disposables.push(watcher)
 	}
 
+	/**
+	 * Create a new skill with YAML frontmatter.
+	 */
+	async createSkill(options: {
+		name: string
+		description: string
+		source: "global" | "project"
+		mode?: string
+		instructions?: string
+	}): Promise<void> {
+		const { name, description, source, mode, instructions } = options
+
+		// Validate name: 1-64 chars, lowercase letters/numbers/hyphens, no leading/trailing/consecutive hyphens
+		if (name.length < 1 || name.length > 64) {
+			throw new Error(`Skill name must be 1-64 characters (got ${name.length})`)
+		}
+		const nameFormat = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+		if (!nameFormat.test(name)) {
+			throw new Error(
+				`Skill name "${name}" is invalid: must be lowercase letters/numbers/hyphens only (no leading/trailing hyphen, no consecutive hyphens)`,
+			)
+		}
+
+		// Determine directory
+		let skillDir: string
+		if (source === "global") {
+			const globalRooDir = getGlobalRooDirectory()
+			const skillsFolder = mode ? `skills-${mode}` : "skills"
+			skillDir = path.join(globalRooDir, skillsFolder, name)
+		} else {
+			const provider = this.providerRef.deref()
+			const cwd = provider?.cwd
+			if (!cwd) {
+				throw new Error("No workspace path available to create a project skill")
+			}
+			const skillsFolder = mode ? `skills-${mode}` : "skills"
+			skillDir = path.join(cwd, ".roo", skillsFolder, name)
+		}
+
+		// Create directory
+		await fs.mkdir(skillDir, { recursive: true })
+
+		// Write SKILL.md with YAML frontmatter
+		const skillMdPath = path.join(skillDir, "SKILL.md")
+		const content = `---\nname: ${name}\ndescription: ${description}\n---\n${instructions || ""}\n`
+		await fs.writeFile(skillMdPath, content, "utf-8")
+
+		// Refresh skills list
+		await this.discoverSkills()
+	}
+
+	/**
+	 * Delete a skill by name and source.
+	 */
+	async deleteSkill(name: string, source: "global" | "project"): Promise<void> {
+		// Find the skill in the discovered skills list
+		let targetSkill: SkillMetadata | undefined
+		for (const skill of this.skills.values()) {
+			if (skill.name === name && skill.source === source) {
+				targetSkill = skill
+				break
+			}
+		}
+
+		if (!targetSkill) {
+			throw new Error(`Skill "${name}" with source "${source}" not found`)
+		}
+
+		// The skill's path points to SKILL.md; delete the parent directory
+		const skillDir = path.dirname(targetSkill.path)
+		await fs.rm(skillDir, { recursive: true, force: true })
+
+		// Refresh skills list
+		await this.discoverSkills()
+	}
+
+	/**
+	 * Get the file path of a skill's SKILL.md for opening in the editor.
+	 * Returns null if the skill is not found.
+	 */
+	async openSkillFile(name: string): Promise<string | null> {
+		for (const skill of this.skills.values()) {
+			if (skill.name === name) {
+				return skill.path
+			}
+		}
+		return null
+	}
+
 	async dispose(): Promise<void> {
 		this.isDisposed = true
 		this.disposables.forEach((d) => d.dispose())

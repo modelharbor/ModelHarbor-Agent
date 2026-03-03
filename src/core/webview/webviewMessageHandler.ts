@@ -3399,6 +3399,76 @@ export const webviewMessageHandler = async (
 			break
 		}
 
+		case "requestSkills":
+		case "refreshSkills": {
+			const skillsManager = provider.getSkillsManager()
+			await skillsManager.initialize()
+			const skills = skillsManager.getAllSkills()
+			await provider.postMessageToWebview({ type: "skillsList", skills })
+			break
+		}
+
+		case "getSkillContent": {
+			if (message.text) {
+				const skillsManager = provider.getSkillsManager()
+				await skillsManager.initialize()
+				const content = await skillsManager.getSkillContent(message.text)
+				await provider.postMessageToWebview({ type: "skillContent", skillContent: content })
+			}
+			break
+		}
+
+		case "createSkill": {
+			if (message.values) {
+				const skillsManager = provider.getSkillsManager()
+				await skillsManager.initialize()
+				await skillsManager.createSkill({
+					name: message.values.name,
+					description: message.values.description,
+					source: message.values.source as "global" | "project",
+					mode: message.values.mode,
+					instructions: message.values.instructions,
+				})
+				const skills = skillsManager.getAllSkills()
+				await provider.postMessageToWebview({ type: "skillsList", skills })
+			}
+			break
+		}
+
+		case "deleteSkill": {
+			if (message.text) {
+				const skillsManager = provider.getSkillsManager()
+				await skillsManager.initialize()
+				const source = (message.source as "global" | "project") || "project"
+				await skillsManager.deleteSkill(message.text, source)
+				const skills = skillsManager.getAllSkills()
+				await provider.postMessageToWebview({ type: "skillsList", skills })
+			}
+			break
+		}
+
+		case "openSkillFile": {
+			if (message.text) {
+				const skillsManager = provider.getSkillsManager()
+				await skillsManager.initialize()
+				const filePath = await skillsManager.openSkillFile(message.text)
+				if (filePath) {
+					const uri = vscode.Uri.file(filePath)
+					await vscode.window.showTextDocument(uri)
+				}
+			}
+			break
+		}
+
+		case "openSkillsDirectory": {
+			const cwd = provider.cwd
+			const skillsDir = path.join(cwd, ".roo", "skills")
+			await fs.mkdir(skillsDir, { recursive: true })
+			const uri = vscode.Uri.file(skillsDir)
+			await vscode.commands.executeCommand("revealFileInOS", uri)
+			break
+		}
+
 		default: {
 			// console.log(`Unhandled message type: ${message.type}`)
 			//

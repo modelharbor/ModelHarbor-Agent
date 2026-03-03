@@ -128,6 +128,7 @@ export class ClineProvider
 	protected mcpHub?: McpHub // Change from private to protected
 	private marketplaceManager: MarketplaceManager
 	private mdmService?: MdmService
+	private skillsManager: SkillsManager | null = null
 	private taskCreationCallback: (task: Task) => void
 	private taskEventListeners: WeakMap<Task, Array<() => void>> = new WeakMap()
 	private currentWorkspacePath: string | undefined
@@ -486,6 +487,8 @@ export class ClineProvider
 		this.mcpHub = undefined
 		this.marketplaceManager?.cleanup()
 		this.customModesManager?.dispose()
+		await this.skillsManager?.dispose()
+		this.skillsManager = null
 		this.log("Disposed all disposables")
 		ClineProvider.activeInstances.delete(this)
 
@@ -2270,8 +2273,11 @@ export class ClineProvider
 		return this.mcpHub
 	}
 
-	public getSkillsManager(): SkillsManager | undefined {
-		return new SkillsManager(this)
+	public getSkillsManager(): SkillsManager {
+		if (!this.skillsManager) {
+			this.skillsManager = new SkillsManager(this)
+		}
+		return this.skillsManager
 	}
 
 	/**
