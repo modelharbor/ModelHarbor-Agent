@@ -18,6 +18,7 @@ import type { GitCommit } from "./git.js"
 import type { McpServer } from "./mcp.js"
 import type { ModelRecord, RouterModels } from "./model.js"
 import type { Worktree } from "./worktree.js"
+import type { SkillMetadata, SkillContent } from "./skills.js"
 
 /**
  * Share visibility options for task sharing
@@ -108,6 +109,8 @@ export interface ExtensionMessage {
 		| "worktreeCopyProgress"
 		| "folderSelected"
 		| "fileChanges"
+		| "skillsList"
+		| "skillContent"
 	text?: string
 	payload?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 	checkpointWarning?: {
@@ -221,6 +224,8 @@ export interface ExtensionMessage {
 	}
 	historyItem?: HistoryItem
 	liteLLMEmbeddingModels?: LiteLLMEmbeddingModel[]
+	skills?: SkillMetadata[]
+	skillContent?: SkillContent | null
 }
 
 /**
@@ -571,6 +576,13 @@ export interface WebviewMessage {
 		| "humanRelayCancel"
 		| "fetchLiteLLMEmbeddingModels"
 		| "getLiteLLMEmbeddingModelsFromCache"
+		| "requestSkills"
+		| "getSkillContent"
+		| "createSkill"
+		| "deleteSkill"
+		| "openSkillFile"
+		| "refreshSkills"
+		| "openSkillsDirectory"
 	text?: string
 	editedMessageContent?: string
 	tab?: "settings" | "history" | "mcp" | "modes" | "chat" | "marketplace" | "cloud"
