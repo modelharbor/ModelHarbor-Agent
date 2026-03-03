@@ -1,0 +1,45 @@
+{
+	"title": "Skills",
+	"description": "Skills are reusable instructions (SKILL.md files) that can be automatically included in the system prompt. Place them in <code>.roo/skills/</code> (project) or <code>~/.roo/skills/</code> (global).",
+	"emptyState": "No skills found. Create a skill or add SKILL.md files to .roo/skills/",
+	"projectSkills": "Project Skills",
+	"globalSkills": "Global Skills",
+	"source": {
+		"project": "project",
+		"global": "global"
+	},
+	"actions": {
+		"refresh": "Refresh",
+		"openDirectory": "Open Folder",
+		"create": "+ New Skill"
+	},
+	"row": {
+		"edit": "Edit in editor",
+		"delete": "Delete",
+		"mode": "Mode: {{mode}}"
+	},
+	"deleteDialog": {
+		"title": "Delete Skill",
+		"description": "Are you sure you want to delete the skill \"{{name}}\"? This cannot be undone.",
+		"cancel": "Cancel",
+		"delete": "Delete"
+	},
+	"createDialog": {
+		"title": "Create New Skill",
+		"name": "Name",
+		"namePlaceholder": "my-skill",
+		"nameHelp": "Lowercase letters, numbers, and hyphens only",
+		"description": "Description",
+		"descriptionPlaceholder": "When to use this skill",
+		"source": "Location",
+		"sourceProject": "Project (.roo/skills/)",
+		"sourceGlobal": "Global (~/.roo/skills/)",
+		"mode": "Mode (optional)",
+		"modePlaceholder": "e.g. code, architect",
+		"modeHelp": "If set, skill is only available in this mode",
+		"instructions": "Instructions (optional)",
+		"instructionsPlaceholder": "Skill instructions in markdown...",
+		"cancel": "Cancel",
+		"create": "Create"
+	}
+}

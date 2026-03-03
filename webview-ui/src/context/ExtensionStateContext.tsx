@@ -12,6 +12,8 @@ import {
 	type MarketplaceInstalledMetadata,
 	type Command,
 	type McpServer,
+	type SkillMetadata,
+	type SkillContent,
 	RouterModels,
 	DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
 } from "@roo-code/types"
@@ -34,6 +36,8 @@ export interface ExtensionStateContextType extends ExtensionState {
 	showWelcome: boolean
 	theme: any
 	mcpServers: McpServer[]
+	skills: SkillMetadata[]
+	skillContent: SkillContent | null
 	organizationAllowList: OrganizationAllowList
 	hasSystemPromptOverride?: boolean
 	currentCheckpoint?: string
@@ -272,6 +276,8 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 	const [openedTabs, setOpenedTabs] = useState<Array<{ label: string; isActive: boolean; path?: string }>>([])
 	const [commands, setCommands] = useState<Command[]>([])
 	const [mcpServers, setMcpServers] = useState<McpServer[]>([])
+	const [skills, setSkills] = useState<SkillMetadata[]>([])
+	const [skillContent, setSkillContent] = useState<SkillContent | null>(null)
 	const [currentCheckpoint, setCurrentCheckpoint] = useState<string>()
 	const [extensionRouterModels, setExtensionRouterModels] = useState<RouterModels | undefined>(undefined)
 	const [marketplaceItems, setMarketplaceItems] = useState<any[]>([])
@@ -387,6 +393,14 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 					setMcpServers(message.mcpServers ?? [])
 					break
 				}
+				case "skillsList": {
+					setSkills(message.skills ?? [])
+					break
+				}
+				case "skillContent": {
+					setSkillContent(message.skillContent ?? null)
+					break
+				}
 				case "currentCheckpointUpdated": {
 					setCurrentCheckpoint(message.text)
 					break
@@ -431,6 +445,8 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		showWelcome,
 		theme,
 		mcpServers,
+		skills,
+		skillContent,
 		organizationAllowList,
 		currentCheckpoint,
 		filePaths,

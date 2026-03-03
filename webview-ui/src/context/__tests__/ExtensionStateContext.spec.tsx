@@ -4,6 +4,8 @@ import {
 	type ProviderSettings,
 	type ExperimentId,
 	type ExtensionState,
+	type SkillMetadata,
+	type SkillContent,
 	DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
 } from "@roo-code/types"
 
@@ -24,6 +26,17 @@ const TestComponent = () => {
 			<button data-testid="toggle-rooignore-button" onClick={() => setShowRooIgnoredFiles(!showRooIgnoredFiles)}>
 				Update Commands
 			</button>
+		</div>
+	)
+}
+
+const SkillsTestComponent = () => {
+	const { skills, skillContent } = useExtensionState()
+
+	return (
+		<div>
+			<div data-testid="skills">{JSON.stringify(skills)}</div>
+			<div data-testid="skill-content">{JSON.stringify(skillContent)}</div>
 		</div>
 	)
 }
@@ -179,6 +192,97 @@ describe("ExtensionStateContext", () => {
 				modelTemperature: 0.7, // Should add this from partial update
 			}),
 		)
+	})
+
+	it("initializes with empty skills array and null skillContent", () => {
+		render(
+			<ExtensionStateContextProvider>
+				<SkillsTestComponent />
+			</ExtensionStateContextProvider>,
+		)
+
+		expect(JSON.parse(screen.getByTestId("skills").textContent!)).toEqual([])
+		expect(JSON.parse(screen.getByTestId("skill-content").textContent!)).toBeNull()
+	})
+
+	it("updates skills when skillsList message is received", () => {
+		render(
+			<ExtensionStateContextProvider>
+				<SkillsTestComponent />
+			</ExtensionStateContextProvider>,
+		)
+
+		const mockSkills: SkillMetadata[] = [
+			{
+				name: "test-skill",
+				description: "A test skill",
+				path: "/path/to/skill",
+				source: "project",
+				mode: "code",
+			},
+		]
+
+		act(() => {
+			window.dispatchEvent(
+				new MessageEvent("message", {
+					data: {
+						type: "skillsList",
+						skills: mockSkills,
+					},
+				}),
+			)
+		})
+
+		expect(JSON.parse(screen.getByTestId("skills").textContent!)).toEqual(mockSkills)
+	})
+
+	it("updates skillContent when skillContent message is received", () => {
+		render(
+			<ExtensionStateContextProvider>
+				<SkillsTestComponent />
+			</ExtensionStateContextProvider>,
+		)
+
+		const mockSkillContent: SkillContent = {
+			name: "test-skill",
+			description: "A test skill",
+			path: "/path/to/skill",
+			source: "project",
+			instructions: "# Test Skill\nDo the thing.",
+		}
+
+		act(() => {
+			window.dispatchEvent(
+				new MessageEvent("message", {
+					data: {
+						type: "skillContent",
+						skillContent: mockSkillContent,
+					},
+				}),
+			)
+		})
+
+		expect(JSON.parse(screen.getByTestId("skill-content").textContent!)).toEqual(mockSkillContent)
+	})
+
+	it("sets skillContent to null when skillContent message has no content", () => {
+		render(
+			<ExtensionStateContextProvider>
+				<SkillsTestComponent />
+			</ExtensionStateContextProvider>,
+		)
+
+		act(() => {
+			window.dispatchEvent(
+				new MessageEvent("message", {
+					data: {
+						type: "skillContent",
+					},
+				}),
+			)
+		})
+
+		expect(JSON.parse(screen.getByTestId("skill-content").textContent!)).toBeNull()
 	})
 })
 
