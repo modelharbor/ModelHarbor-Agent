@@ -31,6 +31,7 @@ import { CodeIndexManager } from "./services/code-index/manager"
 import { MdmService } from "./services/mdm/MdmService"
 import { migrateSettings } from "./utils/migrateSettings"
 import { autoImportSettings } from "./utils/autoImportSettings"
+import { autoSetupMcpServers } from "./utils/autoSetupMcpServers"
 import { API } from "./extension/api"
 
 import {
@@ -144,6 +145,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	} catch (error) {
 		outputChannel.appendLine(
 			`[AutoImport] Error during auto-import: ${error instanceof Error ? error.message : String(error)}`,
+		)
+	}
+
+	// Auto-setup default MCP servers (e.g., context7) if not already configured.
+	try {
+		await autoSetupMcpServers(context)
+	} catch (error) {
+		outputChannel.appendLine(
+			`[AutoSetupMcp] Error during auto-setup: ${error instanceof Error ? error.message : String(error)}`,
 		)
 	}
 

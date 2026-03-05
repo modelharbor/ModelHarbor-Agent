@@ -155,6 +155,8 @@ export const DEFAULT_MODES: readonly ModeConfig[] = [
 			"Use this mode when you need to write, modify, or refactor code. Ideal for implementing features, fixing bugs, creating new files, or making code improvements across any programming language or framework.",
 		description: "Write, modify, and refactor code",
 		groups: ["read", "edit", "browser", "command", "mcp"],
+		customInstructions:
+			"use context7 if your code get compilation error and your test failed or the user ask for the latest version or the fix the error in code.",
 	},
 	{
 		slug: "ask",
@@ -166,7 +168,7 @@ export const DEFAULT_MODES: readonly ModeConfig[] = [
 		description: "Get answers and explanations",
 		groups: ["read", "browser", "mcp"],
 		customInstructions:
-			"You can analyze code, explain concepts, and access external resources. Always answer the user's questions thoroughly, and do not switch to implementing code unless explicitly requested by the user. Include Mermaid diagrams when they clarify your response.",
+			"You can analyze code, explain concepts, and access external resources. Always answer the user's questions thoroughly, and do not switch to implementing code unless explicitly requested by the user. Include Mermaid diagrams when they clarify your response. You may query context7 for the latest information.",
 	},
 	{
 		slug: "debug",
@@ -178,7 +180,7 @@ export const DEFAULT_MODES: readonly ModeConfig[] = [
 		description: "Diagnose and fix software issues",
 		groups: ["read", "edit", "browser", "command", "mcp"],
 		customInstructions:
-			"Reflect on 5-7 different possible sources of the problem, distill those down to 1-2 most likely sources, and then add logs to validate your assumptions. Explicitly ask the user to confirm the diagnosis before fixing the problem.",
+			"Reflect on 5-7 different possible sources of the problem, distill those down to 1-2 most likely sources, and then add logs to validate your assumptions. Explicitly ask the user to confirm the diagnosis before fixing the problem. If the problem still persists you may use context7 to get the latest information about the error and the possible solution.",
 	},
 	{
 		slug: "orchestrator",
