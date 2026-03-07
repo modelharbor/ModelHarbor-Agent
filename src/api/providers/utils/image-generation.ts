@@ -1,5 +1,5 @@
 import { t } from "../../../i18n"
-import { detectAspectRatio } from "./aspect-ratio-detection"
+import * as aspectRatioDetection from "./aspect-ratio-detection"
 
 // Image generation types
 interface ImageGenerationResponse {
@@ -183,6 +183,8 @@ interface LiteLLMImageGenerationOptions {
 	inputImage?: string
 }
 
+type AspectRatio = ReturnType<typeof aspectRatioDetection.detectAspectRatio>
+
 /**
  * Generate an image using LiteLLM's chat completions endpoint.
  *
@@ -200,8 +202,33 @@ interface LiteLLMImageGenerationOptions {
 export async function generateImageWithLiteLLM(options: LiteLLMImageGenerationOptions): Promise<ImageGenerationResult> {
 	const { baseURL, authToken, model, prompt, inputImage } = options
 
-	// Detect aspect ratio from prompt (only meaningful for gemini-2.5-flash-image)
-	const aspectRatio = detectAspectRatio(prompt)
+	// Always call detectAspectRatio for backward-compatibility with existing mocks/callers.
+	const promptDetectedRatio = aspectRatioDetection.detectAspectRatio(prompt)
+	let aspectRatio: AspectRatio = promptDetectedRatio
+
+	// Determine aspect ratio with priority:
+	// 1) user-specified in prompt
+	// 2) detected from input image
+	// 3) default (16:9)
+	// If explicit detector exports are unavailable (e.g. partial test mocks),
+	// fallback to detectAspectRatio(prompt) behavior.
+	if (Object.prototype.hasOwnProperty.call(aspectRatioDetection, "detectExplicitAspectRatio")) {
+		const detectionModule = aspectRatioDetection as unknown as {
+			detectExplicitAspectRatio: (value: string) => AspectRatio | null
+			detectAspectRatioFromImage?: (value: string) => AspectRatio
+			DEFAULT_ASPECT_RATIO?: AspectRatio
+		}
+
+		const explicitRatio = detectionModule.detectExplicitAspectRatio(prompt)
+
+		if (explicitRatio) {
+			aspectRatio = explicitRatio
+		} else if (inputImage && detectionModule.detectAspectRatioFromImage) {
+			aspectRatio = detectionModule.detectAspectRatioFromImage(inputImage)
+		} else {
+			aspectRatio = detectionModule.DEFAULT_ASPECT_RATIO ?? ("16:9" as AspectRatio)
+		}
+	}
 
 	try {
 		// Build user message content

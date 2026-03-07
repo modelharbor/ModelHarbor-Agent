@@ -17,7 +17,10 @@ vi.mock("../../../i18n", () => ({
 
 // Mock aspect-ratio-detection
 vi.mock("../aspect-ratio-detection", () => ({
-	detectAspectRatio: vi.fn().mockReturnValue("1:1"),
+	detectAspectRatio: vi.fn().mockReturnValue("16:9"),
+	detectExplicitAspectRatio: vi.fn().mockReturnValue(null),
+	detectAspectRatioFromImage: vi.fn().mockReturnValue("16:9"),
+	DEFAULT_ASPECT_RATIO: "16:9",
 }))
 
 // Mock fetch globally
@@ -413,7 +416,7 @@ describe("generateImageWithLiteLLM", () => {
 		expect(body.modalities).toEqual(["image", "text"])
 		expect(body.temperature).toBe(1)
 		expect(body.stream).toBe(false)
-		expect(body.image_config).toEqual({ aspect_ratio: "1:1" })
+		expect(body.image_config).toEqual({ aspect_ratio: "16:9" })
 		expect(body.messages).toHaveLength(1)
 		expect(body.messages[0].role).toBe("user")
 		expect(body.messages[0].content).toBe("A cute cat")
@@ -446,6 +449,123 @@ describe("generateImageWithLiteLLM", () => {
 		})
 
 		expect(detectAspectRatio).toHaveBeenCalledWith("A landscape wallpaper of mountains")
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+		expect(body.image_config.aspect_ratio).toBe("16:9")
+	})
+
+	it("should prioritize user-specified prompt ratio over input image ratio", async () => {
+		const { detectAspectRatio, detectExplicitAspectRatio, detectAspectRatioFromImage } = await import(
+			"../aspect-ratio-detection"
+		)
+
+		vi.mocked(detectAspectRatio).mockReturnValueOnce("1:1")
+		vi.mocked(detectExplicitAspectRatio).mockReturnValueOnce("21:9")
+
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const inputImage = "data:image/png;base64,aW5wdXQ="
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "generate 21:9 cinematic image",
+			inputImage,
+		})
+
+		expect(detectExplicitAspectRatio).toHaveBeenCalledWith("generate 21:9 cinematic image")
+		expect(detectAspectRatioFromImage).not.toHaveBeenCalled()
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+		expect(body.image_config.aspect_ratio).toBe("21:9")
+	})
+
+	it("should use input image ratio when no explicit prompt ratio is provided", async () => {
+		const { detectExplicitAspectRatio, detectAspectRatioFromImage } = await import("../aspect-ratio-detection")
+
+		vi.mocked(detectExplicitAspectRatio).mockReturnValueOnce(null)
+		vi.mocked(detectAspectRatioFromImage).mockReturnValueOnce("3:4")
+
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const inputImage = "data:image/png;base64,aW5wdXQ="
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "make it look vintage",
+			inputImage,
+		})
+
+		expect(detectAspectRatioFromImage).toHaveBeenCalledWith(inputImage)
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+		expect(body.image_config.aspect_ratio).toBe("3:4")
+	})
+
+	it("should use default 16:9 when no explicit ratio and no input image are provided", async () => {
+		const { detectAspectRatio, detectExplicitAspectRatio, detectAspectRatioFromImage } = await import(
+			"../aspect-ratio-detection"
+		)
+
+		vi.mocked(detectAspectRatio).mockReturnValueOnce("1:1")
+		vi.mocked(detectExplicitAspectRatio).mockReturnValueOnce(null)
+
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "a mysterious city at night",
+		})
+
+		expect(detectAspectRatio).toHaveBeenCalledWith("a mysterious city at night")
+		expect(detectAspectRatioFromImage).not.toHaveBeenCalled()
 
 		const callArgs = vi.mocked(global.fetch).mock.calls[0]
 		const body = JSON.parse(callArgs[1]?.body as string)
