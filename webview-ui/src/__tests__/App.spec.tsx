@@ -294,6 +294,73 @@ describe("App", () => {
 		expect(screen.queryByTestId("marketplace-view")).not.toBeInTheDocument()
 	})
 
+	describe("Webview font size CSS variable binding", () => {
+		afterEach(() => {
+			// Clean up the CSS variable after each test
+			document.documentElement.style.removeProperty("--webview-font-size")
+		})
+
+		it("sets --webview-font-size to the provided webviewFontSize value", () => {
+			mockUseExtensionState.mockReturnValue({
+				didHydrateState: true,
+				showWelcome: false,
+				shouldShowAnnouncement: false,
+				experiments: {},
+				language: "en",
+				telemetrySetting: "enabled",
+				webviewFontSize: 16,
+			})
+
+			render(<AppWithProviders />)
+
+			expect(document.documentElement.style.getPropertyValue("--webview-font-size")).toBe("16px")
+		})
+
+		it("falls back to 13px when webviewFontSize is undefined", () => {
+			mockUseExtensionState.mockReturnValue({
+				didHydrateState: true,
+				showWelcome: false,
+				shouldShowAnnouncement: false,
+				experiments: {},
+				language: "en",
+				telemetrySetting: "enabled",
+				webviewFontSize: undefined,
+			})
+
+			render(<AppWithProviders />)
+
+			expect(document.documentElement.style.getPropertyValue("--webview-font-size")).toBe("13px")
+		})
+
+		it("updates --webview-font-size when webviewFontSize changes", () => {
+			const initialState = {
+				didHydrateState: true,
+				showWelcome: false,
+				shouldShowAnnouncement: false,
+				experiments: {},
+				language: "en",
+				telemetrySetting: "enabled",
+				webviewFontSize: 14,
+			}
+
+			mockUseExtensionState.mockReturnValue(initialState)
+
+			const { rerender } = render(<AppWithProviders />)
+
+			expect(document.documentElement.style.getPropertyValue("--webview-font-size")).toBe("14px")
+
+			// Simulate state change to a new font size
+			mockUseExtensionState.mockReturnValue({
+				...initialState,
+				webviewFontSize: 20,
+			})
+
+			rerender(<AppWithProviders />)
+
+			expect(document.documentElement.style.getPropertyValue("--webview-font-size")).toBe("20px")
+		})
+	})
+
 	describe("PostHog feature flag initialization", () => {
 		it("waits for state hydration before checking feature flags", () => {
 			mockUseExtensionState.mockReturnValue({

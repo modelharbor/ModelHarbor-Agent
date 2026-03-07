@@ -6,7 +6,7 @@ import { TooltipProvider } from "@src/components/ui/tooltip"
 import TranslationProvider from "@src/i18n/TranslationContext"
 import { vscode } from "@src/utils/vscode"
 
-import { ExtensionStateContextProvider } from "@/context/ExtensionStateContext"
+import { ExtensionStateContextProvider, useExtensionState } from "@/context/ExtensionStateContext"
 
 import BrowserSessionRow from "../chat/BrowserSessionRow"
 import ErrorBoundary from "../ErrorBoundary"
@@ -19,6 +19,14 @@ interface BrowserSessionPanelState {
 
 const BrowserSessionPanelContent: React.FC = () => {
 	const { browserViewportSize, isBrowserSessionActive } = useBrowserPanelState()
+	const { webviewFontSize } = useExtensionState()
+
+	// Apply webview font size CSS variable to document root
+	useEffect(() => {
+		const size = webviewFontSize ?? 13
+		document.documentElement.style.setProperty("--webview-font-size", `${size}px`)
+	}, [webviewFontSize])
+
 	const [state, setState] = useState<BrowserSessionPanelState>({
 		messages: [],
 	})

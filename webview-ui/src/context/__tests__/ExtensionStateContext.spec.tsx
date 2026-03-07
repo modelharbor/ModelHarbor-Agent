@@ -297,6 +297,7 @@ describe("mergeExtensionState", () => {
 			shouldShowAnnouncement: false,
 			enableCheckpoints: true,
 			writeDelayMs: 1000,
+			webviewFontSize: 13,
 			mode: "default",
 			experiments: {} as Record<ExperimentId, boolean>,
 			customModes: [],

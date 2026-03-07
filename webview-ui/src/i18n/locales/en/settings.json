@@ -78,6 +78,13 @@
 		"requireCtrlEnterToSend": {
 			"label": "Require {{primaryMod}}+Enter to send messages",
 			"description": "When enabled, you must press {{primaryMod}}+Enter to send messages instead of just Enter"
+		},
+		"fontSize": {
+			"label": "Font Size",
+			"description": "Adjust the font size of webview content. Default: {{defaultSize}}px",
+			"decrease": "Decrease font size",
+			"increase": "Increase font size",
+			"reset": "Reset"
 		}
 	},
 	"prompts": {

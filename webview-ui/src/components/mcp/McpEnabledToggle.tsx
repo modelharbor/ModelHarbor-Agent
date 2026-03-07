@@ -26,8 +26,8 @@ const McpEnabledToggle = () => {
 				<span style={{ fontWeight: "500" }}>{t("mcp:enableToggle.title")}</span>
 			</VSCodeCheckbox>
 			<p
+				className="text-sm"
 				style={{
-					fontSize: "12px",
 					marginTop: "5px",
 					color: "var(--vscode-descriptionForeground)",
 				}}>

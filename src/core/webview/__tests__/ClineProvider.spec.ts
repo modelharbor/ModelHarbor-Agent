@@ -550,6 +550,7 @@ describe("ClineProvider", () => {
 			enableCheckpoints: false,
 			writeDelayMs: 1000,
 			browserViewportSize: "900x600",
+			webviewFontSize: 13,
 			fuzzyMatchThreshold: 1.0,
 			mcpEnabled: true,
 			enableMcpServerCreation: false,
@@ -782,6 +783,18 @@ describe("ClineProvider", () => {
 		expect(state.writeDelayMs).toBe(1000)
 	})
 
+	test("webviewFontSize defaults to 13", async () => {
+		;(mockContext.globalState.get as any).mockImplementation((key: string) => {
+			if (key === "webviewFontSize") {
+				return undefined
+			}
+			return null
+		})
+
+		const state = await provider.getState()
+		expect(state.webviewFontSize).toBe(13)
+	})
+
 	test("handles writeDelayMs message", async () => {
 		await provider.resolveWebviewView(mockWebviewView)
 		const messageHandler = (mockWebviewView.webview.onDidReceiveMessage as any).mock.calls[0][0]
@@ -790,6 +803,17 @@ describe("ClineProvider", () => {
 
 		expect(updateGlobalStateSpy).toHaveBeenCalledWith("writeDelayMs", 2000)
 		expect(mockContext.globalState.update).toHaveBeenCalledWith("writeDelayMs", 2000)
+		expect(mockPostMessage).toHaveBeenCalled()
+	})
+
+	test("handles webviewFontSize message", async () => {
+		await provider.resolveWebviewView(mockWebviewView)
+		const messageHandler = (mockWebviewView.webview.onDidReceiveMessage as any).mock.calls[0][0]
+
+		await messageHandler({ type: "updateSettings", updatedSettings: { webviewFontSize: 18 } })
+
+		expect(updateGlobalStateSpy).toHaveBeenCalledWith("webviewFontSize", 18)
+		expect(mockContext.globalState.update).toHaveBeenCalledWith("webviewFontSize", 18)
 		expect(mockPostMessage).toHaveBeenCalled()
 	})
 

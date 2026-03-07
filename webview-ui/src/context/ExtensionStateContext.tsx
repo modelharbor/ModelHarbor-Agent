@@ -202,6 +202,7 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		language: "en", // Default language code
 		writeDelayMs: 1000,
 		browserViewportSize: "900x600",
+		webviewFontSize: 13,
 		screenshotQuality: 75,
 		terminalOutputLineLimit: 500,
 		terminalOutputCharacterLimit: 50000,

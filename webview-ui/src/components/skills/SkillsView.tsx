@@ -74,7 +74,6 @@ const SkillsView = () => {
 				<div
 					style={{
 						color: "var(--vscode-foreground)",
-						fontSize: "13px",
 						marginBottom: "10px",
 						marginTop: "5px",
 					}}>
@@ -124,8 +123,8 @@ const SkillsView = () => {
 						{projectSkills.length > 0 && (
 							<div>
 								<div
+									className="text-sm"
 									style={{
-										fontSize: "12px",
 										fontWeight: 500,
 										color: "var(--vscode-descriptionForeground)",
 										marginBottom: "8px",
@@ -157,8 +156,8 @@ const SkillsView = () => {
 						{globalSkills.length > 0 && (
 							<div>
 								<div
+									className="text-sm"
 									style={{
-										fontSize: "12px",
 										fontWeight: 500,
 										color: "var(--vscode-descriptionForeground)",
 										marginBottom: "8px",
@@ -240,10 +239,10 @@ const SkillRow = ({
 					<span style={{ fontWeight: 500 }}>{skill.name}</span>
 					{skill.description && (
 						<span
+							className="text-sm"
 							style={{
 								marginLeft: "8px",
 								color: "var(--vscode-descriptionForeground)",
-								fontSize: "12px",
 							}}>
 							{skill.description}
 						</span>
@@ -251,10 +250,10 @@ const SkillRow = ({
 				</div>
 				{skill.mode && (
 					<span
+						className="text-xs"
 						style={{
 							marginLeft: "8px",
 							padding: "1px 6px",
-							fontSize: "11px",
 							borderRadius: "4px",
 							background: "var(--vscode-badge-background)",
 							color: "var(--vscode-badge-foreground)",
@@ -263,10 +262,10 @@ const SkillRow = ({
 					</span>
 				)}
 				<span
+					className="text-xs"
 					style={{
 						marginLeft: "8px",
 						padding: "1px 6px",
-						fontSize: "11px",
 						borderRadius: "4px",
 						background: "var(--vscode-badge-background)",
 						color: "var(--vscode-badge-foreground)",
@@ -290,7 +289,6 @@ const SkillRow = ({
 					style={{
 						background: "var(--vscode-textCodeBlock-background)",
 						padding: "10px",
-						fontSize: "13px",
 						borderRadius: "0 0 4px 4px",
 					}}>
 					<div style={{ marginBottom: "8px" }}>
@@ -377,7 +375,6 @@ const CreateSkillDialog = ({ onClose, onCreate }: CreateSkillDialogProps) => {
 						<label
 							style={{
 								display: "block",
-								fontSize: "13px",
 								marginBottom: "4px",
 								fontWeight: 500,
 							}}>
@@ -389,8 +386,8 @@ const CreateSkillDialog = ({ onClose, onCreate }: CreateSkillDialogProps) => {
 							placeholder={t("skills:createDialog.namePlaceholder")}
 						/>
 						<div
+							className="text-xs"
 							style={{
-								fontSize: "11px",
 								color: "var(--vscode-descriptionForeground)",
 								marginTop: "4px",
 							}}>
@@ -403,7 +400,6 @@ const CreateSkillDialog = ({ onClose, onCreate }: CreateSkillDialogProps) => {
 						<label
 							style={{
 								display: "block",
-								fontSize: "13px",
 								marginBottom: "4px",
 								fontWeight: 500,
 							}}>
@@ -421,7 +417,6 @@ const CreateSkillDialog = ({ onClose, onCreate }: CreateSkillDialogProps) => {
 						<label
 							style={{
 								display: "block",
-								fontSize: "13px",
 								marginBottom: "4px",
 								fontWeight: 500,
 							}}>
@@ -434,7 +429,6 @@ const CreateSkillDialog = ({ onClose, onCreate }: CreateSkillDialogProps) => {
 									alignItems: "center",
 									gap: "6px",
 									cursor: "pointer",
-									fontSize: "13px",
 								}}>
 								<input
 									type="radio"
@@ -450,7 +444,6 @@ const CreateSkillDialog = ({ onClose, onCreate }: CreateSkillDialogProps) => {
 									alignItems: "center",
 									gap: "6px",
 									cursor: "pointer",
-									fontSize: "13px",
 								}}>
 								<input
 									type="radio"
@@ -468,7 +461,6 @@ const CreateSkillDialog = ({ onClose, onCreate }: CreateSkillDialogProps) => {
 						<label
 							style={{
 								display: "block",
-								fontSize: "13px",
 								marginBottom: "4px",
 								fontWeight: 500,
 							}}>
@@ -480,8 +472,8 @@ const CreateSkillDialog = ({ onClose, onCreate }: CreateSkillDialogProps) => {
 							placeholder={t("skills:createDialog.modePlaceholder")}
 						/>
 						<div
+							className="text-xs"
 							style={{
-								fontSize: "11px",
 								color: "var(--vscode-descriptionForeground)",
 								marginTop: "4px",
 							}}>
@@ -494,7 +486,6 @@ const CreateSkillDialog = ({ onClose, onCreate }: CreateSkillDialogProps) => {
 						<label
 							style={{
 								display: "block",
-								fontSize: "13px",
 								marginBottom: "4px",
 								fontWeight: 500,
 							}}>

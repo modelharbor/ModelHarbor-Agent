@@ -841,7 +841,7 @@ export const ChatRowContent = ({
 									backgroundColor: "var(--vscode-badge-background)",
 									borderBottom: "1px solid var(--vscode-editorGroup-border)",
 									fontWeight: "bold",
-									fontSize: "var(--vscode-font-size)",
+									fontSize: "var(--webview-font-size, 13px)",
 									color: "var(--vscode-badge-foreground)",
 									display: "flex",
 									alignItems: "center",
@@ -878,7 +878,7 @@ export const ChatRowContent = ({
 									backgroundColor: "var(--vscode-badge-background)",
 									borderBottom: "1px solid var(--vscode-editorGroup-border)",
 									fontWeight: "bold",
-									fontSize: "var(--vscode-font-size)",
+									fontSize: "var(--webview-font-size, 13px)",
 									color: "var(--vscode-badge-foreground)",
 									display: "flex",
 									alignItems: "center",
@@ -924,11 +924,11 @@ export const ChatRowContent = ({
 									padding: "10px 12px",
 								}}>
 								<div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-									<span style={{ fontWeight: "500", fontSize: "var(--vscode-font-size)" }}>
+									<span style={{ fontWeight: "500", fontSize: "var(--webview-font-size, 13px)" }}>
 										/{slashCommandInfo.command}
 									</span>
 									{slashCommandInfo.source && (
-										<VSCodeBadge style={{ fontSize: "calc(var(--vscode-font-size) - 2px)" }}>
+										<VSCodeBadge style={{ fontSize: "calc(var(--webview-font-size, 13px) - 2px)" }}>
 											{slashCommandInfo.source}
 										</VSCodeBadge>
 									)}
@@ -1035,7 +1035,7 @@ export const ChatRowContent = ({
 										backgroundColor: "var(--vscode-badge-background)",
 										borderBottom: "1px solid var(--vscode-editorGroup-border)",
 										fontWeight: "bold",
-										fontSize: "var(--vscode-font-size)",
+										fontSize: "var(--webview-font-size, 13px)",
 										color: "var(--vscode-badge-foreground)",
 										display: "flex",
 										alignItems: "center",
@@ -1462,7 +1462,7 @@ export const ChatRowContent = ({
 													<span
 														style={{
 															fontWeight: "500",
-															fontSize: "var(--vscode-font-size)",
+															fontSize: "var(--webview-font-size, 13px)",
 														}}>
 														/{slashCommandInfo.command}
 													</span>
@@ -1470,7 +1470,7 @@ export const ChatRowContent = ({
 														<span
 															style={{
 																color: "var(--vscode-descriptionForeground)",
-																fontSize: "var(--vscode-font-size)",
+																fontSize: "var(--webview-font-size, 13px)",
 															}}>
 															{slashCommandInfo.args}
 														</span>
@@ -1480,7 +1480,7 @@ export const ChatRowContent = ({
 													<div
 														style={{
 															color: "var(--vscode-descriptionForeground)",
-															fontSize: "calc(var(--vscode-font-size) - 1px)",
+															fontSize: "calc(var(--webview-font-size, 13px) - 1px)",
 														}}>
 														{slashCommandInfo.description}
 													</div>
@@ -1488,7 +1488,9 @@ export const ChatRowContent = ({
 												{slashCommandInfo.source && (
 													<div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
 														<VSCodeBadge
-															style={{ fontSize: "calc(var(--vscode-font-size) - 2px)" }}>
+															style={{
+																fontSize: "calc(var(--webview-font-size, 13px) - 2px)",
+															}}>
 															{slashCommandInfo.source}
 														</VSCodeBadge>
 													</div>

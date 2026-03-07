@@ -52,7 +52,6 @@ const McpView = () => {
 				<div
 					style={{
 						color: "var(--vscode-foreground)",
-						fontSize: "13px",
 						marginBottom: "10px",
 						marginTop: "5px",
 					}}>
@@ -79,8 +78,8 @@ const McpView = () => {
 								<span style={{ fontWeight: "500" }}>{t("mcp:enableServerCreation.title")}</span>
 							</VSCodeCheckbox>
 							<div
+								className="text-sm"
 								style={{
-									fontSize: "12px",
 									marginTop: "5px",
 									color: "var(--vscode-descriptionForeground)",
 								}}>
@@ -168,9 +167,9 @@ const McpView = () => {
 							</StandardTooltip>
 						</div>
 						<div
+							className="text-sm"
 							style={{
 								marginTop: "15px",
-								fontSize: "12px",
 								color: "var(--vscode-descriptionForeground)",
 							}}>
 							<VSCodeLink
@@ -286,10 +285,10 @@ const ServerRow = ({ server, alwaysAllowMcp }: { server: McpServer; alwaysAllowM
 					{server.name}
 					{server.source && (
 						<span
+							className="text-xs"
 							style={{
 								marginLeft: "8px",
 								padding: "1px 6px",
-								fontSize: "11px",
 								borderRadius: "4px",
 								background: "var(--vscode-badge-background)",
 								color: "var(--vscode-badge-foreground)",
@@ -349,7 +348,6 @@ const ServerRow = ({ server, alwaysAllowMcp }: { server: McpServer; alwaysAllowM
 							style={{
 								background: "var(--vscode-textCodeBlock-background)",
 								padding: "0 10px 10px 10px",
-								fontSize: "13px",
 								borderRadius: "0 0 4px 4px",
 							}}>
 							<VSCodePanels style={{ marginBottom: "10px" }}>
@@ -423,7 +421,7 @@ const ServerRow = ({ server, alwaysAllowMcp }: { server: McpServer; alwaysAllowM
 
 								{server.instructions && (
 									<VSCodePanelView id="instructions-view">
-										<div style={{ padding: "10px 0", fontSize: "12px" }}>
+										<div className="text-sm" style={{ padding: "10px 0" }}>
 											<div className="opacity-80 whitespace-pre-wrap break-words">
 												{server.instructions}
 											</div>
@@ -486,8 +484,8 @@ const ServerRow = ({ server, alwaysAllowMcp }: { server: McpServer; alwaysAllowM
 									</select>
 								</div>
 								<span
+									className="text-sm"
 									style={{
-										fontSize: "12px",
 										color: "var(--vscode-descriptionForeground)",
 										display: "block",
 									}}>
@@ -500,7 +498,6 @@ const ServerRow = ({ server, alwaysAllowMcp }: { server: McpServer; alwaysAllowM
 					!server.disabled && (
 						<div
 							style={{
-								fontSize: "13px",
 								background: "var(--vscode-textCodeBlock-background)",
 								borderRadius: "0 0 4px 4px",
 								width: "100%",

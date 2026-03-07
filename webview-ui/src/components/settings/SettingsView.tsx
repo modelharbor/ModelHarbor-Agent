@@ -218,6 +218,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 		includeCurrentTime,
 		includeCurrentCost,
 		maxGitStatusFiles,
+		webviewFontSize,
 	} = cachedState
 
 	const apiConfiguration = useMemo(() => cachedState.apiConfiguration ?? {}, [cachedState.apiConfiguration])
@@ -389,6 +390,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 					enableCheckpoints: enableCheckpoints ?? false,
 					checkpointTimeout: checkpointTimeout ?? DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
 					browserViewportSize: browserViewportSize ?? "900x600",
+					webviewFontSize: webviewFontSize ?? 13,
 					remoteBrowserHost: remoteBrowserEnabled ? remoteBrowserHost : undefined,
 					remoteBrowserEnabled: remoteBrowserEnabled ?? false,
 					fuzzyMatchThreshold: fuzzyMatchThreshold ?? 1.0,
@@ -917,6 +919,7 @@ const SettingsView = forwardRef<SettingsViewRef, SettingsViewProps>(({ onDone, t
 							<UISettings
 								reasoningBlockCollapsed={reasoningBlockCollapsed ?? true}
 								enterBehavior={enterBehavior ?? "send"}
+								webviewFontSize={webviewFontSize ?? 13}
 								setCachedStateField={setCachedStateField}
 							/>
 						)}

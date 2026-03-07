@@ -983,6 +983,13 @@
 		"requireCtrlEnterToSend": {
 			"description": "When enabled, you must press {{primaryMod}}+Enter to send messages instead of just Enter",
 			"label": "Require {{primaryMod}}+Enter to send messages"
+		},
+		"fontSize": {
+			"label": "ขนาดตัวอักษร",
+			"description": "ปรับขนาดตัวอักษรของเนื้อหาใน webview ค่าเริ่มต้น: {{defaultSize}}px",
+			"decrease": "ลดขนาดตัวอักษร",
+			"increase": "เพิ่มขนาดตัวอักษร",
+			"reset": "รีเซ็ต"
 		}
 	},
 	"unsavedChangesDialog": {

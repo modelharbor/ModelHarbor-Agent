@@ -24,8 +24,8 @@ const McpResourceRow = ({ item }: McpResourceRowProps) => {
 				<span style={{ fontWeight: 500, wordBreak: "break-all" }}>{uri}</span>
 			</div>
 			<div
+				className="text-sm"
 				style={{
-					fontSize: "12px",
 					opacity: 0.8,
 					margin: "4px 0",
 				}}>
@@ -37,10 +37,7 @@ const McpResourceRow = ({ item }: McpResourceRowProps) => {
 							? item.name
 							: "No description"}
 			</div>
-			<div
-				style={{
-					fontSize: "12px",
-				}}>
+			<div className="text-sm">
 				<span style={{ opacity: 0.8 }}>Returns </span>
 				<code
 					style={{

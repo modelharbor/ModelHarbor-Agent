@@ -269,6 +269,7 @@ export type ExtensionState = Pick<
 	| "browserToolEnabled"
 	| "browserViewportSize"
 	| "screenshotQuality"
+	| "webviewFontSize"
 	| "remoteBrowserEnabled"
 	| "cachedChromeHostUrl"
 	| "remoteBrowserHost"
@@ -683,7 +684,7 @@ export interface WebviewMessage {
 		codebaseIndexOpenRouterApiKey?: string
 		codebaseIndexLitellmApiKey?: string
 	}
-	updatedSettings?: RooCodeSettings
+	updatedSettings?: Partial<RooCodeSettings>
 }
 
 export const checkoutDiffPayloadSchema = z.object({

@@ -195,7 +195,6 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 									borderRadius: 4,
 									padding: "2px 8px",
 									cursor: "pointer",
-									fontSize: 13,
 									marginLeft: 8,
 								}}>
 								{isEditing ? "Done" : "Edit"}
@@ -279,7 +278,6 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 													background: "var(--vscode-input-background)",
 													border: "none",
 													outline: "none",
-													fontSize: 13,
 													marginRight: 6,
 													padding: "1px 3px",
 													borderBottom: "1px solid var(--vscode-input-border)",
@@ -302,7 +300,6 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 															: todo.status === "in_progress"
 																? "var(--vscode-charts-yellow)"
 																: "var(--vscode-foreground)",
-													fontSize: 13,
 													marginRight: 6,
 													padding: "1px 3px",
 													lineHeight: "1.4",
@@ -314,13 +311,13 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 											<select
 												value={todo.status || ""}
 												onChange={(e) => handleStatusChange(todo.id!, e.target.value)}
+												className="text-sm"
 												style={{
 													marginRight: 6,
 													borderRadius: 4,
 													border: "1px solid var(--vscode-input-border)",
 													background: "var(--vscode-input-background)",
 													color: "var(--vscode-input-foreground)",
-													fontSize: 12,
 													padding: "1px 4px",
 												}}>
 												{STATUS_OPTIONS.map((opt) => (
@@ -333,12 +330,12 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 										{isEditing && (
 											<button
 												onClick={() => handleDelete(todo.id!)}
+												className="text-lg"
 												style={{
 													border: "none",
 													background: "transparent",
 													color: "#f14c4c",
 													cursor: "pointer",
-													fontSize: 14,
 													marginLeft: 2,
 													padding: 0,
 													lineHeight: 1,
@@ -368,7 +365,6 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 											background: "transparent",
 											border: "none",
 											outline: "none",
-											fontSize: 13,
 											marginRight: 6,
 											padding: "1px 3px",
 											borderBottom: "1px solid #eee",
@@ -377,6 +373,7 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 									<button
 										onClick={handleAdd}
 										disabled={!newContent.trim()}
+										className="text-sm"
 										style={{
 											border: "1px solid var(--vscode-button-border)",
 											background: "var(--vscode-button-background)",
@@ -384,7 +381,6 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 											borderRadius: 4,
 											padding: "1px 7px",
 											cursor: newContent.trim() ? "pointer" : "not-allowed",
-											fontSize: 12,
 											marginRight: 4,
 										}}>
 										Add
@@ -394,6 +390,7 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 											setAdding(false)
 											setNewContent("")
 										}}
+										className="text-sm"
 										style={{
 											border: "1px solid var(--vscode-button-secondaryBorder)",
 											background: "var(--vscode-button-secondaryBackground)",
@@ -401,7 +398,6 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 											borderRadius: 4,
 											padding: "1px 7px",
 											cursor: "pointer",
-											fontSize: 12,
 										}}>
 										Cancel
 									</button>
@@ -411,6 +407,7 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 									{isEditing && (
 										<button
 											onClick={() => setAdding(true)}
+											className="text-sm"
 											style={{
 												border: "1px dashed var(--vscode-button-secondaryBorder)",
 												background: "var(--vscode-button-secondaryBackground)",
@@ -418,7 +415,6 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 												borderRadius: 4,
 												padding: "1px 8px",
 												cursor: "pointer",
-												fontSize: 12,
 											}}>
 											+ Add Todo
 										</button>
@@ -456,12 +452,13 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 								zIndex: 10000,
 							}}
 							onClick={(e) => e.stopPropagation()}>
-							<div style={{ marginBottom: 12, fontSize: 14, color: "#333" }}>
+							<div className="text-lg" style={{ marginBottom: 12, color: "#333" }}>
 								Are you sure you want to delete this todo item?
 							</div>
 							<div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
 								<button
 									onClick={cancelDelete}
+									className="text-sm"
 									style={{
 										border: "1px solid #bbb",
 										background: "transparent",
@@ -469,12 +466,12 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 										borderRadius: 4,
 										padding: "2px 10px",
 										cursor: "pointer",
-										fontSize: 12,
 									}}>
 									Cancel
 								</button>
 								<button
 									onClick={confirmDelete}
+									className="text-sm"
 									style={{
 										border: "1px solid #f14c4c",
 										background: "#f14c4c",
@@ -482,7 +479,6 @@ const UpdateTodoListToolBlock: React.FC<UpdateTodoListToolBlockProps> = ({
 										borderRadius: 4,
 										padding: "2px 10px",
 										cursor: "pointer",
-										fontSize: 12,
 									}}>
 									Delete
 								</button>

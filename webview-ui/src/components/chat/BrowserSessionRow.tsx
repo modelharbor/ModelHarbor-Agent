@@ -521,7 +521,6 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 						})}
 				style={{
 					flex: 1,
-					fontSize: 13,
 					fontWeight: 500,
 					lineHeight: "22px",
 					color: "var(--vscode-editor-foreground)",
@@ -538,8 +537,8 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				)}
 				{pages.length > 0 && (
 					<span
+						className="text-xs"
 						style={{
-							fontSize: 11,
 							opacity: 0.6,
 							fontWeight: 400,
 						}}>
@@ -548,11 +547,11 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				)}
 				{/* Inline action summary to the right, similar to ChatView */}
 				<span
+					className="text-sm"
 					style={{
 						display: "inline-flex",
 						alignItems: "center",
 						gap: 6,
-						fontSize: 12,
 						color: "var(--vscode-descriptionForeground)",
 						fontWeight: 400,
 					}}>
@@ -794,8 +793,8 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 						}}>
 						<Globe className="w-3 h-3 shrink-0 opacity-60" />
 						<span
+							className="text-sm"
 							style={{
-								fontSize: 12,
 								lineHeight: "18px",
 								textOverflow: "ellipsis",
 								overflow: "hidden",

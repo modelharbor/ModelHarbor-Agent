@@ -60,7 +60,7 @@ const actionToSettingsSection: Partial<Record<NonNullable<ExtensionMessage["acti
 }
 
 const App = () => {
-	const { didHydrateState, showWelcome, shouldShowAnnouncement, renderContext } = useExtensionState()
+	const { didHydrateState, showWelcome, shouldShowAnnouncement, renderContext, webviewFontSize } = useExtensionState()
 
 	const [useProviderSignupView, setUseProviderSignupView] = useState(false)
 
@@ -192,6 +192,12 @@ const App = () => {
 		// Log initialization for debugging
 		console.debug("App initialized with source map support")
 	}, [])
+
+	// Apply webview font size CSS variable to document root
+	useEffect(() => {
+		const size = webviewFontSize ?? 13
+		document.documentElement.style.setProperty("--webview-font-size", `${size}px`)
+	}, [webviewFontSize])
 
 	// Focus the WebView when non-interactive content is clicked (only in editor/tab mode)
 	useAddNonInteractiveClickListener(
