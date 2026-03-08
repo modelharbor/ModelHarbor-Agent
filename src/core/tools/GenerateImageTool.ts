@@ -215,6 +215,7 @@ export class GenerateImageTool extends BaseTool<"generate_image"> {
 					model: selectedModel,
 					prompt,
 					inputImage: inputImageData,
+					...(task.apiConfiguration ? { apiConfiguration: task.apiConfiguration } : {}),
 				})
 			} else {
 				// Use OpenRouter provider (only supports chat completions API)

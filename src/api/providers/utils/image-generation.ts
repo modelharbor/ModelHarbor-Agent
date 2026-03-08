@@ -1,5 +1,8 @@
+import type { ProviderSettings } from "@roo-code/types"
+
 import { t } from "../../../i18n"
 import * as aspectRatioDetection from "./aspect-ratio-detection"
+import { routeGeminiImageModel } from "./gemini-image-router"
 
 // Image generation types
 interface ImageGenerationResponse {
@@ -181,27 +184,31 @@ interface LiteLLMImageGenerationOptions {
 	model: string
 	prompt: string
 	inputImage?: string
+	apiConfiguration?: ProviderSettings
 }
 
 type AspectRatio = ReturnType<typeof aspectRatioDetection.detectAspectRatio>
 
-/**
- * Generate an image using LiteLLM's chat completions endpoint.
- *
- * This implementation is tailored for `google/gemini-2.5-flash-image`
- * via LiteLLM proxy and includes:
- *   - `modalities: ["image", "text"]`
- *   - `image_config.aspect_ratio` auto-detected from the prompt
- *   - `temperature: 1` (required for image output)
- *   - `stream: false`
- *
- * The response may contain images in two formats:
- *   1. `choices[0].message.images[].image_url.url`  (OpenRouter style)
- *   2. `choices[0].message.content` as array with `{ type: "image_url", image_url: { url } }` blocks
- */
-export async function generateImageWithLiteLLM(options: LiteLLMImageGenerationOptions): Promise<ImageGenerationResult> {
-	const { baseURL, authToken, model, prompt, inputImage } = options
+const LITELLM_GEMINI_AUTO_ROUTER_MODEL = "gemini-image-auto-router"
+const GEMINI_25_IMAGE_MODEL = "google/gemini-2.5-flash-image"
+const GEMINI_31_IMAGE_MODEL = "google/gemini-3.1-flash-image-preview"
 
+function isGemini31ImageModel(modelId: string): boolean {
+	return modelId === GEMINI_31_IMAGE_MODEL
+}
+
+function buildLiteLLMUserContent(prompt: string, inputImage?: string): string | Array<Record<string, unknown>> {
+	if (!inputImage) {
+		return prompt
+	}
+
+	return [
+		{ type: "text", text: prompt },
+		{ type: "image_url", image_url: { url: inputImage } },
+	]
+}
+
+function resolveLiteLLMAspectRatio(prompt: string, inputImage?: string): AspectRatio {
 	// Always call detectAspectRatio for backward-compatibility with existing mocks/callers.
 	const promptDetectedRatio = aspectRatioDetection.detectAspectRatio(prompt)
 	let aspectRatio: AspectRatio = promptDetectedRatio
@@ -230,36 +237,92 @@ export async function generateImageWithLiteLLM(options: LiteLLMImageGenerationOp
 		}
 	}
 
+	return aspectRatio
+}
+
+/**
+ * Generate an image using LiteLLM's chat completions endpoint.
+ *
+ * For `gemini-image-auto-router`, request routing behavior is:
+ * - With `apiConfiguration`: use LLM-based classifier for model/complexity/aspect-ratio.
+ * - Without `apiConfiguration` (or when classifier fails): fallback to default Gemini 2.5 routing.
+ *
+ * Payload routing:
+ * - `google/gemini-2.5-flash-image`: uses `image_config.aspect_ratio`
+ * - `google/gemini-3.1-flash-image-preview`: uses `tools` + `imageConfig` + `thinkingConfig`
+ *
+ * The response may contain images in two formats:
+ *   1. `choices[0].message.images[].image_url.url`  (OpenRouter style)
+ *   2. `choices[0].message.content` as array with `{ type: "image_url", image_url: { url } }` blocks
+ */
+export async function generateImageWithLiteLLM(options: LiteLLMImageGenerationOptions): Promise<ImageGenerationResult> {
+	const { baseURL, authToken, model, prompt, inputImage, apiConfiguration } = options
+	const userContent = buildLiteLLMUserContent(prompt, inputImage)
+
+	let effectiveModel = model
+	let routerResult: Awaited<ReturnType<typeof routeGeminiImageModel>> | undefined
+	let shouldUseRouterAspectRatio = false
+
 	try {
-		// Build user message content
-		let userContent: string | Array<Record<string, unknown>>
-		if (inputImage) {
-			userContent = [
-				{ type: "text", text: prompt },
-				{ type: "image_url", image_url: { url: inputImage } },
-			]
-		} else {
-			userContent = prompt
+		if (model === LITELLM_GEMINI_AUTO_ROUTER_MODEL) {
+			if (apiConfiguration) {
+				routerResult = await routeGeminiImageModel(prompt, apiConfiguration, inputImage)
+				shouldUseRouterAspectRatio = true
+			} else {
+				routerResult = await routeGeminiImageModel(prompt, undefined, inputImage)
+			}
+
+			effectiveModel = routerResult.model
 		}
 
-		const requestBody: Record<string, unknown> = {
-			model,
-			messages: [
-				{
-					role: "user",
-					content: userContent,
-				},
-			],
-			temperature: 1,
-			modalities: ["image", "text"],
-			image_config: {
-				aspect_ratio: aspectRatio,
-			},
-			stream: false,
-			stream_options: {
-				include_usage: true,
-			},
-		}
+		const requestBody: Record<string, unknown> = isGemini31ImageModel(effectiveModel)
+			? {
+					model: effectiveModel,
+					messages: [
+						{
+							role: "user",
+							content: userContent,
+						},
+					],
+					modalities: ["text", "image"],
+					stream: false,
+					tools: [
+						{
+							googleSearch: {
+								searchTypes: {
+									webSearch: {},
+									imageSearch: {},
+								},
+							},
+						},
+					],
+					imageConfig: {
+						imageSize: "1K",
+					},
+					thinkingConfig: {
+						thinkingLevel: routerResult?.complexity === "complex" ? "HIGH" : "MINIMAL",
+					},
+				}
+			: {
+					model: effectiveModel,
+					messages: [
+						{
+							role: "user",
+							content: userContent,
+						},
+					],
+					temperature: 1,
+					modalities: ["image", "text"],
+					image_config: {
+						aspect_ratio: shouldUseRouterAspectRatio
+							? (routerResult?.aspectRatio ?? "16:9")
+							: resolveLiteLLMAspectRatio(prompt, inputImage),
+					},
+					stream: false,
+					stream_options: {
+						include_usage: true,
+					},
+				}
 
 		const response = await fetch(`${baseURL}/chat/completions`, {
 			method: "POST",

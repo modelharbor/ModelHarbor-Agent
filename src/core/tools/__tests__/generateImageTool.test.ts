@@ -312,7 +312,7 @@ describe("generateImageTool", () => {
 				imageGenerationProvider: "litellm",
 				liteLlmImageApiKey: "litellm-api-key-123",
 				liteLlmImageBaseUrl: "http://my-litellm:4000",
-				openRouterImageGenerationSelectedModel: "google/gemini-2.5-flash-image",
+				openRouterImageGenerationSelectedModel: "gemini-image-auto-router",
 			})
 
 			vi.mocked(generateImageWithLiteLLM).mockResolvedValue({
@@ -343,12 +343,63 @@ describe("generateImageTool", () => {
 			expect(generateImageWithLiteLLM).toHaveBeenCalledWith({
 				baseURL: "http://my-litellm:4000",
 				authToken: "litellm-api-key-123",
-				model: "google/gemini-2.5-flash-image",
+				model: "gemini-image-auto-router",
 				prompt: "A test image via litellm",
 				inputImage: undefined,
 			})
 			expect(OpenRouterHandler).not.toHaveBeenCalled()
 			expect(mockPushToolResult).toHaveBeenCalled()
+		})
+
+		it("should pass task.apiConfiguration to generateImageWithLiteLLM in options", async () => {
+			const apiConfiguration = {
+				apiProvider: "openrouter",
+				openRouterModelId: "google/gemini-2.5-flash",
+			}
+			mockCline.apiConfiguration = apiConfiguration
+
+			mockCline.providerRef.deref().getState.mockResolvedValue({
+				experiments: { [EXPERIMENT_IDS.IMAGE_GENERATION]: true },
+				imageGenerationProvider: "litellm",
+				liteLlmImageApiKey: "litellm-api-key-123",
+				liteLlmImageBaseUrl: "http://my-litellm:4000",
+				openRouterImageGenerationSelectedModel: "gemini-image-auto-router",
+			})
+
+			vi.mocked(generateImageWithLiteLLM).mockResolvedValue({
+				success: true,
+				imageData: "data:image/png;base64,bGl0ZWxsbURhdGE=",
+				imageFormat: "png",
+			})
+
+			const block: ToolUse = {
+				type: "tool_use",
+				name: "generate_image",
+				params: {
+					prompt: "A test image via litellm with apiConfiguration",
+					path: "litellm-api-config-output.png",
+				},
+				partial: false,
+			}
+
+			await generateImageTool.handle(mockCline as Task, block as ToolUse<"generate_image">, {
+				askApproval: mockAskApproval,
+				handleError: mockHandleError,
+				pushToolResult: mockPushToolResult,
+				removeClosingTag: mockRemoveClosingTag,
+				toolProtocol: "xml",
+			})
+
+			expect(generateImageWithLiteLLM).toHaveBeenCalledWith(
+				expect.objectContaining({
+					baseURL: "http://my-litellm:4000",
+					authToken: "litellm-api-key-123",
+					model: "gemini-image-auto-router",
+					prompt: "A test image via litellm with apiConfiguration",
+					inputImage: undefined,
+					apiConfiguration,
+				}),
+			)
 		})
 
 		it("should route to OpenRouterHandler when provider is openrouter", async () => {
@@ -401,7 +452,7 @@ describe("generateImageTool", () => {
 				imageGenerationProvider: "litellm",
 				liteLlmImageApiKey: "litellm-key",
 				// liteLlmImageBaseUrl is undefined — should default to "http://localhost:4000"
-				openRouterImageGenerationSelectedModel: "google/gemini-2.5-flash-image",
+				openRouterImageGenerationSelectedModel: "gemini-image-auto-router",
 			})
 
 			vi.mocked(generateImageWithLiteLLM).mockResolvedValue({
@@ -440,7 +491,7 @@ describe("generateImageTool", () => {
 				experiments: { [EXPERIMENT_IDS.IMAGE_GENERATION]: true },
 				imageGenerationProvider: "litellm",
 				// liteLlmImageApiKey is missing
-				openRouterImageGenerationSelectedModel: "google/gemini-2.5-flash-image",
+				openRouterImageGenerationSelectedModel: "gemini-image-auto-router",
 			})
 
 			const block: ToolUse = {
@@ -472,7 +523,7 @@ describe("generateImageTool", () => {
 				imageGenerationProvider: "litellm",
 				liteLlmImageApiKey: "litellm-key",
 				liteLlmImageBaseUrl: "http://localhost:4000",
-				openRouterImageGenerationSelectedModel: "google/gemini-2.5-flash-image",
+				openRouterImageGenerationSelectedModel: "gemini-image-auto-router",
 			})
 
 			vi.mocked(generateImageWithLiteLLM).mockResolvedValue({

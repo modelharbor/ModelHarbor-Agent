@@ -23,6 +23,7 @@ export const IMAGE_GENERATION_MODELS: ImageGenerationModel[] = [
 	{ value: "black-forest-labs/flux.2-flex", label: "Black Forest Labs FLUX.2 Flex", provider: "openrouter" },
 	{ value: "black-forest-labs/flux.2-pro", label: "Black Forest Labs FLUX.2 Pro", provider: "openrouter" },
 	// LiteLLM models
+	{ value: "gemini-image-auto-router", label: "Gemini Image Auto Router", provider: "litellm" },
 	{ value: "google/gemini-2.5-flash-image", label: "Gemini 2.5 Flash Image", provider: "litellm" },
 ]
 

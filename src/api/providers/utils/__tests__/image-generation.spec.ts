@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { generateImageWithImagesApi, generateImageWithLiteLLM, generateImageWithProvider } from "../image-generation"
+import { routeGeminiImageModel } from "../gemini-image-router"
 
 // Mock the i18n module
 vi.mock("../../../i18n", () => ({
@@ -22,6 +23,14 @@ vi.mock("../aspect-ratio-detection", () => ({
 	detectAspectRatioFromImage: vi.fn().mockReturnValue("16:9"),
 	DEFAULT_ASPECT_RATIO: "16:9",
 }))
+
+vi.mock("../gemini-image-router", async () => {
+	const actual = await vi.importActual<typeof import("../gemini-image-router")>("../gemini-image-router")
+	return {
+		...actual,
+		routeGeminiImageModel: vi.fn(actual.routeGeminiImageModel),
+	}
+})
 
 // Mock fetch globally
 global.fetch = vi.fn()
@@ -420,6 +429,304 @@ describe("generateImageWithLiteLLM", () => {
 		expect(body.messages).toHaveLength(1)
 		expect(body.messages[0].role).toBe("user")
 		expect(body.messages[0].content).toBe("A cute cat")
+	})
+
+	it("should call routeGeminiImageModel asynchronously and pass apiConfiguration for auto-router", async () => {
+		const apiConfiguration = { apiProvider: "openrouter" } as any
+
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+		vi.mocked(routeGeminiImageModel).mockResolvedValueOnce({
+			model: "google/gemini-2.5-flash-image",
+			reason: "LLM selected Gemini 2.5",
+			requiresThaiText: false,
+			complexity: "simple",
+			aspectRatio: "3:4",
+		})
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-litellm-key",
+			model: "gemini-image-auto-router",
+			prompt: "draw a cute cat",
+			apiConfiguration,
+		})
+
+		expect(routeGeminiImageModel).toHaveBeenCalledTimes(1)
+		expect(routeGeminiImageModel).toHaveBeenCalledWith("draw a cute cat", apiConfiguration, undefined)
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.model).toBe("google/gemini-2.5-flash-image")
+		expect(body.modalities).toEqual(["image", "text"])
+		expect(body.image_config).toEqual({ aspect_ratio: "3:4" })
+		expect(body.tools).toBeUndefined()
+		expect(body.imageConfig).toBeUndefined()
+		expect(body.thinkingConfig).toBeUndefined()
+	})
+
+	it("should use google/gemini-3.1-flash-image-preview payload when router returns Gemini 3.1", async () => {
+		const apiConfiguration = { apiProvider: "openrouter" } as any
+
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							content: "data:image/png;base64,dGVzdA==",
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+		vi.mocked(routeGeminiImageModel).mockResolvedValueOnce({
+			model: "google/gemini-3.1-flash-image-preview",
+			reason: "Thai text rendering required",
+			requiresThaiText: true,
+			complexity: "complex",
+			aspectRatio: "9:16",
+		})
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-litellm-key",
+			model: "gemini-image-auto-router",
+			prompt: "สร้างโปสเตอร์พร้อมข้อความภาษาไทย",
+			apiConfiguration,
+		})
+
+		expect(routeGeminiImageModel).toHaveBeenCalledWith(
+			"สร้างโปสเตอร์พร้อมข้อความภาษาไทย",
+			apiConfiguration,
+			undefined,
+		)
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.model).toBe("google/gemini-3.1-flash-image-preview")
+		expect(body.modalities).toEqual(["text", "image"])
+		expect(body.stream).toBe(false)
+		expect(body.tools).toEqual([
+			{
+				googleSearch: {
+					searchTypes: {
+						webSearch: {},
+						imageSearch: {},
+					},
+				},
+			},
+		])
+		expect(body.imageConfig).toEqual({
+			imageSize: "1K",
+		})
+		expect(body.thinkingConfig).toEqual({
+			thinkingLevel: "HIGH",
+		})
+		expect(body.image_config).toBeUndefined()
+	})
+
+	it("should fallback gemini-image-auto-router to google/gemini-2.5-flash-image without apiConfiguration", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-litellm-key",
+			model: "gemini-image-auto-router",
+			prompt: "สร้างสไลด์หัวข้อ 'การศึกษาไทย'",
+		})
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.model).toBe("google/gemini-2.5-flash-image")
+		expect(body.modalities).toEqual(["image", "text"])
+		expect(body.image_config).toEqual({ aspect_ratio: "16:9" })
+		expect(body.tools).toBeUndefined()
+		expect(body.imageConfig).toBeUndefined()
+		expect(body.thinkingConfig).toBeUndefined()
+	})
+
+	it("should route gemini-image-auto-router to google/gemini-2.5-flash-image for general prompts", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-litellm-key",
+			model: "gemini-image-auto-router",
+			prompt: "draw a cute cat",
+		})
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.model).toBe("google/gemini-2.5-flash-image")
+		expect(body.modalities).toEqual(["image", "text"])
+		expect(body.image_config).toEqual({ aspect_ratio: "16:9" })
+		expect(body.tools).toBeUndefined()
+		expect(body.imageConfig).toBeUndefined()
+		expect(body.thinkingConfig).toBeUndefined()
+	})
+
+	it("should keep aspect ratio logic for gemini-2.5 path when using auto-router", async () => {
+		const { detectExplicitAspectRatio, detectAspectRatioFromImage } = await import("../aspect-ratio-detection")
+
+		vi.mocked(detectExplicitAspectRatio).mockReturnValueOnce("21:9")
+		vi.mocked(detectAspectRatioFromImage).mockReturnValueOnce("3:4")
+
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const inputImage = "data:image/png;base64,aW5wdXQ="
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-litellm-key",
+			model: "gemini-image-auto-router",
+			prompt: "generate 21:9 cinematic image of neon skyline",
+			inputImage,
+		})
+
+		expect(detectExplicitAspectRatio).toHaveBeenCalledWith("generate 21:9 cinematic image of neon skyline")
+		expect(detectAspectRatioFromImage).not.toHaveBeenCalled()
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.model).toBe("google/gemini-2.5-flash-image")
+		expect(body.image_config.aspect_ratio).toBe("21:9")
+	})
+
+	it("should fallback to Gemini 2.5 for complex prompts when apiConfiguration is missing", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		const complexPrompt =
+			"Create an infographic presentation in Thai language with headline 'เศรษฐกิจไทย' and include a timeline, comparison table, grid layout, dashboard section, and storyboard structure. Add labels for each section, include caption text, ensure multiple columns, and provide step 1, step 2, step 3 with clear hierarchy and detailed visual constraints."
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-litellm-key",
+			model: "gemini-image-auto-router",
+			prompt: complexPrompt,
+		})
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.model).toBe("google/gemini-2.5-flash-image")
+		expect(body.image_config).toEqual({ aspect_ratio: "16:9" })
+		expect(body.thinkingConfig).toBeUndefined()
+	})
+
+	it("should map simple classifier result to MINIMAL thinking level for Gemini 3.1 payload", async () => {
+		const apiConfiguration = { apiProvider: "openrouter" } as any
+
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							content: "data:image/png;base64,dGVzdA==",
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+		vi.mocked(routeGeminiImageModel).mockResolvedValueOnce({
+			model: "google/gemini-3.1-flash-image-preview",
+			reason: "LLM selected Gemini 3.1",
+			requiresThaiText: true,
+			complexity: "simple",
+			aspectRatio: "16:9",
+		})
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-litellm-key",
+			model: "gemini-image-auto-router",
+			prompt: "เขียนตัวอักษร 'สวัสดี' บนรูป",
+			apiConfiguration,
+		})
+
+		expect(routeGeminiImageModel).toHaveBeenCalledWith("เขียนตัวอักษร 'สวัสดี' บนรูป", apiConfiguration, undefined)
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.model).toBe("google/gemini-3.1-flash-image-preview")
+		expect(body.thinkingConfig).toEqual({
+			thinkingLevel: "MINIMAL",
+		})
 	})
 
 	it("should detect aspect ratio from prompt and include in image_config", async () => {

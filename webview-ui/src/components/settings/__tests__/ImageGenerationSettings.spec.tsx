@@ -1,4 +1,5 @@
 import { render, fireEvent } from "@testing-library/react"
+import { IMAGE_GENERATION_MODELS } from "@roo-code/types"
 
 import { ImageGenerationSettings } from "../ImageGenerationSettings"
 
@@ -96,6 +97,52 @@ describe("ImageGenerationSettings", () => {
 			expect(
 				queryByPlaceholderText("settings:experimental.IMAGE_GENERATION.openRouterApiKeyPlaceholder"),
 			).not.toBeInTheDocument()
+		})
+
+		it("should render LiteLLM model list from IMAGE_GENERATION_MODELS", () => {
+			const { container } = render(
+				<ImageGenerationSettings
+					{...defaultProps}
+					enabled={true}
+					imageGenerationProvider="litellm"
+					openRouterImageGenerationSelectedModel="gemini-image-auto-router"
+				/>,
+			)
+
+			const dropdowns = container.querySelectorAll("vscode-dropdown")
+			expect(dropdowns.length).toBeGreaterThan(1)
+
+			const modelOptions = Array.from(dropdowns[1].querySelectorAll("vscode-option")).map((option) =>
+				option.textContent?.trim(),
+			)
+			const expectedLabels = IMAGE_GENERATION_MODELS.filter((model) => model.provider === "litellm").map(
+				(model) => model.label,
+			)
+
+			expect(modelOptions).toEqual(expectedLabels)
+		})
+
+		it("should render OpenRouter model list from IMAGE_GENERATION_MODELS", () => {
+			const { container } = render(
+				<ImageGenerationSettings
+					{...defaultProps}
+					enabled={true}
+					imageGenerationProvider="openrouter"
+					openRouterImageGenerationSelectedModel="google/gemini-2.5-flash-image"
+				/>,
+			)
+
+			const dropdowns = container.querySelectorAll("vscode-dropdown")
+			expect(dropdowns.length).toBeGreaterThan(1)
+
+			const modelOptions = Array.from(dropdowns[1].querySelectorAll("vscode-option")).map((option) =>
+				option.textContent?.trim(),
+			)
+			const expectedLabels = IMAGE_GENERATION_MODELS.filter((model) => model.provider === "openrouter").map(
+				(model) => model.label,
+			)
+
+			expect(modelOptions).toEqual(expectedLabels)
 		})
 	})
 })
