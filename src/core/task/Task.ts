@@ -1445,8 +1445,15 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// Cancel any existing timer first
 		this.cancelSuperYoloStuckTimer()
 
-		// Don't start stuck timer for completion results - task is done
-		if (askType === "completion_result" || askType === "resume_completed_task" || askType === "resume_task") {
+		// Don't start stuck timer for completion/resume asks or followup asks.
+		// Followup has its own timeout-based auto-approval flow that returns
+		// a messageResponse with suggestion text.
+		if (
+			askType === "completion_result" ||
+			askType === "resume_completed_task" ||
+			askType === "resume_task" ||
+			askType === "followup"
+		) {
 			return
 		}
 
@@ -1472,11 +1479,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			if (askType === "command_output" || askType === "tool") {
 				// For terminal/tool operations, continue the process
 				this.handleTerminalOperation("continue")
-			} else if (askType === "followup") {
-				// For followup questions, try to use the first suggestion or just approve
-				this.handleWebviewAskResponse("yesButtonClicked")
 			} else {
-				// For other ask types, approve to continue
+				// For other supported ask types, approve to continue
 				this.handleWebviewAskResponse("yesButtonClicked")
 			}
 

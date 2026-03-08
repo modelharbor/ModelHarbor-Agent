@@ -120,6 +120,41 @@ describe("Super YOLO Mode", () => {
 			expect(result.decision).toBe("approve")
 		})
 
+		it("should preserve timeout-based followup auto-approval with a message response", async () => {
+			const result = await checkAutoApproval({
+				state: {
+					autoApprovalEnabled: true,
+					superYoloMode: true,
+					alwaysAllowReadOnly: false,
+					alwaysAllowWrite: false,
+					alwaysAllowExecute: false,
+					alwaysAllowBrowser: false,
+					alwaysAllowMcp: false,
+					alwaysAllowModeSwitch: false,
+					alwaysAllowSubtasks: false,
+					alwaysApproveResubmit: false,
+					alwaysAllowFollowupQuestions: true,
+					alwaysAllowUpdateTodoList: false,
+					followupAutoApproveTimeoutMs: 1234,
+				},
+				ask: "followup",
+				text: JSON.stringify({
+					question: "What would you like to do?",
+					suggest: [{ answer: "Use option 1", mode: "code" }],
+				}),
+			})
+
+			expect(result.decision).toBe("timeout")
+			if (result.decision !== "timeout") {
+				throw new Error("Expected followup auto-approval to use timeout flow")
+			}
+			expect(result.timeout).toBe(1234)
+			expect(result.fn()).toEqual({
+				askResponse: "messageResponse",
+				text: "Use option 1",
+			})
+		})
+
 		it("should auto-approve MCP server usage", async () => {
 			const result = await checkAutoApproval({
 				state: {

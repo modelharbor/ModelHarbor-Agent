@@ -77,6 +77,14 @@ export class AskFollowupQuestionTool extends BaseTool<"ask_followup_question"> {
 				return
 			}
 
+			const failFollowupResponse = async (errorMessage: string) => {
+				task.consecutiveMistakeCount++
+				task.recordToolError("ask_followup_question", errorMessage)
+				task.didToolFailInCurrentTurn = true
+				await task.say("error", errorMessage)
+				pushToolResult(formatResponse.toolError(errorMessage, toolProtocol))
+			}
+
 			// Transform follow_up suggestions to the format expected by task.ask
 			const follow_up_json = {
 				question,
@@ -84,9 +92,23 @@ export class AskFollowupQuestionTool extends BaseTool<"ask_followup_question"> {
 			}
 
 			task.consecutiveMistakeCount = 0
-			const { text, images } = await task.ask("followup", JSON.stringify(follow_up_json), false)
-			await task.say("user_feedback", text ?? "", images)
-			pushToolResult(formatResponse.toolResult(`<answer>\n${text}\n</answer>`, images))
+			const { response, text, images } = await task.ask("followup", JSON.stringify(follow_up_json), false)
+
+			if (response !== "messageResponse") {
+				await failFollowupResponse(
+					`Follow-up questions require a message response, but received '${response}'.`,
+				)
+				return
+			}
+
+			const answerText = text?.trim()
+			if (!answerText) {
+				await failFollowupResponse("Follow-up question response was empty.")
+				return
+			}
+
+			await task.say("user_feedback", answerText, images)
+			pushToolResult(formatResponse.toolResult(`<answer>\n${answerText}\n</answer>`, images))
 		} catch (error) {
 			await handleError("asking question", error as Error)
 		}

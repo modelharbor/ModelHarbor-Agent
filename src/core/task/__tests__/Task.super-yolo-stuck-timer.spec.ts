@@ -236,7 +236,7 @@ describe("startSuperYoloStuckTimer", () => {
 		})
 	}
 
-	describe("should NOT start timer for terminal ask types", () => {
+	describe("should NOT start timer for excluded ask types", () => {
 		it("should not start timer for completion_result", async () => {
 			const task = createTask({
 				autoApprovalEnabled: true,
@@ -274,6 +274,18 @@ describe("startSuperYoloStuckTimer", () => {
 
 			expect((task as any).superYoloStuckTimeoutRef).toBeUndefined()
 		})
+
+		it("should not start timer for followup", async () => {
+			const task = createTask({
+				autoApprovalEnabled: true,
+				superYoloMode: true,
+				superYoloStuckTimeoutMs: 60000,
+			})
+
+			await (task as any).startSuperYoloStuckTimer("followup")
+
+			expect((task as any).superYoloStuckTimeoutRef).toBeUndefined()
+		})
 	})
 
 	describe("should start timer for other ask types when Super YOLO is enabled", () => {
@@ -298,18 +310,6 @@ describe("startSuperYoloStuckTimer", () => {
 			})
 
 			await (task as any).startSuperYoloStuckTimer("tool")
-
-			expect((task as any).superYoloStuckTimeoutRef).toBeDefined()
-		})
-
-		it("should start timer for followup ask type", async () => {
-			const task = createTask({
-				autoApprovalEnabled: true,
-				superYoloMode: true,
-				superYoloStuckTimeoutMs: 60000,
-			})
-
-			await (task as any).startSuperYoloStuckTimer("followup")
 
 			expect((task as any).superYoloStuckTimeoutRef).toBeDefined()
 		})
@@ -453,6 +453,20 @@ describe("startSuperYoloStuckTimer", () => {
 			mockProvider.getState.mockClear()
 
 			await (task as any).startSuperYoloStuckTimer("resume_task")
+
+			expect(mockProvider.getState).not.toHaveBeenCalled()
+		})
+
+		it("should return early for followup without calling getState", async () => {
+			const task = createTask({
+				autoApprovalEnabled: true,
+				superYoloMode: true,
+				superYoloStuckTimeoutMs: 60000,
+			})
+
+			mockProvider.getState.mockClear()
+
+			await (task as any).startSuperYoloStuckTimer("followup")
 
 			expect(mockProvider.getState).not.toHaveBeenCalled()
 		})

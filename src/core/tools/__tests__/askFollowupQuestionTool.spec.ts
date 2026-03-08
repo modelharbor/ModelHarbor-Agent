@@ -11,9 +11,11 @@ describe("askFollowupQuestionTool", () => {
 		vi.clearAllMocks()
 
 		mockCline = {
-			ask: vi.fn().mockResolvedValue({ text: "Test response" }),
+			ask: vi.fn().mockResolvedValue({ response: "messageResponse", text: "Test response" }),
 			say: vi.fn().mockResolvedValue(undefined),
+			recordToolError: vi.fn(),
 			consecutiveMistakeCount: 0,
+			didToolFailInCurrentTurn: false,
 		}
 
 		mockPushToolResult = vi.fn((result) => {
@@ -101,6 +103,79 @@ describe("askFollowupQuestionTool", () => {
 			),
 			false,
 		)
+	})
+
+	describe("execute validation", () => {
+		it("should reject non-message followup responses", async () => {
+			mockCline.ask.mockResolvedValueOnce({ response: "yesButtonClicked" })
+
+			const block: ToolUse = {
+				type: "tool_use",
+				name: "ask_followup_question",
+				params: {
+					question: "What would you like to do?",
+					follow_up: "<suggest>Option 1</suggest>",
+				},
+				partial: false,
+			}
+
+			await askFollowupQuestionTool.handle(mockCline, block as ToolUse<"ask_followup_question">, {
+				askApproval: vi.fn(),
+				handleError: vi.fn(),
+				pushToolResult: mockPushToolResult,
+				removeClosingTag: vi.fn((tag, content) => content),
+				toolProtocol: "xml",
+			})
+
+			expect(mockCline.say).toHaveBeenCalledWith(
+				"error",
+				"Follow-up questions require a message response, but received 'yesButtonClicked'.",
+			)
+			expect(mockCline.say.mock.calls.some((call: any[]) => call[0] === "user_feedback")).toBe(false)
+			expect(mockPushToolResult).toHaveBeenCalledWith(
+				expect.stringContaining("Follow-up questions require a message response"),
+			)
+			expect(mockCline.recordToolError).toHaveBeenCalledWith(
+				"ask_followup_question",
+				"Follow-up questions require a message response, but received 'yesButtonClicked'.",
+			)
+			expect(mockCline.consecutiveMistakeCount).toBe(1)
+			expect(mockCline.didToolFailInCurrentTurn).toBe(true)
+		})
+
+		it("should reject empty followup responses", async () => {
+			mockCline.ask.mockResolvedValueOnce({ response: "messageResponse", text: "   " })
+
+			const block: ToolUse = {
+				type: "tool_use",
+				name: "ask_followup_question",
+				params: {
+					question: "What would you like to do?",
+					follow_up: "<suggest>Option 1</suggest>",
+				},
+				partial: false,
+			}
+
+			await askFollowupQuestionTool.handle(mockCline, block as ToolUse<"ask_followup_question">, {
+				askApproval: vi.fn(),
+				handleError: vi.fn(),
+				pushToolResult: mockPushToolResult,
+				removeClosingTag: vi.fn((tag, content) => content),
+				toolProtocol: "xml",
+			})
+
+			expect(mockCline.say).toHaveBeenCalledWith("error", "Follow-up question response was empty.")
+			expect(mockCline.say.mock.calls.some((call: any[]) => call[0] === "user_feedback")).toBe(false)
+			expect(mockPushToolResult).toHaveBeenCalledWith(
+				expect.stringContaining("Follow-up question response was empty."),
+			)
+			expect(mockCline.recordToolError).toHaveBeenCalledWith(
+				"ask_followup_question",
+				"Follow-up question response was empty.",
+			)
+			expect(mockCline.consecutiveMistakeCount).toBe(1)
+			expect(mockCline.didToolFailInCurrentTurn).toBe(true)
+		})
 	})
 
 	describe("handlePartial with native protocol", () => {
