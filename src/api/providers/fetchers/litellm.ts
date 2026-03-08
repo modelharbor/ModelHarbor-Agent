@@ -4,6 +4,14 @@ import type { ModelRecord } from "@roo-code/types"
 
 import { DEFAULT_HEADERS } from "../constants"
 import { inferImageSupport } from "./model-capabilities"
+
+const NON_CHAT_MODEL_KEYWORDS = ["image", "embedding", "rerank"]
+
+export function isNonChatModel(name: string): boolean {
+	const normalizedName = name.toLowerCase()
+	return NON_CHAT_MODEL_KEYWORDS.some((keyword) => normalizedName.includes(keyword))
+}
+
 /**
  * Fetches available models from a LiteLLM server
  *
@@ -44,6 +52,8 @@ export async function getLiteLLMModels(apiKey?: string, baseUrl?: string): Promi
 				const litellmModelName = model?.litellm_params?.model as string | undefined
 
 				if (!modelName || !modelInfo || !litellmModelName) continue
+
+				if (isNonChatModel(modelName) || isNonChatModel(litellmModelName)) continue
 
 				const supportsNativeTools = modelInfo.supports_function_calling !== false
 
