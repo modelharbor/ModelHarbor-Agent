@@ -43,4 +43,8 @@ export const createRunSchema = z
 		path: ["exercises"],
 	})
 
-export type CreateRun = z.infer<typeof createRunSchema>
+/**
+ * Use z.input so form-side types match what users can submit before Zod applies defaults.
+ * This keeps settings with schema defaults (e.g. webviewFontSize) optional at input time.
+ */
+export type CreateRun = z.input<typeof createRunSchema>

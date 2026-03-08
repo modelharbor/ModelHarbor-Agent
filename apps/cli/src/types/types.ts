@@ -46,4 +46,11 @@ export interface OnboardingResult {
 
 export interface CliSettings {
 	onboardingProviderChoice?: OnboardingProviderChoice
+	mode?: string
+	provider?: SupportedProvider
+	model?: string
+	reasoningEffort?: ReasoningEffortFlagOptions
+	requireApproval?: boolean
+	oneshot?: boolean
+	dangerouslySkipPermissions?: boolean
 }

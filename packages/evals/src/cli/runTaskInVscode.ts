@@ -22,6 +22,18 @@ import { type RunTaskOptions } from "./types.js"
 import { isDockerContainer, copyConversationHistory, mergeToolUsage, waitForSubprocessWithTimeout } from "./utils.js"
 import { MessageLogDeduper } from "./messageLogDeduper.js"
 
+export const buildTaskConfiguration = (
+	runSettings: RunTaskOptions["run"]["settings"],
+	openRouterApiKey: string | undefined,
+) => ({
+	...EVALS_SETTINGS,
+	openRouterApiKey,
+	...(runSettings ?? {}),
+	// `TaskCommandName.StartNewTask` expects parsed settings output type where
+	// `webviewFontSize` is required (zod default-applied), so ensure it's never undefined.
+	webviewFontSize: runSettings?.webviewFontSize ?? EVALS_SETTINGS.webviewFontSize ?? 13,
+})
+
 export const runTaskInVscode = async ({ run, task, publish, logger, jobToken }: RunTaskOptions) => {
 	const { language, exercise } = task
 	const prompt = fs.readFileSync(path.resolve(EVALS_REPO_PATH, `prompts/${language}.md`), "utf-8")
@@ -246,14 +258,12 @@ export const runTaskInVscode = async ({ run, task, publish, logger, jobToken }: 
 		resolveTaskMetricsReady()
 	})
 
+	const configuration = buildTaskConfiguration(run.settings, process.env.OPENROUTER_API_KEY)
+
 	client.sendCommand({
 		commandName: TaskCommandName.StartNewTask,
 		data: {
-			configuration: {
-				...EVALS_SETTINGS,
-				openRouterApiKey: process.env.OPENROUTER_API_KEY,
-				...run.settings, // Allow the provided settings to override `openRouterApiKey`.
-			},
+			configuration,
 			text: prompt,
 		},
 	})

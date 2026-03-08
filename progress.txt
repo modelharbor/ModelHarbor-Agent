@@ -57,3 +57,13 @@
   will be resolved when the PR is merged to main and the script reference is cleaned up.
 - Push was done with `--no-verify` after independent verification of types, backend tests,
   and UI tests all passed cleanly.
+
+## Journal (Grouped by Date)
+
+### 2026-03-08 — check-types fix for GlobalSettings input typing
+- **ปัญหา:** `pnpm check-types` ล้มเหลวใน package `@roo-code/vscode-e2e` เนื่องจาก type `RooCodeSettings` บังคับให้มี property `webviewFontSize` แต่ไฟล์ทดสอบจำนวนมากส่ง partial objects ที่ไม่มี field นี้ ทำให้เกิด type errors มากกว่า 40 จุด
+- **การแก้ไข:**
+  - เปลี่ยน type alias `GlobalSettings` ใน `packages/types/src/global-settings.ts` จาก `z.infer<typeof globalSettingsSchema>` เป็น `z.input<typeof globalSettingsSchema>`
+  - ผลของการเปลี่ยนนี้คือ field ที่กำหนด `.default()` ใน Zod schema (เช่น `webviewFontSize`) จะยังเป็น optional ในระดับ input type ขณะที่ runtime default values จาก schema ยังทำงานปกติ
+  - ปรับ type usage ที่เกี่ยวข้องใน `packages/evals/src/cli/runTaskInVscode.ts` และ `apps/web-evals/src/lib/schemas.ts` ให้สอดคล้องกับ `GlobalSettings` แบบ input
+- **ผลลัพธ์:** `pnpm check-types` ผ่านครบทั้ง 12 packages (12 successful, 0 failed)

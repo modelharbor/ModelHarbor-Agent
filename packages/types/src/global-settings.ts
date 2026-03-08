@@ -212,7 +212,13 @@ export const globalSettingsSchema = z.object({
 	openRouterUseMiddleOutTransform: z.boolean().optional(),
 })
 
-export type GlobalSettings = z.infer<typeof globalSettingsSchema>
+/**
+ * NOTE:
+ * Use z.input<> (not z.infer<>) so settings with Zod defaults (e.g. webviewFontSize)
+ * remain optional at the type level for partial updates (setValues/setConfiguration/startNewTask).
+ * Runtime defaults are still applied when parsing with the schema.
+ */
+export type GlobalSettings = z.input<typeof globalSettingsSchema>
 
 export const GLOBAL_SETTINGS_KEYS = globalSettingsSchema.keyof().options
 

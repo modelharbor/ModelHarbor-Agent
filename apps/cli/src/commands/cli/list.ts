@@ -84,22 +84,20 @@ function outputModelsText(models: ModelRecord): void {
 async function createListHost(options: BaseListOptions): Promise<ExtensionHost> {
 	const workspacePath = resolveWorkspacePath(options.workspace)
 	const extensionPath = resolveExtensionPath(options.extension)
-	const apiKey = options.apiKey || (await loadToken()) || getApiKeyFromEnv("roo")
+	const apiKey = options.apiKey || (await loadToken()) || getApiKeyFromEnv("modelharbor")
 
 	const extensionHostOptions: ExtensionHostOptions = {
 		mode: "code",
 		reasoningEffort: undefined,
 		user: null,
-		provider: "roo",
-		model: getProviderDefaultModelId("roo"),
+		provider: "modelharbor",
+		model: getProviderDefaultModelId("modelharbor"),
 		apiKey,
 		workspacePath,
 		extensionPath,
 		nonInteractive: true,
 		ephemeral: true,
 		debug: options.debug ?? false,
-		exitOnComplete: true,
-		exitOnError: false,
 		disableOutput: true,
 	}
 
@@ -124,6 +122,7 @@ function requestFromExtension<T>(
 	host: ExtensionHost,
 	requestType: WebviewMessage["type"],
 	extract: (message: Record<string, unknown>) => T | undefined,
+	requestValues?: WebviewMessage["values"],
 ): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
 		let settled = false
@@ -170,7 +169,7 @@ function requestFromExtension<T>(
 		}, REQUEST_TIMEOUT_MS)
 
 		host.on("extensionWebviewMessage", onMessage)
-		host.sendToExtension({ type: requestType })
+		host.sendToExtension({ type: requestType, values: requestValues })
 	})
 }
 

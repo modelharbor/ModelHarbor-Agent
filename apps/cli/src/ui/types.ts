@@ -47,6 +47,8 @@ export interface ToolData {
 	url?: string
 	/** Click/hover coordinates */
 	coordinate?: string
+	/** Input text for browser actions */
+	text?: string
 
 	// Batch operation fields
 	/** Batch file reads */
