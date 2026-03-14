@@ -1957,7 +1957,7 @@ export class ClineProvider
 			enhancementApiConfigId,
 			autoApprovalEnabled: autoApprovalEnabled ?? false,
 			superYoloMode: superYoloMode ?? false,
-			superYoloStuckTimeoutMs: superYoloStuckTimeoutMs ?? 300000,
+			superYoloStuckTimeoutMs: superYoloStuckTimeoutMs ?? 300000, // 5 minutes default
 			customModes,
 			experiments: experiments ?? experimentDefault,
 			mcpServers: this.mcpHub?.getAllServers() ?? [],
@@ -2127,7 +2127,7 @@ export class ClineProvider
 			experiments: stateValues.experiments ?? experimentDefault,
 			autoApprovalEnabled: stateValues.autoApprovalEnabled ?? false,
 			superYoloMode: stateValues.superYoloMode ?? false,
-			superYoloStuckTimeoutMs: stateValues.superYoloStuckTimeoutMs ?? 300000,
+			superYoloStuckTimeoutMs: stateValues.superYoloStuckTimeoutMs ?? 300000, // 5 minutes default
 			customModes,
 			maxOpenTabsContext: stateValues.maxOpenTabsContext ?? 20,
 			maxWorkspaceFiles: stateValues.maxWorkspaceFiles ?? 200,
