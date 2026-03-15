@@ -3,6 +3,14 @@
 import * as fs from "fs"
 import * as path from "path"
 
+describe("webview build assets", () => {
+	const webviewBuildPath = path.join(__dirname, "../webview-ui/build/assets")
+
+	it("should have browser-panel.js", () => {
+		expect(fs.existsSync(path.join(webviewBuildPath, "browser-panel.js"))).toBe(true)
+	})
+})
+
 describe("dist assets", () => {
 	const distPath = path.join(__dirname, "../dist")
 

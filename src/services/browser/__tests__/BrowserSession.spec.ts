@@ -105,6 +105,87 @@ describe("BrowserSession", () => {
 		browserSession = new BrowserSession(mockContext)
 	})
 
+	describe("launchLocalBrowser launch args", () => {
+		it("should include all required Chromium flags when launching locally", async () => {
+			mockContext.globalState.get.mockImplementation((key: string) => {
+				if (key === "remoteBrowserEnabled") return false
+				return undefined
+			})
+
+			// Get a reference to the PCR mock to inspect launch args
+			const PCR = (await import("puppeteer-chromium-resolver")).default
+			const pcrStats = await PCR({ downloadPath: "" })
+			vi.mocked(pcrStats.puppeteer.launch).mockClear()
+
+			await browserSession.launchBrowser()
+
+			expect(pcrStats.puppeteer.launch).toHaveBeenCalledTimes(1)
+			const launchCall = vi.mocked(pcrStats.puppeteer.launch).mock.calls[0][0] as any
+			const args: string[] = launchCall.args
+
+			expect(args).toContain(
+				"--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+			)
+			expect(args).toContain("--disable-dev-shm-usage")
+			expect(args).toContain("--disable-accelerated-2d-canvas")
+			expect(args).toContain("--no-first-run")
+			expect(args).toContain("--disable-gpu")
+			expect(args).toContain("--disable-features=VizDisplayCompositor")
+		})
+
+		it("should include --no-sandbox on Linux", async () => {
+			mockContext.globalState.get.mockImplementation((key: string) => {
+				if (key === "remoteBrowserEnabled") return false
+				return undefined
+			})
+
+			// Temporarily mock process.platform to "linux"
+			const originalPlatform = process.platform
+			Object.defineProperty(process, "platform", { value: "linux" })
+
+			const PCR = (await import("puppeteer-chromium-resolver")).default
+			const pcrStats = await PCR({ downloadPath: "" })
+			vi.mocked(pcrStats.puppeteer.launch).mockClear()
+
+			try {
+				await browserSession.launchBrowser()
+
+				const launchCall = vi.mocked(pcrStats.puppeteer.launch).mock.calls[0][0] as any
+				const args: string[] = launchCall.args
+
+				expect(args).toContain("--no-sandbox")
+			} finally {
+				Object.defineProperty(process, "platform", { value: originalPlatform })
+			}
+		})
+
+		it("should not include --no-sandbox on non-Linux platforms", async () => {
+			mockContext.globalState.get.mockImplementation((key: string) => {
+				if (key === "remoteBrowserEnabled") return false
+				return undefined
+			})
+
+			// Temporarily mock process.platform to "win32"
+			const originalPlatform = process.platform
+			Object.defineProperty(process, "platform", { value: "win32" })
+
+			const PCR = (await import("puppeteer-chromium-resolver")).default
+			const pcrStats = await PCR({ downloadPath: "" })
+			vi.mocked(pcrStats.puppeteer.launch).mockClear()
+
+			try {
+				await browserSession.launchBrowser()
+
+				const launchCall = vi.mocked(pcrStats.puppeteer.launch).mock.calls[0][0] as any
+				const args: string[] = launchCall.args
+
+				expect(args).not.toContain("--no-sandbox")
+			} finally {
+				Object.defineProperty(process, "platform", { value: originalPlatform })
+			}
+		})
+	})
+
 	describe("Remote browser disabled", () => {
 		it("should launch a local browser when remote browser is disabled", async () => {
 			// Mock context to indicate remote browser is disabled
