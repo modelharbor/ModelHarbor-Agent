@@ -120,6 +120,123 @@ describe("ExecaTerminalProcess", () => {
 		})
 	})
 
+	describe("stream force-close after process exit", () => {
+		it("force-destroys stream when process exits but stream loop hangs", async () => {
+			vi.useFakeTimers()
+
+			const mockDestroy = vitest.fn()
+			let exitCallback: (() => void) | undefined
+			let rejectHangingStream: ((err: Error) => void) | undefined
+
+			const hangingIterable = (async function* () {
+				yield "output before hang\n"
+				await new Promise<void>((_resolve, reject) => {
+					rejectHangingStream = reject
+				})
+			})()
+
+			// Connect destroy to unblock the hanging stream (simulates real stream behavior)
+			mockDestroy.mockImplementation(() => {
+				if (rejectHangingStream) {
+					rejectHangingStream(new Error("stream destroyed"))
+				}
+			})
+
+			const mockSubprocess = {
+				pid: 54321,
+				iterable: vitest.fn().mockReturnValue(hangingIterable),
+				kill: vitest.fn(),
+				on: vitest.fn((event: string, cb: () => void) => {
+					if (event === "exit") {
+						exitCallback = cb
+					}
+				}),
+				all: { destroy: mockDestroy },
+			}
+
+			const execaMock = vitest.mocked(execa)
+			execaMock.mockImplementationOnce(
+				((_options: any) =>
+					((_template: TemplateStringsArray, ..._args: any[]) => mockSubprocess) as any) as any,
+			)
+
+			const warnSpy = vitest.spyOn(console, "warn").mockImplementation(() => {})
+
+			terminalProcess = new ExecaTerminalProcess(mockTerminal)
+			const runPromise = terminalProcess.run("hanging-command")
+
+			// Let the stream start and ps-tree resolve (100ms delay)
+			await vi.advanceTimersByTimeAsync(200)
+
+			// Verify exit listener was registered
+			expect(exitCallback).toBeDefined()
+
+			// Fire the process exit event
+			exitCallback!()
+
+			// Advance past the 5-second grace period
+			await vi.advanceTimersByTimeAsync(5_000)
+
+			// Verify the stream was force-destroyed
+			expect(mockDestroy).toHaveBeenCalled()
+
+			// Wait for run() to complete (stream error is caught internally)
+			await vi.advanceTimersByTimeAsync(1_000)
+			await runPromise
+
+			warnSpy.mockRestore()
+			vi.useRealTimers()
+		})
+
+		it("does not destroy stream if stream loop completes before grace period", async () => {
+			vi.useFakeTimers()
+
+			let exitCallback: (() => void) | undefined
+			const mockDestroy = vitest.fn()
+
+			// Stream that completes quickly (doesn't hang)
+			const quickIterable = (async function* () {
+				yield "quick output\n"
+			})()
+
+			const mockSubprocess = {
+				pid: 54322,
+				iterable: vitest.fn().mockReturnValue(quickIterable),
+				kill: vitest.fn(),
+				on: vitest.fn((event: string, cb: () => void) => {
+					if (event === "exit") {
+						exitCallback = cb
+					}
+				}),
+				all: { destroy: mockDestroy },
+			}
+
+			const execaMock = vitest.mocked(execa)
+			execaMock.mockImplementationOnce(
+				((_options: any) =>
+					((_template: TemplateStringsArray, ..._args: any[]) => mockSubprocess) as any) as any,
+			)
+
+			terminalProcess = new ExecaTerminalProcess(mockTerminal)
+			const runPromise = terminalProcess.run("quick-command")
+
+			// Let the stream complete
+			await vi.advanceTimersByTimeAsync(200)
+			await runPromise
+
+			// Now fire exit event after stream already completed
+			if (exitCallback) {
+				exitCallback()
+				await vi.advanceTimersByTimeAsync(5_000)
+			}
+
+			// Stream should NOT have been force-destroyed since it completed normally
+			expect(mockDestroy).not.toHaveBeenCalled()
+
+			vi.useRealTimers()
+		})
+	})
+
 	describe("trimRetrievedOutput", () => {
 		it("clears buffer when all output has been retrieved", () => {
 			// Set up a scenario where all output has been retrieved

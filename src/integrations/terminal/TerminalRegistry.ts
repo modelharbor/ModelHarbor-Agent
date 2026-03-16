@@ -95,12 +95,15 @@ export class TerminalRegistry {
 					}
 
 					if (!terminal.running) {
-						console.error(
-							"[TerminalRegistry] Shell execution end event received, but process is not running for terminal:",
+						console.warn(
+							"[TerminalRegistry] Shell execution end event received, but process is not running for terminal (delivering completion signal anyway):",
 							{ terminalId: terminal?.id, command: process?.command, exitCode: e.exitCode },
 						)
 
-						terminal.busy = false
+						// Still call shellExecutionComplete to unblock any waiting promises.
+						// The running flag is not a reliable indicator of whether a
+						// completion signal should be delivered.
+						terminal.shellExecutionComplete(exitDetails)
 						return
 					}
 

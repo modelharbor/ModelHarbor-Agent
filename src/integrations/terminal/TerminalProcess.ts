@@ -200,8 +200,20 @@ export class TerminalProcess extends BaseTerminalProcess {
 		// Set streamClosed immediately after stream ends.
 		this.terminal.setActiveStream(undefined)
 
-		// Wait for shell execution to complete.
-		await shellExecutionComplete
+		// Wait for shell execution to complete, with a timeout safety net.
+		// After the stream has ended (command output is done), if the VSCode
+		// onDidEndTerminalShellExecution event doesn't fire within 15 seconds,
+		// assume completion to prevent hanging indefinitely.
+		const shellExecTimeout = new Promise<ExitCodeDetails>((resolve) => {
+			setTimeout(() => {
+				console.warn(
+					"[TerminalProcess] shellExecutionComplete timed out after stream ended (15s), assuming completion",
+				)
+				resolve({ exitCode: undefined })
+			}, 15_000)
+		})
+
+		await Promise.race([shellExecutionComplete, shellExecTimeout])
 
 		this.isHot = false
 

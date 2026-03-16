@@ -135,6 +135,44 @@ describe("TerminalProcess", () => {
 			consoleWarnSpy.mockRestore()
 		})
 
+		it("resolves via timeout when shellExecutionComplete never fires (15s timeout)", async () => {
+			vi.useFakeTimers()
+
+			let completedOutput: string | undefined
+			terminalProcess.on("completed", (output) => {
+				completedOutput = output
+			})
+
+			// Mock stream that yields data but never emits shell_execution_complete
+			mockStream = (async function* () {
+				yield "\x1b]633;C\x07"
+				yield "timeout test output"
+				yield "\x1b]633;D\x07"
+				// Intentionally NOT emitting shell_execution_complete
+			})()
+
+			mockTerminal.shellIntegration.executeCommand.mockReturnValue({
+				read: vi.fn().mockReturnValue(mockStream),
+			})
+
+			const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
+
+			const runPromise = terminalProcess.run("test command")
+			terminalProcess.emit("stream_available", mockStream)
+
+			// Advance past the 15-second shellExecutionComplete timeout
+			await vi.advanceTimersByTimeAsync(16_000)
+
+			await runPromise
+
+			// Process should have completed via timeout with the output
+			expect(completedOutput).toBe("timeout test output")
+			expect(terminalProcess.isHot).toBe(false)
+
+			warnSpy.mockRestore()
+			vi.useRealTimers()
+		})
+
 		it("sets hot state for compiling commands", async () => {
 			let lines: string[] = []
 

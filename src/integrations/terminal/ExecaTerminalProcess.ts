@@ -84,21 +84,70 @@ export class ExecaTerminalProcess extends BaseTerminalProcess {
 
 			this.terminal.setActiveStream(stream, this.pid)
 
-			for await (const line of stream) {
-				if (this.aborted) {
-					break
+			// Track stream loop completion for exit-based cleanup.
+			// On Windows, the child process's stdout stream may not close
+			// when subprocesses inherit pipes, causing the for-await loop
+			// to hang indefinitely.
+			let streamLoopCompleted = false
+			let exitCleanupTimeout: NodeJS.Timeout | undefined
+			const subprocessRef = this.subprocess
+
+			// Listen for the process exit event to detect when the stream
+			// loop should have completed. Use optional chaining since
+			// the subprocess may not always expose an EventEmitter interface.
+			if (typeof subprocessRef.on === "function") {
+				subprocessRef.on("exit", () => {
+					exitCleanupTimeout = setTimeout(() => {
+						if (!streamLoopCompleted) {
+							console.warn(
+								"[ExecaTerminalProcess] Process exited but stream loop still active after 5s, forcing stream close",
+							)
+
+							try {
+								// Force-close stdio streams to unblock the for-await loop
+								const allStream = subprocessRef.all
+
+								if (allStream && typeof (allStream as any).destroy === "function") {
+									;(allStream as any).destroy()
+								}
+							} catch (e) {
+								console.warn(
+									`[ExecaTerminalProcess] Error destroying stream: ${e instanceof Error ? e.message : String(e)}`,
+								)
+							}
+						}
+					}, 5_000)
+				})
+			}
+
+			try {
+				for await (const line of stream) {
+					if (this.aborted) {
+						break
+					}
+
+					this.fullOutput += line
+
+					const now = Date.now()
+
+					if (this.isListening && (now - this.lastEmitTime_ms > 500 || this.lastEmitTime_ms === 0)) {
+						this.emitRemainingBufferIfListening()
+						this.lastEmitTime_ms = now
+					}
+
+					this.startHotTimer(line)
 				}
+			} catch (streamError) {
+				// If the stream was force-closed after process exit, this is expected
+				console.warn(
+					`[ExecaTerminalProcess] Stream iteration error (may be from forced close after process exit): ${streamError instanceof Error ? (streamError as Error).message : String(streamError)}`,
+				)
+			} finally {
+				streamLoopCompleted = true
 
-				this.fullOutput += line
-
-				const now = Date.now()
-
-				if (this.isListening && (now - this.lastEmitTime_ms > 500 || this.lastEmitTime_ms === 0)) {
-					this.emitRemainingBufferIfListening()
-					this.lastEmitTime_ms = now
+				if (exitCleanupTimeout) {
+					clearTimeout(exitCleanupTimeout)
 				}
-
-				this.startHotTimer(line)
 			}
 
 			if (this.aborted) {

@@ -96,7 +96,8 @@ export class ExecuteCommandTool extends BaseTool<"execute_command"> {
 
 			// In Super YOLO mode, enforce a maximum 5-minute timeout for command execution
 			// This prevents commands from getting stuck during execution (not just waiting for user input)
-			if (superYoloMode) {
+			// Skip allowlisted commands (e.g. install/build) — they should never be forcibly timed out
+			if (superYoloMode && !isCommandAllowlisted) {
 				const superYoloTimeout = superYoloStuckTimeoutMs ?? 300000 // Default 5 minutes
 				// Apply the minimum of user-configured timeout and Super YOLO timeout
 				if (commandExecutionTimeout === 0 || commandExecutionTimeout > superYoloTimeout) {
