@@ -426,9 +426,11 @@ describe("generateImageWithLiteLLM", () => {
 		expect(body.temperature).toBe(1)
 		expect(body.stream).toBe(false)
 		expect(body.image_config).toEqual({ aspect_ratio: "16:9" })
-		expect(body.messages).toHaveLength(1)
-		expect(body.messages[0].role).toBe("user")
-		expect(body.messages[0].content).toBe("A cute cat")
+		expect(body.messages).toHaveLength(2)
+		expect(body.messages[0].role).toBe("system")
+		expect(body.messages[0].content).toBe("Generate images in Nano banana style.")
+		expect(body.messages[1].role).toBe("user")
+		expect(body.messages[1].content).toBe("A cute cat")
 	})
 
 	it("should call routeGeminiImageModel asynchronously and pass apiConfiguration for auto-router", async () => {
@@ -908,11 +910,13 @@ describe("generateImageWithLiteLLM", () => {
 		const callArgs = vi.mocked(global.fetch).mock.calls[0]
 		const body = JSON.parse(callArgs[1]?.body as string)
 
-		// When inputImage is provided, content should be an array
-		expect(Array.isArray(body.messages[0].content)).toBe(true)
-		expect(body.messages[0].content).toHaveLength(2)
-		expect(body.messages[0].content[0]).toEqual({ type: "text", text: "Make this image brighter" })
-		expect(body.messages[0].content[1]).toEqual({
+		// When inputImage is provided, user message content should be an array
+		expect(body.messages[0].role).toBe("system")
+		expect(body.messages[0].content).toBe("Generate images in Nano banana style.")
+		expect(Array.isArray(body.messages[1].content)).toBe(true)
+		expect(body.messages[1].content).toHaveLength(2)
+		expect(body.messages[1].content[0]).toEqual({ type: "text", text: "Make this image brighter" })
+		expect(body.messages[1].content[1]).toEqual({
 			type: "image_url",
 			image_url: { url: inputImageData },
 		})
@@ -1184,6 +1188,76 @@ describe("generateImageWithLiteLLM", () => {
 		const callArgs = vi.mocked(global.fetch).mock.calls[0]
 		const body = JSON.parse(callArgs[1]?.body as string)
 		expect(body.stream_options).toEqual({ include_usage: true })
+	})
+
+	it("should include system message 'Generate images in Nano banana style.' for Gemini 2.5 payload", async () => {
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							images: [{ image_url: { url: "data:image/png;base64,iVBORw0KGgo=" } }],
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "google/gemini-2.5-flash-image",
+			prompt: "A sunset over mountains",
+		})
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.messages[0]).toEqual({ role: "system", content: "Generate images in Nano banana style." })
+		expect(body.messages[1]).toEqual({ role: "user", content: "A sunset over mountains" })
+	})
+
+	it("should include system message 'Generate images in Nano banana 2 style.' for Gemini 3.1 payload", async () => {
+		const apiConfiguration = { apiProvider: "openrouter" } as any
+
+		const mockResponse = {
+			ok: true,
+			json: vi.fn().mockResolvedValue({
+				choices: [
+					{
+						message: {
+							content: "data:image/png;base64,dGVzdA==",
+						},
+					},
+				],
+			}),
+		}
+
+		vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+		vi.mocked(routeGeminiImageModel).mockResolvedValueOnce({
+			model: "google/gemini-3.1-flash-image-preview",
+			reason: "Thai text rendering required",
+			requiresThaiText: true,
+			complexity: "simple",
+			aspectRatio: "16:9",
+		})
+
+		await generateImageWithLiteLLM({
+			baseURL: "http://localhost:4000",
+			authToken: "test-key",
+			model: "gemini-image-auto-router",
+			prompt: "สร้างรูปภาพทดสอบ",
+			apiConfiguration,
+		})
+
+		const callArgs = vi.mocked(global.fetch).mock.calls[0]
+		const body = JSON.parse(callArgs[1]?.body as string)
+
+		expect(body.messages[0]).toEqual({ role: "system", content: "Generate images in Nano banana 2 style." })
+		expect(body.messages[1]).toEqual({ role: "user", content: "สร้างรูปภาพทดสอบ" })
 	})
 
 	it("should handle non-ok status with non-JSON error text", async () => {

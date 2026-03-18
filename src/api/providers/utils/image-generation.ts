@@ -275,10 +275,18 @@ export async function generateImageWithLiteLLM(options: LiteLLMImageGenerationOp
 			effectiveModel = routerResult.model
 		}
 
+		const systemInstruction = isGemini31ImageModel(effectiveModel)
+			? "Generate images in Nano banana 2 style."
+			: "Generate images in Nano banana style."
+
 		const requestBody: Record<string, unknown> = isGemini31ImageModel(effectiveModel)
 			? {
 					model: effectiveModel,
 					messages: [
+						{
+							role: "system",
+							content: systemInstruction,
+						},
 						{
 							role: "user",
 							content: userContent,
@@ -306,6 +314,10 @@ export async function generateImageWithLiteLLM(options: LiteLLMImageGenerationOp
 			: {
 					model: effectiveModel,
 					messages: [
+						{
+							role: "system",
+							content: systemInstruction,
+						},
 						{
 							role: "user",
 							content: userContent,
