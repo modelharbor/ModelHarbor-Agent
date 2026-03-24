@@ -56,7 +56,13 @@ vi.mock("path", async () => ({
 import fs from "fs/promises"
 import type { PathLike } from "fs"
 
-import { loadRuleFiles, addCustomInstructions } from "../custom-instructions"
+import {
+	loadRuleFiles,
+	addCustomInstructions,
+	CONFIDENCE_ASSESSMENT_PROMPT,
+	SUPERROO_WORKSPACE_RULES,
+	SUPERROO_DEDUP_MARKER,
+} from "../custom-instructions"
 
 // Create mock functions
 const readFileMock = vi.fn()
@@ -93,7 +99,9 @@ describe("loadRuleFiles", () => {
 		readFileMock.mockResolvedValue("  content with spaces  ")
 		const result = await loadRuleFiles("/fake/path")
 		expect(readFileMock).toHaveBeenCalled()
-		expect(result).toBe("\n# Rules from .roorules:\ncontent with spaces\n")
+		expect(result).toContain("\n# Rules from .roorules:\ncontent with spaces\n")
+		expect(result).toContain(CONFIDENCE_ASSESSMENT_PROMPT.trim())
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
 	})
 
 	it("should handle ENOENT error", async () => {
@@ -103,6 +111,7 @@ describe("loadRuleFiles", () => {
 		const result = await loadRuleFiles("/fake/path")
 		expect(result).toContain("# Collaboration Rules")
 		expect(result).toContain("## Core Behavior")
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
 	})
 
 	it("should handle EISDIR error", async () => {
@@ -112,6 +121,7 @@ describe("loadRuleFiles", () => {
 		const result = await loadRuleFiles("/fake/path")
 		expect(result).toContain("# Collaboration Rules")
 		expect(result).toContain("## Core Behavior")
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
 	})
 
 	it("should throw on unexpected errors", async () => {
@@ -140,7 +150,9 @@ describe("loadRuleFiles", () => {
 		})
 
 		const result = await loadRuleFiles("/fake/path")
-		expect(result).toBe("\n# Rules from .roorules:\nroo rules content\n")
+		expect(result).toContain("\n# Rules from .roorules:\nroo rules content\n")
+		expect(result).toContain(CONFIDENCE_ASSESSMENT_PROMPT.trim())
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
 	})
 
 	it("should handle when no rule files exist", async () => {
@@ -151,6 +163,7 @@ describe("loadRuleFiles", () => {
 		const result = await loadRuleFiles("/fake/path")
 		expect(result).toContain("# Collaboration Rules")
 		expect(result).toContain("## Core Behavior")
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
 	})
 
 	it("should skip directories with same name as rule files", async () => {
@@ -169,6 +182,7 @@ describe("loadRuleFiles", () => {
 		const result = await loadRuleFiles("/fake/path")
 		expect(result).toContain("# Collaboration Rules")
 		expect(result).toContain("## Core Behavior")
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
 	})
 
 	it("should use .roo/rules/ directory when it exists and has files", async () => {
@@ -354,7 +368,9 @@ describe("loadRuleFiles", () => {
 		})
 
 		const result = await loadRuleFiles("/fake/path")
-		expect(result).toBe("\n# Rules from .roorules:\nroo rules content\n")
+		expect(result).toContain("\n# Rules from .roorules:\nroo rules content\n")
+		expect(result).toContain(CONFIDENCE_ASSESSMENT_PROMPT.trim())
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
 	})
 
 	it("should handle errors when reading directory", async () => {
@@ -375,7 +391,50 @@ describe("loadRuleFiles", () => {
 		})
 
 		const result = await loadRuleFiles("/fake/path")
-		expect(result).toBe("\n# Rules from .roorules:\nroo rules content\n")
+		expect(result).toContain("\n# Rules from .roorules:\nroo rules content\n")
+		expect(result).toContain(CONFIDENCE_ASSESSMENT_PROMPT.trim())
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
+	})
+
+	it("should deduplicate SuperRoo rules when already present in .roo/rules/ content", async () => {
+		// Simulate .roo/rules directory exists
+		statMock.mockResolvedValueOnce({
+			isDirectory: vi.fn().mockReturnValue(true),
+		} as any)
+
+		// Simulate listing files including superroo-workspace.md
+		readdirMock.mockResolvedValueOnce([
+			{
+				name: "superroo-workspace.md",
+				isFile: () => true,
+				isSymbolicLink: () => false,
+				parentPath: "/fake/path/.roo/rules",
+			},
+		] as any)
+
+		statMock.mockImplementation((path) => {
+			return Promise.resolve({
+				isFile: vi.fn().mockReturnValue(true),
+			}) as any
+		})
+
+		// Return content that contains the SuperRoo dedup marker
+		readFileMock.mockImplementation((filePath: PathLike) => {
+			const normalizedPath = filePath.toString().replace(/\\/g, "/")
+			if (normalizedPath.includes("superroo-workspace.md")) {
+				return Promise.resolve("# SuperRoo Development Methodology\n\nSome SuperRoo content here")
+			}
+			return Promise.reject({ code: "ENOENT" })
+		})
+
+		const result = await loadRuleFiles("/fake/path")
+
+		// Should contain SuperRoo marker from the loaded file
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
+
+		// Count occurrences - should only appear once (from file), not twice (from file + injection)
+		const markerCount = result.split(SUPERROO_DEDUP_MARKER).length - 1
+		expect(markerCount).toBe(1)
 	})
 
 	it("should read files from nested subdirectories in .roo/rules/", async () => {
@@ -1240,7 +1299,9 @@ describe("Directory existence checks", () => {
 		const result = await loadRuleFiles("/fake/path")
 
 		// Verify it fell back to reading rule files directly
-		expect(result).toBe("\n# Rules from .roorules:\nfallback content\n")
+		expect(result).toContain("\n# Rules from .roorules:\nfallback content\n")
+		expect(result).toContain(CONFIDENCE_ASSESSMENT_PROMPT.trim())
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
 	})
 })
 
@@ -1598,6 +1659,8 @@ describe("Rules directory reading", () => {
 		readFileMock.mockResolvedValueOnce("fallback content")
 
 		const result = await loadRuleFiles("/fake/path")
-		expect(result).toBe("\n# Rules from .roorules:\nfallback content\n")
+		expect(result).toContain("\n# Rules from .roorules:\nfallback content\n")
+		expect(result).toContain(CONFIDENCE_ASSESSMENT_PROMPT.trim())
+		expect(result).toContain(SUPERROO_DEDUP_MARKER)
 	})
 })
