@@ -2895,17 +2895,20 @@ export class ClineProvider
 			// non-fatal
 		}
 
-		// 6) Close child instance if still open (single-open-task invariant)
+		// 6) Extract file changes from child before closing
+		const childFileChanges = this.getCurrentTask()?.getFileChanges() ?? []
+
+		// 7) Close child instance if still open (single-open-task invariant)
 		const current = this.getCurrentTask()
 		if (current?.taskId === childTaskId) {
 			await this.removeClineFromStack()
 		}
 
-		// 7) Reopen the parent from history as the sole active task (restores saved mode)
+		// 8) Reopen the parent from history as the sole active task (restores saved mode)
 		//    IMPORTANT: startTask=false to suppress resume-from-history ask scheduling
 		const parentInstance = await this.createTaskWithHistoryItem(updatedHistory, { startTask: false })
 
-		// 8) Inject restored histories into the in-memory instance before resuming
+		// 9) Inject restored histories into the in-memory instance before resuming
 		if (parentInstance) {
 			try {
 				await parentInstance.overwriteClineMessages(parentClineMessages)
@@ -2918,11 +2921,16 @@ export class ClineProvider
 				// non-fatal
 			}
 
+			// Propagate child's file changes to parent
+			if (childFileChanges.length > 0) {
+				parentInstance.mergeChildFileChanges(childFileChanges)
+			}
+
 			// Auto-resume parent without ask("resume_task")
 			await parentInstance.resumeAfterDelegation()
 		}
 
-		// 9) Emit TaskDelegationResumed (provider-level)
+		// 10) Emit TaskDelegationResumed (provider-level)
 		try {
 			this.emit(RooCodeEventName.TaskDelegationResumed, parentTaskId, childTaskId)
 		} catch {

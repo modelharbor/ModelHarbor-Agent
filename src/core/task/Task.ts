@@ -4635,6 +4635,31 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	}
 
 	/**
+	 * Merge file changes from a child (subtask) into this parent task.
+	 * Uses existing dedup logic: keeps earliest originalContent, latest updatedContent.
+	 * Notifies webview once after all merges.
+	 */
+	public mergeChildFileChanges(childFileChanges: FileChange[]): void {
+		if (!childFileChanges || childFileChanges.length === 0) {
+			return
+		}
+
+		for (const change of childFileChanges) {
+			const existing = this.fileChanges.get(change.path)
+			if (existing) {
+				// Keep earliest originalContent and timestamp, update to latest updatedContent/diff/diffStats
+				existing.updatedContent = change.updatedContent
+				existing.diff = change.diff
+				existing.diffStats = change.diffStats
+			} else {
+				this.fileChanges.set(change.path, { ...change })
+			}
+		}
+
+		this.notifyFileChangesChanged()
+	}
+
+	/**
 	 * Notifies the webview that file changes have been updated.
 	 * Sends the current list of file changes to the webview.
 	 */

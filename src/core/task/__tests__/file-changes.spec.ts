@@ -6,6 +6,7 @@
  * - removeFileChange(): Removes a file change record
  * - getFileChanges(): Gets all file changes as an array
  * - clearFileChanges(): Clears all file changes
+ * - mergeChildFileChanges(): Merges file changes from child subtask into parent
  * - Deduplication: Updating same file multiple times
  */
 
@@ -443,6 +444,237 @@ describe("Task file change tracking", () => {
 
 			const changes = task.getFileChanges()
 			expect(changes[0].timestamp).toBe(firstTimestamp)
+		})
+	})
+
+	describe("mergeChildFileChanges", () => {
+		test("should not change anything when given empty array", () => {
+			task.mergeChildFileChanges([])
+
+			expect(task.getFileChanges()).toEqual([])
+			expect(mockProvider.postMessageToWebview).not.toHaveBeenCalled()
+		})
+
+		test("should not change anything when given undefined-like input", () => {
+			task.mergeChildFileChanges(undefined as any)
+
+			expect(task.getFileChanges()).toEqual([])
+			expect(mockProvider.postMessageToWebview).not.toHaveBeenCalled()
+		})
+
+		test("should add new file changes from child to parent", () => {
+			const childChanges = [
+				{
+					path: "src/child-file1.ts",
+					originalContent: "child-original-1",
+					updatedContent: "child-updated-1",
+					diff: "diff-1",
+					diffStats: { added: 3, removed: 1 },
+					timestamp: Date.now(),
+				},
+				{
+					path: "src/child-file2.ts",
+					originalContent: "child-original-2",
+					updatedContent: "child-updated-2",
+					diff: "diff-2",
+					diffStats: { added: 5, removed: 2 },
+					timestamp: Date.now(),
+				},
+			]
+
+			task.mergeChildFileChanges(childChanges)
+
+			const changes = task.getFileChanges()
+			expect(changes).toHaveLength(2)
+			expect(changes.map((c) => c.path)).toEqual(
+				expect.arrayContaining(["src/child-file1.ts", "src/child-file2.ts"]),
+			)
+			expect(changes.find((c) => c.path === "src/child-file1.ts")?.updatedContent).toBe("child-updated-1")
+			expect(changes.find((c) => c.path === "src/child-file2.ts")?.updatedContent).toBe("child-updated-2")
+		})
+
+		test("should dedup overlapping paths: keep earliest originalContent, latest updatedContent", () => {
+			// Parent already has a file change
+			task.updateFileChange({
+				path: "src/shared.ts",
+				originalContent: "parent-original",
+				updatedContent: "parent-updated",
+				diff: "parent-diff",
+				diffStats: { added: 1, removed: 0 },
+			})
+
+			mockProvider.postMessageToWebview.mockClear()
+
+			// Child has change for same file
+			const childChanges = [
+				{
+					path: "src/shared.ts",
+					originalContent: "child-original",
+					updatedContent: "child-updated",
+					diff: "child-diff",
+					diffStats: { added: 10, removed: 5 },
+					timestamp: Date.now(),
+				},
+			]
+
+			task.mergeChildFileChanges(childChanges)
+
+			const changes = task.getFileChanges()
+			expect(changes).toHaveLength(1)
+
+			const shared = changes[0]
+			expect(shared.path).toBe("src/shared.ts")
+			// Keep parent's earliest originalContent
+			expect(shared.originalContent).toBe("parent-original")
+			// Use child's latest updatedContent, diff, diffStats
+			expect(shared.updatedContent).toBe("child-updated")
+			expect(shared.diff).toBe("child-diff")
+			expect(shared.diffStats).toEqual({ added: 10, removed: 5 })
+		})
+
+		test("should preserve earliest timestamp on overlapping paths", () => {
+			// Parent has a file change with early timestamp
+			task.updateFileChange({
+				path: "src/shared.ts",
+				originalContent: "parent-original",
+				updatedContent: "parent-updated",
+			})
+
+			const parentTimestamp = task.getFileChanges()[0].timestamp!
+
+			mockProvider.postMessageToWebview.mockClear()
+
+			// Child has same file with later timestamp
+			const childChanges = [
+				{
+					path: "src/shared.ts",
+					originalContent: "child-original",
+					updatedContent: "child-updated",
+					timestamp: parentTimestamp + 10000,
+				},
+			]
+
+			task.mergeChildFileChanges(childChanges)
+
+			const changes = task.getFileChanges()
+			expect(changes[0].timestamp).toBe(parentTimestamp)
+		})
+
+		test("should accumulate changes across multiple merges", () => {
+			// First child merge
+			task.mergeChildFileChanges([
+				{
+					path: "src/file-a.ts",
+					originalContent: "orig-a",
+					updatedContent: "updated-a",
+					timestamp: Date.now(),
+				},
+			])
+
+			expect(task.getFileChanges()).toHaveLength(1)
+
+			// Second child merge
+			task.mergeChildFileChanges([
+				{
+					path: "src/file-b.ts",
+					originalContent: "orig-b",
+					updatedContent: "updated-b",
+					timestamp: Date.now(),
+				},
+			])
+
+			expect(task.getFileChanges()).toHaveLength(2)
+
+			// Third child merge — overlaps with file-a
+			task.mergeChildFileChanges([
+				{
+					path: "src/file-a.ts",
+					originalContent: "orig-a-v2",
+					updatedContent: "updated-a-v3",
+					timestamp: Date.now(),
+				},
+				{
+					path: "src/file-c.ts",
+					originalContent: "orig-c",
+					updatedContent: "updated-c",
+					timestamp: Date.now(),
+				},
+			])
+
+			const changes = task.getFileChanges()
+			expect(changes).toHaveLength(3) // file-a, file-b, file-c
+
+			const fileA = changes.find((c) => c.path === "src/file-a.ts")
+			expect(fileA?.originalContent).toBe("orig-a") // Earliest preserved
+			expect(fileA?.updatedContent).toBe("updated-a-v3") // Latest
+		})
+
+		test("should send single notification per merge call", () => {
+			const childChanges = [
+				{ path: "file1.ts", originalContent: "o1", updatedContent: "u1", timestamp: Date.now() },
+				{ path: "file2.ts", originalContent: "o2", updatedContent: "u2", timestamp: Date.now() },
+				{ path: "file3.ts", originalContent: "o3", updatedContent: "u3", timestamp: Date.now() },
+			]
+
+			task.mergeChildFileChanges(childChanges)
+
+			// Should only notify once, not once per file
+			expect(mockProvider.postMessageToWebview).toHaveBeenCalledTimes(1)
+			expect(mockProvider.postMessageToWebview).toHaveBeenCalledWith(
+				expect.objectContaining({
+					type: "fileChanges",
+					fileChanges: expect.arrayContaining([
+						expect.objectContaining({ path: "file1.ts" }),
+						expect.objectContaining({ path: "file2.ts" }),
+						expect.objectContaining({ path: "file3.ts" }),
+					]),
+				}),
+			)
+		})
+
+		test("should mix parent's existing changes with child's new and overlapping changes", () => {
+			// Parent has two existing changes
+			task.updateFileChange({ path: "parent-only.ts", originalContent: "po", updatedContent: "pu" })
+			task.updateFileChange({ path: "shared.ts", originalContent: "so", updatedContent: "su" })
+
+			mockProvider.postMessageToWebview.mockClear()
+
+			// Child has one overlap + one new
+			task.mergeChildFileChanges([
+				{
+					path: "shared.ts",
+					originalContent: "child-so",
+					updatedContent: "child-su",
+					diff: "child-diff",
+					diffStats: { added: 2, removed: 1 },
+					timestamp: Date.now(),
+				},
+				{
+					path: "child-only.ts",
+					originalContent: "co",
+					updatedContent: "cu",
+					timestamp: Date.now(),
+				},
+			])
+
+			const changes = task.getFileChanges()
+			expect(changes).toHaveLength(3)
+
+			// Parent-only unchanged
+			const parentOnly = changes.find((c) => c.path === "parent-only.ts")
+			expect(parentOnly?.originalContent).toBe("po")
+			expect(parentOnly?.updatedContent).toBe("pu")
+
+			// Shared: parent's originalContent, child's updatedContent
+			const shared = changes.find((c) => c.path === "shared.ts")
+			expect(shared?.originalContent).toBe("so")
+			expect(shared?.updatedContent).toBe("child-su")
+			expect(shared?.diff).toBe("child-diff")
+
+			// Child-only added
+			const childOnly = changes.find((c) => c.path === "child-only.ts")
+			expect(childOnly?.originalContent).toBe("co")
+			expect(childOnly?.updatedContent).toBe("cu")
 		})
 	})
 
