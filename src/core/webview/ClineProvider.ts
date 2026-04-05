@@ -851,6 +851,9 @@ export class ClineProvider
 			initialStatus: historyItem.status,
 		})
 
+		// Load persisted file changes from disk for restored tasks
+		await task.loadFileChangesFromDisk()
+
 		if (isRehydratingCurrentTask) {
 			// Replace the current task in-place to avoid UI flicker
 			const stackIndex = this.clineStack.length - 1
@@ -2679,6 +2682,18 @@ export class ClineProvider
 			)
 		}
 
+		// 2.5) Persist parent's file changes to disk before disposal.
+		//      This ensures file changes survive the parent being disposed and recreated.
+		try {
+			await parent.saveFileChangesToDisk()
+		} catch (error) {
+			this.log(
+				`[delegateParentAndOpenChild] Error saving parent file changes (non-fatal): ${
+					error instanceof Error ? error.message : String(error)
+				}`,
+			)
+		}
+
 		// 3) Enforce single-open invariant by closing/disposing the parent first
 		//    This ensures we never have >1 tasks open at any time during delegation.
 		//    Await abort completion to ensure clean disposal and prevent unhandled rejections.
@@ -2897,6 +2912,20 @@ export class ClineProvider
 
 		// 6) Extract file changes from child before closing
 		const childFileChanges = this.getCurrentTask()?.getFileChanges() ?? []
+
+		// 6.5) Persist child's file changes to disk before closing
+		const childTask = this.getCurrentTask()
+		if (childTask?.taskId === childTaskId) {
+			try {
+				await childTask.saveFileChangesToDisk()
+			} catch (error) {
+				this.log(
+					`[reopenParentFromDelegation] Error saving child file changes (non-fatal): ${
+						error instanceof Error ? error.message : String(error)
+					}`,
+				)
+			}
+		}
 
 		// 7) Close child instance if still open (single-open-task invariant)
 		const current = this.getCurrentTask()

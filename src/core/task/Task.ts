@@ -112,6 +112,8 @@ import {
 	type ApiMessage,
 	readApiMessages,
 	saveApiMessages,
+	readFileChanges,
+	saveFileChanges,
 	readTaskMessages,
 	saveTaskMessages,
 	taskMetadata,
@@ -4604,6 +4606,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 		// Notify webview of file changes update
 		this.notifyFileChangesChanged()
+
+		// Persist to disk (fire-and-forget)
+		this.saveFileChangesToDisk()
 	}
 
 	/**
@@ -4657,6 +4662,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		}
 
 		this.notifyFileChangesChanged()
+
+		// Persist to disk (fire-and-forget)
+		this.saveFileChangesToDisk()
 	}
 
 	/**
@@ -4670,6 +4678,41 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				type: "fileChanges",
 				fileChanges: this.getFileChanges(),
 			})
+		}
+	}
+
+	/**
+	 * Persists the current in-memory fileChanges Map to disk as JSON.
+	 * Follows the same pattern as saveApiConversationHistory().
+	 * Called as fire-and-forget from mutation methods (updateFileChange, mergeChildFileChanges).
+	 */
+	public async saveFileChangesToDisk(): Promise<void> {
+		try {
+			await saveFileChanges({
+				fileChanges: this.getFileChanges(),
+				taskId: this.taskId,
+				globalStoragePath: this.globalStoragePath,
+			})
+		} catch (error) {
+			console.error("Failed to save file changes to disk:", error)
+		}
+	}
+
+	/**
+	 * Loads persisted fileChanges from disk and populates the in-memory Map.
+	 * Called during task restoration (e.g., in ClineProvider.createTaskWithHistoryItem).
+	 */
+	public async loadFileChangesFromDisk(): Promise<void> {
+		try {
+			const changes = await readFileChanges({
+				taskId: this.taskId,
+				globalStoragePath: this.globalStoragePath,
+			})
+			for (const change of changes) {
+				this.fileChanges.set(change.path, change)
+			}
+		} catch (error) {
+			console.error("Failed to load file changes from disk:", error)
 		}
 	}
 }

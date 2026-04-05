@@ -14,6 +14,7 @@ import { describe, test, expect, beforeEach, vi } from "vitest"
 import { Task } from "../Task"
 import { ClineProvider } from "../../webview/ClineProvider"
 import type { ProviderSettings } from "@roo-code/types"
+import { saveFileChanges, readFileChanges } from "../../task-persistence"
 
 // Mock dependencies
 vi.mock("../../webview/ClineProvider")
@@ -42,6 +43,17 @@ vi.mock("@roo-code/telemetry", () => ({
 			captureTaskRestarted: vi.fn(),
 		},
 	},
+}))
+
+// Mock task-persistence for file changes persistence
+vi.mock("../../task-persistence", () => ({
+	readApiMessages: vi.fn().mockResolvedValue([]),
+	saveApiMessages: vi.fn().mockResolvedValue(undefined),
+	readFileChanges: vi.fn().mockResolvedValue([]),
+	saveFileChanges: vi.fn().mockResolvedValue(undefined),
+	readTaskMessages: vi.fn().mockResolvedValue([]),
+	saveTaskMessages: vi.fn().mockResolvedValue(undefined),
+	taskMetadata: vi.fn().mockResolvedValue({ historyItem: {}, tokenUsage: {} }),
 }))
 
 describe("Task file change tracking", () => {
@@ -675,6 +687,160 @@ describe("Task file change tracking", () => {
 			const childOnly = changes.find((c) => c.path === "child-only.ts")
 			expect(childOnly?.originalContent).toBe("co")
 			expect(childOnly?.updatedContent).toBe("cu")
+		})
+	})
+
+	describe("saveFileChangesToDisk", () => {
+		test("should call saveFileChanges with correct parameters", async () => {
+			const mockSave = vi.mocked(saveFileChanges)
+
+			task.updateFileChange({
+				path: "src/test.ts",
+				originalContent: "original",
+				updatedContent: "updated",
+			})
+
+			mockSave.mockClear()
+			await task.saveFileChangesToDisk()
+
+			expect(mockSave).toHaveBeenCalledWith({
+				fileChanges: expect.arrayContaining([
+					expect.objectContaining({
+						path: "src/test.ts",
+						originalContent: "original",
+						updatedContent: "updated",
+					}),
+				]),
+				taskId: task.taskId,
+				globalStoragePath: "/test/path",
+			})
+		})
+
+		test("should save empty array when no file changes", async () => {
+			const mockSave = vi.mocked(saveFileChanges)
+			mockSave.mockClear()
+
+			await task.saveFileChangesToDisk()
+
+			expect(mockSave).toHaveBeenCalledWith({
+				fileChanges: [],
+				taskId: task.taskId,
+				globalStoragePath: "/test/path",
+			})
+		})
+
+		test("should not throw on save failure", async () => {
+			const mockSave = vi.mocked(saveFileChanges)
+			mockSave.mockRejectedValueOnce(new Error("Disk full"))
+
+			await expect(task.saveFileChangesToDisk()).resolves.not.toThrow()
+		})
+
+		test("should be called as fire-and-forget from updateFileChange", async () => {
+			const mockSave = vi.mocked(saveFileChanges)
+			mockSave.mockClear()
+
+			task.updateFileChange({
+				path: "src/test.ts",
+				originalContent: "original",
+				updatedContent: "updated",
+			})
+
+			// Allow fire-and-forget promise to settle
+			await new Promise((resolve) => setTimeout(resolve, 0))
+
+			expect(mockSave).toHaveBeenCalled()
+		})
+
+		test("should be called as fire-and-forget from mergeChildFileChanges", async () => {
+			const mockSave = vi.mocked(saveFileChanges)
+			mockSave.mockClear()
+
+			task.mergeChildFileChanges([
+				{
+					path: "src/child.ts",
+					originalContent: "co",
+					updatedContent: "cu",
+					timestamp: Date.now(),
+				},
+			])
+
+			// Allow fire-and-forget promise to settle
+			await new Promise((resolve) => setTimeout(resolve, 0))
+
+			expect(mockSave).toHaveBeenCalled()
+		})
+	})
+
+	describe("loadFileChangesFromDisk", () => {
+		test("should populate fileChanges Map from disk", async () => {
+			const mockRead = vi.mocked(readFileChanges)
+			mockRead.mockResolvedValueOnce([
+				{
+					path: "src/file1.ts",
+					originalContent: "o1",
+					updatedContent: "u1",
+					timestamp: 1000,
+				},
+				{
+					path: "src/file2.ts",
+					originalContent: "o2",
+					updatedContent: "u2",
+					timestamp: 2000,
+				},
+			])
+
+			await task.loadFileChangesFromDisk()
+
+			const changes = task.getFileChanges()
+			expect(changes).toHaveLength(2)
+			expect(changes.find((c) => c.path === "src/file1.ts")?.updatedContent).toBe("u1")
+			expect(changes.find((c) => c.path === "src/file2.ts")?.updatedContent).toBe("u2")
+		})
+
+		test("should call readFileChanges with correct parameters", async () => {
+			const mockRead = vi.mocked(readFileChanges)
+
+			await task.loadFileChangesFromDisk()
+
+			expect(mockRead).toHaveBeenCalledWith({
+				taskId: task.taskId,
+				globalStoragePath: "/test/path",
+			})
+		})
+
+		test("should not throw on read failure", async () => {
+			const mockRead = vi.mocked(readFileChanges)
+			mockRead.mockRejectedValueOnce(new Error("File not found"))
+
+			await expect(task.loadFileChangesFromDisk()).resolves.not.toThrow()
+		})
+
+		test("should leave existing changes when load fails", async () => {
+			// Add a change first
+			task.updateFileChange({
+				path: "existing.ts",
+				originalContent: "o",
+				updatedContent: "u",
+			})
+
+			const mockRead = vi.mocked(readFileChanges)
+			mockRead.mockRejectedValueOnce(new Error("Read error"))
+
+			await task.loadFileChangesFromDisk()
+
+			// Existing change should still be there
+			expect(task.getFileChanges()).toHaveLength(1)
+			expect(task.getFileChanges()[0].path).toBe("existing.ts")
+		})
+
+		test("should handle empty array from disk", async () => {
+			const mockRead = vi.mocked(readFileChanges)
+			mockRead.mockResolvedValueOnce([])
+
+			await task.loadFileChangesFromDisk()
+
+			expect(task.getFileChanges()).toHaveLength(0)
 		})
 	})
 
