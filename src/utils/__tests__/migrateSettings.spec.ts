@@ -3,6 +3,49 @@ import * as vscode from "vscode"
 import { migrateSettings } from "../migrateSettings"
 import type { ModeConfig } from "@roo-code/types"
 
+const SUPERROO_SKILL_MODE_SLUGS = [
+	"using-superpowers",
+	"test-driven-development",
+	"testing-anti-patterns",
+	"verification-before-completion",
+	"condition-based-waiting",
+	"defense-in-depth",
+	"receiving-code-review",
+	"requesting-code-review",
+	"systematic-debugging",
+	"root-cause-tracing",
+	"dispatching-parallel-agents",
+	"brainstorming",
+	"writing-plans",
+	"executing-plans",
+	"subagent-driven-development",
+	"using-git-worktrees",
+	"finishing-a-development-branch",
+	"writing-skills",
+	"testing-skills-with-subagents",
+	"sharing-skills",
+	"code-reviewer",
+] as const
+
+const UTILITY_MODE_SLUGS = [
+	"translate",
+	"issue-fixer",
+	"pr-fixer",
+	"merge-resolver",
+	"docs-extractor",
+	"issue-investigator",
+	"issue-writer",
+] as const
+
+const REMOVED_MODE_SLUGS = [...SUPERROO_SKILL_MODE_SLUGS, ...UTILITY_MODE_SLUGS] as const
+
+const createModeConfig = (slug: string): ModeConfig => ({
+	slug,
+	name: slug,
+	roleDefinition: `${slug} role`,
+	groups: ["read"],
+})
+
 // Mock vscode module
 vi.mock("vscode", () => ({
 	window: {
@@ -371,13 +414,15 @@ describe("migrateSettings", () => {
 			)
 		})
 
-		it("should remove all built-in mode overrides (architect, code, ask, debug, orchestrator)", async () => {
+		it("should remove all built-in mode overrides (architect, code, ask, debug, orchestrator, rooignore-generator, rules-generator)", async () => {
 			const customModesWithAllBuiltins: ModeConfig[] = [
 				{ slug: "architect", name: "Custom Architect", roleDefinition: "Role", groups: ["read"] },
 				{ slug: "code", name: "Custom Code", roleDefinition: "Role", groups: ["read"] },
 				{ slug: "ask", name: "Custom Ask", roleDefinition: "Role", groups: ["read"] },
 				{ slug: "debug", name: "Custom Debug", roleDefinition: "Role", groups: ["read"] },
 				{ slug: "orchestrator", name: "Custom Orchestrator", roleDefinition: "Role", groups: ["read"] },
+				{ slug: "rooignore-generator", name: "Custom RooIgnore", roleDefinition: "Role", groups: ["read"] },
+				{ slug: "rules-generator", name: "Custom Rules", roleDefinition: "Role", groups: ["read"] },
 				{ slug: "truly-custom", name: "Custom", roleDefinition: "Role", groups: ["read"] },
 			]
 			mockGlobalState.set("customModes", customModesWithAllBuiltins)
@@ -418,6 +463,166 @@ describe("migrateSettings", () => {
 			expect(updatedPrompts).toEqual({
 				"my-mode": { roleDefinition: "Custom my-mode role" },
 			})
+		})
+	})
+
+	describe("removed modes migration", () => {
+		beforeEach(() => {
+			// Skip other migrations to isolate removed modes migration tests
+			mockGlobalState.set("defaultCommandsMigrationCompleted", true)
+		})
+
+		it("should remove all removed modes from customModes in globalState", async () => {
+			const keptMode = createModeConfig("my-custom-mode")
+			const customModes: ModeConfig[] = [...REMOVED_MODE_SLUGS.map((slug) => createModeConfig(slug)), keptMode]
+			mockGlobalState.set("customModes", customModes)
+
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedModes = mockGlobalState.get("customModes")
+			expect(updatedModes).toEqual([keptMode])
+		})
+
+		it("should remove all removed mode prompts from customModePrompts in globalState", async () => {
+			mockGlobalState.set("customModePrompts", {
+				...Object.fromEntries(REMOVED_MODE_SLUGS.map((slug) => [slug, { roleDefinition: `${slug} role` }])),
+				"my-custom-mode": { roleDefinition: "My custom role" },
+			})
+
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedPrompts = mockGlobalState.get("customModePrompts")
+			expect(updatedPrompts).toEqual({
+				"my-custom-mode": { roleDefinition: "My custom role" },
+			})
+		})
+
+		it("should not remove non-removed modes", async () => {
+			const customModes: ModeConfig[] = [
+				{
+					slug: "my-reviewer",
+					name: "My Reviewer",
+					roleDefinition: "Review role",
+					groups: ["read"],
+				},
+				{
+					slug: "my-translator",
+					name: "My Translator",
+					roleDefinition: "Translate role",
+					groups: ["read"],
+				},
+			]
+			mockGlobalState.set("customModes", customModes)
+
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedModes = mockGlobalState.get("customModes")
+			expect(updatedModes).toHaveLength(2)
+			expect(updatedModes).toEqual(customModes)
+		})
+
+		it("should rerun cleanup when only the legacy SuperRoo migration flag is set", async () => {
+			mockGlobalState.set("superRooModesMigrationCompleted", true)
+			const keptMode = createModeConfig("my-custom-mode")
+			mockGlobalState.set("customModes", [createModeConfig("translate"), keptMode])
+
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedModes = mockGlobalState.get("customModes")
+			expect(updatedModes).toEqual([keptMode])
+			expect(mockGlobalState.get("removedModesMigrationCompleted")).toBe(true)
+		})
+
+		it("should skip if removedModesMigrationCompleted flag is already true", async () => {
+			mockGlobalState.set("removedModesMigrationCompleted", true)
+			const removedModes: ModeConfig[] = [createModeConfig("using-superpowers"), createModeConfig("translate")]
+			mockGlobalState.set("customModes", removedModes)
+
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedModes = mockGlobalState.get("customModes")
+			expect(updatedModes).toEqual(removedModes)
+		})
+
+		it("should work normally when no customModes exist", async () => {
+			// No customModes or customModePrompts set
+
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await expect(migrateSettings(mockContext, mockOutputChannel)).resolves.toBeUndefined()
+
+			// Migration flag should still be set
+			expect(mockGlobalState.get("removedModesMigrationCompleted")).toBe(true)
+		})
+
+		it("should set removedModesMigrationCompleted flag after finishing", async () => {
+			const customModes: ModeConfig[] = [createModeConfig("brainstorming")]
+			mockGlobalState.set("customModes", customModes)
+
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			expect(mockGlobalState.get("removedModesMigrationCompleted")).toBe(true)
+			expect(mockContext.globalState.update).toHaveBeenCalledWith("removedModesMigrationCompleted", true)
+		})
+
+		it("should strip rooignore-generator and rules-generator as built-in overrides, not as removed modes", async () => {
+			// rooignore-generator and rules-generator are DEFAULT_MODES (built-in),
+			// so custom overrides should be stripped by migrateBuiltinModeOverrides,
+			// NOT by migrateRemovedModes. using-superpowers is a removed mode.
+			const rooignoreMode = createModeConfig("rooignore-generator")
+			const rulesMode = createModeConfig("rules-generator")
+			const removedMode = createModeConfig("using-superpowers")
+			const customMode = createModeConfig("my-custom")
+			mockGlobalState.set("customModes", [rooignoreMode, rulesMode, removedMode, customMode])
+
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			await migrateSettings(mockContext, mockOutputChannel)
+
+			const updatedModes = mockGlobalState.get("customModes")
+			// All built-in and removed modes stripped, only truly custom survives
+			expect(updatedModes).toHaveLength(1)
+			expect(updatedModes[0].slug).toBe("my-custom")
+		})
+
+		it("should not crash if an error occurs during migration", async () => {
+			// Set up a scenario that triggers removed modes migration
+			mockGlobalState.set("customModes", [createModeConfig("using-superpowers")])
+
+			// Make globalState.update throw on specific key to simulate error
+			const originalUpdate = mockContext.globalState.update
+			mockContext.globalState.update = vi.fn(async (key: string, value: any) => {
+				if (key === "customModes") {
+					throw new Error("globalState update failed")
+				}
+				return originalUpdate(key, value)
+			})
+
+			const { fileExistsAtPath } = await import("../fs")
+			vi.mocked(fileExistsAtPath).mockResolvedValue(false)
+
+			// Should not throw
+			await expect(migrateSettings(mockContext, mockOutputChannel)).resolves.toBeUndefined()
 		})
 	})
 })

@@ -257,106 +257,6 @@ Calculate confidence using baseline + factors + modifiers:
 - Avoid rigid format requirements
 `
 
-/**
- * SuperRoo workspace rules that are always injected into the system prompt,
- * regardless of whether workspace has .roo/rules/ or not.
- * Uses dedup marker "# SuperRoo Development Methodology" to avoid double-injection
- * when the workspace already has .roo/rules/superroo-workspace.md.
- */
-export const SUPERROO_WORKSPACE_RULES = `
-# SuperRoo Development Methodology
-
-This workspace enforces SuperRoo development discipline.
-
----
-
-## Use SuperRoo Skill-Modes
-
-For serious work, you MUST use SuperRoo skill-modes. Start with:
-- **using-superpowers** - Entry point that selects the right skill
-
-Or use slash commands for quick access:
-- \`/tdd\` - Test-driven development
-- \`/debug\` - Systematic debugging
-- \`/brainstorm\` - Design refinement
-- \`/write-plan\` - Create implementation plan
-- \`/execute-plan\` - Execute plan with TDD
-- \`/review\` - Request code review
-
-Or select directly from 21 skill-modes:
-- **test-driven-development** - RED-GREEN-REFACTOR cycle
-- **systematic-debugging** - 4-phase root-cause investigation
-- **brainstorming** - Socratic design refinement
-- **writing-plans** - Comprehensive implementation plans
-- **executing-plans** - Batch execution with review checkpoints
-- **requesting-code-review** - Perform rigorous code review
-- **receiving-code-review** - Process review feedback
-- And 14 more specialized skills...
-
-**Do NOT bypass SuperRoo modes for convenience.**
-
-Only use other modes for:
-- ⚠️ Trivial one-off tasks explicitly marked as experimental
-- ⚠️ User explicitly requests different mode
-- ⚠️ Quick questions that don't involve code changes
-
-When in doubt, use a skill-mode. They exist for a reason.
-
----
-
-## Core Principles (Non-Negotiable)
-
-These apply ALWAYS, even if temporarily outside superpowers modes:
-
-### 🔴 NO CODE WITHOUT FAILING TEST FIRST
-
-Write the test, watch it fail, then implement.
-If you didn't watch it fail, it proves nothing.
-
-### ✅ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION
-
-Before saying "done," "fixed," or "passing," run the verification command
-and show the output. Evidence before assertions, always.
-
-### 🔍 ROOT CAUSE INVESTIGATION BEFORE FIXES
-
-No fixes without understanding the root cause first.
-Patching symptoms creates more bugs.
-
-### 👁️ REVIEW EARLY, REVIEW OFTEN
-
-Code review is automatic after task completion (test-driven-development/systematic-debugging).
-Catch issues before they compound.
-
----
-
-## If You're Bypassing SuperRoo Modes
-
-**Stop and ask:**
-- Why am I not using a SuperRoo mode?
-- Is this serious work? (If yes → use SuperRoo mode)
-- Am I bypassing for convenience? (If yes → stop, use proper mode)
-
-The discipline exists to catch bugs early, maintain quality, and ensure
-rigorous development. Bypassing defeats the purpose.
-
----
-
-**When you start a session, select the appropriate SuperRoo skill-mode:**
-- using-superpowers for automatic skill selection
-- brainstorming for design refinement
-- writing-plans for implementation planning
-- test-driven-development for feature implementation
-- systematic-debugging for investigating bugs
-- requesting-code-review for code review only
-- Or use slash commands: /tdd, /debug, /brainstorm, /write-plan, /execute-plan
-`
-
-/**
- * Dedup marker used to detect if SuperRoo rules are already present in loaded content.
- */
-export const SUPERROO_DEDUP_MARKER = "# SuperRoo Development Methodology"
-
 export const customIntructions = `
 # Collaboration Rules
 
@@ -421,53 +321,6 @@ Follow this reasoning approach for problems. This cycle can be repeated automati
 - **Manual**: When human requests re-analysis or approach reconsideration
 - **Session-wide**: Each major phase can trigger a new chain of thought cycle
 
-## Confidence-Based Human Interaction
-
-### Confidence Assessment Guidelines
-Calculate confidence using baseline + factors + modifiers:
-
-**Baseline Confidence: 70%** (starting point for all assessments)
-
-**Base Confidence Factors:**
-- Task complexity: Simple (+5%), Moderate (0%), Complex (-10%)
-- Domain familiarity: Expert (+5%), Familiar (0%), Unfamiliar (-10%)
-- Information completeness: Complete (+5%), Partial (0%), Incomplete (-10%)
-
-**Solution Optimization Factors:**
-- Solution exploration: Multiple alternatives explored (+10%), Single approach considered (0%), No alternatives explored (-10%)
-- Trade-off analysis: All relevant trade-offs analyzed (+10%), Key trade-offs considered (0%), Trade-offs not analyzed (-15%)
-- Context optimization: Solution optimized for specific context (+5%), Generally appropriate solution (0%), Generic solution (-5%)
-
-**Modifiers:**
-- Analysis involves interdependent elements: -10%
-- High stakes/impact: -15%
-- Making assumptions about requirements: -20%
-- Multiple valid approaches exist without clear justification for choice: -20%
-- Never exceed 95% for multi-domain problems
-
-### ≥95% Confidence: Proceed Independently
-- Continue with response or solution development
-- Maintain collaborative communication style
-
-### 70-94% Confidence: Proactively Seek Clarity
-- Request clarification on uncertain aspects
-- Present approach for validation if needed
-- Provide a concise chain-of-thought when:
-    - Exploring solution alternatives and trade-offs
-    - Justifying solution choice over other options
-    - Optimizing solution for specific context
-
-### <70% Confidence: Human Collaboration Required
-- Express uncertainty and request guidance
-- Present multiple options when available
-- Ask specific questions to improve understanding
-- Wait for human input before proceeding
-
-### Special Triggers (Regardless of Confidence)
-- **Significant Impact:** "⚠️ This affects [areas]. Confirm proceed?"
-- **Ethical/Risk Concerns:** "🔒 Risk identified: [issue]. Suggested mitigation: [solution]. Proceed?"
-- **Multiple Valid Approaches:** Present options with recommendation
-
 ## Solution Quality Guidelines
 
 ### Before Developing Solutions
@@ -512,11 +365,6 @@ Calculate confidence using baseline + factors + modifiers:
 - You're stuck on the problem
 
 ## Communication Patterns
-
-### Confidence-Based Communication
-- Start response with "**Confidence: X%**" for all responses
-- Use natural language flow throughout
-- Avoid rigid format requirements
 
 ### Presenting Solutions
 - Present solution with clear reasoning
@@ -665,7 +513,19 @@ Calculate confidence using baseline + factors + modifiers:
 - Plan for peer review
 
 Remember: The goal is collaborative problem-solving, not just answer generation. Think thoroughly, communicate efficiently, and work together toward the optimal solution.
+${CONFIDENCE_ASSESSMENT_PROMPT}
 `
+
+function appendConfidenceAssessmentPrompt(content: string): string {
+	const trimmedPrompt = CONFIDENCE_ASSESSMENT_PROMPT.trim()
+	if (content.includes(trimmedPrompt)) {
+		return content
+	}
+
+	const trimmedContent = content.trimEnd()
+	return trimmedContent ? `${trimmedContent}\n\n${trimmedPrompt}` : trimmedPrompt
+}
+
 /**
  * Load rule files from global, project-local, and optionally subfolder directories
  * Rules are loaded in order: global first, then project-local, then subfolders (alphabetically)
@@ -690,14 +550,9 @@ export async function loadRuleFiles(cwd: string, enableSubfolderRules: boolean =
 		}
 	}
 
-	// If we found rules in .roo/rules/ directories, return them with Confidence % prompt and SuperRoo rules
+	// If we found rules in .roo/rules/ directories, return them
 	if (rules.length > 0) {
-		let result = "\n# Rules from .roo directories:\n\n" + rules.join("\n\n") + "\n\n" + CONFIDENCE_ASSESSMENT_PROMPT
-		// Deduplicate: only inject SuperRoo rules if not already present in loaded content
-		if (!result.includes(SUPERROO_DEDUP_MARKER)) {
-			result += "\n\n" + SUPERROO_WORKSPACE_RULES
-		}
-		return result
+		return appendConfidenceAssessmentPrompt("\n# Rules from .roo directories:\n\n" + rules.join("\n\n"))
 	}
 
 	// Fall back to existing behavior for legacy .roorules/.clinerules files
@@ -706,12 +561,12 @@ export async function loadRuleFiles(cwd: string, enableSubfolderRules: boolean =
 	for (const file of ruleFiles) {
 		const content = await safeReadFile(path.join(cwd, file))
 		if (content) {
-			return `\n# Rules from ${file}:\n${content}\n\n${CONFIDENCE_ASSESSMENT_PROMPT}\n\n${SUPERROO_WORKSPACE_RULES}`
+			return appendConfidenceAssessmentPrompt(`\n# Rules from ${file}:\n${content}`)
 		}
 	}
 
-	// Return customIntructions with SuperRoo rules if no rule files found
-	return customIntructions + "\n\n" + SUPERROO_WORKSPACE_RULES
+	// Return default custom instructions if no rule files found
+	return appendConfidenceAssessmentPrompt(customIntructions)
 }
 
 /**

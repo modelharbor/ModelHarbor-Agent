@@ -49,7 +49,9 @@ vi.mock("../../../../services/roo-config", () => ({
 	getGlobalRooDirectory: mockGetGlobalRooDirectory,
 }))
 
-import { loadRuleFiles, addCustomInstructions } from "../custom-instructions"
+import { loadRuleFiles, addCustomInstructions, CONFIDENCE_ASSESSMENT_PROMPT } from "../custom-instructions"
+
+const trimmedConfidenceAssessmentPrompt = CONFIDENCE_ASSESSMENT_PROMPT.trim()
 
 describe("custom-instructions global .roo support", () => {
 	const mockCwd = "/mock/project"
@@ -101,6 +103,7 @@ describe("custom-instructions global .roo support", () => {
 			expect(result).toContain("# Rules from")
 			expect(result).toContain("rules.md:")
 			expect(result).toContain("global rule content")
+			expect(result).toContain(trimmedConfidenceAssessmentPrompt)
 			expect(result).not.toContain("project rule content")
 		})
 
@@ -186,9 +189,10 @@ describe("custom-instructions global .roo support", () => {
 
 			expect(result).toContain("# Rules from .roorules:")
 			expect(result).toContain("legacy rule content")
+			expect(result).toContain(trimmedConfidenceAssessmentPrompt)
 		})
 
-		it("should return empty string when no rules exist anywhere", async () => {
+		it("should return fallback custom instructions when no rules exist anywhere", async () => {
 			// Mock directory existence - neither exist
 			mockStat
 				.mockRejectedValueOnce(new Error("ENOENT")) // global rules dir doesn't exist
@@ -205,6 +209,7 @@ describe("custom-instructions global .roo support", () => {
 
 			expect(result).toContain("# Collaboration Rules")
 			expect(result).toContain("Core Behavior")
+			expect(result).toContain(trimmedConfidenceAssessmentPrompt)
 		})
 	})
 
@@ -253,6 +258,7 @@ describe("custom-instructions global .roo support", () => {
 			expect(result).toContain("global mode rule content")
 			expect(result).toContain("project-mode.md:")
 			expect(result).toContain("project mode rule content")
+			expect(result).toContain(trimmedConfidenceAssessmentPrompt)
 		})
 
 		it("should fall back to legacy mode-specific files when no mode directories exist", async () => {

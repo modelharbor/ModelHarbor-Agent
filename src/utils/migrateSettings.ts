@@ -9,6 +9,39 @@ import type { ModeConfig, PromptComponent } from "@roo-code/types"
 
 const deprecatedCustomModesJSONFilename = "custom_modes.json"
 
+const REMOVED_MODE_SLUGS = new Set([
+	"using-superpowers",
+	"test-driven-development",
+	"testing-anti-patterns",
+	"verification-before-completion",
+	"condition-based-waiting",
+	"defense-in-depth",
+	"receiving-code-review",
+	"requesting-code-review",
+	"systematic-debugging",
+	"root-cause-tracing",
+	"dispatching-parallel-agents",
+	"brainstorming",
+	"writing-plans",
+	"executing-plans",
+	"subagent-driven-development",
+	"using-git-worktrees",
+	"finishing-a-development-branch",
+	"writing-skills",
+	"testing-skills-with-subagents",
+	"sharing-skills",
+	"code-reviewer",
+	"translate",
+	"issue-fixer",
+	"pr-fixer",
+	"merge-resolver",
+	"docs-extractor",
+	"issue-investigator",
+	"issue-writer",
+])
+
+const REMOVED_MODES_MIGRATION_KEY = "removedModesMigrationCompleted"
+
 /**
  * Migrates old settings files to new file names and removes commands from old defaults
  *
@@ -23,6 +56,9 @@ export async function migrateSettings(
 
 	// Then, ensure built-in modes always use latest DEFAULT_MODES
 	await migrateBuiltinModeOverrides(context, outputChannel)
+
+	// Clean up modes removed from defaults or migrated to .roomodes for existing users
+	await migrateRemovedModes(context, outputChannel)
 
 	// Legacy file names that need to be migrated to the new names in GlobalFileNames
 	const fileMigrations = [
@@ -177,6 +213,62 @@ async function migrateDefaultCommands(
 }
 
 /**
+ * Removes modes that are no longer shipped in DEFAULT_MODES or are now provided via .roomodes.
+ * This ensures legacy utility modes and SuperRoo skill modes do not persist in globalState.
+ */
+async function migrateRemovedModes(
+	context: vscode.ExtensionContext,
+	outputChannel: vscode.OutputChannel,
+): Promise<void> {
+	try {
+		if (context.globalState.get(REMOVED_MODES_MIGRATION_KEY)) {
+			outputChannel.appendLine("[Removed Modes Migration] Migration already completed, skipping")
+			return
+		}
+
+		// Remove removed modes from customModes
+		const customModes = context.globalState.get<ModeConfig[]>("customModes") || []
+		const filteredModes = customModes.filter((mode) => !REMOVED_MODE_SLUGS.has(mode.slug))
+
+		if (filteredModes.length < customModes.length) {
+			const removedSlugs = customModes
+				.filter((mode) => REMOVED_MODE_SLUGS.has(mode.slug))
+				.map((mode) => mode.slug)
+			await context.globalState.update("customModes", filteredModes)
+			outputChannel.appendLine(
+				`[Removed Modes Migration] Removed ${removedSlugs.length} mode(s): ${removedSlugs.join(", ")}`,
+			)
+		}
+
+		// Remove removed mode prompts from customModePrompts
+		const customModePrompts = context.globalState.get<Record<string, PromptComponent>>("customModePrompts") || {}
+		const filteredPrompts: Record<string, PromptComponent> = {}
+		const removedPromptSlugs: string[] = []
+
+		for (const [slug, prompt] of Object.entries(customModePrompts)) {
+			if (REMOVED_MODE_SLUGS.has(slug)) {
+				removedPromptSlugs.push(slug)
+			} else {
+				filteredPrompts[slug] = prompt
+			}
+		}
+
+		if (removedPromptSlugs.length > 0) {
+			await context.globalState.update("customModePrompts", filteredPrompts)
+			outputChannel.appendLine(
+				`[Removed Modes Migration] Removed ${removedPromptSlugs.length} prompt(s): ${removedPromptSlugs.join(", ")}`,
+			)
+		}
+
+		// Mark migration as complete
+		await context.globalState.update(REMOVED_MODES_MIGRATION_KEY, true)
+		outputChannel.appendLine("[Removed Modes Migration] Migration marked as complete")
+	} catch (error) {
+		outputChannel.appendLine(`[Removed Modes Migration] Error: ${error}`)
+	}
+}
+
+/**
  * Ensures built-in modes always use the latest DEFAULT_MODES values
  * This migration runs on every extension activation to apply updates
  * to built-in modes, while preserving fully custom modes.
@@ -187,7 +279,15 @@ async function migrateBuiltinModeOverrides(
 ): Promise<void> {
 	try {
 		// Built-in mode slugs that should always be overridden
-		const BUILTIN_MODE_SLUGS = ["architect", "code", "ask", "debug", "orchestrator"] as const
+		const BUILTIN_MODE_SLUGS = [
+			"architect",
+			"code",
+			"ask",
+			"debug",
+			"orchestrator",
+			"rooignore-generator",
+			"rules-generator",
+		] as const
 
 		// Get current custom modes from globalState
 		const customModes = context.globalState.get<ModeConfig[]>("customModes") || []
