@@ -2781,7 +2781,11 @@ export class ClineProvider
 				taskId: parentTaskId,
 				globalStoragePath,
 			})
-		} catch {
+		} catch (error) {
+			console.error(
+				`[reopenParentFromDelegation] Failed to read persisted UI messages for ${parentTaskId}:`,
+				error,
+			)
 			parentClineMessages = []
 		}
 
@@ -2791,7 +2795,11 @@ export class ClineProvider
 				taskId: parentTaskId,
 				globalStoragePath,
 			})) as any[]
-		} catch {
+		} catch (error) {
+			console.error(
+				`[reopenParentFromDelegation] Failed to read persisted API messages for ${parentTaskId}:`,
+				error,
+			)
 			parentApiMessages = []
 		}
 
@@ -2906,8 +2914,11 @@ export class ClineProvider
 		// 5) Emit TaskDelegationCompleted (provider-level)
 		try {
 			this.emit(RooCodeEventName.TaskDelegationCompleted, parentTaskId, childTaskId, completionResultSummary)
-		} catch {
-			// non-fatal
+		} catch (error) {
+			console.error(
+				`[reopenParentFromDelegation] Failed to emit TaskDelegationCompleted for ${parentTaskId} <- ${childTaskId}:`,
+				error,
+			)
 		}
 
 		// 6) Extract file changes from child before closing
@@ -2941,13 +2952,19 @@ export class ClineProvider
 		if (parentInstance) {
 			try {
 				await parentInstance.overwriteClineMessages(parentClineMessages)
-			} catch {
-				// non-fatal
+			} catch (error) {
+				console.error(
+					`[reopenParentFromDelegation] Failed to overwrite UI messages for reopened parent ${parentTaskId}:`,
+					error,
+				)
 			}
 			try {
 				await parentInstance.overwriteApiConversationHistory(parentApiMessages as any)
-			} catch {
-				// non-fatal
+			} catch (error) {
+				console.error(
+					`[reopenParentFromDelegation] Failed to overwrite API history for reopened parent ${parentTaskId}:`,
+					error,
+				)
 			}
 
 			// Propagate child's file changes to parent
@@ -2962,8 +2979,11 @@ export class ClineProvider
 		// 10) Emit TaskDelegationResumed (provider-level)
 		try {
 			this.emit(RooCodeEventName.TaskDelegationResumed, parentTaskId, childTaskId)
-		} catch {
-			// non-fatal
+		} catch (error) {
+			console.error(
+				`[reopenParentFromDelegation] Failed to emit TaskDelegationResumed for ${parentTaskId} <- ${childTaskId}:`,
+				error,
+			)
 		}
 	}
 

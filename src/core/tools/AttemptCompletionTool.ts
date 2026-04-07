@@ -119,14 +119,20 @@ export class AttemptCompletionTool extends BaseTool<"attempt_completion"> {
 							)
 							if (delegated) return
 						} else {
-							// Unexpected status (undefined or "delegated") - log error and skip delegation
-							// undefined indicates a bug in status persistence during child creation
-							// "delegated" would mean this child has its own grandchild pending (shouldn't reach attempt_completion)
-							console.error(
-								`[AttemptCompletionTool] Unexpected child task status "${status}" for task ${task.taskId}. ` +
-									`Expected "active" or "completed". Skipping delegation to prevent data corruption.`,
+							// Unexpected status (undefined or "delegated") can happen due to status persistence races.
+							// parentTaskId is the authoritative signal that this is still a subtask, so attempt delegation.
+							console.warn(
+								`[AttemptCompletionTool] Unexpected child task status "${status}" for task ${task.taskId}, ` +
+									`but parentTaskId exists. Attempting delegation anyway.`,
 							)
-							// Fall through to normal completion ask flow
+							const delegated = await this.delegateToParent(
+								task,
+								result,
+								provider,
+								askFinishSubTaskApproval,
+								pushToolResult,
+							)
+							if (delegated) return
 						}
 					} catch (err) {
 						// If we can't get the history, log error and skip delegation

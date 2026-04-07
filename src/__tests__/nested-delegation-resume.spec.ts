@@ -55,6 +55,13 @@ import type { Task } from "../core/task/Task"
 import { readTaskMessages } from "../core/task-persistence/taskMessages"
 import { readApiMessages, saveApiMessages, saveTaskMessages } from "../core/task-persistence"
 
+const createCurrentTaskStub = (taskId: string) =>
+	({
+		taskId,
+		getFileChanges: vi.fn(() => []),
+		saveFileChangesToDisk: vi.fn().mockResolvedValue(undefined),
+	}) as any
+
 describe("Nested delegation resume (A → B → C)", () => {
 	beforeEach(() => {
 		vi.restoreAllMocks()
@@ -152,7 +159,7 @@ describe("Nested delegation resume (A → B → C)", () => {
 			contextProxy: { globalStorageUri: { fsPath: "/tmp" } },
 			getTaskWithId,
 			emit: emitSpy,
-			getCurrentTask: vi.fn(() => (currentActiveId ? ({ taskId: currentActiveId } as any) : undefined)),
+			getCurrentTask: vi.fn(() => (currentActiveId ? createCurrentTaskStub(currentActiveId) : undefined)),
 			removeClineFromStack,
 			createTaskWithHistoryItem,
 			updateTaskHistory,
@@ -262,5 +269,71 @@ describe("Nested delegation resume (A → B → C)", () => {
 		// Find a TaskDelegationCompleted matching A <- B
 		const hasAfromB = completedEvents.some(([, parentId, childId]: any[]) => parentId === "A" && childId === "B")
 		expect(hasAfromB).toBe(true)
+	})
+
+	it("delegates back to parent when child history status is unexpected but parentTaskId exists", async () => {
+		const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
+
+		try {
+			const reopenParentFromDelegation = vi.fn().mockResolvedValue(undefined)
+			const provider = {
+				getTaskWithId: vi.fn().mockResolvedValue({
+					historyItem: {
+						id: "B",
+						status: undefined,
+					},
+				}),
+				reopenParentFromDelegation,
+			}
+
+			const pushToolResult = vi.fn()
+			const askFinishSubTaskApproval = vi.fn(async () => true)
+			const askSpy = vi.fn()
+
+			const childTask = {
+				taskId: "B",
+				parentTaskId: "A",
+				providerRef: { deref: () => provider },
+				didToolFailInCurrentTurn: false,
+				say: vi.fn().mockResolvedValue(undefined),
+				ask: askSpy,
+				emit: vi.fn(),
+				getTokenUsage: vi.fn(() => ({})),
+				toolUsage: {},
+				consecutiveMistakeCount: 0,
+				emitFinalTokenUsageUpdate: vi.fn(),
+			} as unknown as Task
+
+			await attemptCompletionTool.handle(
+				childTask,
+				{
+					type: "tool_use",
+					name: "attempt_completion",
+					params: { result: "B finished" },
+					partial: false,
+				} as any,
+				{
+					askApproval: vi.fn(),
+					handleError: vi.fn(),
+					pushToolResult,
+					removeClosingTag: vi.fn((_, v?: string) => v ?? ""),
+					askFinishSubTaskApproval,
+					toolProtocol: "xml",
+					toolDescription: () => "desc",
+				} as any,
+			)
+
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Unexpected child task status "undefined"'))
+			expect(askFinishSubTaskApproval).toHaveBeenCalledTimes(1)
+			expect(pushToolResult).toHaveBeenCalledWith("")
+			expect(reopenParentFromDelegation).toHaveBeenCalledWith({
+				parentTaskId: "A",
+				childTaskId: "B",
+				completionResultSummary: "B finished",
+			})
+			expect(askSpy).not.toHaveBeenCalled()
+		} finally {
+			warnSpy.mockRestore()
+		}
 	})
 })
