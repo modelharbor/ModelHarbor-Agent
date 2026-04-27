@@ -3053,8 +3053,30 @@ export const webviewMessageHandler = async (
 		 */
 
 		case "queueMessage": {
-			const resolved = await resolveIncomingImages({ text: message.text, images: message.images })
-			provider.getCurrentTask()?.messageQueueService.addMessage(resolved.text, resolved.images)
+			try {
+				const resolved = await resolveIncomingImages({ text: message.text, images: message.images })
+				const task = provider.getCurrentTask()
+				if (!task) {
+					throw new Error("No active task")
+				}
+				task.messageQueueService.addMessage(resolved.text, resolved.images)
+				// Send acknowledgment back to webview so it can safely clear input
+				if (message.requestId) {
+					await provider.postMessageToWebview({
+						type: "queueMessageAck",
+						requestId: message.requestId,
+					})
+				}
+			} catch (error) {
+				// Send error back to webview so it can keep input for retry
+				if (message.requestId) {
+					await provider.postMessageToWebview({
+						type: "queueMessageError",
+						requestId: message.requestId,
+						error: error instanceof Error ? error.message : String(error),
+					})
+				}
+			}
 			break
 		}
 		case "removeQueuedMessage": {

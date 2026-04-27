@@ -583,16 +583,11 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 
 			if (text || images.length > 0) {
 				if (sendingDisabled) {
-					try {
-						console.log("queueMessage", text, images)
-						vscode.postMessage({ type: "queueMessage", text, images })
-						setInputValue("")
-						setSelectedImages([])
-					} catch (error) {
-						console.error(
-							`Failed to queue message: ${error instanceof Error ? error.message : String(error)}`,
-						)
-					}
+					// Send message to queue with requestId but do NOT clear input yet.
+					// Input will be cleared only after backend acknowledges success (queueMessageAck).
+					// On error (queueMessageError), input is preserved so the user can retry.
+					const requestId = crypto.randomUUID()
+					vscode.postMessage({ type: "queueMessage", text, images, requestId })
 
 					return
 				}
@@ -668,13 +663,14 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 	const handleEnqueueCurrentMessage = useCallback(() => {
 		const text = inputValue.trim()
 		if (text || selectedImages.length > 0) {
+			// Send with requestId but do NOT clear input yet — wait for ack
+			const requestId = crypto.randomUUID()
 			vscode.postMessage({
 				type: "queueMessage",
 				text,
 				images: selectedImages,
+				requestId,
 			})
-			setInputValue("")
-			setSelectedImages([])
 		}
 	}, [inputValue, selectedImages])
 
@@ -892,6 +888,15 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 							return newMap
 						})
 					}
+					break
+				case "queueMessageAck":
+					// Backend confirmed message was queued successfully — safe to clear input
+					setInputValue("")
+					setSelectedImages([])
+					break
+				case "queueMessageError":
+					// Backend failed to queue message — keep input so user can retry
+					console.error(`Failed to queue message: ${message.error ?? "Unknown error"}`)
 					break
 			}
 			// textAreaRef.current is not explicitly required here since React

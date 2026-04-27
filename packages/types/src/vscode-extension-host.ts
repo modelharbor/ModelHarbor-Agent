@@ -111,6 +111,8 @@ export interface ExtensionMessage {
 		| "fileChanges"
 		| "skillsList"
 		| "skillContent"
+		| "queueMessageAck"
+		| "queueMessageError"
 	text?: string
 	payload?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 	checkpointWarning?: {
