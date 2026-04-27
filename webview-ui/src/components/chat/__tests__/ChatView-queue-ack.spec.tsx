@@ -212,13 +212,11 @@ afterAll(() => {
 const mockFocus = vi.fn()
 
 vi.mock("../ChatTextArea", () => {
-	const mockReact = require("react")
-
-	const ChatTextAreaComponent = mockReact.forwardRef(function MockChatTextArea(
+	const ChatTextAreaComponent = React.forwardRef(function MockChatTextArea(
 		props: any,
 		ref: React.ForwardedRef<{ focus: () => void }>,
 	) {
-		mockReact.useImperativeHandle(ref, () => ({
+		React.useImperativeHandle(ref, () => ({
 			focus: mockFocus,
 		}))
 
