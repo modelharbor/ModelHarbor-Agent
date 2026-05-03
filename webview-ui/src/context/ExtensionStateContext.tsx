@@ -14,6 +14,7 @@ import {
 	type McpServer,
 	type SkillMetadata,
 	type SkillContent,
+	type CacheInfo,
 	RouterModels,
 	DEFAULT_CHECKPOINT_TIMEOUT_SECONDS,
 } from "@roo-code/types"
@@ -157,6 +158,7 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setIncludeCurrentTime: (value: boolean) => void
 	includeCurrentCost?: boolean
 	setIncludeCurrentCost: (value: boolean) => void
+	cacheInfo?: CacheInfo
 }
 
 export const ExtensionStateContext = createContext<ExtensionStateContextType | undefined>(undefined)
@@ -292,6 +294,7 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 	const [includeCurrentTime, setIncludeCurrentTime] = useState(true)
 	const [includeCurrentCost, setIncludeCurrentCost] = useState(true)
 	const [organizationAllowList] = useState<OrganizationAllowList>(ORGANIZATION_ALLOW_ALL)
+	const [cacheInfo, setCacheInfo] = useState<CacheInfo | undefined>(undefined)
 
 	const setListApiConfigMeta = useCallback(
 		(value: ProviderSettingsEntry[]) => setState((prevState) => ({ ...prevState, listApiConfigMeta: value })),
@@ -421,6 +424,16 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 					if (message.marketplaceInstalledMetadata !== undefined) {
 						setMarketplaceInstalledMetadata(message.marketplaceInstalledMetadata)
 					}
+					break
+				}
+				case "cacheInfo": {
+					if (message.cacheInfo) {
+						setCacheInfo(message.cacheInfo)
+					}
+					break
+				}
+				case "cacheCleared": {
+					// Cache was cleared, the backend auto-refreshes cache info
 					break
 				}
 			}
@@ -576,6 +589,7 @@ export const ExtensionStateContextProvider: React.FC<{ children: React.ReactNode
 		setIncludeCurrentTime,
 		includeCurrentCost,
 		setIncludeCurrentCost,
+		cacheInfo,
 	}
 
 	return <ExtensionStateContext.Provider value={contextValue}>{children}</ExtensionStateContext.Provider>

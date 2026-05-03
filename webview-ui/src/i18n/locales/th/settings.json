@@ -21,6 +21,22 @@
 		"securityIssue": {
 			"label": "Discovered a vulnerability?",
 			"link": "Follow our disclosure process"
+		},
+		"cacheManagement": {
+			"title": "การจัดการแคช",
+			"totalCacheSize": "ขนาดแคชทั้งหมด",
+			"tasks": "งาน",
+			"taskCount": "{{count}} งาน",
+			"checkpoints": "จุดตรวจสอบ",
+			"checkpointCount": "{{count}} จุดตรวจสอบ",
+			"cache": "แคช",
+			"diskUsage": "การใช้งานดิสก์",
+			"diskUsed": "ใช้แล้ว {{percentage}}%",
+			"diskAvailable": "{{size}} ว่างอยู่",
+			"clearCache": "ล้างแคช",
+			"clearingCache": "กำลังล้าง...",
+			"refresh": "รีเฟรช",
+			"loading": "กำลังโหลดข้อมูลแคช..."
 		}
 	},
 	"advanced": {

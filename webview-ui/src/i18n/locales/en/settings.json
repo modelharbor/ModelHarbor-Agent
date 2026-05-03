@@ -65,6 +65,22 @@
 		"debugMode": {
 			"label": "Enable debug mode",
 			"description": "Enable debug mode to show additional buttons in the task header for viewing API conversation history and UI messages as prettified JSON in temporary files."
+		},
+		"cacheManagement": {
+			"title": "Cache Management",
+			"totalCacheSize": "Total Cache Size",
+			"tasks": "Tasks",
+			"taskCount": "{{count}} tasks",
+			"checkpoints": "Checkpoints",
+			"checkpointCount": "{{count}} checkpoints",
+			"cache": "Cache",
+			"diskUsage": "Disk Usage",
+			"diskUsed": "{{percentage}}% used",
+			"diskAvailable": "{{size}} available",
+			"clearCache": "Clear Cache",
+			"clearingCache": "Clearing...",
+			"refresh": "Refresh",
+			"loading": "Loading cache info..."
 		}
 	},
 	"slashCommands": {

@@ -26,6 +26,7 @@ import {
 	type TokenUsage,
 	type ToolUsage,
 	type ExtensionMessage,
+	type ExtensionMetaInfo,
 	type ExtensionState,
 	type MarketplaceInstalledMetadata,
 	RooCodeEventName,
@@ -2020,6 +2021,7 @@ export class ClineProvider
 			liteLlmImageBaseUrl,
 			openRouterUseMiddleOutTransform,
 			debug: vscode.workspace.getConfiguration(Package.name).get<boolean>("debug", false),
+			extensionMetaInfo: await this.getExtensionMetaInfo(),
 		}
 	}
 
@@ -2252,6 +2254,158 @@ export class ClineProvider
 		await this.removeClineFromStack()
 		await this.postStateToWebview()
 		await this.postMessageToWebview({ type: "action", action: "chatButtonClicked" })
+	}
+
+	// cache management
+
+	private cachedStorageBasePath: string | undefined
+
+	/**
+	 * Gets the storage base path, caching the result to ensure consistency.
+	 * This ensures that all operations (cache info, task saving, etc.) use the same path.
+	 */
+	private async getStorageBasePath(): Promise<string> {
+		if (this.cachedStorageBasePath) {
+			return this.cachedStorageBasePath
+		}
+
+		const { getStorageBasePath } = await import("../../utils/storage")
+		const globalStoragePath = this.contextProxy.globalStorageUri.fsPath
+		this.cachedStorageBasePath = await getStorageBasePath(globalStoragePath)
+		this.log(`[getStorageBasePath] Resolved and cached: ${this.cachedStorageBasePath}`)
+		return this.cachedStorageBasePath
+	}
+
+	async getCacheInfo() {
+		try {
+			const { calculateCacheInfo } = await import("../../utils/cacheInfo")
+			// Use the cached storage base path to ensure consistency with task operations
+			const basePath = await this.getStorageBasePath()
+			this.log(`[getCacheInfo] Using basePath: ${basePath}`)
+			const cacheInfo = await calculateCacheInfo(basePath)
+			this.log(
+				`[getCacheInfo] Cache info: total=${cacheInfo.totalSize} bytes, tasks=${cacheInfo.tasksSize}, checkpoints=${cacheInfo.checkpointsSize}, cache=${cacheInfo.cacheSize}`,
+			)
+			await this.postMessageToWebview({ type: "cacheInfo", cacheInfo })
+		} catch (error) {
+			this.log(
+				`[getCacheInfo] Error calculating cache info: ${
+					error instanceof Error ? error.message : String(error)
+				}`,
+			)
+			await this.postMessageToWebview({
+				type: "cacheInfo",
+				cacheInfo: {
+					tasksSize: 0,
+					tasksCount: 0,
+					checkpointsSize: 0,
+					checkpointsCount: 0,
+					cacheSize: 0,
+					totalSize: 0,
+					diskTotal: 0,
+					diskUsed: 0,
+					diskAvailable: 0,
+				},
+			})
+		}
+	}
+
+	async clearCache() {
+		const answer = await vscode.window.showWarningMessage(
+			t("common:confirmation.clear_cache"),
+			{ modal: true },
+			t("common:answers.yes"),
+		)
+
+		if (answer !== t("common:answers.yes")) {
+			return
+		}
+
+		try {
+			const { clearAllCache } = await import("../../utils/cacheInfo")
+			// Use the cached storage base path to ensure consistency
+			const basePath = await this.getStorageBasePath()
+			const result = await clearAllCache(basePath)
+			await this.postMessageToWebview({
+				type: "cacheCleared",
+				text: JSON.stringify({ freedBytes: result.freedBytes }),
+			})
+			// Refresh cache info after clearing
+			await this.getCacheInfo()
+		} catch (error) {
+			this.log(`[clearCache] Error clearing cache: ${error instanceof Error ? error.message : String(error)}`)
+			vscode.window.showErrorMessage(
+				t("common:errors.clear_cache_failed", {
+					error: error instanceof Error ? error.message : String(error),
+				}),
+			)
+		}
+	}
+
+	/**
+	 * Retrieves extension metadata similar to what VSCode displays in the Extensions panel.
+	 * Includes identifier, version, source, last updated, and extension size.
+	 */
+	private async getExtensionMetaInfo(): Promise<ExtensionMetaInfo | undefined> {
+		try {
+			const extensionId = `${Package.publisher.toLowerCase()}.${Package.name}`
+			const extension = vscode.extensions.getExtension(extensionId)
+
+			if (!extension) {
+				return undefined
+			}
+
+			const version = extension.packageJSON.version ?? Package.version
+
+			// Determine install source from packageJSON.__metadata
+			const metadata = extension.packageJSON.__metadata
+			let source = "Unknown"
+			if (metadata) {
+				if (metadata.installed === true || metadata.source === "vsix") {
+					source = "VSIX"
+				} else if (metadata.source === "marketplace" || metadata.galleryExtensionId) {
+					source = "Marketplace"
+				} else if (metadata.source) {
+					source = metadata.source
+				}
+			}
+
+			// Get last updated timestamp
+			let lastUpdated = "Unknown"
+			if (metadata?.lastUpdated) {
+				const date = new Date(metadata.lastUpdated)
+				lastUpdated = date.toLocaleDateString(undefined, {
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				})
+			}
+
+			// Calculate extension size
+			let extensionSize = "Unknown"
+			try {
+				const extensionPath = this.contextProxy.extensionUri.fsPath
+				const { calculateDirectorySize } = await import("../../utils/cacheInfo")
+				const sizeBytes = await calculateDirectorySize(extensionPath)
+				if (sizeBytes > 0) {
+					const sizeMB = sizeBytes / (1024 * 1024)
+					extensionSize = `${sizeMB.toFixed(2)} MB`
+				}
+			} catch {
+				// Size calculation failed, keep "Unknown"
+			}
+
+			return {
+				identifier: extensionId,
+				version,
+				source,
+				lastUpdated,
+				extensionSize,
+			}
+		} catch (error) {
+			this.log(`[getExtensionMetaInfo] Error: ${error instanceof Error ? error.message : String(error)}`)
+			return undefined
+		}
 	}
 
 	// logging

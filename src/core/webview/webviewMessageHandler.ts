@@ -3491,6 +3491,13 @@ export const webviewMessageHandler = async (
 			break
 		}
 
+		case "getCacheInfo":
+			await provider.getCacheInfo()
+			break
+		case "clearCache":
+			await provider.clearCache()
+			break
+
 		default: {
 			// console.log(`Unhandled message type: ${message.type}`)
 			//

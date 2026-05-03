@@ -113,6 +113,8 @@ export interface ExtensionMessage {
 		| "skillContent"
 		| "queueMessageAck"
 		| "queueMessageError"
+		| "cacheInfo"
+		| "cacheCleared"
 	text?: string
 	payload?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 	checkpointWarning?: {
@@ -228,6 +230,7 @@ export interface ExtensionMessage {
 	liteLLMEmbeddingModels?: LiteLLMEmbeddingModel[]
 	skills?: SkillMetadata[]
 	skillContent?: SkillContent | null
+	cacheInfo?: CacheInfo
 }
 
 /**
@@ -377,6 +380,26 @@ export type ExtensionState = Pick<
 	claudeCodeIsAuthenticated?: boolean
 	openAiCodexIsAuthenticated?: boolean
 	debug?: boolean
+	extensionMetaInfo?: ExtensionMetaInfo
+}
+
+/**
+ * ExtensionMetaInfo
+ *
+ * Represents metadata about the extension installation, similar to what
+ * VSCode displays in the Extensions panel.
+ */
+export interface ExtensionMetaInfo {
+	/** Extension identifier (e.g., "modelharbor.modelharbor-agent") */
+	identifier: string
+	/** Extension version (e.g., "3.50.21") */
+	version: string
+	/** Install source (e.g., "VSIX" or "Marketplace") */
+	source: string
+	/** Last updated timestamp as formatted date string */
+	lastUpdated: string
+	/** Extension size as formatted string (e.g., "149.32 MB") */
+	extensionSize: string
 }
 
 export interface Command {
@@ -586,6 +609,8 @@ export interface WebviewMessage {
 		| "openSkillFile"
 		| "refreshSkills"
 		| "openSkillsDirectory"
+		| "getCacheInfo"
+		| "clearCache"
 	text?: string
 	editedMessageContent?: string
 	tab?: "settings" | "history" | "mcp" | "modes" | "chat" | "marketplace" | "cloud"
@@ -911,3 +936,29 @@ export interface ClineApiReqInfo {
 }
 
 export type ClineApiReqCancelReason = "streaming_failed" | "user_cancelled"
+
+/**
+ * CacheInfo
+ *
+ * Represents cache storage information for tasks, checkpoints, and cache directories.
+ */
+export interface CacheInfo {
+	/** Total size of all task directories in bytes */
+	tasksSize: number
+	/** Number of task folders */
+	tasksCount: number
+	/** Total size of all checkpoint directories in bytes */
+	checkpointsSize: number
+	/** Number of checkpoint folders */
+	checkpointsCount: number
+	/** Total size of cache directory in bytes */
+	cacheSize: number
+	/** Sum of tasks, checkpoints, and cache sizes in bytes */
+	totalSize: number
+	/** Total disk space in bytes */
+	diskTotal: number
+	/** Used disk space in bytes */
+	diskUsed: number
+	/** Available disk space in bytes */
+	diskAvailable: number
+}
