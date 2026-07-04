@@ -9,6 +9,7 @@ import type { MarketplaceItem } from "@roo-code/types"
 import type { CustomModesManager } from "../../../core/config/CustomModesManager"
 import * as path from "path"
 import { fileExistsAtPath } from "../../../utils/fs"
+import { safeWriteJson } from "../../../utils/safeWriteJson"
 
 vi.mock("fs/promises", () => ({
 	readFile: vi.fn(),
@@ -30,8 +31,15 @@ vi.mock("vscode", () => ({
 }))
 vi.mock("../../../utils/globalContext")
 vi.mock("../../../utils/fs")
+// safeWriteJson now handles the atomic JSON write for MCP installs/removes.
+// Mock it so we can assert on the data being written without standing up the
+// real temp-file + lockfile machinery.
+vi.mock("../../../utils/safeWriteJson", () => ({
+	safeWriteJson: vi.fn().mockResolvedValue(undefined),
+}))
 
 const mockFs = vi.mocked(fs)
+const mockSafeWriteJson = vi.mocked(safeWriteJson)
 
 describe("SimpleInstaller", () => {
 	let installer: SimpleInstaller
@@ -52,6 +60,8 @@ describe("SimpleInstaller", () => {
 		mockFs.mkdir.mockResolvedValue(undefined as any)
 		// Mock rm to always succeed
 		mockFs.rm.mockResolvedValue(undefined as any)
+		// safeWriteJson resolves by default (atomic JSON write for MCP installs)
+		mockSafeWriteJson.mockResolvedValue(undefined)
 		// Mock os.homedir
 		vi.mocked(os.homedir).mockReturnValue("/home/user")
 		// Mock fileExistsAtPath to return false by default
@@ -155,16 +165,14 @@ describe("SimpleInstaller", () => {
 			const notFoundError = new Error("File not found") as any
 			notFoundError.code = "ENOENT"
 			mockFs.readFile.mockRejectedValueOnce(notFoundError)
-			mockFs.writeFile.mockResolvedValueOnce(undefined as any)
 
 			const result = await installer.installItem(mockMcpItem, { target: "project" })
 
 			expect(result.filePath).toBe(path.join("/test/workspace", ".roo", "mcp.json"))
-			expect(mockFs.writeFile).toHaveBeenCalled()
+			expect(mockSafeWriteJson).toHaveBeenCalled()
 
 			// Verify the written content contains the new server
-			const writtenContent = mockFs.writeFile.mock.calls[0][1] as string
-			const writtenData = JSON.parse(writtenContent)
+			const writtenData = mockSafeWriteJson.mock.calls[0][1] as any
 			expect(writtenData.mcpServers["test-mcp"]).toBeDefined()
 		})
 
@@ -178,7 +186,7 @@ describe("SimpleInstaller", () => {
 			)
 
 			// Should NOT write to file
-			expect(mockFs.writeFile).not.toHaveBeenCalled()
+			expect(mockSafeWriteJson).not.toHaveBeenCalled()
 		})
 
 		it("should install MCP when mcp.json contains valid JSON", async () => {
@@ -189,12 +197,10 @@ describe("SimpleInstaller", () => {
 			})
 
 			mockFs.readFile.mockResolvedValueOnce(existingContent)
-			mockFs.writeFile.mockResolvedValueOnce(undefined as any)
 
 			await installer.installItem(mockMcpItem, { target: "project" })
 
-			const writtenContent = mockFs.writeFile.mock.calls[0][1] as string
-			const writtenData = JSON.parse(writtenContent)
+			const writtenData = mockSafeWriteJson.mock.calls[0][1] as any
 
 			// Should contain both existing and new server
 			expect(Object.keys(writtenData.mcpServers)).toHaveLength(2)

@@ -277,78 +277,85 @@ export class BrowserSession {
 		this.page.on("pageerror", errorListener)
 
 		try {
-			await action(this.page)
-		} catch (err) {
-			if (!(err instanceof TimeoutError)) {
-				logs.push(`[Error] ${err.toString()}`)
+			try {
+				await action(this.page)
+			} catch (err) {
+				if (!(err instanceof TimeoutError)) {
+					logs.push(`[Error] ${err.toString()}`)
+				}
 			}
-		}
 
-		// Wait for console inactivity, with a timeout
-		await pWaitFor(() => Date.now() - lastLogTs >= 500, {
-			timeout: 3_000,
-			interval: 100,
-		}).catch(() => {})
+			// Wait for console inactivity, with a timeout
+			await pWaitFor(() => Date.now() - lastLogTs >= 500, {
+				timeout: 3_000,
+				interval: 100,
+			}).catch(() => {})
 
-		// Draw cursor indicator if we have a cursor position
-		if (this.currentMousePosition) {
-			await this.drawCursorIndicator(this.page, this.currentMousePosition)
-		}
+			// Draw cursor indicator if we have a cursor position
+			if (this.currentMousePosition) {
+				await this.drawCursorIndicator(this.page, this.currentMousePosition)
+			}
 
-		let options: ScreenshotOptions = {
-			encoding: "base64",
+			let options: ScreenshotOptions = {
+				encoding: "base64",
 
-			// clip: {
-			// 	x: 0,
-			// 	y: 0,
-			// 	width: 900,
-			// 	height: 600,
-			// },
-		}
+				// clip: {
+				// 	x: 0,
+				// 	y: 0,
+				// 	width: 900,
+				// 	height: 600,
+				// },
+			}
 
-		let screenshotBase64 = await this.page.screenshot({
-			...options,
-			type: "webp",
-			quality: ((await this.context.globalState.get("screenshotQuality")) as number | undefined) ?? 75,
-		})
-		let screenshot = `data:image/webp;base64,${screenshotBase64}`
-
-		if (!screenshotBase64) {
-			console.log("webp screenshot failed, trying png")
-			screenshotBase64 = await this.page.screenshot({
+			let screenshotBase64 = await this.page.screenshot({
 				...options,
-				type: "png",
+				type: "webp",
+				quality: ((await this.context.globalState.get("screenshotQuality")) as number | undefined) ?? 75,
 			})
-			screenshot = `data:image/png;base64,${screenshotBase64}`
-		}
+			let screenshot = `data:image/webp;base64,${screenshotBase64}`
 
-		if (!screenshotBase64) {
-			throw new Error("Failed to take screenshot.")
-		}
+			if (!screenshotBase64) {
+				console.log("webp screenshot failed, trying png")
+				screenshotBase64 = await this.page.screenshot({
+					...options,
+					type: "png",
+				})
+				screenshot = `data:image/png;base64,${screenshotBase64}`
+			}
 
-		// Remove cursor indicator after taking screenshot
-		if (this.currentMousePosition) {
-			await this.removeCursorIndicator(this.page)
-		}
+			if (!screenshotBase64) {
+				throw new Error("Failed to take screenshot.")
+			}
 
-		// this.page.removeAllListeners() <- causes the page to crash!
-		this.page.off("console", consoleListener)
-		this.page.off("pageerror", errorListener)
+			// Remove cursor indicator after taking screenshot
+			if (this.currentMousePosition) {
+				await this.removeCursorIndicator(this.page)
+			}
 
-		// Get actual viewport dimensions
-		const viewport = this.page.viewport()
+			// Get actual viewport dimensions
+			const viewport = this.page.viewport()
 
-		// Persist last known viewport dimensions
-		this.lastViewportWidth = viewport?.width
-		this.lastViewportHeight = viewport?.height
+			// Persist last known viewport dimensions
+			this.lastViewportWidth = viewport?.width
+			this.lastViewportHeight = viewport?.height
 
-		return {
-			screenshot,
-			logs: logs.join("\n"),
-			currentUrl: this.page.url(),
-			currentMousePosition: this.currentMousePosition,
-			viewportWidth: viewport?.width,
-			viewportHeight: viewport?.height,
+			return {
+				screenshot,
+				logs: logs.join("\n"),
+				currentUrl: this.page.url(),
+				currentMousePosition: this.currentMousePosition,
+				viewportWidth: viewport?.width,
+				viewportHeight: viewport?.height,
+			}
+		} finally {
+			// Always remove the listeners, even if a screenshot threw (page
+			// navigated/closed mid-capture, renderer crash). The browser session
+			// is kept alive on errors by the caller, so this.page persists —
+			// leaking these listeners would accumulate one pair per failed
+			// action. this.page.removeAllListeners() crashes the page, so we
+			// remove the specific listeners we added.
+			this.page.off("console", consoleListener)
+			this.page.off("pageerror", errorListener)
 		}
 	}
 

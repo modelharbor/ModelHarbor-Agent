@@ -156,13 +156,18 @@ describe("RemoteConfigLoader", () => {
 			expect(items[0].type).toBe("mode")
 		})
 
-		it("should throw error after max retries", async () => {
+		it("should return empty array (not throw) when all endpoints fail after max retries", async () => {
+			// After switching loadAllItems to Promise.allSettled, a failure on
+			// both endpoints degrades to an empty list rather than rejecting —
+			// the marketplace shows as empty instead of surfacing a hard error.
 			mockedAxios.get.mockRejectedValue(new Error("Persistent network error"))
 
-			await expect(loader.loadAllItems()).rejects.toThrow("Persistent network error")
+			const items = await loader.loadAllItems()
 
-			// Both endpoints will be called with retries since Promise.all starts both promises
-			// Each endpoint retries 3 times, but due to Promise.all behavior, one might fail faster
+			expect(items).toEqual([])
+
+			// Both endpoints will be called with retries since Promise.allSettled starts both promises
+			// Each endpoint retries 3 times, but due to allSettled behavior, one might fail faster
 			expect(mockedAxios.get).toHaveBeenCalledWith(
 				expect.stringContaining("/api/marketplace/"),
 				expect.any(Object),

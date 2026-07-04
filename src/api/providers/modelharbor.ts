@@ -19,6 +19,7 @@ import type { ApiHandlerOptions } from "../../shared/api"
 
 import { BaseOpenAiCompatibleProvider } from "./base-openai-compatible-provider"
 import { MODELHARBOR_HEADERS } from "./constants"
+import { getApiRequestTimeout } from "./utils/timeout-config"
 import { unescapeHtmlEntities } from "../../utils/text-normalization"
 
 // Create ModelHarbor-specific output channel
@@ -41,11 +42,15 @@ export class ModelHarborHandler
 			defaultTemperature: 0.7,
 		})
 
-		// Override the client with ModelHarbor-specific headers
+		// Override the client with ModelHarbor-specific headers.
+		// Preserve the request timeout that the base class set — omitting it
+		// here would silently fall back to the SDK's 10-minute default and
+		// ignore the user-configured apiRequestTimeout setting.
 		this.client = new OpenAI({
 			baseURL: "https://api.modelharbor.com/v1",
 			apiKey: options.modelharborApiKey,
 			defaultHeaders: MODELHARBOR_HEADERS,
+			timeout: getApiRequestTimeout(),
 		})
 
 		// Set up output channel for logging if not already done

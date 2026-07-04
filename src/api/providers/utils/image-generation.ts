@@ -5,6 +5,12 @@ import * as aspectRatioDetection from "./aspect-ratio-detection"
 import { routeGeminiImageModel } from "./gemini-image-router"
 
 // Image generation types
+// Image generation is long-running by design, but a stalled provider that
+// accepts the connection and never responds must not hang the tool forever.
+// AbortSignal.timeout bounds the wait so the failure surfaces to the agent
+// instead of an indefinite hang with no cancel path.
+const IMAGE_GENERATION_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
+
 interface ImageGenerationResponse {
 	choices?: Array<{
 		message?: {
@@ -77,6 +83,7 @@ export async function generateImageWithProvider(options: ImageGenerationOptions)
 				"HTTP-Referer": "https://github.com/RooVetGit/Roo-Code",
 				"X-Title": "Roo Code",
 			},
+			signal: AbortSignal.timeout(IMAGE_GENERATION_TIMEOUT_MS),
 			body: JSON.stringify({
 				model,
 				messages: [
@@ -342,6 +349,7 @@ export async function generateImageWithLiteLLM(options: LiteLLMImageGenerationOp
 				Authorization: `Bearer ${authToken}`,
 				"Content-Type": "application/json",
 			},
+			signal: AbortSignal.timeout(IMAGE_GENERATION_TIMEOUT_MS),
 			body: JSON.stringify(requestBody),
 		})
 
@@ -486,6 +494,7 @@ export async function generateImageWithImagesApi(options: ImagesApiOptions): Pro
 				"HTTP-Referer": "https://github.com/RooVetGit/Roo-Code",
 				"X-Title": "Roo Code",
 			},
+			signal: AbortSignal.timeout(IMAGE_GENERATION_TIMEOUT_MS),
 			body: JSON.stringify(requestBody),
 		}
 

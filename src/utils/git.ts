@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 import * as path from "path"
 import { promises as fs } from "fs"
-import { exec } from "child_process"
+import { exec, execFile } from "child_process"
 import { promisify } from "util"
 
 import type { GitRepositoryInfo, GitCommit } from "@roo-code/types"
@@ -9,6 +9,7 @@ import type { GitRepositoryInfo, GitCommit } from "@roo-code/types"
 import { truncateOutput } from "../integrations/misc/extract-text"
 
 const execAsync = promisify(exec)
+const execFileAsync = promisify(execFile)
 
 const GIT_OUTPUT_LINE_LIMIT = 500
 
@@ -232,17 +233,28 @@ export async function searchCommits(query: string, cwd: string): Promise<GitComm
 			return []
 		}
 
-		// Search commits by hash or message, limiting to 10 results
-		const { stdout } = await execAsync(
-			`git log -n 10 --format="%H%n%h%n%s%n%an%n%ad" --date=short ` + `--grep="${query}" --regexp-ignore-case`,
-			{ cwd },
-		)
+		// Search commits by hash or message, limiting to 10 results.
+		// Use execFile with array args (not exec with a shell string) so the
+		// user-supplied query is passed as a single argv element and cannot
+		// break the shell command line or be interpreted as a metacharacter
+		// (quotes, backticks, $, backslash — common in commit messages).
+		const logArgs = [
+			"log",
+			"-n",
+			"10",
+			"--format=%H%n%h%n%s%n%an%n%ad",
+			"--date=short",
+			`--grep=${query}`,
+			"--regexp-ignore-case",
+		]
+		const { stdout } = await execFileAsync("git", logArgs, { cwd })
 
 		let output = stdout
 		if (!output.trim() && /^[a-f0-9]+$/i.test(query)) {
 			// If no results from grep search and query looks like a hash, try searching by hash
-			const { stdout: hashStdout } = await execAsync(
-				`git log -n 10 --format="%H%n%h%n%s%n%an%n%ad" --date=short ` + `--author-date-order ${query}`,
+			const { stdout: hashStdout } = await execFileAsync(
+				"git",
+				["log", "-n", "10", "--format=%H%n%h%n%s%n%an%n%ad", "--date=short", "--author-date-order", query],
 				{ cwd },
 			).catch(() => ({ stdout: "" }))
 

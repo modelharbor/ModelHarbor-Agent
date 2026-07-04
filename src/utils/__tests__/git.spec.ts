@@ -22,11 +22,25 @@ type ExecFunction = (
 	callback: (error: ExecException | null, result?: { stdout: string; stderr: string }) => void,
 ) => void
 
+type ExecFileFunction = (
+	file: string,
+	args: string[],
+	options: { cwd?: string },
+	callback: (error: ExecException | null, result?: { stdout: string; stderr: string }) => void,
+) => void
+
 type PromisifiedExec = (command: string, options?: { cwd?: string }) => Promise<{ stdout: string; stderr: string }>
 
-// Mock child_process.exec
+type PromisifiedExecFile = (
+	file: string,
+	args: string[],
+	options?: { cwd?: string },
+) => Promise<{ stdout: string; stderr: string }>
+
+// Mock child_process.exec and child_process.execFile
 vitest.mock("child_process", () => ({
 	exec: vitest.fn(),
+	execFile: vitest.fn(),
 }))
 
 // Mock fs.promises
@@ -47,23 +61,31 @@ vitest.mock("vscode", () => ({
 	},
 }))
 
-// Mock util.promisify to return our own mock function
+// Mock util.promisify to return our own mock function. A single returned
+// function handles both shapes: exec (command, options) and execFile
+// (file, args, options). We distinguish at call time by whether the second
+// argument is an argv array (execFile) or an options object (exec).
 vitest.mock("util", () => ({
-	promisify: vitest.fn((fn: ExecFunction): PromisifiedExec => {
-		return async (command: string, options?: { cwd?: string }) => {
-			// Call the original mock to maintain the mock implementation
+	promisify: vitest.fn((fn: any) => {
+		return async (...args: any[]) => {
 			return new Promise((resolve, reject) => {
-				fn(
-					command,
-					options || {},
-					(error: ExecException | null, result?: { stdout: string; stderr: string }) => {
-						if (error) {
-							reject(error)
-						} else {
-							resolve(result!)
-						}
-					},
-				)
+				const callback = (error: ExecException | null, result?: any) => {
+					if (error) {
+						reject(error)
+					} else {
+						resolve(result)
+					}
+				}
+				if (Array.isArray(args[1])) {
+					// execFile(file, args, options?) — keep argv intact, default options to {}
+					const [file, argv, options] = args
+					fn(file, argv, options || {}, callback)
+				} else {
+					// exec(command, options?) — default options to {} to match
+					// the original behavior that existing tests assert against.
+					const [command, options] = args
+					fn(command, options || {}, callback)
+				}
 			})
 		}
 	}),
@@ -74,7 +96,7 @@ vitest.mock("../../integrations/misc/extract-text", () => ({
 	truncateOutput: vitest.fn((text) => text),
 }))
 
-import { exec } from "child_process"
+import { exec, execFile } from "child_process"
 
 describe("git utils", () => {
 	const cwd = "/test/path"
@@ -146,25 +168,45 @@ describe("git utils", () => {
 		].join("\n")
 
 		it("should return commits when git is installed and repo exists", async () => {
-			// Set up mock responses
-			const responses = new Map([
+			// Set up mock responses keyed by the command string (exec) or the
+			// execFile argv joined for readability.
+			const execResponses = new Map([
 				["git --version", { stdout: "git version 2.39.2", stderr: "" }],
 				["git rev-parse --git-dir", { stdout: ".git", stderr: "" }],
+			])
+			const execFileResponses = new Map([
 				[
-					'git log -n 10 --format="%H%n%h%n%s%n%an%n%ad" --date=short --grep="test" --regexp-ignore-case',
+					[
+						"git",
+						"log",
+						"-n",
+						"10",
+						"--format=%H%n%h%n%s%n%an%n%ad",
+						"--date=short",
+						"--grep=test",
+						"--regexp-ignore-case",
+					].join(" "),
 					{ stdout: mockCommitData, stderr: "" },
 				],
 			])
 
 			vitest.mocked(exec).mockImplementation((command: string, options: any, callback: any) => {
-				// Find matching response
-				for (const [cmd, response] of responses) {
-					if (command === cmd) {
-						callback(null, response)
-						return {} as any
-					}
+				const response = execResponses.get(command)
+				if (response) {
+					callback(null, response)
+					return {} as any
 				}
-				callback(new Error(`Unexpected command: ${command}`))
+				callback(new Error(`Unexpected exec command: ${command}`))
+			})
+
+			vitest.mocked(execFile).mockImplementation((file: any, args: any, options: any, callback: any) => {
+				const key = [file, ...args].join(" ")
+				const response = execFileResponses.get(key)
+				if (response) {
+					callback(null, response)
+					return {} as any
+				}
+				callback(new Error(`Unexpected execFile command: ${key}`))
 			})
 
 			const result = await searchCommits("test", cwd)
@@ -182,8 +224,20 @@ describe("git utils", () => {
 			// Then verify all commands were called correctly
 			expect(vitest.mocked(exec)).toHaveBeenCalledWith("git --version", {}, expect.any(Function))
 			expect(vitest.mocked(exec)).toHaveBeenCalledWith("git rev-parse --git-dir", { cwd }, expect.any(Function))
-			expect(vitest.mocked(exec)).toHaveBeenCalledWith(
-				'git log -n 10 --format="%H%n%h%n%s%n%an%n%ad" --date=short --grep="test" --regexp-ignore-case',
+			// searchCommits now uses execFile with argv args (no shell), so a
+			// query containing shell metacharacters is passed as a single
+			// argv element and cannot break the command line.
+			expect(vitest.mocked(execFile)).toHaveBeenCalledWith(
+				"git",
+				[
+					"log",
+					"-n",
+					"10",
+					"--format=%H%n%h%n%s%n%an%n%ad",
+					"--date=short",
+					"--grep=test",
+					"--regexp-ignore-case",
+				],
 				{ cwd },
 				expect.any(Function),
 			)
@@ -231,27 +285,57 @@ describe("git utils", () => {
 		})
 
 		it("should handle hash search when grep search returns no results", async () => {
-			const responses = new Map([
+			const execResponses = new Map([
 				["git --version", { stdout: "git version 2.39.2", stderr: "" }],
 				["git rev-parse --git-dir", { stdout: ".git", stderr: "" }],
+			])
+			const execFileResponses = new Map([
 				[
-					'git log -n 10 --format="%H%n%h%n%s%n%an%n%ad" --date=short --grep="abc123" --regexp-ignore-case',
+					[
+						"git",
+						"log",
+						"-n",
+						"10",
+						"--format=%H%n%h%n%s%n%an%n%ad",
+						"--date=short",
+						"--grep=abc123",
+						"--regexp-ignore-case",
+					].join(" "),
 					{ stdout: "", stderr: "" },
 				],
 				[
-					'git log -n 10 --format="%H%n%h%n%s%n%an%n%ad" --date=short --author-date-order abc123',
+					[
+						"git",
+						"log",
+						"-n",
+						"10",
+						"--format=%H%n%h%n%s%n%an%n%ad",
+						"--date=short",
+						"--author-date-order",
+						"abc123",
+					].join(" "),
 					{ stdout: mockCommitData, stderr: "" },
 				],
 			])
 
 			vitest.mocked(exec).mockImplementation((command: string, options: any, callback: any) => {
-				for (const [cmd, response] of responses) {
-					if (command === cmd) {
-						callback(null, response)
-						return {} as any
-					}
+				const response = execResponses.get(command)
+				if (response) {
+					callback(null, response)
+					return {} as any
 				}
-				callback(new Error("Unexpected command"))
+				callback(new Error("Unexpected exec command"))
+				return {} as any
+			})
+
+			vitest.mocked(execFile).mockImplementation((file: any, args: any, options: any, callback: any) => {
+				const key = [file, ...args].join(" ")
+				const response = execFileResponses.get(key)
+				if (response) {
+					callback(null, response)
+					return {} as any
+				}
+				callback(new Error("Unexpected execFile command"))
 				return {} as any
 			})
 

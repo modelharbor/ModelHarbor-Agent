@@ -86,28 +86,33 @@ export async function getOllamaModels(
 
 		const response = await axios.get<OllamaModelsResponse>(`${baseUrl}/api/tags`, { headers })
 		const parsedResponse = OllamaModelsResponseSchema.safeParse(response.data)
-		let modelInfoPromises = []
 
 		if (parsedResponse.success) {
-			for (const ollamaModel of parsedResponse.data.models) {
-				modelInfoPromises.push(
-					axios
-						.post<OllamaModelInfoResponse>(
-							`${baseUrl}/api/show`,
-							{
-								model: ollamaModel.model,
-							},
-							{ headers },
-						)
-						.then((ollamaModelInfo) => {
-							const modelInfo = parseOllamaModel(ollamaModelInfo.data)
-							// Only include models that support native tools
-							if (modelInfo) {
-								models[ollamaModel.name] = modelInfo
-							}
-						}),
-				)
-			}
+			// Fetch each model's /api/show in parallel, but isolate failures: a
+			// single broken/corrupted/unloaded model that 500s on /api/show must
+			// not wipe out the whole model list. Promise.all would reject the
+			// entire batch on the first failure; allSettled keeps the valid ones.
+			const modelInfoPromises = parsedResponse.data.models.map((ollamaModel) =>
+				axios
+					.post<OllamaModelInfoResponse>(
+						`${baseUrl}/api/show`,
+						{
+							model: ollamaModel.model,
+						},
+						{ headers },
+					)
+					.then((ollamaModelInfo) => {
+						const modelInfo = parseOllamaModel(ollamaModelInfo.data)
+						// Only include models that support native tools
+						if (modelInfo) {
+							models[ollamaModel.name] = modelInfo
+						}
+					})
+					.catch((error) => {
+						// Swallow per-model failures so one bad model doesn't empty the list
+						console.warn(`Failed fetching Ollama model info for "${ollamaModel.name}": ${error}`)
+					}),
+			)
 
 			await Promise.all(modelInfoPromises)
 		} else {

@@ -33,7 +33,21 @@ export class RemoteConfigLoader {
 		const modesPromise = this.fetchModes()
 		const mcpsPromise = hideMarketplaceMcps ? Promise.resolve([]) : this.fetchMcps()
 
-		const [modes, mcps] = await Promise.all([modesPromise, mcpsPromise])
+		// Fetch modes and MCPs independently: a failure fetching one (e.g. the
+		// MCP endpoint is temporarily down) must not discard the other. Using
+		// Promise.allSettled keeps whichever list succeeded and only empties
+		// the one that failed, instead of zeroing out the whole marketplace.
+		const [modesSettled, mcpsSettled] = await Promise.allSettled([modesPromise, mcpsPromise])
+
+		const modes = modesSettled.status === "fulfilled" ? modesSettled.value : []
+		const mcps = mcpsSettled.status === "fulfilled" ? mcpsSettled.value : []
+
+		if (modesSettled.status === "rejected") {
+			console.error("Failed to fetch marketplace modes:", modesSettled.reason)
+		}
+		if (mcpsSettled.status === "rejected") {
+			console.error("Failed to fetch marketplace MCPs:", mcpsSettled.reason)
+		}
 
 		items.push(...modes, ...mcps)
 		return items
